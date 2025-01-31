@@ -14,4 +14,8 @@ This repository contains **Property Tycoon**, a game developed for Year 2 **G604
 
 * [Owen Chen](https://github.com/)
 
+* ## The Vedio
+
+https://www.youtube.com/watch?v=wR6-iZzgyU0
+
 
