@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025.
+This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025. The game is built on the Pygame library, which is a set of Python modules designed for writing video games.
 
 ## Group 5 Team Members
 
