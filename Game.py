@@ -166,7 +166,9 @@ class Game:
 
         panel_height = 45 * len(self.logic.players)
         panel_width = 280
-        panel_x = 10
+        #panel_x = 10
+        #panel_y = 10
+        panel_x = WINDOW_SIZE[0] - panel_width - 10
         panel_y = 10
         
         s = pygame.Surface((panel_width, panel_height))
@@ -227,7 +229,16 @@ class Game:
             self.draw_dice(dice1, dice2, False)
 
         self.draw_notifications()
+        board_rect = pygame.Rect(
+            (WINDOW_SIZE[0] - 600) // 2,
+            (WINDOW_SIZE[1] - 600) // 2,
+            600, 600
+        )
         
+        message_area_width = 300
+        message_x = board_rect.left - message_area_width - 20
+        message_y = board_rect.top - message_area_width - 20
+
         current_time = pygame.time.get_ticks()
         messages_to_remove = []
         
@@ -252,7 +263,7 @@ class Game:
                 alpha = int(255 * (1 - fade_progress))
             
             msg_surface = self.font.render(message, True, WHITE)
-            msg_rect = msg_surface.get_rect(centerx=WINDOW_SIZE[0] // 2, y=message_y)
+            msg_rect = msg_surface.get_rect(topleft=(message_x, message_y))
             
             padding = 30
             bg_rect = msg_rect.inflate(padding * 2, padding)
