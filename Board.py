@@ -128,10 +128,128 @@ class Board:
         text_rect = text.get_rect(center=(pos_x + token_size//2, pos_y + token_size//2))
         screen.blit(text, text_rect)
 
+    
     def add_message(self, text):
         self.messages.append(text)
         self.message_times.append(pygame.time.get_ticks())
+    
+    def draw(self, screen):
+        screen.fill(MODERN_BG)
+        
+        gradient = pygame.Surface((WINDOW_SIZE[0], WINDOW_SIZE[1]), pygame.SRCALPHA)
+        for i in range(WINDOW_SIZE[1]):
+            alpha = int(255 * (1 - i/WINDOW_SIZE[1]))
+            pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (WINDOW_SIZE[0], i))
+        screen.blit(gradient, (0, 0))
 
+        board_rect = pygame.Rect(
+            (WINDOW_SIZE[0] - 600) // 2,
+            (WINDOW_SIZE[1] - 600) // 2,
+            600, 600
+        )
+        message_area_width = 300
+        message_x = board_rect.left - message_area_width - 20 
+        #message_y = board_rect.top FIX
+        
+        glow_size = 20
+        glow_surface = pygame.Surface((
+            board_rect.width + glow_size * 2,
+            board_rect.height + glow_size * 2
+        ), pygame.SRCALPHA)
+        
+        for i in range(glow_size):
+            alpha = int(100 * (1 - i/glow_size))
+            pygame.draw.rect(glow_surface, (*ACCENT_COLOR[:3], alpha),
+                           (i, i, board_rect.width + glow_size * 2 - i * 2,
+                            board_rect.height + glow_size * 2 - i * 2),
+                           1, border_radius=10)
+        
+        screen.blit(glow_surface, 
+                   (board_rect.x - glow_size, board_rect.y - glow_size))
+
+        current_time = pygame.time.get_ticks()
+        animation_progress = (current_time % self.ANIMATION_DURATION) / self.ANIMATION_DURATION
+
+        for i, rect in enumerate(self.board_rects):
+            space = self.spaces[i]
+            space_data = self.properties_data.get(str(i + 1), {})
+            
+            s = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+            
+            bgcolor = MODERN_BG
+            if space_data:
+                group = space_data.get("group")
+                name = space_data.get("name", "")
+                
+                if group in GROUP_COLORS:
+                    base_color = GROUP_COLORS[group]
+                    if space and space.owner:
+                        alpha = int(180 + 75 * abs(math.sin(2 * math.pi * animation_progress)))
+                        bgcolor = (*base_color[:3], alpha)
+                    else:
+                        bgcolor = base_color
+                elif "Station" in name:
+                    bgcolor = (100, 100, 100, 180)
+                elif name in ["Tesla Power Co", "Edison Water"]:
+                    bgcolor = (100, 100, 0, 180)
+            
+            pygame.draw.rect(s, bgcolor, s.get_rect(), border_radius=5)
+            screen.blit(s, rect)
+            
+            if space and space.owner:
+                border_color = ACCENT_COLOR
+                for thickness in range(2):
+                    pygame.draw.rect(screen, border_color, 
+                                   rect.inflate(thickness*2, thickness*2), 
+                                   1, border_radius=5)
+            else:
+                pygame.draw.rect(screen, WHITE, rect, 1, border_radius=5)
+            
+            if space or space_data:
+                self.draw_space_contents(screen, rect, space, space_data)
+    
+               
+                message_area_width = 300
+                message_x = board_rect.left - message_area_width - 20 
+                #message_y = board_rect.top FIX
+        #current_time = pygame.time.get_ticks()
+        y_offset = 50
+        messages_to_remove = []
+        
+        for i, (message, time) in enumerate(zip(self.messages, self.message_times)):
+            if current_time - time > self.message_duration:
+                messages_to_remove.append(i)
+                continue
+            
+            progress = (current_time - time) / self.message_duration
+            alpha = max(0, 255 * (1 - progress))
+            y_pos = y_offset - 20 * progress
+            
+            msg_surface = self.message_font.render(message, True, WHITE)
+            msg_rect = msg_surface.get_rect(topleft=(message_x, y_pos))
+
+            
+            bg_rect = msg_rect.inflate(40, 20)
+            bg_surface = pygame.Surface(bg_rect.size, pygame.SRCALPHA)
+            
+            for y in range(bg_rect.height):
+                grad_alpha = int(alpha * (1 - y/bg_rect.height) * 0.7)
+                pygame.draw.line(bg_surface, (*BLACK, grad_alpha),
+                               (0, y), (bg_rect.width, y))
+    
+         
+            screen.blit(bg_surface, bg_rect)
+            
+            msg_surface.set_alpha(int(alpha))
+            screen.blit(msg_surface, msg_rect)
+            
+            y_offset += 40
+        
+        for i in reversed(messages_to_remove):
+            self.messages.pop(i)
+            self.message_times.pop(i)
+
+    """
     def draw(self, screen):
         screen.fill(MODERN_BG)
         
@@ -203,7 +321,16 @@ class Board:
             
             if space or space_data:
                 self.draw_space_contents(screen, rect, space, space_data)
-
+    
+                board_rect = pygame.Rect(
+                    (WINDOW_SIZE[0] - 600) // 2,
+                    (WINDOW_SIZE[1] - 600) // 2,
+                    600,
+                    600
+                    )
+                message_area_width = 300
+                message_x = board_rect.left - message_area_width - 20 
+                message_y = board_rect.top 
         current_time = pygame.time.get_ticks()
         y_offset = 50
         messages_to_remove = []
@@ -218,7 +345,7 @@ class Board:
             y_pos = y_offset - 20 * progress
             
             msg_surface = self.message_font.render(message, True, WHITE)
-            msg_rect = msg_surface.get_rect(centerx=WINDOW_SIZE[0] // 2, top=y_pos)
+            
             
             bg_rect = msg_rect.inflate(40, 20)
             bg_surface = pygame.Surface(bg_rect.size, pygame.SRCALPHA)
@@ -227,7 +354,8 @@ class Board:
                 grad_alpha = int(alpha * (1 - y/bg_rect.height) * 0.7)
                 pygame.draw.line(bg_surface, (*BLACK, grad_alpha),
                                (0, y), (bg_rect.width, y))
-            
+    
+         
             screen.blit(bg_surface, bg_rect)
             
             msg_surface.set_alpha(int(alpha))
@@ -238,7 +366,7 @@ class Board:
         for i in reversed(messages_to_remove):
             self.messages.pop(i)
             self.message_times.pop(i)
-
+    """
     def draw_space_contents(self, screen, rect, space, space_data):
         name = space_data.get("name", "")
         
@@ -259,21 +387,13 @@ class Board:
         name_text = font.render(name, True, WHITE)
         name_rect = name_text.get_rect(centerx=rect.centerx, top=rect.top+5)
         screen.blit(name_text, name_rect)
-        
+
         if space and hasattr(space, 'price'):
             price_font = pygame.font.Font(None, 16)
             price_text = price_font.render(f"£{space.price}", True, WHITE)
             price_rect = price_text.get_rect(centerx=rect.centerx, top=name_rect.bottom+2)
             screen.blit(price_text, price_rect)
-            
-            if space.is_station:
-                rent_text = price_font.render("£25-£200", True, WHITE)
-            elif space.is_utility:
-                rent_text = price_font.render("4x/10x", True, WHITE)
-            else:
-                rent_text = price_font.render(f"Rent: £{space.rent}", True, WHITE)
-            rent_rect = rent_text.get_rect(centerx=rect.centerx, top=price_rect.bottom+2)
-            screen.blit(rent_text, rent_rect)
+    
             
             if space.owner:
                 owner_text = price_font.render(f"👤 {space.owner}", True, WHITE)
@@ -295,6 +415,84 @@ class Board:
             action_text = action_font.render(display_text, True, WHITE)
             action_rect = action_text.get_rect(centerx=rect.centerx, bottom=rect.bottom-5)
             screen.blit(action_text, action_rect)
+    
+    def draw_space_contents(self, screen, rect, space, space_data):
+        texts = [] 
+
+        # For property wtih prices to make spaces
+        if space and hasattr(space, 'price'):
+            name = space_data.get("name", "")
+            available_width = rect.width - 10
+            font_size = 20
+            # After 8 alphebets, words will split to fit in the rectangle
+            while font_size > 12:
+                test_font = pygame.font.Font(None, font_size)
+                if test_font.size(name[:8])[0] <= available_width:
+                    break
+                font_size -= 1
+            name_font = pygame.font.Font(None, font_size)
+            
+            if len(name) > 8:
+                name_lines = [name[i:i+8] for i in range(0, len(name), 8)]
+            else:
+                name_lines = [name]
+            
+            for line in name_lines:
+                texts.append((line, name_font, WHITE))
+            
+            # Price text
+            price_font = pygame.font.Font(None, 16)
+            price_text = f"£{space.price}"
+            texts.append((price_text, price_font, WHITE))
+
+            # Owner text
+            if space.owner:
+                owner_font = pygame.font.Font(None, 16)
+                owner_text = f"👤 {space.owner}"
+                texts.append((owner_text, owner_font, WHITE))
+        else:
+            =
+            name = space_data.get("name", "")
+            if name == "Go to Jail":
+                display_text = "Go to Jail!"
+            elif name in ["Pot Luck", "Opportunity Knocks"]:
+                display_text = "Draw a Card"
+            elif name == "Income Tax":
+                display_text = "Pay £200"
+            elif name == "Super Tax":
+                display_text = "Pay £100"
+            else:
+                
+                display_text = space_data.get("action", "") or name
+            action_font = pygame.font.Font(None, 14)
+            texts.append((display_text, action_font, WHITE))
+
+        # To check height of the bloack
+        line_spacing = 2
+        total_height = 0
+        text_surfaces = []
+        for text, font, color in texts:
+            surface = font.render(text, True, color)
+            text_surfaces.append((text, font, color, surface))
+            total_height += surface.get_height()
+        if text_surfaces:
+            total_height += line_spacing * (len(text_surfaces) - 1)
+
+        # To check the Y position 
+        current_y = rect.top + (rect.height - total_height) // 2
+        for text, font, color, surface in text_surfaces:
+            text_rect = surface.get_rect(centerx=rect.centerx, top=current_y)
+
+            
+            shadow = font.render(text, True, BLACK)
+            shadow_rect = text_rect.copy()
+            shadow_rect.x += 1
+            shadow_rect.y += 1
+            screen.blit(shadow, shadow_rect)
+
+            
+            screen.blit(surface, text_rect)
+            current_y += surface.get_height() + line_spacing
 
     def get_space(self, position):
         array_pos = (position - 1) % 40
