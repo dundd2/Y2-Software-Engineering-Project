@@ -1,13 +1,15 @@
 ## to do : move some game.py ui stuff back to ui.py
 # some of the code should not in the file
+# this file should only contain the game logic
+
 import pygame
 from Board import Board
 from Property import Property
 from game_logic import GameLogic
 from typing import Optional
 import time
+import math
 
-WINDOW_SIZE = (1280, 720)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
@@ -34,14 +36,25 @@ KEY_BUY = [pygame.K_y, pygame.K_RETURN]
 KEY_PASS = [pygame.K_n, pygame.K_ESCAPE]
 
 class Game:
-    def __init__(self, players):
+    def __init__(self, players, game_mode="full", time_limit=None):
         if not pygame.get_init():
             pygame.init()
             
-        self.screen = pygame.display.set_mode(WINDOW_SIZE)
+        info = pygame.display.Info()
+        self.screen = pygame.display.get_surface()
+        if not self.screen:
+            self.screen = pygame.display.set_mode((info.current_w, info.current_h))
         pygame.display.set_caption("Property Tycoon")
         self.font = pygame.font.Font(None, 42)
         self.small_font = pygame.font.Font(None, 32)
+        
+        self.game_mode = game_mode
+        self.time_limit = time_limit
+        self.start_time = pygame.time.get_ticks() if time_limit else None
+        self.rounds_completed = {player.name: 0 for player in players}
+        
+        self.time_warning_start = 60
+        self.warning_flash_rate = 500
         
         try:
             self.logic = GameLogic()
@@ -49,6 +62,7 @@ class Game:
                 raise RuntimeError("Failed to initialize game data")
                 
             self.board = Board()
+            
             self.board.update_ownership(self.logic.properties)
             
             self.state = "ROLL"
@@ -62,7 +76,6 @@ class Game:
             self.dice_animation = False
             self.dice_values = None
             
-            self.player_emojis = ["😎", "🤠", "🤓", "😊", "🥳"]
             self.player_colors = {}
             
             for i, player in enumerate(players):
@@ -70,56 +83,37 @@ class Game:
                     raise RuntimeError(f"Failed to add player {player.name}")
                 self.player_colors[player.name] = player.color
 
-            self.message = None
-            self.message_time = 0
-            self.MESSAGE_DISPLAY_TIME = 2000
-
-            self.button_animations = {}
-            self.notification_queue = []
-            self.notification_time = 0
-            self.NOTIFICATION_DURATION = 3000
-            
+            window_size = self.screen.get_size()
             button_width = 120
             button_height = 45
             button_margin = 20
-            button_y = WINDOW_SIZE[1] - button_height - button_margin
+            button_y = window_size[1] - button_height - button_margin
             
             self.roll_button = pygame.Rect(
-                WINDOW_SIZE[0] - button_width - button_margin,
+                window_size[0] - button_width - button_margin,
                 button_y,
                 button_width,
                 button_height
             )
             
             self.yes_button = pygame.Rect(
-                WINDOW_SIZE[0] - (button_width * 2) - (button_margin * 2),
+                window_size[0] - (button_width * 2) - (button_margin * 2),
                 button_y,
                 button_width,
                 button_height
             )
             
             self.no_button = pygame.Rect(
-                WINDOW_SIZE[0] - button_width - button_margin,
+                window_size[0] - button_width - button_margin,
                 button_y,
                 button_width,
                 button_height
             )
-            
-            self.messages = []
-            self.message_duration = 5000
-            self.message_fade_time = 1000
-            self.message_spacing = 70
-            self.max_messages = 4
-            self.message_times = []
                     
         except Exception as e:
             print(f"Error during game initialization: {e}")
             pygame.quit()
             raise
-
-    def add_notification(self, text, color=WHITE):
-        self.notification_queue.append({"text": text, "color": color})
-        self.notification_time = pygame.time.get_ticks()
 
     def draw_button(self, button, text, hover=False, active=True):
         base_color = BUTTON_HOVER if hover else ACCENT_COLOR
@@ -151,24 +145,96 @@ class Game:
         self.screen.blit(text_surface, text_rect)
 
     def add_message(self, text):
-        self.messages.append(text)
-        self.message_times.append(pygame.time.get_ticks())
+        self.board.add_message(text)
+
+    def draw_time_remaining(self):
+        if self.game_mode == "abridged" and self.time_limit:
+            current_time = pygame.time.get_ticks()
+            elapsed = (current_time - self.start_time) // 1000
+            remaining = max(0, self.time_limit - elapsed)
+            minutes = remaining // 60
+            seconds = remaining % 60
+            
+            window_size = self.screen.get_size()
+            
+            if remaining <= self.time_warning_start:
+                flash_alpha = abs(math.sin(current_time / self.warning_flash_rate)) * 255
+                warning_surface = pygame.Surface(window_size, pygame.SRCALPHA)
+                warning_color = (*ERROR_COLOR, int(flash_alpha * 0.1))
+                warning_surface.fill(warning_color)
+                self.screen.blit(warning_surface, (0, 0))
+                
+                if remaining == 60 or remaining == 30 or remaining == 10:
+                    self.add_message(f"Warning: {remaining} seconds remaining!")
+
+            panel_width = 200
+            panel_height = 100
+            panel_x = 10
+            panel_y = 120
+            
+            glow_surface = pygame.Surface((panel_width + 10, panel_height + 10), pygame.SRCALPHA)
+            for i in range(5):
+                alpha = int(100 * (1 - i/5))
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR[:3], alpha),
+                               pygame.Rect(i, i, panel_width + 10 - i*2, panel_height + 10 - i*2),
+                               border_radius=10)
+            self.screen.blit(glow_surface, (panel_x - 5, panel_y - 5))
+            
+            panel = pygame.Surface((panel_width, panel_height))
+            panel.fill(MODERN_BG)
+            self.screen.blit(panel, (panel_x, panel_y))
+            
+            title_text = self.small_font.render("Time Remaining", True, LIGHT_GRAY)
+            title_rect = title_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 10)
+            self.screen.blit(title_text, title_rect)
+            
+            time_color = ERROR_COLOR if remaining < 300 else ACCENT_COLOR
+            time_text = self.font.render(f"{minutes:02d}:{seconds:02d}", True, time_color)
+            time_rect = time_text.get_rect(centerx=panel_x + panel_width//2, top=title_rect.bottom + 10)
+            self.screen.blit(time_text, time_rect)
+            
+            if remaining < 300:
+                rules_text = "Game will end when all players complete equal rounds"
+                rules_surface = self.small_font.render(rules_text, True, LIGHT_GRAY)
+                rules_rect = rules_surface.get_rect(
+                    centerx=panel_x + panel_width//2, 
+                    bottom=panel_y + panel_height - 25
+                )
+                self.screen.blit(rules_surface, rules_rect)
+            
+            progress_width = panel_width - 40
+            progress_height = 8
+            progress_x = panel_x + 20
+            progress_y = panel_y + panel_height - 15
+            
+            pygame.draw.rect(self.screen, GRAY, 
+                           pygame.Rect(progress_x, progress_y, progress_width, progress_height),
+                           border_radius=4)
+            
+            progress = remaining / self.time_limit
+            if progress > 0:
+                progress_color = time_color
+                pygame.draw.rect(self.screen, progress_color,
+                               pygame.Rect(progress_x, progress_y, 
+                                         int(progress_width * progress), progress_height),
+                               border_radius=4)
 
     def draw(self):
+        window_size = self.screen.get_size()
         self.screen.fill(MODERN_BG)
-        gradient = pygame.Surface(WINDOW_SIZE, pygame.SRCALPHA)
-        for i in range(WINDOW_SIZE[1]):
-            alpha = int(255 * (1 - i/WINDOW_SIZE[1]))
-            pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (WINDOW_SIZE[0], i))
+        gradient = pygame.Surface(window_size, pygame.SRCALPHA)
+        for i in range(window_size[1]):
+            alpha = int(255 * (1 - i/window_size[1]))
+            pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (window_size[0], i))
         self.screen.blit(gradient, (0, 0))
 
         self.board.draw(self.screen)
+        
+        self.draw_time_remaining()
 
         panel_height = 45 * len(self.logic.players)
         panel_width = 280
-        #panel_x = 10
-        #panel_y = 10
-        panel_x = WINDOW_SIZE[0] - panel_width - 10
+        panel_x = window_size[0] - panel_width - 10
         panel_y = 10
         
         s = pygame.Surface((panel_width, panel_height))
@@ -176,6 +242,7 @@ class Game:
         s.fill(BLACK)
         self.screen.blit(s, (panel_x, panel_y))
         
+        mouse_pos = pygame.mouse.get_pos()
         y = panel_y + 5
         for i, player in enumerate(self.logic.players):
             is_current = (i == self.logic.current_player_index)
@@ -186,9 +253,8 @@ class Game:
                 highlight.fill(ACCENT_COLOR)
                 self.screen.blit(highlight, (panel_x + 5, y))
             
-            emoji = self.player_emojis[i % len(self.player_emojis)]
             color = ACCENT_COLOR if is_current else WHITE
-            text = self.font.render(f"{emoji} {player['name']}", True, color)
+            text = self.font.render(player['name'], True, color)
             self.screen.blit(text, (panel_x + 10, y + 5))
             
             money_color = SUCCESS_COLOR if player['money'] > 500 else ERROR_COLOR if player['money'] < 200 else WHITE
@@ -197,13 +263,26 @@ class Game:
             
             props = [prop for prop in self.logic.properties.values() 
                     if prop.get('owner') == player['name']]
-            if props:
-                props_text = self.small_font.render(
-                    ', '.join(p['name'][:15] + ('...' if len(p['name']) > 15 else '') 
-                             for p in props[:3]), True, LIGHT_GRAY)
-                self.screen.blit(props_text, (panel_x + 20, y + 25))
             
-            y += 45
+            if props:
+                card_width = 60
+                card_height = 30
+                card_spacing = 5
+                card_y = y + 35
+                
+                for idx, prop in enumerate(props):
+                    card_x = panel_x + 20 + idx * (card_width + card_spacing)
+                    card_rect = pygame.Rect(card_x, card_y, card_width, card_height)
+                    
+                    group = prop.get('group')
+                    card_color = GROUP_COLORS.get(group, GRAY) if group else GRAY
+                    pygame.draw.rect(self.screen, card_color, card_rect, border_radius=3)
+                    pygame.draw.rect(self.screen, WHITE, card_rect, 1, border_radius=3)
+                    
+                    if card_rect.collidepoint(mouse_pos):
+                        self.draw_property_tooltip(prop, mouse_pos)
+            
+            y += 45 + (30 if props else 0)
 
         if self.state == "ROLL":
             self.draw_button(self.roll_button, "Roll", 
@@ -228,75 +307,14 @@ class Game:
             dice1, dice2 = self.last_roll
             self.draw_dice(dice1, dice2, False)
 
-        self.draw_notifications()
-        board_rect = pygame.Rect(
-            (WINDOW_SIZE[0] - 600) // 2,
-            (WINDOW_SIZE[1] - 600) // 2,
-            600, 600
-        )
-        
-        message_area_width = 300
-        message_x = board_rect.left - message_area_width - 20
-        message_y = board_rect.top - message_area_width - 20
-
-        current_time = pygame.time.get_ticks()
-        messages_to_remove = []
-        
-        visible_messages = [m for m, t in zip(self.messages, self.message_times) 
-                          if current_time - t < self.message_duration][:self.max_messages]
-        total_height = len(visible_messages) * self.message_spacing
-        message_y = (WINDOW_SIZE[1] - total_height) // 2
-        
-        for i, (message, start_time) in enumerate(zip(self.messages, self.message_times)):
-            if i >= self.max_messages:
-                break
-                
-            if current_time - start_time > self.message_duration:
-                messages_to_remove.append(i)
-                continue
-                
-            time_displayed = current_time - start_time
-            if time_displayed < self.message_duration - self.message_fade_time:
-                alpha = 255
-            else:
-                fade_progress = (time_displayed - (self.message_duration - self.message_fade_time)) / self.message_fade_time
-                alpha = int(255 * (1 - fade_progress))
-            
-            msg_surface = self.font.render(message, True, WHITE)
-            msg_rect = msg_surface.get_rect(topleft=(message_x, message_y))
-            
-            padding = 30
-            bg_rect = msg_rect.inflate(padding * 2, padding)
-            bg_surface = pygame.Surface(bg_rect.size, pygame.SRCALPHA)
-            
-            pygame.draw.rect(bg_surface, (0, 0, 0, int(alpha * 0.8)), 
-                           bg_surface.get_rect(), border_radius=15)
-            
-            glow_size = 4
-            for i in range(glow_size):
-                glow_alpha = int((alpha * 0.4) * (1 - i/glow_size))
-                pygame.draw.rect(bg_surface, (*ACCENT_COLOR, glow_alpha),
-                               bg_surface.get_rect().inflate(i*2, i*2),
-                               2, border_radius=15)
-            
-            self.screen.blit(bg_surface, bg_rect)
-            
-            msg_surface.set_alpha(alpha)
-            self.screen.blit(msg_surface, msg_rect)
-            
-            message_y += self.message_spacing
-        
-        for i in reversed(messages_to_remove):
-            self.messages.pop(i)
-            self.message_times.pop(i)
-
         pygame.display.flip()
 
     def draw_dice(self, dice1, dice2, is_rolling):
-        dice_size = 60
-        spacing = 20
-        start_x = WINDOW_SIZE[0] - (dice_size * 2 + spacing) - 20
-        y = WINDOW_SIZE[1] - dice_size - 80
+        window_size = self.screen.get_size()
+        dice_size = int(window_size[1] * 0.08)
+        spacing = dice_size // 3
+        start_x = window_size[0] - (dice_size * 2 + spacing) - 20
+        y = window_size[1] - dice_size - 80
 
         for i, value in enumerate([dice1, dice2]):
             x = start_x + (dice_size + spacing) * i
@@ -311,17 +329,20 @@ class Game:
             
             if is_rolling:
                 color = ACCENT_COLOR
-                pygame.draw.rect(self.screen, color, dice_rect, 2, border_radius=10)
+            else:
+                color = BLACK
+            pygame.draw.rect(self.screen, color, dice_rect, 2, border_radius=10)
             
             dice_text = self.font.render(str(value), True, BLACK)
             dice_text_rect = dice_text.get_rect(center=dice_rect.center)
             self.screen.blit(dice_text, dice_text_rect)
 
     def draw_property_card(self, property_data):
-        card_width = 300
-        card_height = 200
-        card_x = (WINDOW_SIZE[0] - card_width) // 2
-        card_y = (WINDOW_SIZE[1] - card_height) // 2
+        window_size = self.screen.get_size()
+        card_width = int(window_size[0] * 0.25)
+        card_height = int(window_size[1] * 0.3)
+        card_x = (window_size[0] - card_width) // 2
+        card_y = (window_size[1] - card_height) // 2
 
         shadow_rect = pygame.Rect(card_x + 4, card_y + 4, card_width, card_height)
         shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
@@ -343,26 +364,32 @@ class Game:
         rent_rect = rent_text.get_rect(centerx=card_rect.centerx, top=price_rect.bottom + 20)
         self.screen.blit(rent_text, rent_rect)
 
-    def draw_notifications(self):
-        current_time = pygame.time.get_ticks()
-        if self.notification_queue and current_time - self.notification_time < self.NOTIFICATION_DURATION:
-            notification = self.notification_queue[0]
-            alpha = max(0, 255 - ((current_time - self.notification_time) / self.NOTIFICATION_DURATION * 255))
-            
-            text = self.font.render(notification["text"], True, notification["color"])
-            text_rect = text.get_rect(centerx=WINDOW_SIZE[0]//2, y=100)
-            
-            bg_rect = text_rect.inflate(40, 20)
-            bg = pygame.Surface(bg_rect.size, pygame.SRCALPHA)
-            bg.fill((*BLACK, int(alpha * 0.7)))
-            self.screen.blit(bg, bg_rect)
-            
-            text.set_alpha(int(alpha))
-            self.screen.blit(text, text_rect)
-        elif self.notification_queue:
-            self.notification_queue.pop(0)
-            if self.notification_queue:
-                self.notification_time = current_time
+    def draw_property_tooltip(self, property_data, mouse_pos):
+        padding = 10
+        window_size = self.screen.get_size()
+        
+        tooltip_width = 200
+        tooltip_height = 80
+        
+        x = min(mouse_pos[0] + 10, window_size[0] - tooltip_width - padding)
+        y = min(mouse_pos[1] + 10, window_size[1] - tooltip_height - padding)
+        
+        shadow = pygame.Surface((tooltip_width + 4, tooltip_height + 4), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
+        self.screen.blit(shadow, (x + 2, y + 2))
+        
+        tooltip = pygame.Surface((tooltip_width, tooltip_height))
+        tooltip.fill(MODERN_BG)
+        self.screen.blit(tooltip, (x, y))
+        pygame.draw.rect(self.screen, WHITE, pygame.Rect(x, y, tooltip_width, tooltip_height), 1, border_radius=5)
+        
+        name_text = self.small_font.render(property_data['name'], True, WHITE)
+        price_text = self.small_font.render(f"Price: £{property_data['price']}", True, ACCENT_COLOR)
+        rent_text = self.small_font.render(f"Rent: £{property_data.get('rent', 0)}", True, LIGHT_GRAY)
+        
+        self.screen.blit(name_text, (x + padding, y + padding))
+        self.screen.blit(price_text, (x + padding, y + padding + 25))
+        self.screen.blit(rent_text, (x + padding, y + padding + 50))
 
     def finish_dice_animation(self):
         self.dice_animation = False
@@ -376,29 +403,35 @@ class Game:
         position = str(current_player['position'])
         
         while self.logic.message_queue:
-            self.add_message(self.logic.message_queue.pop(0))
+            message = self.logic.message_queue.pop(0)
+            self.board.add_message(message)
         
         if position in self.logic.properties:
             space = self.logic.properties[position]
             if space["name"] == "Go to Jail":
-                self.add_message(f"{current_player['name']} goes to Jail! Do not pass GO, do not collect £200")
+                self.board.add_message(f"{current_player['name']} goes to Jail!")
                 self.state = "ROLL"
             elif "price" in space and not space.get("owner"):
                 self.state = "BUY"
                 self.current_property = space
-                self.add_message(f"{current_player['name']} landed on {space['name']}. Buy for £{space['price']}?")
+                self.board.add_message(f"{current_player['name']} landed on {space['name']}")
+                self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
             else:
                 if space.get("owner"):
                     rent = self.logic.calculate_space_rent(space, current_player)
-                    self.add_message(f"{current_player['name']} must pay £{rent} rent to {space['owner']}")
-                self.state = "ROLL"
+                    self.board.add_message(f"{current_player['name']} pays £{rent} rent to {space['owner']}")
 
     def play_turn(self):
         if self.dice_animation:
             return False
 
+        current_player = self.logic.players[self.logic.current_player_index]
+        old_position = current_player['position']
+
         self.dice_animation = True
         self.animation_start = pygame.time.get_ticks()
+        
+        self.board.add_message(f"{current_player['name']}'s turn")
         
         dice1, dice2 = self.logic.play_turn()
         if dice1 is None:
@@ -407,34 +440,71 @@ class Game:
         
         self.dice_values = (dice1, dice2)
         
-        while self.logic.message_queue:
-            self.add_message(self.logic.message_queue.pop(0))
-        
-        current_player = self.logic.players[self.logic.current_player_index]
-        roll_message = f"{current_player['name']} rolled {dice1 + dice2} ({dice1}, {dice2})"
-        self.add_message(roll_message)
+        if current_player['position'] < old_position:
+            self.rounds_completed[current_player['name']] += 1
+            
+        self.board.add_message(f"{current_player['name']} rolled {dice1 + dice2}")
         
         if dice1 == dice2:
-            self.add_message("Doubles! Roll again!")
+            self.board.add_message("Doubles! Roll again!")
         
-        if self.logic.is_game_over():
-            winner = self.logic.get_winner()
-            if winner:
-                self.add_message(f"Game Over! {winner} wins!")
+        if self.check_game_over():
             return True
         
         return False
+
+    def check_game_over(self):
+        current_time = pygame.time.get_ticks()
+        end_game_data = None
+        
+        if self.game_mode == "full":
+            if not self.logic.players:
+                if self.logic.bankrupted_players:
+                    winner = self.logic.bankrupted_players[-2] if len(self.logic.bankrupted_players) > 1 else None
+                    return {"winner": winner,
+                           "bankrupted_players": self.logic.bankrupted_players,
+                           "voluntary_exits": self.logic.voluntary_exits}
+                return None
+                
+            active_players = [p for p in self.logic.players if p['money'] > 0]
+            if len(active_players) <= 1:
+                winner = active_players[0]['name'] if active_players else None
+                return {"winner": winner,
+                        "bankrupted_players": self.logic.bankrupted_players,
+                        "voluntary_exits": self.logic.voluntary_exits}
+                
+        elif self.game_mode == "abridged":
+            if self.time_limit and (current_time - self.start_time) // 1000 >= self.time_limit:
+                min_rounds = min(self.rounds_completed.values())
+                if all(rounds == min_rounds for rounds in self.rounds_completed.values()):
+                    assets = {}
+                    for player in self.logic.players:
+                        total = player['money']
+                        for prop in self.logic.properties.values():
+                            if prop.get('owner') == player['name']:
+                                total += prop.get('price', 0)
+                                if 'houses' in prop:
+                                    total += sum(prop.get('house_costs', []))[:prop['houses']]
+                        assets[player['name']] = total
+                    
+                    winner = max(assets.items(), key=lambda x: x[1])[0]
+                    return {"winner": winner,
+                            "final_assets": assets,
+                            "bankrupted_players": self.logic.bankrupted_players,
+                            "voluntary_exits": self.logic.voluntary_exits}
+        
+        return None
 
     def handle_buy_decision(self, wants_to_buy):
         current_player = self.logic.players[self.logic.current_player_index]
         if wants_to_buy:
             if self.logic.buy_property(current_player):
-                self.add_message(f"{current_player['name']} bought {self.current_property['name']} for £{self.current_property['price']}")
+                self.board.add_message(f"{current_player['name']} bought {self.current_property['name']}")
                 self.board.update_ownership(self.logic.properties)
             else:
-                self.add_message(f"{current_player['name']} cannot afford {self.current_property['name']}")
+                self.board.add_message(f"{current_player['name']} cannot afford {self.current_property['name']}")
         else:
-            self.add_message(f"{current_player['name']} passed on {self.current_property['name']}")
+            self.board.add_message(f"{current_player['name']} passed on {self.current_property['name']}")
             if self.logic.auction_property(current_player['position']):
                 self.board.update_ownership(self.logic.properties)
         
@@ -465,6 +535,8 @@ class Game:
         if self.state == "ROLL":
             if event.key in KEY_ROLL:
                 return self.play_turn()
+            elif event.key == pygame.K_t and self.game_mode == "abridged":
+                self.show_time_stats()
         elif self.state == "BUY":
             if event.key in KEY_BUY:
                 self.handle_buy_decision(True)
@@ -472,4 +544,38 @@ class Game:
             elif event.key in KEY_PASS:
                 self.handle_buy_decision(False)
                 return False
+        return False
+
+    def show_time_stats(self):
+        if self.game_mode == "abridged" and self.time_limit:
+            current_time = pygame.time.get_ticks()
+            elapsed = (current_time - self.start_time) // 1000
+            remaining = max(0, self.time_limit - elapsed)
+            minutes = remaining // 60
+            seconds = remaining % 60
+            
+            self.board.add_message(f"Time: {minutes:02d}:{seconds:02d}")
+            
+            min_rounds = min(self.rounds_completed.values())
+            max_rounds = max(self.rounds_completed.values())
+            if min_rounds != max_rounds:
+                self.board.add_message(f"Rounds: {min_rounds}-{max_rounds}")
+
+    def handle_voluntary_exit(self, player_name):
+        if self.game_mode != "full":
+            self.board.add_message("Exit only in full mode")
+            return False
+            
+        self.board.add_message(f"{player_name} exits game")
+        
+        if self.logic.remove_player(player_name, voluntary=True):
+            self.board.update_ownership(self.logic.properties)
+            return True
+        return False
+
+    def handle_bankruptcy(self, player):
+        if self.logic.remove_player(player['name']):
+            self.board.add_message(f"{player['name']} bankrupt!")
+            self.board.update_ownership(self.logic.properties)
+            return True
         return False

@@ -26,6 +26,10 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
         properties_data = {}
         for _, row in df.iterrows():
             try:
+                # Skip rows without a valid position number
+                if not str(row['Position']).strip().isdigit():
+                    continue
+                    
                 position = int(row['Position'])
                 property_name = str(row['Space/property']).strip()
                 
@@ -37,11 +41,31 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                     "action": str(row['Action']).strip() if row['Action'] else None
                 }
 
-                if str(row['Can be bought?']).strip().lower() == 'yes' and row['£']:
+                # Handle stations
+                if "Station" in property_name:
+                    property_data.update({
+                        "price": 200,
+                        "rent": 25,  # Base rent, multiplied based on number of stations owned
+                        "owner": None,
+                        "is_station": True
+                    })
+                # Handle utilities
+                elif property_name in ["Tesla Power Co", "Edison Water"]:
+                    property_data.update({
+                        "price": 150,
+                        "rent": 0, 
+                        "owner": None,
+                        "is_utility": True
+                    })
+                # Handle regular properties
+                elif str(row['Can be bought?']).strip().lower() == 'yes' and row['£']:
                     try:
+                        price_str = str(row['£']).replace('£', '').strip()
+                        rent_str = str(row['£.1']).replace('£', '').strip() or '0'
+                        
                         property_data.update({
-                            "price": int(float(str(row['£']).replace('£', '').strip())),
-                            "rent": int(float(str(row['£.1']).replace('£', '').strip() or '0')),
+                            "price": int(float(price_str)),
+                            "rent": int(float(rent_str)),
                             "owner": None,
                             "house_costs": []
                         })
@@ -50,8 +74,9 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                             cost = row.get(f'£.{i}', '')
                             if cost and str(cost).strip():
                                 try:
+                                    cost_str = str(cost).replace('£', '').strip()
                                     property_data["house_costs"].append(
-                                        int(float(str(cost).replace('£', '').strip()))
+                                        int(float(cost_str))
                                     )
                                 except (ValueError, TypeError):
                                     continue
@@ -65,7 +90,9 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                 print(f"Error processing row: {e}")
                 continue
 
-        print(f"Successfully loaded {len(properties_data)} properties")
+        positions_loaded = sorted([int(pos) for pos in properties_data.keys()])
+        print(f"Successfully loaded properties for positions: {positions_loaded}")
+        print(f"Total properties loaded: {len(properties_data)}")
         return properties_data
 
     except Exception as e:

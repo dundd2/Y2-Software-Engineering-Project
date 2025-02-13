@@ -54,6 +54,8 @@ class GameLogic:
         self.last_dice_roll = None
         self.doubles_count = 0
         self.message_queue = []
+        self.bankrupted_players = []
+        self.voluntary_exits = []
 
     def game_start(self):
         self.properties = load_property_data()
@@ -149,6 +151,7 @@ class GameLogic:
                 else:
                     message = f"{player['name']} went bankrupt!"
                     self.add_message(message)
+                    self.remove_player(player['name'])
                     return "bankrupt", message
 
         elif space["name"] == "Go":
@@ -167,6 +170,7 @@ class GameLogic:
             else:
                 message = f"{player['name']} went bankrupt!"
                 self.add_message(message)
+                self.remove_player(player['name'])
                 return "bankrupt", message
 
         elif space["name"] in ["Pot Luck", "Opportunity Knocks"]:
@@ -300,3 +304,25 @@ class GameLogic:
             if active_players:
                 return active_players[0]["name"]
         return None
+
+    def remove_player(self, player_name, voluntary=False):
+        """Remove a player from the game and handle their assets"""
+        player = next((p for p in self.players if p['name'] == player_name), None)
+        if player:
+            for prop in self.properties.values():
+                if prop.get('owner') == player_name:
+                    prop['owner'] = None
+                    if 'houses' in prop:
+                        prop['houses'] = 0
+            
+            self.players.remove(player)
+            if voluntary:
+                self.voluntary_exits.append(player_name)
+            else:
+                self.bankrupted_players.append(player_name)
+            
+            if len(self.players) > 0:
+                self.current_player_index = self.current_player_index % len(self.players)
+            
+            return True
+        return False
