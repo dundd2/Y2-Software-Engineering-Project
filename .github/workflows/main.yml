@@ -50,32 +50,20 @@ jobs:
         retention-days: 90
         
     - name: Extract version
-      if: matrix.os == 'windows-latest'
       id: get_version
       shell: bash
       run: |
         VERSION=$(echo ${{ github.ref_name }} | sed 's/Build-//')
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "version=${VERSION}" >> $GITHUB_ENV
         
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      if: matrix.os == 'windows-latest'
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: Release-${{ steps.get_version.outputs.version }}
-        release_name: Release ${{ steps.get_version.outputs.version }}
+        files: dist/${{ matrix.output_name }}
+        name: Release ${{ env.version }}
+        tag_name: Release-${{ env.version }}
         draft: false
         prerelease: false
-        
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      if: matrix.os == 'windows-latest'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/${{ matrix.output_name }}
-        asset_name: ${{ matrix.asset_name }}
-        asset_content_type: application/octet-stream
+        fail_on_unmatched_files: false
