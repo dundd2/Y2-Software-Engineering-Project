@@ -451,7 +451,7 @@ class Board:
                 owner_text = f"👤 {space.owner}"
                 texts.append((owner_text, owner_font, WHITE))
         else:
-            =
+            
             name = space_data.get("name", "")
             if name == "Go to Jail":
                 display_text = "Go to Jail!"
