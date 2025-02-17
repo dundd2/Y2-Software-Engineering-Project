@@ -2,17 +2,16 @@ name: Build and Release Game
 
 on:
   push:
-    tags:
-      - 'Build-*'
+    branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   build:
-    if: startsWith(github.ref, 'refs/tags/Build-')
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
@@ -21,52 +20,63 @@ jobs:
             output_name: PropertyTycoon.exe
             asset_name: PropertyTycoon-Windows.exe
           - os: macos-latest
-            output_name: PropertyTycoon
-            asset_name: PropertyTycoon-macOS
+            output_name: PropertyTycoon-macOS.app
+            asset_name: PropertyTycoon-macOS.app
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pygame
         pip install pyinstaller
         pip install -r requirements.txt
-        
-    - name: Build executable
+
+    - name: Build executable for Windows
+      if: matrix.os == 'windows-latest'
+      working-directory: ${{ github.workspace }}
       run: |
-        pyinstaller --onefile --windowed --name PropertyTycoon --add-data "assets:assets" main.py
-        
+        pyinstaller --onefile --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets;assets" main.py
+
+    - name: Build macOS app
+      if: matrix.os == 'macos-latest'
+      working-directory: ${{ github.workspace }}
+      run: |
+        pyinstaller --onefile --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+        mv dist/PropertyTycoon.app dist/PropertyTycoon-macOS.app
+        chmod -R +x dist/PropertyTycoon-macOS.app
+
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-${{ matrix.os }}
         path: dist/${{ matrix.output_name }}
         retention-days: 90
-        
-    - name: Extract version
+
+    - name: Generate version number
       id: get_version
       shell: bash
       run: |
-        VERSION=$(echo ${{ github.ref_name }} | sed 's/Build-//')
+        VERSION=$(date +'%Y.%m.%d-%H%M%S')
         echo "version=${VERSION}" >> $GITHUB_ENV
-        
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: dist/${{ matrix.output_name }}
-        name: Release ${{ env.version }}
-        tag_name: Release-${{ env.version }}
+        name: build-${{ steps.get_version.outputs.version }}
+        tag_name: build-${{ steps.get_version.outputs.version }}
         draft: false
         prerelease: false
         fail_on_unmatched_files: false

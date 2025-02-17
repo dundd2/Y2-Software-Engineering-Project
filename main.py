@@ -1,6 +1,9 @@
 import pygame
 import sys
 import asyncio
+import os 
+pygame.init()
+os.chdir(os.path.dirname(os.path.abspath(__file__))) 
 from Board import Board
 from Game import Game
 from Player import Player
