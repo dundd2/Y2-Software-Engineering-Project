@@ -178,26 +178,38 @@ async def main():
                                 screen = await apply_screen_settings(settings["resolution"])
                             current_page = MainMenuPage(instructions=GAME_INSTRUCTIONS)
                         elif isinstance(current_page, StartPage):
-                            player_info = current_page.get_player_info()
-                            if player_info[2] > 0:
-                                current_page = AIDifficultyPage(instructions=GAME_INSTRUCTIONS)
+                            if result == "back":
+                                current_page = MainMenuPage(instructions=GAME_INSTRUCTIONS)
                             else:
-                                current_page = GameModePage(instructions=GAME_INSTRUCTIONS)
+                                player_info = current_page.get_player_info()
+                                if player_info[2] > 0:
+                                    current_page = AIDifficultyPage(instructions=GAME_INSTRUCTIONS)
+                                else:
+                                    current_page = GameModePage(instructions=GAME_INSTRUCTIONS)
                         elif isinstance(current_page, AIDifficultyPage):
-                            ai_difficulty = result
-                            current_page = GameModePage(instructions=GAME_INSTRUCTIONS)
+                            if result == "back":
+                                current_page = StartPage(instructions=GAME_INSTRUCTIONS)
+                            else:
+                                ai_difficulty = result
+                                current_page = GameModePage(instructions=GAME_INSTRUCTIONS)
                         elif isinstance(current_page, GameModePage):
-                            game_settings = current_page.get_game_settings()
-                            if ai_difficulty:
-                                game_settings["ai_difficulty"] = ai_difficulty
-                            
-                            game = create_game(player_info, game_settings)
-                            game_over_data = await run_game(game, game_settings)
-                            
-                            if game_over_data:
-                                play_again = await handle_end_game(game_over_data)
-                                if play_again:
-                                    current_page = MainMenuPage(instructions=GAME_INSTRUCTIONS)
+                            if result == "back":
+                                if ai_difficulty:
+                                    current_page = AIDifficultyPage(instructions=GAME_INSTRUCTIONS)
+                                else:
+                                    current_page = StartPage(instructions=GAME_INSTRUCTIONS)
+                            else:
+                                game_settings = current_page.get_game_settings()
+                                if ai_difficulty:
+                                    game_settings["ai_difficulty"] = ai_difficulty
+                                
+                                game = create_game(player_info, game_settings)
+                                game_over_data = await run_game(game, game_settings)
+                                
+                                if game_over_data:
+                                    play_again = await handle_end_game(game_over_data)
+                                    if play_again:
+                                        current_page = MainMenuPage(instructions=GAME_INSTRUCTIONS)
                 
                 elif event.type == pygame.MOUSEMOTION:
                     current_page.handle_motion(event.pos)

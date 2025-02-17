@@ -290,13 +290,36 @@ class Game:
             else:
                 name_x = panel_x + 10
 
-            color = ACCENT_COLOR if is_current else WHITE
-            text = self.font.render(player_data['name'], True, color)
+            jail_free_cards = self.logic.jail_free_cards.get(player_data['name'], 0)
+            if player_data.get('in_jail', False):
+                name_with_status = f"{player_data['name']} (In Jail)"
+                color = ERROR_COLOR if is_current else GRAY
+                
+                jail_turns = player_data.get('jail_turns', 0)
+                jail_status = f"Turns in jail: {jail_turns}/3"
+                if jail_free_cards > 0:
+                    jail_status += f" (Has Jail Free Card)"
+                jail_text = self.small_font.render(jail_status, True, ERROR_COLOR)
+                self.screen.blit(jail_text, (name_x, y + 28))
+                y += 20
+            else:
+                name_with_status = player_data['name']
+                if jail_free_cards > 0:
+                    name_with_status += f" ({jail_free_cards} Jail Free)"
+                color = ACCENT_COLOR if is_current else WHITE
+
+            text = self.font.render(name_with_status, True, color)
             self.screen.blit(text, (name_x, y + 5))
             
             money_color = SUCCESS_COLOR if player_data['money'] > 500 else ERROR_COLOR if player_data['money'] < 200 else WHITE
             money_text = self.small_font.render(f"£{player_data['money']}", True, money_color)
             self.screen.blit(money_text, (panel_x + 180, y + 10))
+
+            if player_data.get('in_jail', False):
+                jail_turns = player_data.get('jail_turns', 0)
+                jail_text = self.small_font.render(f"Turns in jail: {jail_turns}/3", True, ERROR_COLOR)
+                self.screen.blit(jail_text, (name_x, y + 28))
+                y += 20
             
             props = [prop for prop in self.logic.properties.values() 
                     if prop.get('owner') == player_data['name']]
@@ -385,10 +408,23 @@ class Game:
             color = ACCENT_COLOR if is_rolling else BLACK
             pygame.draw.rect(self.screen, color, dice_rect, 2, border_radius=10)
 
+        if not is_rolling and dice1 == dice2:
+            current_time = pygame.time.get_ticks()
+            num_sparkles = 20
+            for i in range(num_sparkles):
+                angle = (current_time / 500 + i * (360 / num_sparkles)) % 360
+                radius = 40 + math.sin(current_time / 200 + i) * 10
+                sparkle_x = start_x + dice_size + spacing/2 + math.cos(math.radians(angle)) * radius
+                sparkle_y = y + dice_size/2 + math.sin(math.radians(angle)) * radius
+                sparkle_color = (255, 255, 0, max(0, math.sin(current_time / 200 + i) * 255))
+                sparkle_surface = pygame.Surface((4, 4), pygame.SRCALPHA)
+                pygame.draw.circle(sparkle_surface, sparkle_color, (2, 2), 2)
+                self.screen.blit(sparkle_surface, (sparkle_x, sparkle_y))
+
     def draw_property_card(self, property_data):
         window_size = self.screen.get_size()
         card_width = int(window_size[0] * 0.25)
-        card_height = int(window_size[1] * 0.3)
+        card_height = int(window_size[1] * 0.4)
         card_x = (window_size[0] - card_width) // 2
         card_y = (window_size[1] - card_height) // 2
 
@@ -400,17 +436,46 @@ class Game:
         card_rect = pygame.Rect(card_x, card_y, card_width, card_height)
         pygame.draw.rect(self.screen, WHITE, card_rect, border_radius=15)
 
+        if 'group' in property_data:
+            header_height = 40
+            header_rect = pygame.Rect(card_x, card_y, card_width, header_height)
+            header_color = GROUP_COLORS.get(property_data['group'], GRAY)
+            pygame.draw.rect(self.screen, header_color, header_rect, border_radius=15)
+            pygame.draw.rect(self.screen, header_color, pygame.Rect(card_x, card_y + header_height - 15, card_width, 15))
+
         name_text = self.font.render(property_data['name'], True, BLACK)
-        name_rect = name_text.get_rect(centerx=card_rect.centerx, top=card_rect.top + 20)
+        name_rect = name_text.get_rect(centerx=card_rect.centerx, top=card_y + 50)
         self.screen.blit(name_text, name_rect)
 
-        price_text = self.font.render(f"Price: £{property_data['price']}", True, ACCENT_COLOR)
-        price_rect = price_text.get_rect(centerx=card_rect.centerx, top=name_rect.bottom + 20)
-        self.screen.blit(price_text, price_rect)
+        y_offset = name_rect.bottom + 20
+        padding = 20
 
-        rent_text = self.small_font.render(f"Rent: £{property_data.get('rent', 0)}", True, BLACK)
-        rent_rect = rent_text.get_rect(centerx=card_rect.centerx, top=price_rect.bottom + 20)
-        self.screen.blit(rent_text, rent_rect)
+        price_text = self.font.render(f"Price: £{property_data['price']}", True, ACCENT_COLOR)
+        self.screen.blit(price_text, (card_x + padding, y_offset))
+        y_offset += 35
+
+        rent_text = self.small_font.render(f"Base Rent: £{property_data.get('rent', 0)}", True, BLACK)
+        self.screen.blit(rent_text, (card_x + padding, y_offset))
+        y_offset += 25
+
+        if 'house_costs' in property_data:
+            for i, cost in enumerate(property_data['house_costs'], 1):
+                house_text = self.small_font.render(f"{i} House{'s' if i > 1 else ''}: £{cost}", True, BLACK)
+                self.screen.blit(house_text, (card_x + padding, y_offset))
+                y_offset += 25
+
+        if "Station" in property_data['name']:
+            rent_rules = ["1 Station: £25", "2 Stations: £50", "3 Stations: £100", "4 Stations: £200"]
+            for rule in rent_rules:
+                rule_text = self.small_font.render(rule, True, BLACK)
+                self.screen.blit(rule_text, (card_x + padding, y_offset))
+                y_offset += 25
+        elif property_data['name'] in ["Tesla Power Co", "Edison Water"]:
+            utility_text = self.small_font.render("Rent = 4x dice if 1 owned", True, BLACK)
+            self.screen.blit(utility_text, (card_x + padding, y_offset))
+            y_offset += 25
+            utility_text2 = self.small_font.render("Rent = 10x dice if both owned", True, BLACK)
+            self.screen.blit(utility_text2, (card_x + padding, y_offset))
 
     def draw_property_tooltip(self, property_data, mouse_pos):
         padding = 10
@@ -444,31 +509,39 @@ class Game:
         dice1, dice2 = self.dice_values
         self.last_roll = (dice1, dice2)
         self.roll_time = pygame.time.get_ticks()
-        
-        self.board.update_ownership(self.logic.properties)
-        self.board.update_board_positions()
 
         current_player = self.logic.players[self.logic.current_player_index]
-        position = str(current_player['position'])
+        position = current_player['position']
         
+        self.board.update_board_positions()
+        self.board.update_ownership(self.logic.properties)
+
         while self.logic.message_queue:
             message = self.logic.message_queue.pop(0)
             self.board.add_message(message)
-        
-        if position in self.logic.properties:
-            space = self.logic.properties[position]
+
+        if str(position) in self.logic.properties:
+            space = self.logic.properties[str(position)]
             if space["name"] == "Go to Jail":
                 self.board.add_message(f"{current_player['name']} goes to Jail!")
+                current_player['in_jail'] = True
+                current_player['jail_turns'] = 0
+                current_player['position'] = 11
                 self.state = "ROLL"
+                self.board.update_board_positions()
             elif "price" in space and not space.get("owner"):
-                self.state = "BUY"
-                self.current_property = space
-                self.board.add_message(f"{current_player['name']} landed on {space['name']}")
-                self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
+                if current_player.get('in_jail', False):
+                    self.board.add_message(f"{current_player['name']} cannot buy property while in jail!")
+                    self.state = "ROLL"
+                else:
+                    self.state = "BUY"
+                    self.current_property = space
+                    self.board.add_message(f"{current_player['name']} landed on {space['name']}")
+                    self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
             else:
-                if space.get("owner"):
-                    rent = self.logic.calculate_space_rent(space, current_player)
-                    self.board.add_message(f"{current_player['name']} pays £{rent} rent to {space['owner']}")
+                self.state = "ROLL"
+        else:
+            self.state = "ROLL"
 
     def play_turn(self):
         if self.dice_animation:
@@ -499,7 +572,9 @@ class Game:
         
         if current_player['position'] < old_position:
             self.rounds_completed[current_player['name']] += 1
-            
+            self.board.add_message("🎉 PASSED GO! 🎉")
+            self.board.add_message(f"{current_player['name']} collected £200")
+        
         self.board.add_message(f"{current_player['name']} rolled {dice1 + dice2}")
         
         if dice1 == dice2:
@@ -580,6 +655,12 @@ class Game:
             if self.roll_button.collidepoint(pos):
                 return self.play_turn()
         elif self.state == "BUY" and self.current_property is not None:
+            current_player = self.logic.players[self.logic.current_player_index]
+            if current_player.get('in_jail', False):
+                self.board.add_message(f"{current_player['name']} cannot buy property while in jail!")
+                self.state = "ROLL"
+                return False
+                
             if self.yes_button.collidepoint(pos):
                 self.handle_buy_decision(True)
                 return False
@@ -587,6 +668,13 @@ class Game:
                 self.handle_buy_decision(False)
                 return False
         elif self.state == "AUCTION":
+            current_bidder = self.logic.current_auction["active_players"][self.logic.current_auction["current_bidder_index"]]
+            if current_bidder.get('in_jail', False):
+                self.board.add_message(f"{current_bidder['name']} cannot participate in auction while in jail!")
+                self.logic.current_auction["passed_players"].add(current_bidder['name'])
+                self.logic.move_to_next_bidder()
+                return False
+                
             if self.handle_auction_click(pos):
                 result = self.logic.auction_property(self.logic.players[self.logic.current_player_index]['position'])
                 if result == "auction_completed":
@@ -671,12 +759,12 @@ class Game:
 
     def draw_auction(self, auction_data):
         window_size = self.screen.get_size()
-        card_width = int(window_size[0] * 0.3)
-        card_height = int(window_size[1] * 0.4)
+        card_width = int(window_size[0] * 0.35)
+        card_height = int(window_size[1] * 0.5)
         card_x = (window_size[0] - card_width) // 2
         card_y = (window_size[1] - card_height) // 2
         
-        shadow_rect = pygame.Rect(card_x + 4, card_y + 4, card_width, card_height)
+        shadow_rect = pygame.Rect(card_x + 6, card_y + 6, card_width, card_height)
         shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
         pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
         self.screen.blit(shadow, shadow_rect)
@@ -684,67 +772,101 @@ class Game:
         pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
         
         current_time = pygame.time.get_ticks()
-        time_remaining = (auction_data["start_time"] + auction_data["duration"] - current_time) // 1000
-        timer_color = ERROR_COLOR if time_remaining <= 10 else ACCENT_COLOR
-        timer_text = self.font.render(f"Time: {time_remaining}s", True, timer_color)
-        self.screen.blit(timer_text, (card_x + 20, card_y + 20))
+        time_remaining = max(0, (auction_data["start_time"] + auction_data["duration"] - current_time) // 1000)
         
+        current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
+        current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
+        
+        header_color = ERROR_COLOR if time_remaining <= 10 else ACCENT_COLOR
+        header_text = self.font.render(f"{current_bidder['name']}'s Turn", True, header_color)
+        timer_text = self.font.render(f"Time: {time_remaining}s", True, header_color)
+        
+        header_y = card_y + 20
+        self.screen.blit(header_text, (card_x + 20, header_y))
+        self.screen.blit(timer_text, (card_x + card_width - timer_text.get_width() - 20, header_y))
+        
+        title_y = header_y + 50
         title = self.font.render("AUCTION", True, BLACK)
         property_name = self.font.render(auction_data["property"]["name"], True, BLACK)
+        self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, title_y))
+        self.screen.blit(property_name, (card_x + 20, title_y + 40))
+        
+        info_y = title_y + 90
         current_bid = self.font.render(f"Current Bid: £{auction_data['current_bid']}", True, BLACK)
         min_bid = self.font.render(f"Minimum Bid: £{auction_data['minimum_bid']}", True, BLACK)
+        self.screen.blit(current_bid, (card_x + 20, info_y))
+        self.screen.blit(min_bid, (card_x + 20, info_y + 40))
         
         if auction_data["highest_bidder"]:
-            highest_text = self.font.render(f"Highest: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
-            self.screen.blit(highest_text, (card_x + 20, card_y + 180))
+            highest_y = info_y + 80
+            highest_text = self.font.render(f"Highest Bidder: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
+            self.screen.blit(highest_text, (card_x + 20, highest_y))
         
-        self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, card_y + 60))
-        self.screen.blit(property_name, (card_x + 20, card_y + 100))
-        self.screen.blit(current_bid, (card_x + 20, card_y + 140))
-        self.screen.blit(min_bid, (card_x + 20, card_y + 220))
+        can_bid = current_bidder['name'] not in auction_data.get("passed_players", set())
+        is_human = current_bidder_obj and not current_bidder_obj.is_ai
         
-        self.auction_input.topleft = (card_x + 20, card_y + 260)
-        self.auction_buttons['bid'].topleft = (card_x + 20, card_y + 310)
-        self.auction_buttons['pass'].topleft = (card_x + 150, card_y + 310)
-        
-        pygame.draw.rect(self.screen, WHITE, self.auction_input)
-        pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
-        bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
-        self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + 10))
-        
-        current_player = self.logic.players[self.logic.current_player_index]
-        can_bid = current_player['name'] not in auction_data.get("passed_players", set())
-        
-        for btn_name, btn_rect in self.auction_buttons.items():
-            if btn_name == 'bid' and not can_bid:
-                color = GRAY
+        if is_human and can_bid:
+            self.auction_input = pygame.Rect(card_x + 20, card_y + card_height - 120, 200, 40)
+            self.auction_buttons['bid'].topleft = (card_x + 20, card_y + card_height - 60)
+            self.auction_buttons['pass'].topleft = (card_x + 150, card_y + card_height - 60)
+            
+            pygame.draw.rect(self.screen, WHITE, self.auction_input)
+            pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
+            
+            if self.auction_bid_amount:
+                bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
             else:
-                color = BUTTON_HOVER if btn_rect.collidepoint(pygame.mouse.get_pos()) else ACCENT_COLOR
-            pygame.draw.rect(self.screen, color, btn_rect, border_radius=5)
-            btn_text = self.font.render(btn_name.title(), True, WHITE)
-            self.screen.blit(btn_text, (btn_rect.centerx - btn_text.get_width()//2, 
-                                      btn_rect.centery - btn_text.get_height()//2))
+                bid_text = self.small_font.render("Enter bid amount...", True, GRAY)
+            self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + (self.auction_input.height - bid_text.get_height()) // 2))
+            
+            for btn_name, btn_rect in self.auction_buttons.items():
+                mouse_over = btn_rect.collidepoint(pygame.mouse.get_pos())
+                color = BUTTON_HOVER if mouse_over else ACCENT_COLOR
+                pygame.draw.rect(self.screen, color, btn_rect, border_radius=5)
+                
+                btn_text = self.font.render(btn_name.title(), True, WHITE)
+                self.screen.blit(btn_text, (btn_rect.centerx - btn_text.get_width()//2, 
+                                        btn_rect.centery - btn_text.get_height()//2))
         
-        passed_y = card_y + card_height - 40
         if auction_data.get("passed_players"):
             passed_text = self.small_font.render("Passed: " + ", ".join(auction_data["passed_players"]), True, GRAY)
-            self.screen.blit(passed_text, (card_x + 20, passed_y))
+            self.screen.blit(passed_text, (card_x + 20, card_y + card_height - 30))
 
     def handle_auction_input(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                self.auction_bid_amount = self.auction_bid_amount[:-1]
-            elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
-                             pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
-                self.auction_bid_amount += event.unicode
+        if not hasattr(self.logic, 'current_auction'):
+            return
+            
+        current_bidder = self.logic.current_auction["active_players"][self.logic.current_auction["current_bidder_index"]]
+        current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
+        
+        if current_bidder.get('in_jail', False):
+            self.board.add_message(f"{current_bidder['name']} cannot bid while in jail!")
+            self.logic.current_auction["passed_players"].add(current_bidder['name'])
+            self.logic.move_to_next_bidder()
+            return
+            
+        if current_bidder_obj and not current_bidder_obj.is_ai:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    self.auction_bid_amount = self.auction_bid_amount[:-1]
+                elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+                                 pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
+                    self.auction_bid_amount += event.unicode
 
     def handle_auction_click(self, pos):
-        current_player = self.logic.players[self.logic.current_player_index]
+        if not hasattr(self.logic, 'current_auction'):
+            return False
+            
+        current_bidder = self.logic.current_auction["active_players"][self.logic.current_auction["current_bidder_index"]]
+        current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
+        
+        if not current_bidder_obj or current_bidder_obj.is_ai:
+            return False
         
         if self.auction_buttons['bid'].collidepoint(pos):
             try:
                 bid_amount = int(self.auction_bid_amount or "0")
-                success, message = self.logic.process_auction_bid(current_player, bid_amount)
+                success, message = self.logic.process_auction_bid(current_bidder, bid_amount)
                 self.board.add_message(message)
                 if success:
                     self.auction_bid_amount = ""
@@ -752,7 +874,7 @@ class Game:
                 self.board.add_message("Please enter a valid number!")
         
         elif self.auction_buttons['pass'].collidepoint(pos):
-            success, message = self.logic.process_auction_pass(current_player)
+            success, message = self.logic.process_auction_pass(current_bidder)
             self.board.add_message(message)
         
         result_message = self.logic.check_auction_end()
@@ -770,3 +892,37 @@ class Game:
                 self.winner_index = i
                 player.set_winner(True)
                 break
+
+    def draw_jail_options(self, player):
+        if not player.get('in_jail', False):
+            return
+
+        window_size = self.screen.get_size()
+        card_width = int(window_size[0] * 0.25)
+        card_height = int(window_size[1] * 0.25)
+        card_x = (window_size[0] - card_width) // 2
+        card_y = (window_size[1] - card_height) // 2
+
+        pygame.draw.rect(self.screen, WHITE, pygame.Rect(card_x, card_y, card_width, card_height), border_radius=10)
+        
+        title_text = self.font.render("Jail Options", True, BLACK)
+        title_rect = title_text.get_rect(centerx=card_x + card_width//2, top=card_y + 20)
+        self.screen.blit(title_text, title_rect)
+
+        options = []
+        if self.logic.jail_free_cards.get(player['name'], 0) > 0:
+            options.append("Use Get Out of Jail Free card")
+        if player['money'] >= 50:
+            options.append("Pay £50 fine")
+        options.append("Try rolling doubles")
+
+        y_offset = title_rect.bottom + 20
+        for i, option in enumerate(options):
+            text = self.small_font.render(option, True, BLACK)
+            text_rect = text.get_rect(left=card_x + 20, top=y_offset)
+            self.screen.blit(text, text_rect)
+            y_offset += 30
+
+        turns_text = self.small_font.render(f"Turns in jail: {player.get('jail_turns', 0)}/3", True, ERROR_COLOR)
+        turns_rect = turns_text.get_rect(left=card_x + 20, bottom=card_y + card_height - 20)
+        self.screen.blit(turns_text, turns_rect)

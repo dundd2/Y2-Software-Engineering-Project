@@ -2,6 +2,7 @@ import pygame
 import sys
 import time
 import math
+import random
 from text_scaler import text_scaler
 import os
 
@@ -21,7 +22,8 @@ AI_COLOR = (200, 100, 100)
 
 DEFAULT_RES = (854, 480)
 
-FONT_PATH = os.path.join('assets', 'font', 'Play-Regular.ttf')
+base_path = os.path.dirname(os.path.abspath(__file__))
+FONT_PATH = os.path.join(base_path, "assets", "font", "Play-Regular.ttf")
 
 def get_window_size():
     surface = pygame.display.get_surface()
@@ -101,10 +103,10 @@ class ModernButton:
         return self.is_hovered
 
 class ModernInput:
-    def __init__(self, rect, text, active_color=ACCENT_COLOR, inactive_color=GRAY):
+    def __init__(self, rect, text, font, active_color=ACCENT_COLOR, inactive_color=GRAY):
         self.rect = rect
         self.text = text
-        self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.font = font
         self.active_color = active_color
         self.inactive_color = inactive_color
         self.active = False
@@ -117,10 +119,10 @@ class ModernInput:
         s = pygame.Surface(self.rect.size)
         s.set_alpha(self.background_alpha)
         if self.error:
-            s.fill(ERROR_COLOR)
+            s.fill(ERROR_COLOR[:3])
         else:
             color = self.active_color if self.active or self.is_selected else self.inactive_color
-            s.fill(color)
+            s.fill(color[:3])
         screen.blit(s, self.rect)
         if self.text:
             color = WHITE
@@ -540,6 +542,17 @@ class StartPage(BasePage):
             self.button_font
         )
 
+        self.back_button = ModernButton(
+            pygame.Rect(
+                20,
+                get_window_size()[1] - 100,
+                200,
+                button_height
+            ),
+            "Back to Menu",
+            self.button_font
+        )
+
     def generate_unique_ai_name(self):
         self.ai_name_counter += 1
         return f"AI-{self.ai_name_counter}"
@@ -610,12 +623,15 @@ class StartPage(BasePage):
         self.start_button.active = can_start
         self.start_button.draw(self.screen)
 
+        self.back_button.draw(self.screen)
+
         controls = [
             "Controls:",
             "H/h - Adjust human players",
             "A/a - Adjust AI players",
             "Enter - Edit name",
-            "Space - Start game"
+            "Space - Start game",
+            "ESC/Back - Return to menu"
         ]
         
         y_offset = get_window_size()[1] - 180
@@ -660,6 +676,9 @@ class StartPage(BasePage):
         if self.start_button.check_hover(pos) and self.start_button.active:
             return True
 
+        if self.back_button.check_hover(pos):
+            return "back"
+
         self.active_input = -1
         return False
 
@@ -669,6 +688,7 @@ class StartPage(BasePage):
         self.ai_minus_button.check_hover(pos)
         self.ai_plus_button.check_hover(pos)
         self.start_button.check_hover(pos)
+        self.back_button.check_hover(pos)
 
     def handle_key(self, event):
         if self.active_input >= 0:
@@ -709,6 +729,9 @@ class StartPage(BasePage):
             
             elif event.key == pygame.K_RETURN and self.start_button.active:
                 return True
+
+            elif event.key == pygame.K_ESCAPE:
+                return "back"
         return False
 
     def get_player_info(self):
@@ -960,6 +983,17 @@ class GameModePage(BasePage):
             self.button_font
         )
         
+        self.back_button = ModernButton(
+            pygame.Rect(
+                20,  
+                get_window_size()[1] - 120,
+                200, 
+                button_height
+            ),
+            "Back to Menu",  
+            self.button_font
+        )
+        
         self.full_game_text = "Full Game: Last player standing wins"
         self.abridged_text = "Abridged Game: Highest value after time limit wins"
 
@@ -986,6 +1020,7 @@ class GameModePage(BasePage):
             self.screen.blit(time_text, time_rect)
         
         self.start_button.draw(self.screen)
+        self.back_button.draw(self.screen)
         
         controls = [
             "Controls: ↑/↓ to navigate",
@@ -1020,6 +1055,9 @@ class GameModePage(BasePage):
         if self.start_button.check_hover(pos):
             return True
             
+        if self.back_button.check_hover(pos):
+            return "back"
+            
         return False
 
     def handle_motion(self, pos):
@@ -1027,6 +1065,7 @@ class GameModePage(BasePage):
         if (self.game_mode == "abridged"):
             self.time_button.check_hover(pos)
         self.start_button.check_hover(pos)
+        self.back_button.check_hover(pos)
         
     def handle_key(self, event):
         if event.key == pygame.K_m:
@@ -1040,6 +1079,8 @@ class GameModePage(BasePage):
             self.time_limit = self.time_options[self.current_time_option] * 60
         elif event.key == pygame.K_RETURN:
             return True
+        elif event.key == pygame.K_ESCAPE:
+            return "back"
         return False
 
     def get_game_settings(self):
@@ -1091,86 +1132,55 @@ class EndGamePage(BasePage):
     def draw(self):
         self.draw_background()
         
-        title_text = "Game Over!"
-        title_shadow = self.title_font.render(title_text, True, BLACK)
-        title_glow = self.title_font.render(title_text, True, ACCENT_COLOR)
-        title_surface = self.title_font.render(title_text, True, WHITE)
-        
-        title_rect = title_surface.get_rect(centerx=get_window_size()[0]//2, y=80)
-        shadow_rect = title_rect.copy()
-        shadow_rect.x += 2
-        shadow_rect.y += 2
-        
-        self.screen.blit(title_shadow, shadow_rect)
-        self.screen.blit(title_glow, title_rect)
-        self.screen.blit(title_surface, title_rect)
-        
-        winner_text = f"{self.winner_name} Wins!"
-        winner_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(64))
-        winner_surface = winner_font.render(winner_text, True, SUCCESS_COLOR)
-        winner_rect = winner_surface.get_rect(centerx=get_window_size()[0]//2, top=title_rect.bottom + 40)
-        
-        glow_surface = pygame.Surface((winner_rect.width + 20, winner_rect.height + 20), pygame.SRCALPHA)
         current_time = pygame.time.get_ticks()
-        glow_intensity = abs(math.sin(current_time * 0.003))
-        for i in range(10):
-            alpha = int(25 * (1 - i/10) * glow_intensity)
-            pygame.draw.rect(glow_surface, (*SUCCESS_COLOR, alpha),
-                           pygame.Rect(i, i, glow_surface.get_width() - i*2, glow_surface.get_height() - i*2),
-                           border_radius=5)
-        self.screen.blit(glow_surface, 
-                        (winner_rect.x - 10, winner_rect.y - 10))
-        self.screen.blit(winner_surface, winner_rect)
-        
+        if self.winner_name:
+            for i in range(50):
+                x = (current_time // 10 + i * 37) % get_window_size()[0]
+                y = ((current_time // 20 + i * 23) % get_window_size()[1]) + math.sin(current_time/500 + i) * 10
+                color = [random.randint(100, 255) for _ in range(3)]
+                pygame.draw.rect(self.screen, color, (x, y, 10, 10))
+
+        card_width = 600
+        card_height = 400
+        card_x = (get_window_size()[0] - card_width) // 2
+        card_y = (get_window_size()[1] - card_height) // 2
+
+        shadow = pygame.Surface((card_width + 8, card_height + 8), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        self.screen.blit(shadow, (card_x + 4, card_y + 4))
+
+        pygame.draw.rect(self.screen, WHITE, pygame.Rect(card_x, card_y, card_width, card_height), border_radius=15)
+
+        winner_text = self.title_font.render("Game Over!", True, ACCENT_COLOR)
+        self.screen.blit(winner_text, (card_x + (card_width - winner_text.get_width()) // 2, card_y + 30))
+
+        winner_name = self.button_font.render(f"Winner: {self.winner_name}", True, SUCCESS_COLOR)
+        self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 100))
+
+        y_offset = card_y + 160
         if self.final_assets:
-            y_offset = winner_rect.bottom + 40
-            assets_title = self.button_font.render("Final Assets", True, WHITE)
-            assets_rect = assets_title.get_rect(centerx=get_window_size()[0]//2, top=y_offset)
-            self.screen.blit(assets_title, assets_rect)
+            assets_title = self.button_font.render("Final Assets", True, BLACK)
+            self.screen.blit(assets_title, (card_x + 30, y_offset))
+            y_offset += 40
             
-            y_offset = assets_rect.bottom + 10
             sorted_assets = sorted(self.final_assets.items(), key=lambda x: x[1], reverse=True)
             for name, amount in sorted_assets:
-                player_text = self.small_font.render(f"{name}: £{amount}", True, 
-                                                   SUCCESS_COLOR if name == self.winner_name else LIGHT_GRAY)
-                text_rect = player_text.get_rect(centerx=get_window_size()[0]//2, top=y_offset)
-                self.screen.blit(player_text, text_rect)
+                player_text = self.small_font.render(
+                    f"{name}: £{amount:,}", True, 
+                    SUCCESS_COLOR if name == self.winner_name else LIGHT_GRAY
+                )
+                self.screen.blit(player_text, (card_x + 40, y_offset))
                 y_offset += 30
-        
+
         if self.bankrupted_players:
-            y_offset = winner_rect.bottom + 40 if not self.final_assets else y_offset + 20
-            bankrupt_title = self.button_font.render("Bankrupted Players", True, ERROR_COLOR)
-            bankrupt_rect = bankrupt_title.get_rect(centerx=get_window_size()[0]//2, top=y_offset)
-            self.screen.blit(bankrupt_title, bankrupt_rect)
-            
-            y_offset = bankrupt_rect.bottom + 10
-            for player in self.bankrupted_players:
-                text = self.small_font.render(player, True, LIGHT_GRAY)
-                text_rect = text.get_rect(centerx=get_window_size()[0]//2, top=y_offset)
-                self.screen.blit(text, text_rect)
-                y_offset += 25
-        
-        if self.voluntary_exits:
-            y_offset = y_offset + 20
-            exits_title = self.button_font.render("Voluntary Exits", True, ACCENT_COLOR)
-            exits_rect = exits_title.get_rect(centerx=get_window_size()[0]//2, top=y_offset)
-            self.screen.blit(exits_title, exits_rect)
-            
-            y_offset = exits_rect.bottom + 10
-            for player in self.voluntary_exits:
-                text = self.small_font.render(player, True, LIGHT_GRAY)
-                text_rect = text.get_rect(centerx=get_window_size()[0]//2, top=y_offset)
-                self.screen.blit(text, text_rect)
-                y_offset += 25
-        
+            y_offset += 20
+            bankrupt_text = self.small_font.render(
+                f"Bankrupted: {', '.join(self.bankrupted_players)}", True, ERROR_COLOR
+            )
+            self.screen.blit(bankrupt_text, (card_x + 40, y_offset))
+
         self.play_again_button.draw(self.screen)
         self.quit_button.draw(self.screen)
-        
-        hint_text = self.small_font.render("Press SPACE to play again, ESC to quit", True, LIGHT_GRAY)
-        hint_rect = hint_text.get_rect(centerx=get_window_size()[0]//2, bottom=get_window_size()[1] - 20)
-        self.screen.blit(hint_text, hint_rect)
-        
-        pygame.display.flip()
 
     def handle_click(self, pos):
         if self.play_again_button.check_hover(pos):
@@ -1211,27 +1221,7 @@ class HowToPlayPage(BasePage):
         self.instructions = [
             "How to Play Property Tycoon",
             "",
-            "Game Objective:",
-            "• Buy properties, collect rent, and become the wealthiest player",
-            "• Last player with money in Full Game mode wins",
-            "• Highest net worth in Abridged mode wins",
-            "",
-            "Game Flow:",
-            "• Roll dice to move around the board",
-            "• Land on a property to buy it or pay rent",
-            "• Collect £200 when passing GO",
-            "• Draw cards when landing on Chance or Community Chest",
-            "",
-            "Controls:",
-            "• Space/Enter - Roll dice, confirm actions",
-            "• Mouse - Select options and properties",
-            "• ESC - Access menu (in Full Game mode)",
-            "",
-            "Tips:",
-            "• Build houses to increase rent",
-            "• Trade properties to complete sets",
-            "• Keep enough cash for unexpected expenses",
-            "• Watch out for taxes and fines!"
+            "To be updated...",
         ]
 
     def draw(self):
@@ -1307,6 +1297,17 @@ class AIDifficultyPage(BasePage):
             color=ERROR_COLOR
         )
 
+        self.back_button = ModernButton(
+            pygame.Rect(
+                20,  
+                get_window_size()[1] - 120,
+                200,  
+                button_height
+            ),
+            "Back to Menu", 
+            self.button_font
+        )
+
     def draw(self):
         self.draw_background()
         self.draw_title()
@@ -1338,9 +1339,13 @@ class AIDifficultyPage(BasePage):
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
 
+        self.back_button.draw(self.screen)
+
         pygame.display.flip()
 
     def handle_click(self, pos):
+        if self.back_button.check_hover(pos):
+            return "back"
         if self.easy_button.check_hover(pos):
             return "easy"
         elif self.hard_button.check_hover(pos):
@@ -1348,11 +1353,14 @@ class AIDifficultyPage(BasePage):
         return None
 
     def handle_motion(self, pos):
+        self.back_button.check_hover(pos)
         self.easy_button.check_hover(pos)
         self.hard_button.check_hover(pos)
 
     def handle_key(self, event):
-        if event.key in [pygame.K_e, pygame.K_RETURN]:
+        if event.key == pygame.K_ESCAPE:
+            return "back"
+        elif event.key in [pygame.K_e, pygame.K_RETURN]:
             return "easy"
         elif event.key == pygame.K_h:
             return "hard"
