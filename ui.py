@@ -1,10 +1,9 @@
-# will change after we have photo gui by kit !!!
-# UI now adapts to dynamic window sizing
-
 import pygame
 import sys
 import time
 import math
+from text_scaler import text_scaler
+import os
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -20,56 +19,92 @@ TIME_COLOR = (255, 180, 100)
 HUMAN_COLOR = (100, 200, 100)
 AI_COLOR = (200, 100, 100)
 
+DEFAULT_RES = (854, 480)
+
+FONT_PATH = os.path.join('assets', 'font', 'Play-Regular.ttf')
+
 def get_window_size():
-    info = pygame.display.Info()
-    return (info.current_w, info.current_h)
+    surface = pygame.display.get_surface()
+    if (surface):
+        return surface.get_size()
+    return DEFAULT_RES
 
 class ModernButton:
-    def __init__(self, rect, text, font, color=ACCENT_COLOR, hover_color=BUTTON_HOVER):
+    def __init__(self, rect, text, font, color=ACCENT_COLOR):
         self.rect = rect
         self.text = text
         self.font = font
         self.color = color
-        self.hover_color = hover_color
-        self.is_hovered = False
+        self.hover = False
         self.active = True
         self.is_selected = False
-
+        
+        self.image = None
+        try:
+            button_map = {
+                "Start Game": "Play_Button.png",
+                "Back to Menu": "Back_Button.png",
+                "Edit": "Edit_Button.png",
+                "Exit Game": "Exit_Button.png",
+                "+": "PlusHuman_Button.png" if color == HUMAN_COLOR else "PlusComputer_Button.png",
+                "Play Again": "Play_ButtonSmall.png"
+            }
+            
+            if text in button_map:
+                image_path = f"assets/image/{button_map[text]}"
+                self.image = pygame.image.load(image_path)
+                self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
+        except (pygame.error, FileNotFoundError):
+            print(f"Could not load button image for {text}")
+            
     def draw(self, screen):
         if not self.active:
             base_color = GRAY
+            self._draw_basic_button(screen, base_color)
+            return
+
+        if self.image:
+            if self.hover or self.is_selected:
+                hover_img = self.image.copy()
+                hover_img.fill((255, 255, 255, 50), special_flags=pygame.BLEND_RGBA_ADD)
+                screen.blit(hover_img, self.rect)
+            else:
+                screen.blit(self.image, self.rect)
         else:
-            base_color = self.hover_color if self.is_hovered or self.is_selected else self.color
+            base_color = BUTTON_HOVER if self.hover else self.color
+            self._draw_basic_button(screen, base_color)
+            
+    def _draw_basic_button(self, screen, base_color):
         shadow_rect = self.rect.copy()
         shadow_rect.y += 2
-        pygame.draw.rect(screen, (*BLACK, 128), shadow_rect, border_radius=10)
-        pygame.draw.rect(screen, base_color, self.rect, border_radius=10)
+        shadow = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
+        screen.blit(shadow, shadow_rect)
+
+        pygame.draw.rect(screen, base_color, self.rect, border_radius=5)
         gradient = pygame.Surface(self.rect.size, pygame.SRCALPHA)
         for i in range(self.rect.height):
             alpha = int(100 * (1 - i/self.rect.height))
             pygame.draw.line(gradient, (255, 255, 255, alpha), 
                            (0, i), (self.rect.width, i))
         screen.blit(gradient, self.rect)
-        text_shadow = self.font.render(self.text, True, BLACK)
-        text_rect_shadow = text_shadow.get_rect(center=self.rect.center)
-        text_rect_shadow.x += 1
-        text_rect_shadow.y += 1
-        screen.blit(text_shadow, text_rect_shadow)
+
+        if self.is_selected:
+            pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=5)
+
         text_surface = self.font.render(self.text, True, WHITE)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
-        if self.is_selected:
-            pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=10)
 
     def check_hover(self, pos):
         self.is_hovered = self.rect.collidepoint(pos)
         return self.is_hovered
 
 class ModernInput:
-    def __init__(self, rect, text, font, active_color=ACCENT_COLOR, inactive_color=GRAY):
+    def __init__(self, rect, text, active_color=ACCENT_COLOR, inactive_color=GRAY):
         self.rect = rect
         self.text = text
-        self.font = font
+        self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         self.active_color = active_color
         self.inactive_color = inactive_color
         self.active = False
@@ -102,39 +137,98 @@ class ModernInput:
             pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=5)
 
 class BasePage:
-    def __init__(self):
+    def __init__(self, instructions=None):
         window_size = get_window_size()
         self.screen = pygame.display.set_mode(window_size)
-        self.title_font = pygame.font.Font(None, 82)
-        self.button_font = pygame.font.Font(None, 42)
-        self.version_font = pygame.font.Font(None, 28)
+        try:
+            self.logo_image = pygame.image.load("assets/image/Logo.png")
+            logo_width = int(window_size[0] * 0.3)
+            logo_height = int(logo_width * (self.logo_image.get_height() / self.logo_image.get_width()))
+            self.logo_image = pygame.transform.scale(self.logo_image, (logo_width, logo_height))
+        except (pygame.error, FileNotFoundError):
+            print("Could not load game logo")
+            self.logo_image = None
+            
+        try:
+            self.background_image = pygame.image.load("assets/image/starterbackground.png")
+            self.background_image = pygame.transform.scale(self.background_image, window_size)
+        except (pygame.error, FileNotFoundError):
+            print("Could not load background image")
+            self.background_image = None
+            
+        self.title_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(82))
+        self.button_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(42))
+        self.version_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(28))
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.instructions = instructions
 
     def draw_background(self):
         window_size = get_window_size()
-        self.screen.fill(MODERN_BG)
-        gradient = pygame.Surface(window_size, pygame.SRCALPHA)
-        for i in range(window_size[1]):
-            alpha = int(255 * (1 - i/window_size[1]))
-            pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (window_size[0], i))
-        self.screen.blit(gradient, (0, 0))
+        if self.background_image:
+            self.screen.blit(self.background_image, (0, 0))
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128))
+            self.screen.blit(overlay, (0, 0))
+        else:
+            self.screen.fill(MODERN_BG)
+            gradient = pygame.Surface(window_size, pygame.SRCALPHA)
+            for i in range(window_size[1]):
+                alpha = int(255 * (1 - i/window_size[1]))
+                pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (window_size[0], i))
+            self.screen.blit(gradient, (0, 0))
 
     def draw_title(self):
         window_size = get_window_size()
-        title_shadow = self.title_font.render("Property Tycoon", True, BLACK)
-        title_glow = self.title_font.render("Property Tycoon", True, ACCENT_COLOR)
-        title_text = self.title_font.render("Property Tycoon", True, WHITE)
-        title_rect = title_text.get_rect(centerx=window_size[0]//2, y=80)
-        shadow_rect = title_rect.copy()
-        shadow_rect.x += 2
-        shadow_rect.y += 2
-        self.screen.blit(title_shadow, shadow_rect)
-        self.screen.blit(title_glow, title_rect)
-        self.screen.blit(title_text, title_rect)
+        if self.logo_image:
+            logo_rect = self.logo_image.get_rect(centerx=window_size[0]//2, y=50)
+            
+            glow_surface = pygame.Surface((logo_rect.width + 20, logo_rect.height + 20), pygame.SRCALPHA)
+            current_time = pygame.time.get_ticks()
+            glow_intensity = abs(math.sin(current_time * 0.003))
+            for i in range(10):
+                alpha = int(25 * (1 - i/10) * glow_intensity)
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, alpha),
+                               pygame.Rect(i, i, glow_surface.get_width() - i*2, glow_surface.get_height() - i*2),
+                               border_radius=5)
+            self.screen.blit(glow_surface, (logo_rect.x - 10, logo_rect.y - 10))
+            self.screen.blit(self.logo_image, logo_rect)
+        else:
+            title_shadow = self.title_font.render("Property Tycoon", True, BLACK)
+            title_glow = self.title_font.render("Property Tycoon", True, ACCENT_COLOR)
+            title_text = self.title_font.render("Property Tycoon", True, WHITE)
+            title_rect = title_text.get_rect(centerx=window_size[0]//2, y=80)
+            shadow_rect = title_rect.copy()
+            shadow_rect.x += 2
+            shadow_rect.y += 2
+            self.screen.blit(title_shadow, shadow_rect)
+            self.screen.blit(title_glow, title_rect)
+            self.screen.blit(title_text, title_rect)
+
+    def draw_instructions(self):
+        if self.instructions:
+            window_size = get_window_size()
+            font_size = text_scaler.get_scaled_size(20)
+            font = pygame.font.Font(FONT_PATH, font_size)
+            padding = 10
+            line_height = font_size + 2
+            
+            total_height = len(self.instructions) * line_height
+            
+            for i, instruction in enumerate(self.instructions):
+                text_surface = font.render(instruction, True, WHITE)
+                y_position = window_size[1] - (total_height - (i * line_height)) - padding
+                self.screen.blit(text_surface, (padding, y_position))
+
+    def draw(self):
+        self.draw_background()
+        self.draw_title()
+        self.draw_instructions()
+        pygame.display.flip()
 
 class MainMenuPage(BasePage):
-    def __init__(self):
-        super().__init__()
-        self.small_font = pygame.font.Font(None, 24)
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         button_width = 300
         button_height = 60
         
@@ -184,12 +278,12 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        version_text = self.version_font.render("Build Version: 13.02.2025", True, GRAY)
+        version_text = self.version_font.render("Build Version: 17.02.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
         controls_text = self.small_font.render("Press ENTER to start, H for how to play, S for settings", True, LIGHT_GRAY)
-        controls_rect = controls_text.get_rect(centerx=get_window_size()[0]//2, bottom=get_window_size()[1]-20)
+        controls_rect = controls_text.get_rect(left=20, bottom=get_window_size()[1]-20)
         self.screen.blit(controls_text, controls_rect)
         
         pygame.display.flip()
@@ -218,17 +312,21 @@ class MainMenuPage(BasePage):
         return None
 
 class SettingsPage(BasePage):
-    def __init__(self):
-        super().__init__()
-        self.small_font = pygame.font.Font(None, 24)
-        
+    CONFIRMATION_DURATION = 5000
+
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         self.resolution_options = [
             (1280, 720),
+            (854, 480),
             (1600, 900),
             (1920, 1080),
             (2560, 1440)
         ]
         self.current_resolution = 0
+        self.show_confirmation = False
+        self.confirmation_time = 0
         
         button_width = 400
         button_height = 60
@@ -242,7 +340,17 @@ class SettingsPage(BasePage):
             f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}",
             self.button_font
         )
-        
+        confirm_button_width = 300
+        self.confirm_button = ModernButton(
+            pygame.Rect(
+                (get_window_size()[0] - confirm_button_width) // 2,
+                get_window_size()[1] // 2 + 50,
+                confirm_button_width,
+                button_height
+            ),
+            "Confirm",
+            self.button_font
+        )
         back_button_width = 300
         self.back_button = ModernButton(
             pygame.Rect(
@@ -270,6 +378,15 @@ class SettingsPage(BasePage):
         info_rect = info_text.get_rect(centerx=get_window_size()[0]//2, top=self.resolution_button.rect.bottom + 10)
         self.screen.blit(info_text, info_rect)
         
+        if self.show_confirmation:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.confirmation_time < self.CONFIRMATION_DURATION:
+                confirm_text = self.small_font.render("Press ENTER or click Confirm to apply changes", True, SUCCESS_COLOR)
+                confirm_rect = confirm_text.get_rect(left=20, top=info_rect.bottom + 10)
+                self.screen.blit(confirm_text, confirm_rect)
+            else:
+                self.show_confirmation = False
+        
         controls = [
             "Controls:",
             "R - Change screen resolution",
@@ -279,10 +396,11 @@ class SettingsPage(BasePage):
         y_offset = get_window_size()[1] - 150
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
+            hint_rect = hint_text.get_rect(left=20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
         
+        self.confirm_button.draw(self.screen)
         self.back_button.draw(self.screen)
         
         pygame.display.flip()
@@ -290,34 +408,49 @@ class SettingsPage(BasePage):
     def handle_click(self, pos):
         if self.resolution_button.check_hover(pos):
             self.current_resolution = (self.current_resolution + 1) % len(self.resolution_options)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
             return False
+        elif self.confirm_button.check_hover(pos):
+            current_resolution = get_window_size()
+            new_resolution = self.resolution_options[self.current_resolution]
+            if current_resolution != new_resolution:
+                return True
         elif self.back_button.check_hover(pos):
             return True
         return False
 
     def handle_motion(self, pos):
         self.resolution_button.check_hover(pos)
+        self.confirm_button.check_hover(pos)
         self.back_button.check_hover(pos)
 
     def handle_key(self, event):
-        if event.key in [pygame.K_r]:
+        if event.key == pygame.K_r:
             self.current_resolution = (self.current_resolution + 1) % len(self.resolution_options)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
         elif event.key in [pygame.K_RETURN, pygame.K_SPACE]:
-            return True
+            current_resolution = get_window_size()
+            new_resolution = self.resolution_options[self.current_resolution]
+            if current_resolution != new_resolution:
+                return True
         return False
     
     def get_settings(self):
         return {"resolution": self.resolution_options[self.current_resolution]}
 
-class StartPage:
-    def __init__(self):
+class StartPage(BasePage):
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
         pygame.display.set_caption("Property Tycoon")
-        self.title_font = pygame.font.Font(None, 82)
-        self.button_font = pygame.font.Font(None, 42)
-        self.version_font = pygame.font.Font(None, 28)
-        self.input_font = pygame.font.Font(None, 36)
-        self.small_font = pygame.font.Font(None, 24)
+        self.title_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(82))
+        self.button_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(42))
+        self.version_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(28))
+        self.input_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(36))
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         self.selected_element = 0
         self.active_input = -1
 
@@ -418,23 +551,8 @@ class StartPage:
             self.ai_names.pop()
 
     def draw(self):
-        self.screen.fill(MODERN_BG)
-        gradient = pygame.Surface(get_window_size(), pygame.SRCALPHA)
-        for i in range(get_window_size()[1]):
-            alpha = int(255 * (1 - i/get_window_size()[1]))
-            pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (get_window_size()[0], i))
-        self.screen.blit(gradient, (0, 0))
-
-        title_shadow = self.title_font.render("Property Tycoon", True, BLACK)
-        title_glow = self.title_font.render("Property Tycoon", True, ACCENT_COLOR)
-        title_text = self.title_font.render("Property Tycoon", True, WHITE)
-        title_rect = title_text.get_rect(centerx=get_window_size()[0]//2, y=50)
-        shadow_rect = title_rect.copy()
-        shadow_rect.x += 2
-        shadow_rect.y += 2
-        self.screen.blit(title_shadow, shadow_rect)
-        self.screen.blit(title_glow, title_rect)
-        self.screen.blit(title_text, title_rect)
+        self.draw_background()
+        self.draw_title()
 
         input_y_start = get_window_size()[1] // 2
         
@@ -594,13 +712,14 @@ class StartPage:
         return False
 
     def get_player_info(self):
-        return self.total_players, self.player_names[:self.human_count] + self.ai_names[:self.ai_count], self.ai_count
+        all_names = self.player_names[:self.human_count] + self.ai_names[:self.ai_count]
+        return self.total_players, all_names, self.ai_count
 
 class PlayerSelectPage(BasePage):
     def __init__(self):
         super().__init__()
-        self.input_font = pygame.font.Font(None, 36)
-        self.small_font = pygame.font.Font(None, 24)
+        self.input_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(36))
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         self.selected_element = 0
         self.active_input = -1
         
@@ -793,9 +912,9 @@ class PlayerSelectPage(BasePage):
         return self.player_count, [name.strip() for name in self.player_names[:self.player_count]]
 
 class GameModePage(BasePage):
-    def __init__(self):
-        super().__init__()
-        self.small_font = pygame.font.Font(None, 24)
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         
         self.game_mode = "full"
         self.time_limit = None
@@ -878,7 +997,7 @@ class GameModePage(BasePage):
         y_offset = get_window_size()[1] - 80
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
+            hint_rect = hint_text.get_rect(left=20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
         
@@ -905,7 +1024,7 @@ class GameModePage(BasePage):
 
     def handle_motion(self, pos):
         self.mode_button.check_hover(pos)
-        if self.game_mode == "abridged":
+        if (self.game_mode == "abridged"):
             self.time_button.check_hover(pos)
         self.start_button.check_hover(pos)
         
@@ -924,15 +1043,20 @@ class GameModePage(BasePage):
         return False
 
     def get_game_settings(self):
-        return {
+        settings = {
             "mode": self.game_mode,
-            "time_limit": self.time_limit if self.game_mode == "abridged" else None
+            "time_limit": None
         }
+        
+        if self.game_mode == "abridged":
+            settings["time_limit"] = self.time_options[self.current_time_option] * 60
+            
+        return settings
 
 class EndGamePage(BasePage):
     def __init__(self, winner_name, final_assets=None, bankrupted_players=None, voluntary_exits=None):
         super().__init__()
-        self.small_font = pygame.font.Font(None, 24)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         self.winner_name = winner_name
         self.final_assets = final_assets or {}
         self.bankrupted_players = bankrupted_players or []
@@ -982,7 +1106,7 @@ class EndGamePage(BasePage):
         self.screen.blit(title_surface, title_rect)
         
         winner_text = f"{self.winner_name} Wins!"
-        winner_font = pygame.font.Font(None, 64)
+        winner_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(64))
         winner_surface = winner_font.render(winner_text, True, SUCCESS_COLOR)
         winner_rect = winner_surface.get_rect(centerx=get_window_size()[0]//2, top=title_rect.bottom + 40)
         
@@ -1067,9 +1191,9 @@ class EndGamePage(BasePage):
         return None
 
 class HowToPlayPage(BasePage):
-    def __init__(self):
-        super().__init__()
-        self.small_font = pygame.font.Font(None, 24)
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         
         button_width = 300
         button_height = 60
@@ -1149,4 +1273,87 @@ class HowToPlayPage(BasePage):
     def handle_key(self, event):
         if event.key in [pygame.K_ESCAPE, pygame.K_BACKSPACE]:
             return True
+        return None
+
+class AIDifficultyPage(BasePage):
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        button_width = 300
+        button_height = 60
+        center_y = get_window_size()[1] // 2
+
+        self.easy_button = ModernButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                center_y - 50,
+                button_width,
+                button_height
+            ),
+            "Easy",
+            self.button_font,
+            color=SUCCESS_COLOR
+        )
+
+        self.hard_button = ModernButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                center_y + 50,
+                button_width,
+                button_height
+            ),
+            "Hard",
+            self.button_font,
+            color=ERROR_COLOR
+        )
+
+    def draw(self):
+        self.draw_background()
+        self.draw_title()
+
+        difficulty_text = self.button_font.render("Select AI Difficulty", True, WHITE)
+        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=200)
+        self.screen.blit(difficulty_text, text_rect)
+
+        easy_desc = self.small_font.render("AI will make basic decisions", True, LIGHT_GRAY)
+        easy_rect = easy_desc.get_rect(centerx=get_window_size()[0]//2, y=self.easy_button.rect.bottom + 10)
+        
+        hard_desc = self.small_font.render("AI will make strategic decisions", True, LIGHT_GRAY)
+        hard_rect = hard_desc.get_rect(centerx=get_window_size()[0]//2, y=self.hard_button.rect.bottom + 10)
+
+        self.easy_button.draw(self.screen)
+        self.hard_button.draw(self.screen)
+        
+        self.screen.blit(easy_desc, easy_rect)
+        self.screen.blit(hard_desc, hard_rect)
+
+        controls = [
+            "Press E for Easy mode",
+            "Press H for Hard mode"
+        ]
+        y_offset = get_window_size()[1] - 80
+        for hint in controls:
+            hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
+            hint_rect = hint_text.get_rect(left=20, y=y_offset)
+            self.screen.blit(hint_text, hint_rect)
+            y_offset += 25
+
+        pygame.display.flip()
+
+    def handle_click(self, pos):
+        if self.easy_button.check_hover(pos):
+            return "easy"
+        elif self.hard_button.check_hover(pos):
+            return "hard"
+        return None
+
+    def handle_motion(self, pos):
+        self.easy_button.check_hover(pos)
+        self.hard_button.check_hover(pos)
+
+    def handle_key(self, event):
+        if event.key in [pygame.K_e, pygame.K_RETURN]:
+            return "easy"
+        elif event.key == pygame.K_h:
+            return "hard"
         return None

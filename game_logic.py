@@ -2,6 +2,7 @@
 # script based on Eric's provided flowchart photo (flowchart.drawio.png)
 # will add more comment later to reference for which part of code is based on which part of the flowchart
 import random
+import pygame
 from loadexcel import load_property_data
 
 pot_luck_cards = [
@@ -285,14 +286,83 @@ class GameLogic:
     def auction_property(self, position):
         position = str(position)
         property_data = self.properties[position]
-        auction_price = property_data["price"] // 2
-        for player in self.players:
-            if player["money"] >= auction_price:
-                player["money"] -= auction_price
-                self.bank_money += auction_price
-                property_data["owner"] = player["name"]
-                return True
-        return False
+        
+        starting_bid = property_data["price"] // 2
+        
+        self.current_auction = {
+            "property": property_data,
+            "current_bid": 0,
+            "minimum_bid": starting_bid,
+            "highest_bidder": None,
+            "start_time": pygame.time.get_ticks(),
+            "duration": 30000,
+            "passed_players": set(),
+            "completed": False,
+            "message": f"Auction started for {property_data['name']} - Starting bid: £{starting_bid}"
+        }
+        
+        return "auction_in_progress"
+
+    def process_auction_bid(self, player, bid_amount):
+        if not hasattr(self, 'current_auction') or self.current_auction["completed"]:
+            return False, "Auction is not active"
+            
+        if player['name'] in self.current_auction["passed_players"]:
+            return False, "You have already passed on this auction"
+            
+        if bid_amount < self.current_auction["minimum_bid"]:
+            return False, f"Bid must be at least £{self.current_auction['minimum_bid']}"
+            
+        if bid_amount > player['money']:
+            return False, "You don't have enough money"
+            
+        current_time = pygame.time.get_ticks()
+        if (current_time - self.current_auction["start_time"]) >= self.current_auction["duration"]:
+            return False, "Auction time has expired"
+            
+        self.current_auction["current_bid"] = bid_amount
+        self.current_auction["highest_bidder"] = player
+        self.current_auction["minimum_bid"] = bid_amount + 10
+        self.current_auction["start_time"] = pygame.time.get_ticks()
+        return True, f"{player['name']} bids £{bid_amount} - 30 seconds remaining!"
+
+    def process_auction_pass(self, player):
+        if not hasattr(self, 'current_auction') or self.current_auction["completed"]:
+            return False, "Auction is not active"
+            
+        self.current_auction["passed_players"].add(player['name'])
+        return True, f"{player['name']} passes on the auction"
+    
+    def check_auction_end(self):
+        if not hasattr(self, 'current_auction') or self.current_auction["completed"]:
+            return None
+            
+        current_time = pygame.time.get_ticks()
+        time_remaining = (self.current_auction["start_time"] + self.current_auction["duration"] - current_time) // 1000
+        
+        active_players = [p for p in self.players if p['name'] not in self.current_auction["passed_players"]]
+        all_passed = len(active_players) <= 1
+        time_up = time_remaining <= 0
+        
+        if all_passed or time_up:
+            self.current_auction["completed"] = True
+            property_data = self.current_auction["property"]
+            
+            if self.current_auction["highest_bidder"]:
+                winner = self.current_auction["highest_bidder"]
+                bid_amount = self.current_auction["current_bid"]
+                
+                winner['money'] -= bid_amount
+                self.bank_money += bid_amount
+                property_data['owner'] = winner['name']
+                
+                end_reason = "time's up!" if time_up else "all other players passed!"
+                return f"{winner['name']} won {property_data['name']} for £{bid_amount} - {end_reason}"
+            else:
+                property_data['owner'] = None
+                return f"No one bid on {property_data['name']} - property returns to bank!"
+                
+        return None
 
     def is_game_over(self):
         active_players = [p for p in self.players if p["money"] > 0]
@@ -306,7 +376,6 @@ class GameLogic:
         return None
 
     def remove_player(self, player_name, voluntary=False):
-        """Remove a player from the game and handle their assets"""
         player = next((p for p in self.players if p['name'] == player_name), None)
         if player:
             for prop in self.properties.values():

@@ -1,7 +1,3 @@
-## to do : move some game.py ui stuff back to ui.py
-# some of the code should not in the file
-# this file should only contain the game logic
-
 import pygame
 from Board import Board
 from Property import Property
@@ -9,6 +5,7 @@ from game_logic import GameLogic
 from typing import Optional
 import time
 import math
+import os
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -53,15 +50,31 @@ class Game:
         self.start_time = pygame.time.get_ticks() if time_limit else None
         self.rounds_completed = {player.name: 0 for player in players}
         
+        self.game_over = False
+        self.winner_index = None
+        
         self.time_warning_start = 60
         self.warning_flash_rate = 500
+        
+        self.dice_images = {}
+        try:
+            for i in range(1, 7):
+                dice_path = os.path.join("assets", "image", "Dice", f"{i}.png")
+                if os.path.exists(dice_path):
+                    print(f"Loading dice image: {dice_path}")
+                    self.dice_images[i] = pygame.image.load(dice_path)
+                else:
+                    print(f"Dice image not found: {dice_path}")
+        except Exception as e:
+            print(f"Error loading dice images: {e}")
         
         try:
             self.logic = GameLogic()
             if not self.logic.game_start():
                 raise RuntimeError("Failed to initialize game data")
                 
-            self.board = Board()
+            self.players = players
+            self.board = Board(self.players)
             
             self.board.update_ownership(self.logic.properties)
             
@@ -109,6 +122,13 @@ class Game:
                 button_width,
                 button_height
             )
+            
+            self.auction_buttons = {
+                'bid': pygame.Rect(0, 0, 120, 40),
+                'pass': pygame.Rect(0, 0, 120, 40)
+            }
+            self.auction_input = pygame.Rect(0, 0, 200, 40)
+            self.auction_bid_amount = ""
                     
         except Exception as e:
             print(f"Error during game initialization: {e}")
@@ -228,6 +248,12 @@ class Game:
             pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (window_size[0], i))
         self.screen.blit(gradient, (0, 0))
 
+        for i, player in enumerate(self.players):
+            player.update_animation()
+            player.set_active(i == self.logic.current_player_index)
+            if self.game_over and i == self.winner_index:
+                player.set_winner(True)
+
         self.board.draw(self.screen)
         
         self.draw_time_remaining()
@@ -244,7 +270,8 @@ class Game:
         
         mouse_pos = pygame.mouse.get_pos()
         y = panel_y + 5
-        for i, player in enumerate(self.logic.players):
+        
+        for i, player_data in enumerate(self.logic.players):
             is_current = (i == self.logic.current_player_index)
             
             if is_current:
@@ -253,16 +280,26 @@ class Game:
                 highlight.fill(ACCENT_COLOR)
                 self.screen.blit(highlight, (panel_x + 5, y))
             
-            color = ACCENT_COLOR if is_current else WHITE
-            text = self.font.render(player['name'], True, color)
-            self.screen.blit(text, (panel_x + 10, y + 5))
+            player_obj = next((p for p in self.players if p.name == player_data['name']), None)
             
-            money_color = SUCCESS_COLOR if player['money'] > 500 else ERROR_COLOR if player['money'] < 200 else WHITE
-            money_text = self.small_font.render(f"£{player['money']}", True, money_color)
+            if player_obj and player_obj.player_image:
+                logo_size = 30
+                logo_rect = pygame.Rect(panel_x + 10, y + 5, logo_size, logo_size)
+                self.screen.blit(pygame.transform.scale(player_obj.player_image, (logo_size, logo_size)), logo_rect)
+                name_x = panel_x + logo_size + 20
+            else:
+                name_x = panel_x + 10
+
+            color = ACCENT_COLOR if is_current else WHITE
+            text = self.font.render(player_data['name'], True, color)
+            self.screen.blit(text, (name_x, y + 5))
+            
+            money_color = SUCCESS_COLOR if player_data['money'] > 500 else ERROR_COLOR if player_data['money'] < 200 else WHITE
+            money_text = self.small_font.render(f"£{player_data['money']}", True, money_color)
             self.screen.blit(money_text, (panel_x + 180, y + 10))
             
             props = [prop for prop in self.logic.properties.values() 
-                    if prop.get('owner') == player['name']]
+                    if prop.get('owner') == player_data['name']]
             
             if props:
                 card_width = 60
@@ -286,14 +323,21 @@ class Game:
 
         if self.state == "ROLL":
             self.draw_button(self.roll_button, "Roll", 
-                           hover=self.roll_button.collidepoint(pygame.mouse.get_pos()))
+                           hover=self.roll_button.collidepoint(mouse_pos))
         elif self.state == "BUY" and self.current_property is not None:
             self.draw_property_card(self.current_property)
             
             self.draw_button(self.yes_button, "Buy", 
-                           hover=self.yes_button.collidepoint(pygame.mouse.get_pos()))
+                           hover=self.yes_button.collidepoint(mouse_pos))
             self.draw_button(self.no_button, "Pass", 
-                           hover=self.no_button.collidepoint(pygame.mouse.get_pos()))
+                           hover=self.no_button.collidepoint(mouse_pos))
+        elif self.state == "AUCTION" and hasattr(self.logic, 'current_auction'):
+            self.draw_auction(self.logic.current_auction)
+            result_message = self.logic.check_auction_end()
+            if result_message:
+                self.board.add_message(result_message)
+                self.state = "ROLL"
+                self.board.update_ownership(self.logic.properties)
 
         current_time = pygame.time.get_ticks()
         if self.dice_animation:
@@ -306,6 +350,8 @@ class Game:
         elif self.last_roll and (current_time - self.roll_time < self.ROLL_DISPLAY_TIME):
             dice1, dice2 = self.last_roll
             self.draw_dice(dice1, dice2, False)
+
+        self.board.camera.handle_camera_controls(pygame.key.get_pressed())
 
         pygame.display.flip()
 
@@ -327,15 +373,17 @@ class Game:
             dice_rect = pygame.Rect(x, y, dice_size, dice_size)
             pygame.draw.rect(self.screen, WHITE, dice_rect, border_radius=10)
             
-            if is_rolling:
-                color = ACCENT_COLOR
+            if value in self.dice_images:
+                scaled_dice = pygame.transform.scale(self.dice_images[value], (dice_size - 4, dice_size - 4))
+                image_rect = scaled_dice.get_rect(center=dice_rect.center)
+                self.screen.blit(scaled_dice, image_rect)
             else:
-                color = BLACK
-            pygame.draw.rect(self.screen, color, dice_rect, 2, border_radius=10)
+                dice_text = self.font.render(str(value), True, BLACK)
+                dice_text_rect = dice_text.get_rect(center=dice_rect.center)
+                self.screen.blit(dice_text, dice_text_rect)
             
-            dice_text = self.font.render(str(value), True, BLACK)
-            dice_text_rect = dice_text.get_rect(center=dice_rect.center)
-            self.screen.blit(dice_text, dice_text_rect)
+            color = ACCENT_COLOR if is_rolling else BLACK
+            pygame.draw.rect(self.screen, color, dice_rect, 2, border_radius=10)
 
     def draw_property_card(self, property_data):
         window_size = self.screen.get_size()
@@ -398,7 +446,8 @@ class Game:
         self.roll_time = pygame.time.get_ticks()
         
         self.board.update_ownership(self.logic.properties)
-        
+        self.board.update_board_positions()
+
         current_player = self.logic.players[self.logic.current_player_index]
         position = str(current_player['position'])
         
@@ -440,6 +489,14 @@ class Game:
         
         self.dice_values = (dice1, dice2)
         
+        for player in self.players:
+            if player.name == current_player['name']:
+                player.position = current_player['position']
+                print(f"Moving {player.name} to position {player.position}")
+                break
+        
+        self.board.update_board_positions()
+        
         if current_player['position'] < old_position:
             self.rounds_completed[current_player['name']] += 1
             
@@ -461,6 +518,7 @@ class Game:
             if not self.logic.players:
                 if self.logic.bankrupted_players:
                     winner = self.logic.bankrupted_players[-2] if len(self.logic.bankrupted_players) > 1 else None
+                    self.game_over = True
                     return {"winner": winner,
                            "bankrupted_players": self.logic.bankrupted_players,
                            "voluntary_exits": self.logic.voluntary_exits}
@@ -469,6 +527,7 @@ class Game:
             active_players = [p for p in self.logic.players if p['money'] > 0]
             if len(active_players) <= 1:
                 winner = active_players[0]['name'] if active_players else None
+                self.game_over = True
                 return {"winner": winner,
                         "bankrupted_players": self.logic.bankrupted_players,
                         "voluntary_exits": self.logic.voluntary_exits}
@@ -488,6 +547,7 @@ class Game:
                         assets[player['name']] = total
                     
                     winner = max(assets.items(), key=lambda x: x[1])[0]
+                    self.game_over = True
                     return {"winner": winner,
                             "final_assets": assets,
                             "bankrupted_players": self.logic.bankrupted_players,
@@ -505,8 +565,12 @@ class Game:
                 self.board.add_message(f"{current_player['name']} cannot afford {self.current_property['name']}")
         else:
             self.board.add_message(f"{current_player['name']} passed on {self.current_property['name']}")
-            if self.logic.auction_property(current_player['position']):
-                self.board.update_ownership(self.logic.properties)
+            result = self.logic.auction_property(current_player['position'])
+            if result == "auction_in_progress":
+                self.state = "AUCTION"
+                self.auction_bid_amount = ""
+                return
+            self.board.update_ownership(self.logic.properties)
         
         self.state = "ROLL"
         self.current_property = None
@@ -522,6 +586,13 @@ class Game:
             elif self.no_button.collidepoint(pos):
                 self.handle_buy_decision(False)
                 return False
+        elif self.state == "AUCTION":
+            if self.handle_auction_click(pos):
+                result = self.logic.auction_property(self.logic.players[self.logic.current_player_index]['position'])
+                if result == "auction_completed":
+                    self.state = "ROLL"
+                    self.current_property = None
+                    self.board.update_ownership(self.logic.properties)
         return False
 
     def handle_motion(self, pos):
@@ -529,6 +600,8 @@ class Game:
             return self.roll_button.collidepoint(pos)
         elif self.state == "BUY":
             return self.yes_button.collidepoint(pos) or self.no_button.collidepoint(pos)
+        elif self.state == "AUCTION":
+            return any(btn.collidepoint(pos) for btn in self.auction_buttons.values())
         return False
 
     def handle_key(self, event):
@@ -544,7 +617,23 @@ class Game:
             elif event.key in KEY_PASS:
                 self.handle_buy_decision(False)
                 return False
-        return False
+        elif self.state == "AUCTION":
+            self.handle_auction_input(event)
+        
+        if event.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]:
+            dx, dy = 0, 0
+            if event.key == pygame.K_LEFT:
+                dx = 10
+            elif event.key == pygame.K_RIGHT:
+                dx = -10
+            elif event.key == pygame.K_UP:
+                dy = 10
+            elif event.key == pygame.K_DOWN:
+                dy = -10
+            self.board.update_offset(dx, dy)
+        
+        self.board.camera.handle_camera_controls(pygame.key.get_pressed())
+        return None
 
     def show_time_stats(self):
         if self.game_mode == "abridged" and self.time_limit:
@@ -579,3 +668,105 @@ class Game:
             self.board.update_ownership(self.logic.properties)
             return True
         return False
+
+    def draw_auction(self, auction_data):
+        window_size = self.screen.get_size()
+        card_width = int(window_size[0] * 0.3)
+        card_height = int(window_size[1] * 0.4)
+        card_x = (window_size[0] - card_width) // 2
+        card_y = (window_size[1] - card_height) // 2
+        
+        shadow_rect = pygame.Rect(card_x + 4, card_y + 4, card_width, card_height)
+        shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        self.screen.blit(shadow, shadow_rect)
+        
+        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
+        
+        current_time = pygame.time.get_ticks()
+        time_remaining = (auction_data["start_time"] + auction_data["duration"] - current_time) // 1000
+        timer_color = ERROR_COLOR if time_remaining <= 10 else ACCENT_COLOR
+        timer_text = self.font.render(f"Time: {time_remaining}s", True, timer_color)
+        self.screen.blit(timer_text, (card_x + 20, card_y + 20))
+        
+        title = self.font.render("AUCTION", True, BLACK)
+        property_name = self.font.render(auction_data["property"]["name"], True, BLACK)
+        current_bid = self.font.render(f"Current Bid: £{auction_data['current_bid']}", True, BLACK)
+        min_bid = self.font.render(f"Minimum Bid: £{auction_data['minimum_bid']}", True, BLACK)
+        
+        if auction_data["highest_bidder"]:
+            highest_text = self.font.render(f"Highest: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
+            self.screen.blit(highest_text, (card_x + 20, card_y + 180))
+        
+        self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, card_y + 60))
+        self.screen.blit(property_name, (card_x + 20, card_y + 100))
+        self.screen.blit(current_bid, (card_x + 20, card_y + 140))
+        self.screen.blit(min_bid, (card_x + 20, card_y + 220))
+        
+        self.auction_input.topleft = (card_x + 20, card_y + 260)
+        self.auction_buttons['bid'].topleft = (card_x + 20, card_y + 310)
+        self.auction_buttons['pass'].topleft = (card_x + 150, card_y + 310)
+        
+        pygame.draw.rect(self.screen, WHITE, self.auction_input)
+        pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
+        bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
+        self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + 10))
+        
+        current_player = self.logic.players[self.logic.current_player_index]
+        can_bid = current_player['name'] not in auction_data.get("passed_players", set())
+        
+        for btn_name, btn_rect in self.auction_buttons.items():
+            if btn_name == 'bid' and not can_bid:
+                color = GRAY
+            else:
+                color = BUTTON_HOVER if btn_rect.collidepoint(pygame.mouse.get_pos()) else ACCENT_COLOR
+            pygame.draw.rect(self.screen, color, btn_rect, border_radius=5)
+            btn_text = self.font.render(btn_name.title(), True, WHITE)
+            self.screen.blit(btn_text, (btn_rect.centerx - btn_text.get_width()//2, 
+                                      btn_rect.centery - btn_text.get_height()//2))
+        
+        passed_y = card_y + card_height - 40
+        if auction_data.get("passed_players"):
+            passed_text = self.small_font.render("Passed: " + ", ".join(auction_data["passed_players"]), True, GRAY)
+            self.screen.blit(passed_text, (card_x + 20, passed_y))
+
+    def handle_auction_input(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.auction_bid_amount = self.auction_bid_amount[:-1]
+            elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+                             pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
+                self.auction_bid_amount += event.unicode
+
+    def handle_auction_click(self, pos):
+        current_player = self.logic.players[self.logic.current_player_index]
+        
+        if self.auction_buttons['bid'].collidepoint(pos):
+            try:
+                bid_amount = int(self.auction_bid_amount or "0")
+                success, message = self.logic.process_auction_bid(current_player, bid_amount)
+                self.board.add_message(message)
+                if success:
+                    self.auction_bid_amount = ""
+            except ValueError:
+                self.board.add_message("Please enter a valid number!")
+        
+        elif self.auction_buttons['pass'].collidepoint(pos):
+            success, message = self.logic.process_auction_pass(current_player)
+            self.board.add_message(message)
+        
+        result_message = self.logic.check_auction_end()
+        if result_message:
+            self.board.add_message(result_message)
+            self.state = "ROLL"
+            self.board.update_ownership(self.logic.properties)
+            return True
+        
+        return False
+
+    def handle_game_over(self, winner_name):
+        for i, player in enumerate(self.players):
+            if player.name == winner_name:
+                self.winner_index = i
+                player.set_winner(True)
+                break

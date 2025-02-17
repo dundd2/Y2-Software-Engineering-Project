@@ -1,10 +1,7 @@
-# player that show on the board
-# will be a huge change once we have our gui player photo
-# Bug :13/02/2025 : photo didnt shot on the board as it should , need to be fix
-
 import pygame
 import math
 import os
+from text_scaler import text_scaler
 
 WHITE = (255, 255, 255)
 HUMAN_COLOR = (75, 139, 190)
@@ -12,6 +9,7 @@ AI_COLOR = (190, 75, 75)
 
 class Player:
     def __init__(self, name, money=1500, color=None, is_ai=False, player_number=1):
+        print(f"Creating player: {name}, AI: {is_ai}, Number: {player_number}")
         self.name = name
         self.money = money
         self.position = 1  
@@ -25,38 +23,101 @@ class Player:
         self.is_ai = is_ai
         self.player_number = min(max(player_number, 1), 5)
         self.player_image = None
+        
+        self.highlight_intensity = 0
+        self.is_active = False
+        self.is_winner = False
+        self.bounce_offset = 0
+        self.bounce_speed = 0.15
+        self.glow_alpha = 0
+        self.target_animation_offset = 0
+        
         self.load_player_image()
+        print(f"Player {name} initial position: {self.position}")
 
     def load_player_image(self):
         try:
-            current_dir = os.getcwd()
-            image_path = os.path.join(current_dir, "assets", "image", f"Playerlogo ({self.player_number}).png")
+            image_path = os.path.join("assets", "image", f"Playerlogo ({self.player_number}).png")
             print(f"Attempting to load player image from: {image_path}")
+            
             if os.path.exists(image_path):
                 self.player_image = pygame.image.load(image_path)
                 self.player_image = pygame.transform.scale(self.player_image, (40, 40))
                 print(f"Successfully loaded player {self.player_number} image")
             else:
-                print(f"Image file not found at {image_path}")
-                self.create_fallback_token()
+                print(f"Image file not found at {image_path}, trying absolute path...")
+                current_dir = os.getcwd()
+                abs_path = os.path.join(current_dir, "assets", "image", f"Playerlogo ({self.player_number}).png")
+                if os.path.exists(abs_path):
+                    self.player_image = pygame.image.load(abs_path)
+                    self.player_image = pygame.transform.scale(self.player_image, (40, 40))
+                    print(f"Successfully loaded player {self.player_number} image from absolute path")
+                else:
+                    print(f"Image file not found at {abs_path}")
+                    self.create_fallback_token()
         except pygame.error as e:
             print(f"Could not load player image {self.player_number}: {e}")
             self.create_fallback_token()
 
     def create_fallback_token(self):
         self.player_image = pygame.Surface((40, 40), pygame.SRCALPHA)
-        pygame.draw.circle(self.player_image, self.color, (20, 20), 20)
-        player_number_font = pygame.font.Font(None, 28)
-        number_text = player_number_font.render(str(self.player_number), True, WHITE)
+        
+        token_color = (*self.color[:3], 230)
+        highlight_color = tuple(min(c + 40, 255) for c in self.color[:3])
+        
+        pygame.draw.circle(self.player_image, token_color, (20, 20), 20)
+        for i in range(10):
+            alpha = int(100 * (1 - i/10))
+            pygame.draw.circle(self.player_image, (*highlight_color, alpha), (15, 15), 20-i)
+            
+        number_font = pygame.font.Font('assets/font/Play-Regular.ttf', text_scaler.get_scaled_size(28))
+        number_text = number_font.render(str(self.player_number), True, WHITE)
         number_rect = number_text.get_rect(center=(20, 20))
+        
+        shadow_text = number_font.render(str(self.player_number), True, (0, 0, 0))
+        shadow_rect = number_rect.copy()
+        shadow_rect.x += 1
+        shadow_rect.y += 1
+        self.player_image.blit(shadow_text, shadow_rect)
         self.player_image.blit(number_text, number_rect)
-        print(f"Created fallback token for player {self.player_number}")
+        
+        print(f"Created enhanced fallback token for player {self.player_number}")
 
-    def draw(self, screen, x, y):
+    def update_animation(self):
+        current_time = pygame.time.get_ticks()
+        
+        if self.is_active:
+            self.target_animation_offset = 5
+            self.highlight_intensity = min(self.highlight_intensity + 0.1, 1.0)
+        else:
+            self.target_animation_offset = 0
+            self.highlight_intensity = max(self.highlight_intensity - 0.1, 0.0)
+            
+        self.animation_offset += (self.target_animation_offset - self.animation_offset) * 0.2
+        
+        if self.is_winner:
+            self.bounce_offset = math.sin(current_time * self.bounce_speed) * 8
+            self.glow_alpha = abs(math.sin(current_time * 0.003)) * 255
+        else:
+            self.bounce_offset = 0
+            self.glow_alpha = 0
+            
+    def get_total_offset(self):
+        return self.animation_offset + self.bounce_offset
+
+    def set_active(self, active):
+        self.is_active = active
+
+    def set_winner(self, winner):
+        self.is_winner = winner
+
+    def draw_player(self, screen, x, y):
+        print(f"Drawing player {self.name} at screen coordinates: ({x}, {y})")
         current_time = pygame.time.get_ticks()
         self.animation_offset = abs(math.sin(current_time * 0.003)) * 5
         self.rect.x = x
         self.rect.y = y - self.animation_offset
+        
         glow_surface = pygame.Surface((self.rect.width + 8, self.rect.height + 8), pygame.SRCALPHA)
         for i in range(4):
             alpha = int(100 * (1 - i/4))
@@ -64,12 +125,22 @@ class Player:
                             (self.rect.width//2 + 4, self.rect.height//2 + 4),
                             self.rect.width//2 - i)
         screen.blit(glow_surface, (self.rect.x - 4, self.rect.y - 4))
-        if self.player_image:
+        
+        if hasattr(self, 'player_image') and self.player_image is not None:
+            print(f"Drawing player {self.player_number} image at position: ({self.rect.x}, {self.rect.y})")
+            screen.blit(self.player_image, self.rect)
+        else:
+            print(f"No image for player {self.player_number}, creating fallback")
+            self.create_fallback_token()
             screen.blit(self.player_image, self.rect)
 
     def move(self, steps):
-        self.position = ((self.position - 1 + steps) % 40) + 1
-        self.animation_time = pygame.time.get_ticks()  
+        new_position = ((self.position - 1 + steps) % 40) + 1
+        if 1 <= new_position <= 40:
+            self.position = new_position
+            self.animation_time = pygame.time.get_ticks()
+        else:
+            print(f"Error: Invalid move resulting in position {new_position} for player {self.name}")
 
     def pay(self, amount):
         self.money -= amount

@@ -4,9 +4,11 @@
 
 import pygame
 import math
+import os
 from Property import Property
 from typing import Optional, List
 from loadexcel import load_property_data
+from text_scaler import text_scaler
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -16,161 +18,132 @@ ACCENT_COLOR = (75, 139, 190)
 SUCCESS_COLOR = (40, 167, 69)
 ERROR_COLOR = (220, 53, 69)
 
-GROUP_COLORS = {
-    "Brown": (139, 69, 19, 180),
-    "Blue": (0, 0, 255, 180),
-    "Purple": (128, 0, 128, 180),
-    "Orange": (255, 165, 0, 180),
-    "Red": (255, 0, 0, 180),
-    "Yellow": (255, 255, 0, 180),
-    "Green": (0, 128, 0, 180),
-    "Deep Blue": (0, 0, 139, 180)
-}
+class CameraControls:
+    def __init__(self):
+        self.zoom_level = 1.0
+        self.offset_x = 0
+        self.offset_y = 0
+        self.move_speed = 5
+        self.zoom_speed = 0.05
+        self.min_zoom = 0.5
+        self.max_zoom = 2.0
+
+    def handle_camera_controls(self, keys):
+        if keys[pygame.K_PLUS] or keys[pygame.K_EQUALS]:
+            self.zoom_level = min(self.max_zoom, self.zoom_level + self.zoom_speed)
+        if keys[pygame.K_MINUS]:
+            self.zoom_level = max(self.min_zoom, self.zoom_level - self.zoom_speed)
+
+        adjusted_speed = self.move_speed * (1 / self.zoom_level)
+
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
+            self.offset_y -= adjusted_speed
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+            self.offset_y += adjusted_speed
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+            self.offset_x -= adjusted_speed
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+            self.offset_x += adjusted_speed
+
+        window_size = pygame.display.get_surface().get_size()
+        max_offset = window_size[0] // 4
+        self.offset_x = max(min(self.offset_x, max_offset), -max_offset)
+        self.offset_y = max(min(self.offset_y, max_offset), -max_offset)
+
+        return self.zoom_level, self.offset_x, self.offset_y
 
 class Board:
-    def __init__(self):
+    def __init__(self, players):
+        self.players = players
         self.spaces = [None] * 40
         self.properties_data = load_property_data()
-        print("Board init - Properties data loaded:", bool(self.properties_data))
+        self.camera = CameraControls()
         
-        if not self.properties_data:
-            raise RuntimeError("Failed to load properties data")
+        self.project_root = os.path.abspath(os.path.dirname(__file__))
+        
+        try:
+            self.board_image = pygame.image.load(os.path.join(self.project_root, "assets/image/board.png"))
+            self.board_image = self.board_image.convert_alpha() if self.board_image.get_alpha() else self.board_image.convert()
+        except (pygame.error, FileNotFoundError) as e:
+            print(f"Could not load board image: {e}")
+            self.board_image = None
             
+        try:
+            self.background_image = pygame.image.load(os.path.join(self.project_root, "assets/image/background.jpg"))
+            self.background_image = self.background_image.convert()
+        except (pygame.error, FileNotFoundError) as e:
+            print(f"Could not load background image: {e}")
+            self.background_image = None
+
         self.board_rects = self._create_board_rects()
-        self.card_font = pygame.font.Font(None, 18)
-        self.title_font = pygame.font.Font(None, 36)
-        self.small_font = pygame.font.Font(None, 24)
-        
         self.messages = []
         self.message_times = []
-        self.animation_time = 0
-        self.ANIMATION_DURATION = 2000
+        self.message_font = pygame.font.Font('assets/font/Play-Regular.ttf', text_scaler.get_scaled_size(20))
 
-        self.special_spaces = {
-            "1": "GO",
-            "3": "Pot Luck",
-            "5": "Income Tax",
-            "8": "Opportunity Knocks",
-            "11": "JAIL",
-            "18": "Pot Luck",
-            "21": "Free Parking",
-            "23": "Opportunity Knocks",
-            "31": "Go to Jail",
-            "34": "Pot Luck",
-            "37": "Opportunity Knocks",
-            "39": "Super Tax"
-        }
-        
-        self.image_mappings = {
-            "GO": "Collect 200.png",
-            "Pot Luck": "community chest.png",
-            "Income Tax": "Pay 200.png",
-            "Opportunity Knocks": "Draw a card.png",
-            "JAIL": "Jail.png",
-            "Free Parking": "Collect Fine.png",
-            "Go to Jail": "Go to Jail!.png",
-            "Super Tax": "Pay 200.png"
-        }
-        
-        self.position_scales = {
-            "corner": 1.0,
-            "horizontal": 0.9,
-            "vertical": 0.9,
-        }
-        
-        self.space_images = {}
-        self.load_space_images()
-        
-        for position_str, prop_data in self.properties_data.items():
-            try:
-                position = int(position_str)
-                array_pos = position - 1
-                if 0 <= array_pos < 40:
-                    name = prop_data.get("name", "")
-                    if "Station" in name:
-                        self.spaces[array_pos] = Property(name, 200, 25)
-                    elif name in ["Tesla Power Co", "Edison Water"]:
-                        self.spaces[array_pos] = Property(name, 150, 0)
-                    elif "price" in prop_data and prop_data.get("price"):
-                        price = int(prop_data["price"])
-                        rent = int(prop_data.get("rent", 0))
-                        self.spaces[array_pos] = Property(name, price, rent)
-                        
-                    if prop_data.get("owner"):
-                        self.spaces[array_pos].owner = prop_data["owner"]
-            except (ValueError, TypeError) as e:
-                print(f"Error processing position {position_str}: {e}")
-                continue
-
-    def load_space_images(self):
-        try:
-            import os
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            images_dir = os.path.join(base_dir, "assets", "image")
-            
-            for space_name, image_file in self.image_mappings.items():
-                try:
-                    image_path = os.path.join(images_dir, image_file)
-                    image = pygame.image.load(image_path)
-                    self.space_images[space_name] = image
-                except pygame.error as e:
-                    print(f"Could not load image for {space_name}: {e}")
-                    self.space_images[space_name] = None
-        except Exception as e:
-            print(f"Error loading space images: {e}")
+    def add_message(self, text):
+        self.messages.append(text)
+        self.message_times.append(pygame.time.get_ticks())
+        if len(self.messages) > 10:
+            self.messages.pop(0)
+            self.message_times.pop(0)
 
     def _create_board_rects(self):
         screen_info = pygame.display.Info()
         window_width = screen_info.current_w
         window_height = screen_info.current_h
+        base_board_size = min(window_width, window_height) * 0.8
+        board_size = base_board_size * self.camera.zoom_level
         
-        board_size = min(window_width, window_height) * 0.8
-        space_size = board_size // 11
-        start_x = (window_width - board_size) // 2
-        start_y = (window_height - board_size) // 2
-
-        rects = [None] * 40
-
+        corner_size = board_size // 11
+        normal_width = corner_size
+        normal_height = int(normal_width * (5/8))
+        
+        start_x = ((window_width - board_size) // 2) + self.camera.offset_x
+        start_y = ((window_height - board_size) // 2) + self.camera.offset_y
+        
+        rects = []
+        
         for i in range(11):
-            rects[i] = pygame.Rect(
-                start_x + board_size - (i + 1) * space_size,
-                start_y + board_size - space_size,
-                space_size,
-                space_size
-            )
-
+            width = corner_size if (i == 0 or i == 10) else normal_width
+            height = corner_size if (i == 0 or i == 10) else normal_height
+            x = start_x + board_size - (i + 1) * normal_width
+            y = start_y + board_size - height
+            rects.append(pygame.Rect(x, y, width, height))
+        
         for i in range(11, 21):
-            rects[i] = pygame.Rect(
-                start_x,
-                start_y + board_size - ((i - 9) * space_size),
-                space_size,
-                space_size
-            )
-
+            width = corner_size if i == 20 else normal_height
+            height = corner_size if i == 20 else normal_width
+            x = start_x
+            y = start_y + board_size - ((i - 9) * normal_width)
+            rects.append(pygame.Rect(x, y, width, height))
+        
         for i in range(21, 31):
-            rects[i] = pygame.Rect(
-                start_x + (i - 21) * space_size,
-                start_y,
-                space_size,
-                space_size
-            )
-
+            width = corner_size if (i == 20 or i == 30) else normal_width
+            height = corner_size if (i == 20 or i == 30) else normal_height
+            x = start_x + (i - 20) * normal_width
+            y = start_y
+            rects.append(pygame.Rect(x, y, width, height))
+        
         for i in range(31, 40):
-            rects[i] = pygame.Rect(
-                start_x + board_size - space_size,
-                start_y + (i - 31) * space_size,
-                space_size,
-                space_size
-            )
-
+            width = corner_size if i == 30 else normal_height
+            height = corner_size if i == 30 else normal_width
+            x = start_x + board_size - width
+            y = start_y + (i - 30) * normal_width
+            rects.append(pygame.Rect(x, y, width, height))
+        
         return rects
+
+    def update_board_positions(self):
+        self.board_rects = self._create_board_rects()
+        for player in self.players:
+            if 1 <= player.position <= 40:
+                player_rect = self.board_rects[player.position - 1]
+                player.rect = player_rect
 
     def draw_player(self, screen, player, rect, index):
         is_corner = rect.width > rect.height + 10 or rect.height > rect.width + 10
-        
         row = index // 2
         col = index % 2
-        
         base_padding = 12 if is_corner else 8
         spacing = 35 if is_corner else 30
         
@@ -183,265 +156,92 @@ class Board:
         else:
             pos_x = rect.x + base_padding + (col * spacing)
             pos_y = rect.y + base_padding + (row * spacing)
-        
-        glow_size = 44
-        glow_surface = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
+
+        glow_surface = pygame.Surface((44, 44), pygame.SRCALPHA)
         for i in range(4):
             alpha = int(100 * (1 - i/4))
             pygame.draw.rect(glow_surface, (*player.color[:3], alpha),
-                            pygame.Rect(i, i, glow_size - i*2, glow_size - i*2),
+                            pygame.Rect(i, i, 44 - i*2, 44 - i*2),
                             border_radius=5)
         screen.blit(glow_surface, (pos_x - 2, pos_y - 2 - player.animation_offset))
-        
+
         if player.player_image:
             token_rect = pygame.Rect(pos_x, pos_y - player.animation_offset, 40, 40)
             screen.blit(player.player_image, token_rect)
-
-    def add_message(self, text):
-        self.messages.append(text)
-        self.message_times.append(pygame.time.get_ticks())
-        if len(self.messages) > 10:
-            self.messages.pop(0)
-            self.message_times.pop(0)
+        else:
+            pygame.draw.circle(screen, player.color, (pos_x + 20, pos_y + 20 - player.animation_offset), 20)
 
     def draw(self, screen):
         window_width = screen.get_width()
         window_height = screen.get_height()
+        base_board_size = int(window_height * 0.9)
+        board_size = int(base_board_size * self.camera.zoom_level)
+        board_size = max(1, board_size)
+
+        game_surface = pygame.Surface((window_width, window_height))
+        game_surface.fill(WHITE)
+
+        if self.background_image:
+            game_surface.blit(self.background_image, (0, 0))
+        else:
+            game_surface.fill(MODERN_BG)
+
+        keys = pygame.key.get_pressed()
+        zoom, offset_x, offset_y = self.camera.handle_camera_controls(keys)
+        self.camera.zoom_level = zoom
+        self.camera.offset_x = offset_x
+        self.camera.offset_y = offset_y
         
-        board_size = int(window_height * 0.8)
-        board_rect = pygame.Rect(
-            (window_width - board_size) // 2,
-            (window_height - board_size) // 2,
-            board_size, board_size
-        )
+        self.update_board_positions()
+
+        board_x = ((window_width - board_size) // 2) + self.camera.offset_x
+        board_y = ((window_height - board_size) // 2) + self.camera.offset_y
+
+        board_surface = pygame.Surface((board_size, board_size))
+        board_surface.fill(WHITE)
+        if self.board_image:
+            scaled_board = pygame.transform.scale(self.board_image, (board_size, board_size))
+            board_surface.blit(scaled_board, (0, 0))
+        game_surface.blit(board_surface, (board_x, board_y))
+
+        transparent_surface = pygame.Surface((window_width, window_height), pygame.SRCALPHA)
         
-        shadow_size = 30
-        shadow_surface = pygame.Surface((board_rect.width + shadow_size*2, board_rect.height + shadow_size*2), pygame.SRCALPHA)
-        for i in range(shadow_size):
-            alpha = int(100 * (1 - i/shadow_size))
-            pygame.draw.rect(shadow_surface, (*BLACK, alpha),
-                           pygame.Rect(i, i, 
-                                     shadow_surface.get_width() - i*2,
-                                     shadow_surface.get_height() - i*2),
-                           border_radius=15)
-        screen.blit(shadow_surface, 
-                   (board_rect.x - shadow_size, board_rect.y - shadow_size))
-        
-        center_rect = pygame.Rect(
-            board_rect.left + board_size//11,
-            board_rect.top + board_size//11,
-            board_size - 2*(board_size//11),
-            board_size - 2*(board_size//11)
-        )
-        
-        inner_gradient = pygame.Surface(center_rect.size, pygame.SRCALPHA)
-        for i in range(center_rect.height):
-            alpha = int(200 * (1 - i/center_rect.height))
-            pygame.draw.line(inner_gradient, (*ACCENT_COLOR[:3], alpha),
-                           (0, i), (center_rect.width, i))
-        screen.blit(inner_gradient, center_rect)
-        
-        logo_text = self.title_font.render("Property", True, WHITE)
-        logo_text2 = self.title_font.render("Tycoon", True, WHITE)
-        logo_rect = logo_text.get_rect(centerx=center_rect.centerx, bottom=center_rect.centery-5)
-        logo_rect2 = logo_text2.get_rect(centerx=center_rect.centerx, top=center_rect.centery+5)
-        
-        glow_size = 10
-        glow_surface = pygame.Surface((logo_rect.width + glow_size*2, logo_rect.height*2 + glow_size*2 + 10), pygame.SRCALPHA)
-        for i in range(glow_size):
-            alpha = int(50 * (1 - i/glow_size))
-            pygame.draw.rect(glow_surface, (*ACCENT_COLOR[:3], alpha),
-                           pygame.Rect(i, i, 
-                                     glow_surface.get_width() - i*2,
-                                     glow_surface.get_height() - i*2),
-                           border_radius=5)
-        screen.blit(glow_surface, 
-                   (logo_rect.x - glow_size, logo_rect.y - glow_size))
-        
-        screen.blit(logo_text, logo_rect)
-        screen.blit(logo_text2, logo_rect2)
-        
-        current_time = pygame.time.get_ticks()
-        animation_progress = (current_time % self.ANIMATION_DURATION) / self.ANIMATION_DURATION
-        
-        for i, rect in enumerate(self.board_rects):
-            space = self.spaces[i]
-            space_data = self.properties_data.get(str(i + 1), {})
-            
-            s = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-            base_color = MODERN_BG
-            
-            if space_data:
-                group = space_data.get("group")
-                name = space_data.get("name", "")
-                
-                if group in GROUP_COLORS:
-                    base_color = GROUP_COLORS[group][:3]
-                elif "Station" in name:
-                    base_color = (100, 100, 100)
-                elif name in ["Tesla Power Co", "Edison Water"]:
-                    base_color = (100, 100, 0)
-                
-                if space and space.owner:
-                    alpha = int(180 + 75 * abs(math.sin(2 * math.pi * animation_progress)))
-                    pygame.draw.rect(s, (*base_color, alpha), s.get_rect(), border_radius=5)
-                else:
-                    pygame.draw.rect(s, (*base_color, 180), s.get_rect(), border_radius=5)
-            
-            screen.blit(s, rect)
-            
-            self.draw_space_contents(screen, rect, space, space_data)
-            
-            if space and space.owner:
-                border_color = SUCCESS_COLOR
-                for thickness in range(2):
-                    pygame.draw.rect(screen, border_color, 
-                                   rect.inflate(thickness*2, thickness*2), 
-                                   1, border_radius=5)
-            else:
-                pygame.draw.rect(screen, WHITE, rect, 1, border_radius=5)
+        for player in self.players:
+            if not isinstance(player.position, int):
+                player.position = 1
+            pos_index = max(0, min(player.position - 1, len(self.board_rects) - 1))
+            player_rect = self.board_rects[pos_index]
+            self.draw_player(transparent_surface, player, player_rect, player.player_number)
 
         info_panel_width = 300
         info_panel_height = 100
         info_panel_x = 20
         info_panel_y = window_height - info_panel_height - 20
-        
+
         panel_shadow = pygame.Surface((info_panel_width + 8, info_panel_height + 8), pygame.SRCALPHA)
         for i in range(4):
             alpha = int(100 * (1 - i/4))
             pygame.draw.rect(panel_shadow, (*BLACK, alpha),
                            pygame.Rect(i, i, info_panel_width + 8 - i*2, info_panel_height + 8 - i*2),
                            border_radius=10)
-        screen.blit(panel_shadow, (info_panel_x - 4, info_panel_y - 4))
+        transparent_surface.blit(panel_shadow, (info_panel_x - 4, info_panel_y - 4))
         
         info_panel = pygame.Surface((info_panel_width, info_panel_height), pygame.SRCALPHA)
         pygame.draw.rect(info_panel, (*MODERN_BG, 200), info_panel.get_rect(), border_radius=10)
-        screen.blit(info_panel, (info_panel_x, info_panel_y))
+        transparent_surface.blit(info_panel, (info_panel_x, info_panel_y))
         
+        line_height = self.message_font.get_height() + 5
+        max_messages = (info_panel_height - 20) // line_height
+        visible_messages = self.messages[-max_messages:]
         text_y = info_panel_y + 10
-        current_time = pygame.time.get_ticks()
-        messages_to_remove = []
         
-        visible_messages = self.messages[-3:]
         for message in visible_messages:
-            text = self.small_font.render(message, True, WHITE)
-            text_rect = text.get_rect(left=info_panel_x + 10, top=text_y)
-            screen.blit(text, text_rect)
-            text_y += 25
-        
-        if len(self.messages) > 10:
-            self.messages = self.messages[-10:]
-            self.message_times = self.message_times[-10:]
-
-    def draw_space_contents(self, screen, rect, space, space_data):
-        name = space_data.get("name", "")
-        position = space_data.get("position", "")
-        group = space_data.get("group")
-        header_height = rect.height * 0.2
-
-        is_corner = rect.width > rect.height + 10 or rect.height > rect.width + 10
-        is_horizontal = rect.width > rect.height
-        scale_factor = (
-            self.position_scales["corner"] if is_corner
-            else self.position_scales["horizontal"] if is_horizontal
-            else self.position_scales["vertical"]
-        )
-
-        depth = 4
-        shadow = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-        for i in range(depth):
-            alpha = int(100 * (1 - i/depth))
-            pygame.draw.rect(shadow, (*BLACK, alpha), 
-                           shadow.get_rect().inflate(-i*2, -i*2), 0, border_radius=3)
-        screen.blit(shadow, rect)
-
-        if group in GROUP_COLORS:
-            header_rect = pygame.Rect(rect.x, rect.y, rect.width, header_height)
-            color = GROUP_COLORS[group]
-            pygame.draw.rect(screen, color, header_rect, border_radius=5)
-            pygame.draw.rect(screen, WHITE, header_rect, 1, border_radius=5)
-
-        space_key = self.special_spaces.get(str(position), name)
-        space_image = self.space_images.get(space_key)
-
-        if space_image:
-            available_height = rect.height - (header_height if group in GROUP_COLORS else 0)
-            available_width = rect.width
+            text = self.message_font.render(message, True, WHITE)
+            transparent_surface.blit(text, (info_panel_x + 10, text_y))
+            text_y += line_height
             
-            img_rect = space_image.get_rect()
-            space_width = available_width * scale_factor
-            space_height = available_height * scale_factor
-            
-            new_scale = min(
-                space_width / img_rect.width,
-                space_height / img_rect.height
-            )
-            
-            new_width = int(img_rect.width * new_scale)
-            new_height = int(img_rect.height * new_scale)
-            
-            try:
-                scaled_image = pygame.transform.scale(space_image, (new_width, new_height))
-                
-                if is_corner:
-                    image_x = rect.centerx - new_width // 2
-                    image_y = rect.centery - new_height // 2
-                elif is_horizontal:
-                    image_x = rect.centerx - new_width // 2
-                    if group in GROUP_COLORS:
-                        image_y = rect.y + header_height + (available_height - new_height) // 2
-                    else:
-                        image_y = rect.centery - new_height // 2
-                else:
-                    image_x = rect.centerx - new_width // 2
-                    if group in GROUP_COLORS:
-                        image_y = rect.y + header_height + (available_height - new_height) // 2
-                    else:
-                        image_y = rect.centery - new_height // 2
-                
-                screen.blit(scaled_image, (image_x, image_y))
-            except (pygame.error, ValueError) as e:
-                print(f"Error scaling image for {name}: {e}")
-                self._draw_fallback_text(screen, rect, name, group)
-        else:
-            self._draw_fallback_text(screen, rect, name, group)
-            
-        if space and hasattr(space, 'price'):
-            price_font = pygame.font.Font(None, 16)
-            price_text = price_font.render(f"£{space.price}", True, WHITE)
-            price_rect = price_text.get_rect(centerx=rect.centerx, bottom=rect.bottom-2)
-            screen.blit(price_text, price_rect)
-            
-            if space.owner:
-                current_time = pygame.time.get_ticks()
-                alpha = int(128 + 127 * math.sin(current_time * 0.003))
-                s = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-                pygame.draw.rect(s, (*ACCENT_COLOR, alpha), s.get_rect(), 2, border_radius=5)
-                screen.blit(s, rect)
-                
-                owner_text = price_font.render(space.owner, True, WHITE)
-                owner_rect = owner_text.get_rect(centerx=rect.centerx, bottom=rect.bottom-2)
-                screen.blit(owner_text, owner_rect)
-
-    def _draw_fallback_text(self, screen, rect, name, group):
-        available_width = rect.width - 10
-        text_size = 24
-        while text_size > 16:
-            test_font = pygame.font.Font(None, text_size)
-            if test_font.size(name)[0] <= available_width:
-                break
-            text_size -= 1
-        
-        font = pygame.font.Font(None, text_size)
-        y_offset = rect.height * 0.2 if group in GROUP_COLORS else 5
-        
-        name_shadow = font.render(name, True, BLACK)
-        name_rect_shadow = name_shadow.get_rect(centerx=rect.centerx+1, top=rect.top+y_offset+1)
-        screen.blit(name_shadow, name_rect_shadow)
-        
-        name_text = font.render(name, True, WHITE)
-        name_rect = name_text.get_rect(centerx=rect.centerx, top=rect.top+y_offset)
-        screen.blit(name_text, name_rect)
+        game_surface.blit(transparent_surface, (0, 0))
+        screen.blit(game_surface, (0, 0))
 
     def get_space(self, position):
         array_pos = (position - 1) % 40
@@ -456,8 +256,8 @@ class Board:
                 array_pos = position - 1
                 if 0 <= array_pos < 40 and self.spaces[array_pos]:
                     self.spaces[array_pos].owner = prop_data.get("owner")
-            except (ValueError, TypeError):
-                continue
+            except (ValueError, TypeError) as e:
+                print(f"Error updating ownership for position {position_str}: {e}")
 
     def get_property_group(self, position):
         if str(position) in self.properties_data:
