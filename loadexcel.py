@@ -49,7 +49,6 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                         "owner": None,
                         "is_station": True
                     })
-                # Handle utilities
                 elif property_name in ["Tesla Power Co", "Edison Water"]:
                     property_data.update({
                         "price": 150,
@@ -57,7 +56,6 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                         "owner": None,
                         "is_utility": True
                     })
-                # Handle regular properties
                 elif str(row['Can be bought?']).strip().lower() == 'yes' and row['£']:
                     try:
                         price_str = str(row['£']).replace('£', '').strip()

@@ -16,6 +16,7 @@ class Player:
         self.properties = []
         self.in_jail = False
         self.jail_turns = 0
+        self.jail_cards = []  
         self.color = color or (AI_COLOR if is_ai else HUMAN_COLOR)
         self.rect = pygame.Rect(0, 0, 40, 40)
         self.animation_offset = 0
@@ -158,3 +159,40 @@ class Player:
         else:
             print(f"{self.name} doesn't have enough money to buy {property.name}!")
             return False
+
+    def add_jail_card(self, card_type):
+        """Add a Get Out of Jail Free card to the player's hand"""
+        self.jail_cards.append(card_type)
+
+    def use_jail_card(self):
+        """Use a Get Out of Jail Free card if available"""
+        if self.jail_cards:
+            card_type = self.jail_cards.pop()
+            self.in_jail = False
+            self.jail_turns = 0
+            return card_type
+        return None
+
+    def handle_jail_turn(self):
+        """Handle a turn while in jail"""
+        if not self.in_jail:
+            return False
+
+        if self.is_ai:
+            import random
+            if self.jail_cards and random.random() < 0.7: 
+                return self.use_jail_card()
+            elif self.money >= 50 and random.random() < 0.5: 
+                self.pay(50)
+                self.in_jail = False
+                self.jail_turns = 0
+                return None
+        
+        self.jail_turns += 1
+        if self.jail_turns >= 3:
+            if self.money >= 50:
+                self.pay(50)
+            self.in_jail = False
+            self.jail_turns = 0
+        
+        return None

@@ -2,15 +2,15 @@ import pygame
 import sys
 import asyncio
 import os 
+
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__))) 
+
 from Board import Board
 from Game import Game
 from Player import Player
 from ui import MainMenuPage, StartPage, GameModePage, EndGamePage, SettingsPage, HowToPlayPage, AIDifficultyPage
 from text_scaler import text_scaler
-
-pygame.init()
 
 WINDOW_SIZE = (1280, 720)  
 WHITE = (255, 255, 255)
@@ -102,6 +102,12 @@ async def run_game(game, game_settings):
                 await apply_screen_settings((game_event.w, game_event.h))
             elif game_event.type == pygame.MOUSEMOTION:
                 game.handle_motion(game_event.pos)
+        
+        current_player = game.logic.players[game.logic.current_player_index]
+        if current_player.get("is_ai", False):
+            game_over_data = game.handle_ai_turn(current_player)
+            if game_over_data:
+                running = False
     
     return game_over_data
 

@@ -1,11 +1,14 @@
 import pygame
+import sys
 from Board import Board
 from Property import Property
 from game_logic import GameLogic
+from cards import CardType
 from typing import Optional
 import time
 import math
 import os
+import random
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -70,12 +73,21 @@ class Game:
         
         try:
             self.logic = GameLogic()
+            self.logic.game = self
             if not self.logic.game_start():
                 raise RuntimeError("Failed to initialize game data")
-                
+            
+            if not players:
+                raise ValueError("No players provided")
+            
             self.players = players
             self.board = Board(self.players)
             
+            from cards import CardDeck, CardType
+            self.pot_luck_deck = CardDeck(CardType.POT_LUCK)
+            self.opportunity_deck = CardDeck(CardType.OPPORTUNITY_KNOCKS)
+            
+            self.board.update_board_positions()
             self.board.update_ownership(self.logic.properties)
             
             self.state = "ROLL"
@@ -129,6 +141,15 @@ class Game:
             }
             self.auction_input = pygame.Rect(0, 0, 200, 40)
             self.auction_bid_amount = ""
+            
+            self.current_player_is_ai = False
+            self.notification = None
+            self.notification_time = 0
+            self.NOTIFICATION_DURATION = 3000
+            
+            self.show_popup = False
+            self.popup_message = None
+            self.popup_title = None
                     
         except Exception as e:
             print(f"Error during game initialization: {e}")
@@ -240,6 +261,9 @@ class Game:
                                border_radius=4)
 
     def draw(self):
+        if not pygame.display.get_surface():
+            return
+            
         window_size = self.screen.get_size()
         self.screen.fill(MODERN_BG)
         gradient = pygame.Surface(window_size, pygame.SRCALPHA)
@@ -257,6 +281,7 @@ class Game:
         self.board.draw(self.screen)
         
         self.draw_time_remaining()
+        self.draw_notification()
 
         panel_height = 45 * len(self.logic.players)
         panel_width = 280
@@ -345,8 +370,15 @@ class Game:
             y += 45 + (30 if props else 0)
 
         if self.state == "ROLL":
-            self.draw_button(self.roll_button, "Roll", 
-                           hover=self.roll_button.collidepoint(mouse_pos))
+            current_player = next((p for p in self.players if p.name == self.logic.players[self.logic.current_player_index]['name']), None)
+            self.current_player_is_ai = current_player and current_player.is_ai
+            
+            if not self.current_player_is_ai:
+                self.draw_button(self.roll_button, "Roll", 
+                               hover=self.roll_button.collidepoint(mouse_pos))
+                
+            elif not self.dice_animation:
+                self.play_turn()
         elif self.state == "BUY" and self.current_property is not None:
             self.draw_property_card(self.current_property)
             
@@ -376,6 +408,17 @@ class Game:
 
         self.board.camera.handle_camera_controls(pygame.key.get_pressed())
 
+        self.board.update_board_positions()
+        
+        if not self.game_over:
+            game_over_data = self.check_game_over()
+            if game_over_data:
+                if "winner" in game_over_data:
+                    self.handle_game_over(game_over_data["winner"])
+        
+        if self.show_popup:
+            self.draw_popup_message()
+            
         pygame.display.flip()
 
     def draw_dice(self, dice1, dice2, is_rolling):
@@ -422,6 +465,9 @@ class Game:
                 self.screen.blit(sparkle_surface, (sparkle_x, sparkle_y))
 
     def draw_property_card(self, property_data):
+        if not property_data:
+            return
+            
         window_size = self.screen.get_size()
         card_width = int(window_size[0] * 0.25)
         card_height = int(window_size[1] * 0.4)
@@ -505,12 +551,25 @@ class Game:
         self.screen.blit(rent_text, (x + padding, y + padding + 50))
 
     def finish_dice_animation(self):
+        if not self.dice_animation or not self.dice_values:
+            return
+            
         self.dice_animation = False
         dice1, dice2 = self.dice_values
         self.last_roll = (dice1, dice2)
         self.roll_time = pygame.time.get_ticks()
-
         current_player = self.logic.players[self.logic.current_player_index]
+
+        if current_player.get('in_jail', False):
+            if dice1 == dice2:
+                current_player['in_jail'] = False
+                current_player['jail_turns'] = 0
+                self.board.add_message(f"{current_player['name']} rolled doubles and got out of jail!")
+            else:
+                self.handle_jail_turn(current_player)
+                self.state = "ROLL"
+                return
+
         position = current_player['position']
         
         self.board.update_board_positions()
@@ -519,6 +578,20 @@ class Game:
         while self.logic.message_queue:
             message = self.logic.message_queue.pop(0)
             self.board.add_message(message)
+
+        current_player_obj = next((p for p in self.players if p.name == current_player['name']), None)
+        if current_player_obj and current_player_obj.is_ai and current_player.get('in_jail', False):
+            jail_strategy = self.logic.ai_player.handle_jail_strategy(current_player, self.logic.jail_free_cards)
+            if jail_strategy == "use_card":
+                if self.logic.jail_free_cards.get(current_player['name'], 0) > 0:
+                    self.logic.jail_free_cards[current_player['name']] -= 1
+                    current_player['in_jail'] = False
+                    self.board.add_message(f"{current_player['name']} used Get Out of Jail Free card!")
+            elif jail_strategy == "pay_fine":
+                if current_player['money'] >= 50:
+                    current_player['money'] -= 50
+                    current_player['in_jail'] = False
+                    self.board.add_message(f"{current_player['name']} paid £50 to get out of jail!")
 
         if str(position) in self.logic.properties:
             space = self.logic.properties[str(position)]
@@ -537,17 +610,49 @@ class Game:
                     self.state = "BUY"
                     self.current_property = space
                     self.board.add_message(f"{current_player['name']} landed on {space['name']}")
-                    self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
+                    
+                    if current_player_obj and current_player_obj.is_ai:
+                        if random.random() < 0.7 and current_player['money'] >= space['price']:
+                            self.handle_buy_decision(True)
+                        else:
+                            self.handle_buy_decision(False)
+                    else:
+                        self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
             else:
                 self.state = "ROLL"
+                
+                if current_player_obj and current_player_obj.is_ai:
+                    property_to_develop = self.logic.ai_player.handle_property_development(
+                        current_player, self.logic.properties)
+                    if property_to_develop:
+                        house_cost = property_to_develop['price'] / 2
+                        if current_player['money'] >= house_cost:
+                            property_to_develop['houses'] = property_to_develop.get('houses', 0) + 1
+                            current_player['money'] -= house_cost
+                            self.board.add_message(
+                                f"{current_player['name']} built a house on {property_to_develop['name']}")
+                            self.board.update_ownership(self.logic.properties)
         else:
             self.state = "ROLL"
 
+        while self.logic.message_queue:
+            message = self.logic.message_queue.pop(0)
+            self.board.add_message(message)
+            if "Get Out of Jail Free card" in message or "collected" in message:
+                self.show_notification(message, 3000)
+
     def play_turn(self):
+        if self.game_over:
+            return False
+            
         if self.dice_animation:
             return False
 
         current_player = self.logic.players[self.logic.current_player_index]
+        if not current_player:
+            self.board.add_message("Error: No current player found")
+            return False
+            
         old_position = current_player['position']
 
         self.dice_animation = True
@@ -631,13 +736,46 @@ class Game:
         return None
 
     def handle_buy_decision(self, wants_to_buy):
+        if not self.current_property:
+            self.board.add_message("Error: No property selected")
+            self.state = "ROLL"
+            return
+
         current_player = self.logic.players[self.logic.current_player_index]
+        if not current_player:
+            self.board.add_message("Error: No current player found")
+            self.state = "ROLL"
+            return
+            
         if wants_to_buy:
             if self.logic.buy_property(current_player):
                 self.board.add_message(f"{current_player['name']} bought {self.current_property['name']}")
                 self.board.update_ownership(self.logic.properties)
             else:
                 self.board.add_message(f"{current_player['name']} cannot afford {self.current_property['name']}")
+                
+                current_player_obj = next((p for p in self.players if p.name == current_player['name']), None)
+                if current_player_obj and current_player_obj.is_ai:
+                    properties_to_mortgage = self.logic.ai_player.handle_emergency_cash(
+                        current_player, 
+                        self.current_property['price'], 
+                        self.logic.properties
+                    )
+                    if properties_to_mortgage:
+                        total_raised = 0
+                        for prop in properties_to_mortgage:
+                            mortgage_value = prop['price'] / 2
+                            total_raised += mortgage_value
+                            prop['is_mortgaged'] = True
+                            current_player['money'] += mortgage_value
+                            self.board.add_message(
+                                f"{current_player['name']} mortgaged {prop['name']} for £{mortgage_value}")
+                        
+                        if current_player['money'] >= self.current_property['price']:
+                            self.logic.buy_property(current_player)
+                            self.board.add_message(
+                                f"{current_player['name']} bought {self.current_property['name']} after mortgaging properties")
+                            self.board.update_ownership(self.logic.properties)
         else:
             self.board.add_message(f"{current_player['name']} passed on {self.current_property['name']}")
             result = self.logic.auction_property(current_player['position'])
@@ -651,8 +789,27 @@ class Game:
         self.current_property = None
 
     def handle_click(self, pos):
+        if self.show_popup:
+            window_size = self.screen.get_size()
+            popup_width = int(window_size[0] * 0.4)
+            popup_height = int(window_size[1] * 0.25)
+            popup_x = (window_size[0] - popup_width) // 2
+            popup_y = (window_size[1] - popup_height) // 2
+            
+            button_width = 100
+            button_height = 40
+            button_x = popup_x + (popup_width - button_width) // 2
+            button_y = popup_y + popup_height - 60
+            
+            button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+            if button_rect.collidepoint(pos):
+                self.show_popup = False
+                self.popup_message = None
+                self.popup_title = None
+            return False
+        
         if self.state == "ROLL":
-            if self.roll_button.collidepoint(pos):
+            if not self.current_player_is_ai and self.roll_button.collidepoint(pos):
                 return self.play_turn()
         elif self.state == "BUY" and self.current_property is not None:
             current_player = self.logic.players[self.logic.current_player_index]
@@ -694,7 +851,7 @@ class Game:
 
     def handle_key(self, event):
         if self.state == "ROLL":
-            if event.key in KEY_ROLL:
+            if not self.current_player_is_ai and event.key in KEY_ROLL:
                 return self.play_turn()
             elif event.key == pygame.K_t and self.game_mode == "abridged":
                 self.show_time_stats()
@@ -854,7 +1011,12 @@ class Game:
                     self.auction_bid_amount += event.unicode
 
     def handle_auction_click(self, pos):
-        if not hasattr(self.logic, 'current_auction'):
+        if not hasattr(self.logic, 'current_auction') or not self.logic.current_auction:
+            self.state = "ROLL"
+            return False
+            
+        if "active_players" not in self.logic.current_auction or not self.logic.current_auction["active_players"]:
+            self.state = "ROLL"
             return False
             
         current_bidder = self.logic.current_auction["active_players"][self.logic.current_auction["current_bidder_index"]]
@@ -887,42 +1049,441 @@ class Game:
         return False
 
     def handle_game_over(self, winner_name):
-        for i, player in enumerate(self.players):
-            if player.name == winner_name:
-                self.winner_index = i
-                player.set_winner(True)
-                break
+        if self.game_over:
+            return
+            
+        self.game_over = True
+        if winner_name:
+            for i, player in enumerate(self.players):
+                if player.name == winner_name:
+                    self.winner_index = i
+                    player.set_winner(True)
+                    self.board.add_message(f"🏆 {winner_name} wins! 🏆")
+                    break
 
     def draw_jail_options(self, player):
         if not player.get('in_jail', False):
             return
 
         window_size = self.screen.get_size()
-        card_width = int(window_size[0] * 0.25)
-        card_height = int(window_size[1] * 0.25)
+        card_width = int(window_size[0] * 0.3)
+        card_height = int(window_size[1] * 0.3)
         card_x = (window_size[0] - card_width) // 2
         card_y = (window_size[1] - card_height) // 2
 
-        pygame.draw.rect(self.screen, WHITE, pygame.Rect(card_x, card_y, card_width, card_height), border_radius=10)
+        shadow = pygame.Surface((card_width + 10, card_height + 10), pygame.SRCALPHA)
+        for i in range(5):
+            alpha = int(100 * (1 - i/5))
+            pygame.draw.rect(shadow, (*ERROR_COLOR[:3], alpha),
+                           (i, i, card_width + 10 - i*2, card_height + 10 - i*2),
+                           border_radius=15)
+        self.screen.blit(shadow, (card_x - 5, card_y - 5))
+
+        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=10)
         
-        title_text = self.font.render("Jail Options", True, BLACK)
+        title_text = self.font.render("JAIL OPTIONS", True, ERROR_COLOR)
         title_rect = title_text.get_rect(centerx=card_x + card_width//2, top=card_y + 20)
         self.screen.blit(title_text, title_rect)
 
         options = []
         if self.logic.jail_free_cards.get(player['name'], 0) > 0:
-            options.append("Use Get Out of Jail Free card")
+            options.append(("[1] Use Get Out of Jail Free card", pygame.K_1))
         if player['money'] >= 50:
-            options.append("Pay £50 fine")
-        options.append("Try rolling doubles")
+            options.append(("[2] Pay £50 fine", pygame.K_2))
+        options.append(("[3] Try rolling doubles", pygame.K_3))
 
-        y_offset = title_rect.bottom + 20
-        for i, option in enumerate(options):
-            text = self.small_font.render(option, True, BLACK)
-            text_rect = text.get_rect(left=card_x + 20, top=y_offset)
+        y_offset = title_rect.bottom + 30
+        button_height = 40
+        button_margin = 10
+        mouse_pos = pygame.mouse.get_pos()
+
+        for i, (option_text, key) in enumerate(options):
+            button_rect = pygame.Rect(card_x + 20, y_offset, card_width - 40, button_height)
+            is_hovered = button_rect.collidepoint(mouse_pos)
+            
+            pygame.draw.rect(self.screen, BUTTON_HOVER if is_hovered else ACCENT_COLOR, 
+                           button_rect, border_radius=5)
+            
+            text = self.small_font.render(option_text, True, WHITE)
+            text_rect = text.get_rect(center=button_rect.center)
             self.screen.blit(text, text_rect)
-            y_offset += 30
+            
+            y_offset += button_height + button_margin
 
         turns_text = self.small_font.render(f"Turns in jail: {player.get('jail_turns', 0)}/3", True, ERROR_COLOR)
-        turns_rect = turns_text.get_rect(left=card_x + 20, bottom=card_y + card_height - 20)
+        turns_rect = turns_text.get_rect(centerx=card_x + card_width//2, 
+                                       bottom=card_y + card_height - 20)
         self.screen.blit(turns_text, turns_rect)
+
+    def get_jail_choice(self, player):
+        if player['money'] < 50 and not self.logic.jail_free_cards.get(player['name'], 0):
+            self.show_notification("No options available - must try rolling doubles")
+            return "roll"
+
+        waiting = True
+        choice = None
+        self.show_notification("Choose how to get out of jail", 5000)
+
+        while waiting:
+            self.draw()
+            self.draw_jail_options(player)
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1 and self.logic.jail_free_cards.get(player['name'], 0) > 0:
+                        choice = "card"
+                        waiting = False
+                    elif event.key == pygame.K_2 and player['money'] >= 50:
+                        choice = "pay"
+                        waiting = False
+                    elif event.key == pygame.K_3:
+                        choice = "roll"
+                        waiting = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos
+                    window_size = self.screen.get_size()
+                    card_width = int(window_size[0] * 0.3)
+                    card_height = int(window_size[1] * 0.3)
+                    card_x = (window_size[0] - card_width) // 2
+                    card_y = (window_size[1] - card_height) // 2
+                    
+                    button_height = 40
+                    button_margin = 10
+                    y_offset = card_y + 70
+                    
+                    for i, option in enumerate(["card", "pay", "roll"]):
+                        button_rect = pygame.Rect(card_x + 20, y_offset, card_width - 40, button_height)
+                        if button_rect.collidepoint(mouse_pos):
+                            if option == "card" and self.logic.jail_free_cards.get(player['name'], 0) > 0:
+                                choice = "card"
+                                waiting = False
+                            elif option == "pay" and player['money'] >= 50:
+                                choice = "pay"
+                                waiting = False
+                            elif option == "roll":
+                                choice = "roll"
+                                waiting = False
+                        y_offset += button_height + button_margin
+                elif event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+        return choice or "roll"
+
+    def handle_jail_turn(self, player):
+        if not player['in_jail']:
+            return False
+
+        player_obj = next((p for p in self.players if p.name == player['name']), None)
+        if player_obj and player_obj.is_ai:
+            if self.logic.jail_free_cards.get(player['name'], 0) > 0:
+                card_type = player_obj.use_jail_card()
+                if card_type == CardType.POT_LUCK:
+                    self.pot_luck_deck.return_jail_card(card_type)
+                else:
+                    self.opportunity_deck.return_jail_card(card_type)
+                player['in_jail'] = False
+                self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
+                return True
+            elif player['money'] >= 50 and random.random() < 0.5:
+                player['money'] -= 50
+                player['in_jail'] = False
+                self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
+                return True
+        else:
+            choice = self.get_jail_choice(player)
+            if choice == "card" and self.logic.jail_free_cards.get(player['name'], 0) > 0:
+                card_type = player_obj.use_jail_card()
+                if card_type == CardType.POT_LUCK:
+                    self.pot_luck_deck.return_jail_card(card_type)
+                else:
+                    self.opportunity_deck.return_jail_card(card_type)
+                player['in_jail'] = False
+                self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
+                return True
+            elif choice == "pay" and player['money'] >= 50:
+                player['money'] -= 50
+                player['in_jail'] = False
+                self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
+                return True
+
+        player['jail_turns'] = player.get('jail_turns', 0) + 1
+        if player['jail_turns'] >= 3:
+            if player['money'] >= 50:
+                player['money'] -= 50
+                self.board.add_message(f"{player['name']} paid £50 after 3 turns in jail!")
+            else:
+                self.board.add_message(f"{player['name']} couldn't pay jail fine!")
+                self.handle_bankruptcy(player)
+            player['in_jail'] = False
+            player['jail_turns'] = 0
+            return True
+            
+        return False
+
+    def show_notification(self, text, duration=None):
+        self.notification = text
+        self.notification_time = pygame.time.get_ticks()
+        if duration:
+            self.NOTIFICATION_DURATION = duration
+
+    def draw_notification(self):
+        if not self.notification:
+            return
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.notification_time > self.NOTIFICATION_DURATION:
+            self.notification = None
+            return
+
+        window_size = self.screen.get_size()
+        padding = 20
+        
+        notification_text = self.font.render(self.notification, True, WHITE)
+        bg_width = notification_text.get_width() + padding * 2
+        bg_height = notification_text.get_height() + padding * 2
+        bg_surface = pygame.Surface((bg_width, bg_height), pygame.SRCALPHA)
+        pygame.draw.rect(bg_surface, (*ACCENT_COLOR[:3], 230), (0, 0, bg_width, bg_height), border_radius=10)
+        
+        for i in range(3):
+            alpha = 100 - i * 30
+            pygame.draw.rect(bg_surface, (*ACCENT_COLOR[:3], alpha), 
+                           (-i, -i, bg_width + i*2, bg_height + i*2), 
+                           border_radius=10)
+
+        x = (window_size[0] - bg_width) // 2
+        y = 20  
+        
+        self.screen.blit(bg_surface, (x, y))
+        self.screen.blit(notification_text, (x + padding, y + padding))
+
+    def draw_card_alert(self, card, player):
+        window_size = self.screen.get_size()
+        card_width = int(window_size[0] * 0.3)
+        card_height = int(window_size[1] * 0.25)  
+        card_x = (window_size[0] - card_width) // 2
+        card_y = (window_size[1] - card_height) // 2
+        
+        is_pot_luck = card.card_type == CardType.POT_LUCK
+        base_color = ACCENT_COLOR if is_pot_luck else ERROR_COLOR
+        if card.is_special:
+            glow_width = card_width + 20
+            glow_height = card_height + 20
+            glow = pygame.Surface((glow_width, glow_height), pygame.SRCALPHA)
+            current_time = pygame.time.get_ticks()
+            for i in range(8):
+                angle = (current_time / 500 + i * (360 / 8)) % 360
+                alpha = int(abs(math.sin(current_time / 200 + i)) * 128)
+                pygame.draw.rect(glow, (*base_color[:3], alpha),
+                               (i, i, glow_width - i*2, glow_height - i*2),
+                               border_radius=15)
+            self.screen.blit(glow, (card_x - 10, card_y - 10))
+        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=10)
+                header_height = 40
+        pygame.draw.rect(self.screen, base_color, 
+                        (card_x, card_y, card_width, header_height),
+                        border_radius=10)
+        pygame.draw.rect(self.screen, base_color,
+                        (card_x, card_y + header_height - 15, card_width, 15))
+        title = self.font.render(card.card_type.value.upper(), True, WHITE)
+        title_rect = title.get_rect(centerx=card_x + card_width//2, top=card_y + 10)
+        self.screen.blit(title, title_rect)
+        if card.is_special:
+            icon_size = 30
+            if "jail" in card.text.lower():
+                icon_text = "🔑"
+            elif "advance" in card.text.lower():
+                icon_text = "👣"
+            elif "collect" in card.text.lower():
+                icon_text = "💰"
+            elif "pay" in card.text.lower():
+                icon_text = "💸"
+            else:
+                icon_text = "⭐"
+            
+            icon = self.font.render(icon_text, True, BLACK)
+            icon_rect = icon.get_rect(right=card_x + card_width - 10, 
+                                    centery=title_rect.centery)
+            self.screen.blit(icon, icon_rect)
+                words = card.text.split()
+        lines = []
+        current_line = []
+        for word in words:
+            test_line = ' '.join(current_line + [word])
+            test_surface = self.small_font.render(test_line, True, BLACK)
+            if test_surface.get_width() <= card_width - 40:
+                current_line.append(word)
+            else:
+                lines.append(' '.join(current_line))
+                current_line = [word]
+        if current_line:
+            lines.append(' '.join(current_line))
+
+        y_offset = card_y + header_height + 20
+        for line in lines:
+            text = self.small_font.render(line, True, BLACK)
+            text_rect = text.get_rect(centerx=card_x + card_width//2, top=y_offset)
+            self.screen.blit(text, text_rect)
+            y_offset += text_rect.height + 5
+        if card.card_type == CardType.POT_LUCK:
+            remaining = self.pot_luck_deck.get_remaining_count()
+            discard = self.pot_luck_deck.get_discard_count()
+        else:
+            remaining = self.opportunity_deck.get_remaining_count()
+            discard = self.opportunity_deck.get_discard_count()
+            
+        deck_info = self.small_font.render(f"Cards: {remaining} remaining, {discard} used", 
+                                         True, GRAY)
+        deck_rect = deck_info.get_rect(centerx=card_x + card_width//2,
+                                     bottom=card_y + card_height - 30)
+        self.screen.blit(deck_info, deck_rect)
+
+        prompt = "Click to continue..." if not card.requires_input else "Choose your action..."
+        prompt_text = self.small_font.render(prompt, True, LIGHT_GRAY)
+        prompt_rect = prompt_text.get_rect(centerx=card_x + card_width//2,
+                                         bottom=card_y + card_height - 10)
+        self.screen.blit(prompt_text, prompt_rect)
+
+    def handle_card_action(self, card, player):
+        pygame.event.clear()
+        
+        waiting = True
+        start_time = pygame.time.get_ticks()
+        while waiting:
+            self.draw()
+            
+            if card.is_special:
+                current_time = pygame.time.get_ticks()
+                offset = math.sin((current_time - start_time) / 200) * 5
+            else:
+                offset = 0
+                
+            self.draw_card_alert(card, player)
+            pygame.display.flip()
+            
+            for event in pygame.event.get():
+                if event.type in [pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN]:
+                    if not card.requires_input:
+                        waiting = False
+                    else:
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_1:
+                                waiting = False
+                            elif event.key == pygame.K_2 and "or" in card.text.lower():
+                                waiting = False
+                elif event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+        result = card.action(player, self)
+        
+        if "jail free" in card.text.lower():
+            self.show_notification(f"{player['name']} received a Get Out of Jail Free card!", 3000)
+        elif "collect" in card.text.lower():
+            self.show_notification(f"{player['name']} collected money!", 2000)
+        elif "pay" in card.text.lower():
+            self.show_notification(f"{player['name']} paid money!", 2000)
+        elif "advance" in card.text.lower() or "go to" in card.text.lower():
+            self.show_notification(f"{player['name']} is moving!", 2000)
+            
+        return result
+
+    def draw_popup_message(self):
+        window_size = self.screen.get_size()
+        
+        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 128))
+        self.screen.blit(overlay, (0, 0))
+        
+        popup_width = int(window_size[0] * 0.4)
+        popup_height = int(window_size[1] * 0.25)
+        popup_x = (window_size[0] - popup_width) // 2
+        popup_y = (window_size[1] - popup_height) // 2
+        
+        shadow_offset = 4
+        shadow = pygame.Surface((popup_width, popup_height))
+        shadow.fill(BLACK)
+        self.screen.blit(shadow, (popup_x + shadow_offset, popup_y + shadow_offset))
+        
+        pygame.draw.rect(self.screen, WHITE, (popup_x, popup_y, popup_width, popup_height))
+        pygame.draw.rect(self.screen, ACCENT_COLOR, (popup_x, popup_y, popup_width, popup_height), 2)
+        
+        if self.popup_title:
+            title_surface = self.font.render(self.popup_title, True, ACCENT_COLOR)
+            title_rect = title_surface.get_rect(centerx=popup_x + popup_width//2, top=popup_y + 20)
+            self.screen.blit(title_surface, title_rect)
+            
+        if self.popup_message:
+            words = self.popup_message.split()
+            lines = []
+            current_line = []
+            
+            for word in words:
+                test_line = ' '.join(current_line + [word])
+                test_surface = self.small_font.render(test_line, True, BLACK)
+                if test_surface.get_width() <= popup_width - 40:
+                    current_line.append(word)
+                else:
+                    lines.append(' '.join(current_line))
+                    current_line = [word]
+            if current_line:
+                lines.append(' '.join(current_line))
+            
+            y_offset = popup_y + 80
+            for line in lines:
+                text_surface = self.small_font.render(line, True, BLACK)
+                text_rect = text_surface.get_rect(centerx=popup_x + popup_width//2, top=y_offset)
+                self.screen.blit(text_surface, text_rect)
+                y_offset += 30
+        
+        button_width = 100
+        button_height = 40
+        button_x = popup_x + (popup_width - button_width) // 2
+        button_y = popup_y + popup_height - 60
+        
+        mouse_pos = pygame.mouse.get_pos()
+        button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+        button_color = BUTTON_HOVER if button_rect.collidepoint(mouse_pos) else ACCENT_COLOR
+        
+        pygame.draw.rect(self.screen, button_color, button_rect, border_radius=5)
+        button_text = self.small_font.render("OK", True, WHITE)
+        text_rect = button_text.get_rect(center=button_rect.center)
+        self.screen.blit(button_text, text_rect)
+
+    def show_card_popup(self, card_type, message):
+        self.show_popup = True
+        self.popup_title = card_type
+        self.popup_message = message
+        
+        while self.show_popup:
+            self.draw()  
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    window_size = self.screen.get_size()
+                    popup_width = int(window_size[0] * 0.4)
+                    popup_height = int(window_size[1] * 0.25)
+                    popup_x = (window_size[0] - popup_width) // 2
+                    popup_y = (window_size[1] - popup_height) // 2
+                    
+                    button_width = 100
+                    button_height = 40
+                    button_x = popup_x + (popup_width - button_width) // 2
+                    button_y = popup_y + popup_height - 60
+                    
+                    button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+                    if button_rect.collidepoint(event.pos):
+                        self.show_popup = False
+                        self.popup_message = None
+                        self.popup_title = None
+                elif event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+    def handle_card_draw(self, player, card_type):
+        if not player.get('is_ai', False):
+            self.show_card_popup(card_type, f"{player['name']} landed on {card_type}")
+
+        result = self.logic.handle_card_draw(player, card_type)
+        
+        return result

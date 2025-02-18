@@ -124,7 +124,6 @@ class Board:
             y = start_y
             rects.append(pygame.Rect(x, y, width, height))
         
-        # Right column (positions 31-39)
         for i in range(31, 40):
             width = corner_size if i == 30 else normal_height
             height = corner_size if i == 30 else normal_width

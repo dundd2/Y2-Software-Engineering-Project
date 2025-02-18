@@ -1,22 +1,6 @@
 # This is a demo planning Python script based on Eric's Property_Tycoon easy ai player flowchart
 # a coded version of the easy ai player flowchart
 
-import random
-
-def Property_Tycoon_ai_easy_level():
-    """
-    Simulates the Property_Tycoon AI player's turn based on the provided flowchart (easy level).
-    """
-
-    # Initialize AI parameters (based on "AI has $1500 rolling the dice")
-    ai_money = 1500
-    player_properties = {} # Dictionary to store properties owned by AI, key is property name, value can be houses/hotel info
-    property_details = { # Example property details
-        "Property 1": {"owner": None, "houses": 0, "hotel": False, "cost": 200, "rent_base": 20, "rent_house": [20, 60, 180, 320, 450], "rent_hotel": 600, "group": "Brown"},
-    }
-    current_location_type = get_location_type() # Assume this function simulates dice roll and location type
-    completed_rounds = True # Assume AI has completed first rounds for building logic
-
     # --- Start of flowchart logic ---
 
     # --- stop on the "Go" or cross "Go" ---

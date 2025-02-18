@@ -4,6 +4,7 @@
 import random
 import pygame
 from loadexcel import load_property_data
+from ai_player_logic import SimpleAIPlayer
 
 pot_luck_cards = [
     {"text": "You inherit £200", "action": lambda player, bank, free_parking: (player['money'] + 200, bank - 200, free_parking)},
@@ -45,9 +46,14 @@ opportunity_knocks_cards = [
 ]
 
 class GameLogic:
+    BANK_LIMIT = 50000
+    MAX_HOUSES_PER_PROPERTY = 4
+    MAX_HOTELS_PER_PROPERTY = 1
+    GAME_TOKENS = ["boot", "smartphone", "ship", "hatstand", "cat", "iron"]
+    
     def __init__(self):
         self.players = []
-        self.bank_money = 50000
+        self.bank_money = self.BANK_LIMIT
         self.free_parking_fund = 0
         self.current_player_index = 0
         self.properties = load_property_data()
@@ -57,7 +63,34 @@ class GameLogic:
         self.message_queue = []
         self.bankrupted_players = []
         self.voluntary_exits = []
-        self.jail_free_cards = {}  
+        self.jail_free_cards = {}
+        self.completed_circuits = {}
+        self.available_tokens = self.GAME_TOKENS.copy()
+        self.pot_luck_cards = pot_luck_cards.copy()
+        self.opportunity_knocks_cards = opportunity_knocks_cards.copy()
+        random.shuffle(self.pot_luck_cards)
+        random.shuffle(self.opportunity_knocks_cards)
+        self.ai_player = SimpleAIPlayer()
+        self.game = None
+
+    def validate_bank_transaction(self, amount):
+        if amount > self.bank_money:
+            raise ValueError("Bank does not have sufficient funds")
+        return True
+        
+    def pay_from_bank(self, player, amount):
+        if self.validate_bank_transaction(amount):
+            self.bank_money -= amount
+            player['money'] += amount
+            return True
+        return False
+        
+    def pay_to_bank(self, player, amount):
+        if player['money'] >= amount:
+            player['money'] -= amount
+            self.bank_money += amount
+            return True
+        return False
 
     def game_start(self):
         self.properties = load_property_data()
@@ -65,15 +98,26 @@ class GameLogic:
             return False
         return True
 
-    def add_player(self, name):
+    def add_player(self, player):
         if len(self.players) < 5:
-            self.players.append({
-                "name": name,
+            if not self.available_tokens:
+                return False, "No tokens available"
+            player_name = player.name if hasattr(player, 'name') else player
+            player_is_ai = getattr(player, 'is_ai', False) if hasattr(player, 'is_ai') else False
+            token = random.choice(self.available_tokens)
+            self.available_tokens.remove(token)
+            new_player = {
+                "name": player_name,
                 "money": 1500,
-                "position": 1
-            })
-            return True
-        return False
+                "position": 1,
+                "is_ai": player_is_ai,
+                "properties": [],
+                "token": token
+            }
+            self.players.append(new_player)
+            self.completed_circuits[player_name] = 0
+            return True, f"Added player {player_name} with {token} token"
+        return False, "Maximum number of players reached"
 
     def play_turn(self):
         if not self.players:
@@ -108,6 +152,7 @@ class GameLogic:
         if current_player['position'] < old_pos and not self.is_going_to_jail:
             current_player["money"] += 200
             self.bank_money -= 200
+            self.completed_circuits[current_player['name']] += 1
             print(f"{current_player['name']} collected £200 for passing GO")
 
         result, message = self.handle_space(current_player)
@@ -138,15 +183,31 @@ class GameLogic:
             self.add_message(message)
             return "jail", message
 
+        if space["name"] == "Free Parking":
+            if self.free_parking_fund > 0:
+                amount = self.free_parking_fund
+                player["money"] += amount
+                self.free_parking_fund = 0
+                message = f"{player['name']} collected £{amount} from Free Parking!"
+                self.add_message(message)
+            return None, message
+
         if "price" in space:
             if space["owner"] is None and not player.get('in_jail', False):
+                if self.completed_circuits[player['name']] < 1:
+                    self.add_message(f"{player['name']} must complete one circuit before buying property")
+                    return None, None
                 self.add_message(f"Would you like to buy {space['name']} for £{space['price']}?")
                 return "can_buy", None
             elif space["owner"] != player["name"]:
+                owner = next(p for p in self.players if p["name"] == space["owner"])
+                if owner.get('in_jail', False):
+                    self.add_message(f"{owner['name']} is in jail and cannot collect rent")
+                    return None, None
+                
                 rent = self.calculate_space_rent(space, player)
                 if player["money"] >= rent:
                     player["money"] -= rent
-                    owner = next(p for p in self.players if p["name"] == space["owner"])
                     owner["money"] += rent
                     message = f"{player['name']} paid £{rent} rent to {owner['name']}"
                     self.add_message(message)
@@ -156,17 +217,11 @@ class GameLogic:
                     self.remove_player(player['name'])
                     return "bankrupt", message
 
-        elif space["name"] == "Go":
-            player["money"] += 200
-            self.bank_money -= 200
-            message = f"{player['name']} collected £200 for landing on GO"
-            self.add_message(message)
-
         elif space["name"] in ["Income Tax", "Super Tax"]:
             tax = 200 if space["name"] == "Income Tax" else 100
             if player["money"] >= tax:
                 player["money"] -= tax
-                self.bank_money += tax
+                self.free_parking_fund += tax
                 message = f"{player['name']} paid £{tax} {space['name']}"
                 self.add_message(message)
             else:
@@ -188,91 +243,150 @@ class GameLogic:
         player['position'] = 11
         player['in_jail'] = True
         player['jail_turns'] = 0
-        self.is_going_to_jail = True
         self.doubles_count = 0
-        self.add_message("Go to jail. Do not pass GO, do not collect £200")
-        return "Go to jail. Do not pass GO, do not collect £200"
+        self.add_message(f"{player['name']} goes to jail!")
+        return True
 
     def try_leave_jail(self, player, dice1, dice2):
         if not player.get('in_jail', False):
             return True, None
 
-        player['jail_turns'] = player.get('jail_turns', 0) + 1
+        if 'jail_turns' not in player:
+            player['jail_turns'] = 0
 
-        if self.jail_free_cards.get(player['name'], 0) > 0:
+        if self.jail_free_cards.get(player['name'], 0) > 0 and (player.get('is_ai', False) or self.game and self.game.get_jail_choice(player) == "card"):
             self.jail_free_cards[player['name']] -= 1
             player['in_jail'] = False
             player['jail_turns'] = 0
-            message = f"{player['name']} uses Get Out of Jail Free card!"
-            self.add_message(message)
-            return True, message
+            return True, f"{player['name']} uses Get Out of Jail Free card!"
 
         if dice1 == dice2:
             player['in_jail'] = False
             player['jail_turns'] = 0
-            self.add_message(f"{player['name']} rolled doubles and left jail!")
             return True, f"{player['name']} rolled doubles and left jail!"
 
-        if player['jail_turns'] >= 3 or player['money'] >= 50:
-            message = ""
-            if player['jail_turns'] >= 3:
-                message = f"{player['name']} must leave jail after 3 turns"
-            else:
-                player['money'] -= 50
-                self.bank_money += 50
-                message = f"{player['name']} paid £50 to leave jail"
+        if player['money'] >= 50 and (player.get('is_ai', False) or self.game and self.game.get_jail_choice(player) == "pay"):
+            player['money'] -= 50
+            self.free_parking_fund += 50
             player['in_jail'] = False
             player['jail_turns'] = 0
-            self.add_message(message)
-            return True, message
+            return True, f"{player['name']} paid £50 to leave jail"
 
-        message = f"{player['name']} stays in jail"
-        self.add_message(message)
-        return False, message
+        player['jail_turns'] += 1
+
+        if player['jail_turns'] >= 3:
+            if player['money'] >= 50:
+                player['money'] -= 50
+                self.free_parking_fund += 50
+                player['in_jail'] = False
+                player['jail_turns'] = 0
+                return True, f"{player['name']} paid £50 to leave jail after 3 turns"
+            else:
+                self.handle_bankruptcy(player)
+                player['in_jail'] = False
+                player['jail_turns'] = 0
+                return True, f"{player['name']} went bankrupt trying to pay jail fine"
+
+        return False, f"{player['name']} stays in jail (turn {player['jail_turns']}/3)"
+
+    def check_game_over(self):
+        if self.game_mode == "full":
+            active_players = [p for p in self.players if p['money'] > 0]
+            if len(active_players) <= 1:
+                return True, active_players[0] if active_players else None
+                
+        elif self.game_mode == "abridged":
+            min_rounds = min(self.rounds_completed.values())
+            if min_rounds > 0 and all(rounds == min_rounds for rounds in self.rounds_completed.values()):
+                assets = {}
+                for player in self.players:
+                    total = player['money']
+                    for prop in self.properties.values():
+                        if prop.get('owner') == player['name']:
+                            total += prop['price']
+                            if not prop.get('is_mortgaged', False):
+                                total += prop.get('houses', 0) * prop.get('house_cost', 0)
+                    assets[player['name']] = total
+                winner = max(assets.items(), key=lambda x: x[1])[0]
+                return True, winner
+                
+        return False, None
+
+    def handle_jail(self, player):
+        player['position'] = 11
+        player['in_jail'] = True
+        player['jail_turns'] = 0
+        self.is_going_to_jail = True
+        self.doubles_count = 0
+        self.add_message("Go to jail. Do not pass GO, do not collect £200")
+        return "Go to jail. Do not pass GO, do not collect £200"
 
     def calculate_space_rent(self, space, player):
+        if space.get('is_mortgaged', False):
+            return 0
+            
         if "Station" in space["name"]:
             station_count = sum(1 for prop in self.properties.values()
                               if "Station" in prop.get("name", "")
                               and prop.get("owner") == space["owner"])
             return 25 * (2 ** (station_count - 1))
+            
         elif space["name"] in ["Tesla Power Co", "Edison Water"]:
             utility_count = sum(1 for prop in self.properties.values()
                               if prop.get("name") in ["Tesla Power Co", "Edison Water"]
                               and prop.get("owner") == space["owner"])
-            dice_total = sum(self.last_dice_roll) if hasattr(self, 'last_dice_roll') else 7
+            dice_total = sum(self.last_dice_roll) if self.last_dice_roll else 7
             return dice_total * (10 if utility_count > 1 else 4)
-        else:
-            return space.get("rent", 0)
+            
+        base_rent = space.get("rent", 0)
+        if space.get("houses", 0) > 0:
+            house_rents = space.get("house_costs", [])
+            house_index = min(space["houses"] - 1, len(house_rents) - 1)
+            return house_rents[house_index]
+            
+        color_group = space.get("group")
+        if color_group:
+            all_owned = all(p.get("owner") == space["owner"] 
+                          for p in self.properties.values() 
+                          if p.get("group") == color_group)
+            if all_owned:
+                return base_rent * 2
+                
+        return base_rent
 
     def handle_card_draw(self, player, card_type):
-        cards = pot_luck_cards if card_type == "Pot Luck" else opportunity_knocks_cards
-        card = random.choice(cards)
+        cards = self.pot_luck_cards if card_type == "Pot Luck" else self.opportunity_knocks_cards
+        card = cards.pop(0)
         message = card['text']
         self.add_message(message)
 
+        if hasattr(self, 'game') and self.game and not player.get('is_ai', False):
+            self.game.show_card_popup(card_type, message)
+
+        result = None
         if message == "Get out of jail free":
             self.jail_free_cards[player['name']] = self.jail_free_cards.get(player['name'], 0) + 1
-            return None, message
-
-        try:
-            new_pos, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund, self)
-        except TypeError:
-            new_pos, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund)
-
-        if isinstance(new_pos, int):
-            old_pos = player["position"]
-            player["position"] = new_pos
-            if new_pos < old_pos and new_pos != 11:
-                player["money"] += 200
-                self.bank_money -= 200
-                self.add_message("Collected £200 for passing GO")
+            result = None
         else:
-            player["money"] = new_pos
-        self.bank_money = new_bank
-        self.free_parking_fund = new_parking
+            try:
+                new_pos, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund, self)
+            except TypeError:
+                new_pos, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund)
 
-        return None, message
+            if isinstance(new_pos, int):
+                old_pos = player["position"]
+                player["position"] = new_pos
+                if new_pos < old_pos and new_pos != 11:
+                    player["money"] += 200
+                    self.bank_money -= 200
+                    self.add_message("Collected £200 for passing GO")
+            else:
+                player["money"] = new_pos
+            self.bank_money = new_bank
+            self.free_parking_fund = new_parking
+
+        cards.append(card)
+        return result, message
 
     def calculate_repair_cost(self, player, house_cost, hotel_cost):
         total_cost = 0
@@ -307,19 +421,29 @@ class GameLogic:
             self.add_message(f"{player['name']} cannot buy property while in jail")
             return False
             
+        if self.completed_circuits.get(player['name'], 0) < 1:
+            self.add_message(f"{player['name']} must pass GO before buying property")
+            return False
+            
         position = str(player["position"])
         property_data = self.properties[position]
+        price = property_data["price"]
 
-        if player["money"] >= property_data["price"]:
-            player["money"] -= property_data["price"]
-            self.bank_money += property_data["price"]
-            property_data["owner"] = player["name"]
-            self.check_property_group_completion(player["name"])
-            return True
+        if player["money"] >= price:
+            if self.validate_bank_transaction(price):
+                player["money"] -= price
+                self.bank_money += price
+                property_data["owner"] = player["name"]
+                self.check_property_group_completion(player["name"])
+                return True
         return False
 
     def auction_property(self, position):
         position = str(position)
+        if position not in self.properties:
+            self.add_message(f"Error: Invalid property position {position}")
+            return "auction_completed"
+            
         property_data = self.properties[position]
         
         eligible_players = [p for p in self.players 
@@ -546,8 +670,9 @@ class GameLogic:
     
     def get_ai_bid(self, player, current_minimum, property_data):
         import random
-
+        print(f"DEBUG: AI Player {player['name']} evaluating bid. Current minimum: {current_minimum}, Money: {player['money']}, Property Price: {property_data['price']}")
         if player['money'] < current_minimum:
+            print(f"DEBUG: {player['name']} does not have enough money to bid. Money: {player['money']} < {current_minimum}")
             return None
             
         base_value = property_data['price']
@@ -579,9 +704,13 @@ class GameLogic:
             value_multiplier *= 1.2
 
         perceived_value = base_value * value_multiplier
+        print(f"DEBUG: {player['name']} perceived_value: {perceived_value}")
 
         max_bid = min(player['money'], perceived_value)
+        print(f"DEBUG: {player['name']} max_bid computed as: {max_bid}")
+
         if max_bid <= current_minimum:
+            print(f"DEBUG: {player['name']} max_bid ({max_bid}) <= current_minimum ({current_minimum}); passing.")
             return None
 
         min_increment = 10
@@ -589,10 +718,13 @@ class GameLogic:
 
         bid = current_minimum + random.randint(min_increment, max_increment)
         bid = min(bid, max_bid)
+        print(f"DEBUG: {player['name']} candidate bid before random pass check: {bid}")
 
         if bid > perceived_value * 0.8 and random.random() < 0.3:
+            print(f"DEBUG: {player['name']} decides to pass despite candidate bid {bid}")
             return None
 
+        print(f"DEBUG: {player['name']} bids {bid}")
         return bid
     
     def get_human_bid(self, player, current_minimum, property_data):
@@ -671,3 +803,290 @@ class GameLogic:
             self.current_player_index = self.current_player_index % len(self.players)
 
         return True
+
+    def can_build_house(self, property_data, player):
+        if property_data.get('is_mortgaged', False):
+            return False, "Cannot build on mortgaged property"
+
+        color_group = property_data.get('group')
+        if not color_group:
+            return False, "Cannot build houses on this type of property"
+            
+        color_group_properties = [p for p in self.properties.values() 
+                                if p.get('group') == color_group]
+                                
+        for prop in color_group_properties:
+            if prop.get('owner') != player['name']:
+                return False, f"Must own all {color_group} properties to build"
+
+        current_houses = property_data.get('houses', 0)
+        for prop in color_group_properties:
+            if prop != property_data:
+                other_houses = prop.get('houses', 0)
+                if current_houses + 1 > other_houses + 1:
+                    return False, "Must build houses evenly across properties"
+
+        if current_houses >= 5:
+            return False, "Maximum development reached"
+
+        return True, None
+
+    def can_build_hotel(self, property_data, player):
+        if not self.check_property_group_completion(player['name']):
+            return False, "You must own all properties in the color group"
+
+        color_group = [p for p in self.properties.values() 
+                      if p.get("color") == property_data.get("color") 
+                      and p.get("owner") == player['name']]
+
+        current_houses = property_data.get("houses", 0)
+        if current_houses != 4:
+            return False, "Must have 4 houses before building a hotel"
+
+        for prop in color_group:
+            if prop != property_data:
+                other_houses = prop.get("houses", 0)
+                if other_houses < 4:
+                    return False, "All properties in the set must have at least 4 houses before building a hotel"
+
+        return True, None
+
+    def build_house(self, property_data, player):
+        can_build, error = self.can_build_house(property_data, player)
+        if not can_build:
+            self.add_message(error)
+            return False
+            
+        current_houses = property_data.get("houses", 0)
+        if current_houses >= self.MAX_HOUSES_PER_PROPERTY:
+            self.add_message("Maximum number of houses already built")
+            return False
+
+        house_cost = property_data.get("house_cost", 0)
+        if player["money"] >= house_cost:
+            if self.validate_bank_transaction(house_cost):
+                player["money"] -= house_cost
+                self.bank_money += house_cost
+                property_data["houses"] = current_houses + 1
+                self.add_message(f"{player['name']} built a house on {property_data['name']}")
+                return True
+        
+        self.add_message("Not enough money to build a house")
+        return False
+
+    def build_hotel(self, property_data, player):
+        can_build, error = self.can_build_hotel(property_data, player)
+        if not can_build:
+            self.add_message(error)
+            return False
+
+        hotel_cost = property_data.get("house_cost", 0)
+        if player["money"] >= hotel_cost:
+            if self.validate_bank_transaction(hotel_cost):
+                player["money"] -= hotel_cost
+                self.bank_money += hotel_cost
+                property_data["houses"] = 5
+                self.add_message(f"{player['name']} built a hotel on {property_data['name']}")
+                return True
+        
+        self.add_message("Not enough money to build a hotel")
+        return False
+
+    def sell_house(self, property_data, player):
+        current_houses = property_data.get("houses", 0)
+        if current_houses == 0:
+            self.add_message("No houses to sell")
+            return False
+
+        color_group = [p for p in self.properties.values() 
+                      if p.get("color") == property_data.get("color") 
+                      and p.get("owner") == player['name']]
+
+        for prop in color_group:
+            if prop != property_data:
+                other_houses = prop.get("houses", 0)
+                if current_houses - 1 < other_houses - 1:
+                    self.add_message("Cannot have more than 1 house difference between properties in a set")
+                    return False
+
+        house_cost = property_data.get("house_cost", 0)
+        player["money"] += house_cost // 2
+        self.bank_money -= house_cost // 2
+        property_data["houses"] = current_houses - 1
+        self.add_message(f"{player['name']} sold a house from {property_data['name']}")
+        return True
+
+    def sell_hotel(self, property_data, player):
+        if property_data.get("houses", 0) != 5:
+            self.add_message("No hotel to sell")
+            return False
+
+        hotel_cost = property_data.get("house_cost", 0) * 5
+        player["money"] += hotel_cost // 2
+        self.bank_money -= hotel_cost // 2
+        property_data["houses"] = 4
+        self.add_message(f"{player['name']} sold a hotel from {property_data['name']}")
+        return True
+
+    def mortgage_property(self, property_data, player):
+        if property_data.get('is_mortgaged', False):
+            self.add_message(f"{property_data['name']} is already mortgaged")
+            return False
+            
+        if property_data.get('houses', 0) > 0:
+            self.add_message("Cannot mortgage property with houses/hotels")
+            return False
+            
+        mortgage_value = property_data['price'] // 2
+        self.pay_from_bank(player, mortgage_value)
+        property_data['is_mortgaged'] = True
+        self.add_message(f"{player['name']} mortgaged {property_data['name']} for £{mortgage_value}")
+        return True
+        
+    def unmortgage_property(self, property_data, player):
+        if not property_data.get('is_mortgaged', False):
+            self.add_message(f"{property_data['name']} is not mortgaged")
+            return False
+            
+        unmortgage_cost = (property_data['price'] // 2) * 1.1
+        if player['money'] >= unmortgage_cost:
+            self.pay_to_bank(player, unmortgage_cost)
+            property_data['is_mortgaged'] = False
+            self.add_message(f"{player['name']} unmortgaged {property_data['name']} for £{unmortgage_cost}")
+            return True
+        else:
+            self.add_message(f"Not enough money to unmortgage {property_data['name']}")
+            return False
+            
+    def handle_rent_payment(self, landing_player, property_data):
+        if property_data.get('is_mortgaged', False):
+            self.add_message(f"Property is mortgaged - no rent due")
+            return True
+            
+        owner = next((p for p in self.players if p['name'] == property_data['owner']), None)
+        if not owner or owner.get('in_jail', False):
+            self.add_message(f"Owner is in jail - no rent collected")
+            return True
+            
+        rent = self.calculate_space_rent(property_data, landing_player)
+        if landing_player['money'] >= rent:
+            landing_player['money'] -= rent
+            owner['money'] += rent
+            self.add_message(f"{landing_player['name']} paid £{rent} rent to {owner['name']}")
+            return True
+        else:
+            self.handle_bankruptcy(landing_player)
+            return False
+            
+    def calculate_house_difference(self, color_group_properties):
+        house_counts = [p.get('houses', 0) for p in color_group_properties]
+        return max(house_counts) - min(house_counts)
+
+    def handle_ai_turn(self, player):
+        if not player.get('is_ai', False):
+            return None
+
+        if player.get('in_jail', False):
+            jail_decision = self.ai_player.get_jail_decision(player, *self.last_dice_roll)
+            if jail_decision == 'use_card' and self.jail_free_cards.get(player['name'], 0) > 0:
+                self.jail_free_cards[player['name']] -= 1
+                player['in_jail'] = False
+                player['jail_turns'] = 0
+            elif jail_decision == 'pay' and player['money'] >= 50:
+                player['money'] -= 50
+                self.free_parking_fund += 50
+                player['in_jail'] = False
+                player['jail_turns'] = 0
+
+        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
+        development_priorities = self.ai_player.get_development_priority(owned_properties)
+        
+        for property_data, _ in development_priorities:
+            if self.ai_player.should_develop_property(property_data, player['money'], owned_properties):
+                if property_data.get('houses', 0) == 4:
+                    self.build_hotel(property_data, player)
+                else:
+                    self.build_house(property_data, player)
+
+        if player['money'] < 200:
+            for prop in owned_properties:
+                if self.ai_player.should_mortgage_property(prop, player['money']):
+                    self.mortgage_property(prop, player)
+        elif player['money'] > 500:
+            mortgaged_properties = [p for p in owned_properties if p.get('is_mortgaged', True)]
+            for prop in mortgaged_properties:
+                if self.ai_player.should_unmortgage_property(prop, player['money']):
+                    self.unmortgage_property(prop, player)
+
+        return None
+
+    def process_ai_property_purchase(self, player, property_data):
+        if not player.get('is_ai', False):
+            return False
+
+        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
+        if self.ai_player.should_buy_property(property_data, player['money'], owned_properties):
+            return self.buy_property(player)
+        else:
+            return self.auction_property(property_data['position'])
+
+    def get_ai_auction_bid(self, player, property_data, current_bid):
+        if not player.get('is_ai', False):
+            return None
+
+        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
+        return self.ai_player.make_auction_bid(property_data, current_bid, player['money'], owned_properties)
+
+    def handle_ai_bankruptcy_prevention(self, player, amount_needed):
+        if not player.get('is_ai', False):
+            return False
+
+        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
+        
+        for prop in owned_properties:
+            if self.ai_player.should_sell_houses(prop, player['money'], amount_needed):
+                if prop.get('houses', 0) == 5:
+                    self.sell_hotel(prop, player)
+                else:
+                    self.sell_house(prop, player)
+                if player['money'] >= amount_needed:
+                    return True
+
+        for prop in owned_properties:
+            if self.ai_player.should_mortgage_property(prop, player['money']):
+                self.mortgage_property(prop, player)
+                if player['money'] >= amount_needed:
+                    return True
+
+        return False
+
+    def handle_buy_decision(self, player, decision):
+        position = str(player["position"])
+        property_data = self.properties[position]
+
+        if player.get('in_jail', False):
+            return "Cannot buy property while in jail"
+
+        if property_data.get('owner') is not None:
+            return "Property is already owned"
+            
+        if property_data.get('is_mortgaged', False):
+            return "Property is mortgaged and cannot be purchased"
+
+        if player.get('is_ai', False):
+            if self.process_ai_property_purchase(player, property_data):
+                return f"{player['name']} bought {property_data['name']}"
+            else:
+                return f"{property_data['name']} goes to auction"
+
+        if decision == 'buy':
+            if self.buy_property(player):
+                return f"{player['name']} bought {property_data['name']}"
+            else:
+                self.auction_property(position)
+                return f"Insufficient funds. {property_data['name']} goes to auction"
+        elif decision == 'auction':
+            self.auction_property(position)
+            return f"{property_data['name']} goes to auction"
+        else:
+            return "Invalid decision. Must be 'buy' or 'auction'"
