@@ -1279,16 +1279,20 @@ class Game:
                                (i, i, glow_width - i*2, glow_height - i*2),
                                border_radius=15)
             self.screen.blit(glow, (card_x - 10, card_y - 10))
+
         pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=10)
-                header_height = 40
+        
+        header_height = 40
         pygame.draw.rect(self.screen, base_color, 
                         (card_x, card_y, card_width, header_height),
                         border_radius=10)
         pygame.draw.rect(self.screen, base_color,
                         (card_x, card_y + header_height - 15, card_width, 15))
+
         title = self.font.render(card.card_type.value.upper(), True, WHITE)
         title_rect = title.get_rect(centerx=card_x + card_width//2, top=card_y + 10)
         self.screen.blit(title, title_rect)
+
         if card.is_special:
             icon_size = 30
             if "jail" in card.text.lower():
@@ -1306,7 +1310,8 @@ class Game:
             icon_rect = icon.get_rect(right=card_x + card_width - 10, 
                                     centery=title_rect.centery)
             self.screen.blit(icon, icon_rect)
-                words = card.text.split()
+
+        words = card.text.split()
         lines = []
         current_line = []
         for word in words:
@@ -1326,6 +1331,7 @@ class Game:
             text_rect = text.get_rect(centerx=card_x + card_width//2, top=y_offset)
             self.screen.blit(text, text_rect)
             y_offset += text_rect.height + 5
+
         if card.card_type == CardType.POT_LUCK:
             remaining = self.pot_luck_deck.get_remaining_count()
             discard = self.pot_luck_deck.get_discard_count()
