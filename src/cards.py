@@ -1,6 +1,6 @@
 from enum import Enum
 import random
-from game_logic import pot_luck_cards, opportunity_knocks_cards
+from src.game_logic import pot_luck_cards, opportunity_knocks_cards
 
 class CardType(Enum):
     POT_LUCK = "pot luck"

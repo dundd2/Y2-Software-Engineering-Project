@@ -3,8 +3,8 @@
 # will add more comment later to reference for which part of code is based on which part of the flowchart
 import random
 import pygame
-from loadexcel import load_property_data
-from ai_player_logic import SimpleAIPlayer
+from src.loadexcel import load_property_data
+from src.ai_player_logic import EasyAIPlayer, HardAIPlayer
 
 pot_luck_cards = [
     {"text": "You inherit £200", "action": lambda player, bank, free_parking: (player['money'] + 200, bank - 200, free_parking)},
@@ -70,7 +70,8 @@ class GameLogic:
         self.opportunity_knocks_cards = opportunity_knocks_cards.copy()
         random.shuffle(self.pot_luck_cards)
         random.shuffle(self.opportunity_knocks_cards)
-        self.ai_player = SimpleAIPlayer()
+        self.ai_difficulty = 'easy'  
+        self.ai_player = EasyAIPlayer()  
         self.game = None
 
     def validate_bank_transaction(self, amount):
@@ -146,10 +147,15 @@ class GameLogic:
         else:
             self.doubles_count = 0
 
-        old_pos = current_player['position']
-        current_player['position'] = ((current_player['position'] - 1 + dice1 + dice2) % 40) + 1
+        old_pos = current_player['position'] 
 
-        if current_player['position'] < old_pos and not self.is_going_to_jail:
+        new_pos = current_player['position'] + dice1 + dice2
+        current_player['position'] = (new_pos % 40)
+        
+        if current_player['position'] == 0:
+            current_player['position'] = 40
+        
+        if new_pos >= 40 and not self.is_going_to_jail:
             current_player["money"] += 200
             self.bank_money -= 200
             self.completed_circuits[current_player['name']] += 1
@@ -171,73 +177,50 @@ class GameLogic:
         self.message_queue.append(message)
 
     def handle_space(self, player):
-        position = str(player['position'])
+        position = str(player["position"])
         if position not in self.properties:
             return None, None
-
+            
         space = self.properties[position]
-        message = None
-
-        if space["name"] == "Go to Jail":
-            message = "Go to Jail. Do not pass GO, do not collect £200"
-            self.add_message(message)
-            return "jail", message
-
-        if space["name"] == "Free Parking":
-            if self.free_parking_fund > 0:
-                amount = self.free_parking_fund
-                player["money"] += amount
-                self.free_parking_fund = 0
-                message = f"{player['name']} collected £{amount} from Free Parking!"
-                self.add_message(message)
-            return None, message
-
-        if "price" in space:
-            if space["owner"] is None and not player.get('in_jail', False):
-                if self.completed_circuits[player['name']] < 1:
-                    self.add_message(f"{player['name']} must complete one circuit before buying property")
-                    return None, None
-                self.add_message(f"Would you like to buy {space['name']} for £{space['price']}?")
-                return "can_buy", None
-            elif space["owner"] != player["name"]:
-                owner = next(p for p in self.players if p["name"] == space["owner"])
-                if owner.get('in_jail', False):
-                    self.add_message(f"{owner['name']} is in jail and cannot collect rent")
-                    return None, None
+        space_type = space.get('type', '')
+        
+        if space_type == 'special':
+            return None, None
+        elif space_type == 'tax':
+            player["money"] -= space["amount"]
+            self.bank_money += space["amount"]
+            self.add_message(f"{player['name']} paid £{space['amount']} {space['name']}")
+            return None, None
+        
+        if not space.get("owner"):
+            if player.get('in_jail', False):
+                return None, "Cannot buy property while in jail"
                 
-                rent = self.calculate_space_rent(space, player)
-                if player["money"] >= rent:
-                    player["money"] -= rent
-                    owner["money"] += rent
-                    message = f"{player['name']} paid £{rent} rent to {owner['name']}"
-                    self.add_message(message)
-                else:
-                    message = f"{player['name']} went bankrupt!"
-                    self.add_message(message)
-                    self.remove_player(player['name'])
-                    return "bankrupt", message
-
-        elif space["name"] in ["Income Tax", "Super Tax"]:
-            tax = 200 if space["name"] == "Income Tax" else 100
-            if player["money"] >= tax:
-                player["money"] -= tax
-                self.free_parking_fund += tax
-                message = f"{player['name']} paid £{tax} {space['name']}"
+            if not space.get('can_be_bought', False):
+                return None, None
+                
+            self.add_message(f"Would you like to buy {space['name']} for £{space['price']}?")
+            return "can_buy", None
+            
+        elif space["owner"] != player["name"]:
+            owner = next((p for p in self.players if p["name"] == space["owner"]), None)
+            if owner.get('in_jail', False):
+                self.add_message(f"{owner['name']} is in jail and cannot collect rent")
+                return None, None
+            
+            rent = self.calculate_space_rent(space, player)
+            if player["money"] >= rent:
+                player["money"] -= rent
+                owner["money"] += rent
+                message = f"{player['name']} paid £{rent} rent to {owner['name']}"
                 self.add_message(message)
             else:
                 message = f"{player['name']} went bankrupt!"
                 self.add_message(message)
-                self.remove_player(player['name'])
+                self.handle_bankruptcy(player)
                 return "bankrupt", message
-
-        elif space["name"] in ["Pot Luck", "Opportunity Knocks"]:
-            self.add_message(f"{player['name']} landed on {space['name']}")
-            result, message = self.handle_card_draw(player, space["name"])
-            if message:
-                self.add_message(message)
-            return result, message
-
-        return None, message
+                
+        return None, None
 
     def handle_jail(self, player):
         player['position'] = 11
@@ -408,13 +391,19 @@ class GameLogic:
         group_totals = {}
         for prop in self.properties.values():
             if prop.get('group'):
-                group_totals[prop['group']] = group_totals.get(prop['group'], 0) + 1
+                group = prop['group']
+                group_totals[group] = group_totals.get(group, 0) + 1
 
+        completed_groups = []
         for group, count in groups.items():
-            if count == group_totals[group]:
+            if group in group_totals and count == group_totals[group]:
+                completed_groups.append(group)
                 self.add_message(f"🎊 MONOPOLY! 🎊")
                 self.add_message(f"{player_name} completed the {group} set!")
-                self.add_message(f"Houses can now be built on these properties!")
+                if group not in ["Utilities", "Stations"]:
+                    self.add_message(f"Houses can now be built on these properties!")
+        
+        return len(completed_groups) > 0
 
     def buy_property(self, player):
         if player.get('in_jail', False):
@@ -440,24 +429,41 @@ class GameLogic:
 
     def auction_property(self, position):
         position = str(position)
+        print(f"\n=== Starting Auction for Property at Position {position} ===")
+        
         if position not in self.properties:
             self.add_message(f"Error: Invalid property position {position}")
+            print(f"Error: Invalid property position {position}")
             return "auction_completed"
             
         property_data = self.properties[position]
+        print(f"Property: {property_data['name']}")
+        
+        if property_data.get('type', '') not in ['property', 'station', 'utility']:
+            self.add_message(f"Error: Cannot auction non-purchasable property")
+            print(f"Error: Cannot auction non-purchasable property")
+            return "auction_completed"
         
         eligible_players = [p for p in self.players 
                           if p['money'] >= property_data["price"] // 2 
-                          and not p.get('in_jail', False)]
+                          and not p.get('in_jail', False)
+                          and self.completed_circuits.get(p['name'], 0) >= 1]
+        
+        print(f"Eligible players: {len(eligible_players)}")
+        for player in eligible_players:
+            print(f"- {player['name']} (Money: £{player['money']})")
         
         if not eligible_players:
             property_data['owner'] = None
+            print("No eligible players for auction - property remains unsold")
             return "auction_completed"
         
         starting_bid = property_data["price"] // 2
+        print(f"Starting bid: £{starting_bid}")
         
         self.current_auction = {
             "property": property_data,
+            "property_position": position,
             "current_bid": 0,
             "minimum_bid": starting_bid,
             "highest_bidder": None,
@@ -470,98 +476,186 @@ class GameLogic:
             "message": f"Auction started for {property_data['name']} - Starting bid: £{starting_bid}"
         }
         
-        return "auction_in_progress"
+        print(f"Auction initialized with {len(eligible_players)} active players")
+        if eligible_players:
+            print(f"First bidder: {eligible_players[0]['name']}")
+            self.add_message(f"\n🔨 AUCTION: {property_data['name']}")
+            self.add_message(f"Starting bid: £{starting_bid}")
+            return "auction_in_progress"
+        else:
+            return "auction_completed"
 
     def process_auction_bid(self, player, bid_amount):
+        print(f"\n=== Processing Bid: {player['name']} ===")
+        print(f"Attempted bid amount: £{bid_amount}")
+        
         if not hasattr(self, 'current_auction') or self.current_auction["completed"]:
-            return False, "Auction is not active"
+            print("Error: No active auction")
+            return False, "No active auction in progress"
             
         if player['name'] in self.current_auction["passed_players"]:
+            print(f"Error: {player['name']} has already passed")
             return False, "You have already passed on this auction"
             
         if bid_amount < self.current_auction["minimum_bid"]:
+            print(f"Error: Bid too low (minimum: £{self.current_auction['minimum_bid']})")
             return False, f"Bid must be at least £{self.current_auction['minimum_bid']}"
             
         if bid_amount > player['money']:
+            print(f"Error: Insufficient funds (available: £{player['money']})")
             return False, "You don't have enough money"
             
         current_time = pygame.time.get_ticks()
         remaining_time = max(0, self.current_auction["start_time"] + self.current_auction["duration"] - current_time)
+        
         if remaining_time <= 0:
+            print("Error: Bid timeout")
             self.current_auction["passed_players"].add(player['name'])
             return False, f"{player['name']} took too long to bid - automatically passed"
             
+        print("Bid accepted!")
+        print(f"- Previous high bid: £{self.current_auction['current_bid']}")
+        print(f"- New high bid: £{bid_amount}")
+        print(f"- Previous leader: {self.current_auction['highest_bidder']['name'] if self.current_auction['highest_bidder'] else 'None'}")
+        print(f"- New leader: {player['name']}")
+        
         self.current_auction["current_bid"] = bid_amount
         self.current_auction["highest_bidder"] = player
         self.current_auction["minimum_bid"] = bid_amount + 10
         
+        self.add_message(f"{player['name']} bids £{bid_amount}")
         self.move_to_next_bidder()
-        return True, f"{player['name']} bids £{bid_amount}"
+        return True, None
 
     def process_auction_pass(self, player):
+        print(f"\n=== Processing Pass: {player['name']} ===")
+        
         if not hasattr(self, 'current_auction') or self.current_auction["completed"]:
-            return False, "Auction is not active"
+            print("Error: No active auction")
+            return False, "No active auction in progress"
             
+        if player['name'] in self.current_auction["passed_players"]:
+            print(f"Error: {player['name']} has already passed")
+            return False, "You have already passed on this auction"
+            
+        print(f"{player['name']} passes on bidding")
         self.current_auction["passed_players"].add(player['name'])
+        self.add_message(f"{player['name']} passes")
+        
+        active_bidders = [p for p in self.current_auction["active_players"] 
+                         if p['name'] not in self.current_auction["passed_players"]]
+        
+        print(f"Active bidders remaining: {len(active_bidders)}")
+        for bidder in active_bidders:
+            print(f"- {bidder['name']}")
         
         self.move_to_next_bidder()
-        return True, f"{player['name']} passes on the auction"
+        return True, f"{player['name']} passes"
+
+    def check_auction_end(self):
+        if not hasattr(self, 'current_auction') or not self.current_auction:
+            return None
+
+        if self.current_auction.get("completed", False):
+            print("Auction is marked as completed - processing outcome")
+            
+            property_data = self.current_auction["property"]
+            highest_bidder = self.current_auction["highest_bidder"]
+            
+            if highest_bidder:
+                bid_amount = self.current_auction["current_bid"]
+                highest_bidder["money"] -= bid_amount
+                self.bank_money += bid_amount
+                self.buy_property_after_auction(highest_bidder, property_data)
+                
+                result_message = f"{highest_bidder['name']} bought {property_data['name']} for £{bid_amount}"
+                print(f"Auction completed - {result_message}")
+                self.add_message(result_message)
+            else:
+                result_message = f"No one bid on {property_data['name']}, it remains unsold"
+                print(f"Auction completed - {result_message}")
+                self.add_message(result_message)
+            
+            self.current_auction = None
+            return "auction_completed"
+        
+        active_bidders = [p for p in self.current_auction["active_players"] 
+                        if p["name"] not in self.current_auction["passed_players"]]
+        
+        if not active_bidders or len(active_bidders) <= 1 and self.current_auction["highest_bidder"]:
+            print("All players have passed or only highest bidder remains - auction is complete")
+            self.current_auction["completed"] = True
+            return self.check_auction_end()
+        
+        current_time = pygame.time.get_ticks()
+        if current_time - self.current_auction["start_time"] > self.current_auction["duration"]:
+            print("Auction timed out - marking as complete")
+            self.current_auction["completed"] = True
+            return self.check_auction_end()
+            
+        return None
 
     def move_to_next_bidder(self):
         if not hasattr(self, 'current_auction'):
+            print("Error: No active auction")
             return
             
+        print(f"\n=== Moving to Next Bidder ===")
+        
         active_players = [p for p in self.current_auction["active_players"] 
                          if p['name'] not in self.current_auction["passed_players"]
                          and p['money'] >= self.current_auction["minimum_bid"]]
-                         
-        if len(active_players) <= 1 and self.current_auction["highest_bidder"]:
-            self.current_auction["completed"] = True
-            return
-            
-        current_index = self.current_auction["current_bidder_index"]
-        next_index = (current_index + 1) % len(self.current_auction["active_players"])
         
-        self.current_auction["current_bidder_index"] = next_index
-        self.current_auction["start_time"] = pygame.time.get_ticks()
+        print(f"Active players remaining: {len(active_players)}")
+        for player in active_players:
+            print(f"- {player['name']} (Money: £{player['money']})")
+                         
+        if len(active_players) <= 1:
+            print("Only one or zero active players remaining")
+            
 
-    def check_auction_end(self):
-        if not hasattr(self, 'current_auction') or self.current_auction["completed"]:
-            return None
-            
-        current_time = pygame.time.get_ticks()
-        time_remaining = max(0, (self.current_auction["start_time"] + self.current_auction["duration"] - current_time) // 1000)
-        
-        active_players = [p for p in self.current_auction["active_players"] 
-                         if p['name'] not in self.current_auction["passed_players"]
-                         and p['money'] >= self.current_auction["minimum_bid"]]
-                         
-        all_passed = len(active_players) <= 1
-        time_up = time_remaining <= 0
-        
-        if all_passed or time_up:
-            if time_up:
-                current_player = self.current_auction["active_players"][self.current_auction["current_bidder_index"]]
-                self.current_auction["passed_players"].add(current_player['name'])
-            
-            self.current_auction["completed"] = True
-            property_data = self.current_auction["property"]
-            
             if self.current_auction["highest_bidder"]:
-                winner = self.current_auction["highest_bidder"]
-                bid_amount = self.current_auction["current_bid"]
-                
-                winner['money'] -= bid_amount
-                self.bank_money += bid_amount
-                property_data['owner'] = winner['name']
-                
-                end_reason = "time's up!" if time_up else "all other players passed!"
-                return f"{winner['name']} won {property_data['name']} for £{bid_amount} - {end_reason}"
+                print(f"Auction ending - {self.current_auction['highest_bidder']['name']} wins with bid of £{self.current_auction['current_bid']}")
+                self.current_auction["completed"] = True
+                return
+            elif len(active_players) == 1 and not self.current_auction["highest_bidder"]:
+                print(f"One active player remaining ({active_players[0]['name']}) with no current bids - giving them a chance to bid")
+                for i, player in enumerate(self.current_auction["active_players"]):
+                    if player['name'] == active_players[0]['name']:
+                        self.current_auction["current_bidder_index"] = i
+                        break
             else:
-                property_data['owner'] = None
-                return f"No one bid on {property_data['name']} - property returns to bank!"
+                print("No active players or highest bidder - auction will end")
+                self.current_auction["completed"] = True
+                return
+        else:
+            current_index = self.current_auction["current_bidder_index"]
+            original_index = current_index
+            
+            print(f"Current bidder index: {current_index}")
+            print(f"Current bidder: {self.current_auction['active_players'][current_index]['name']}")
+            
+            found_next_bidder = False
+            while not found_next_bidder:
+                next_index = (current_index + 1) % len(self.current_auction["active_players"])
+                next_player = self.current_auction["active_players"][next_index]
                 
-        return None
+                if (next_player['name'] not in self.current_auction["passed_players"] and 
+                    next_player['money'] >= self.current_auction["minimum_bid"]):
+                    found_next_bidder = True
+                    self.current_auction["current_bidder_index"] = next_index
+                    print(f"Next bidder: {next_player['name']} (index {next_index})")
+                    break
+                
+                current_index = next_index
+                
+                if current_index == original_index:
+                    print("Cycled through all players - no eligible bidders found")
+                    self.current_auction["completed"] = True
+                    return
+        
+        self.current_auction["start_time"] = pygame.time.get_ticks()
+        print(f"Timer reset for next bidder")
 
     def is_game_over(self):
         active_players = [p for p in self.players if p["money"] > 0]
@@ -596,12 +690,16 @@ class GameLogic:
         return False
 
     def auction(self, property_data):
-        auction_message = f"AUCTION: {property_data['name']} will be auctioned because the current player did not purchase it."
-        self.add_message(auction_message)
-        import pygame
-        pygame.time.delay(3000)
+        self.message_queue = [msg for msg in self.message_queue 
+                            if not msg.startswith("Would you like to buy")]
         
-        eligible_players = [p for p in self.players if not p.get('in_jail', False) and p['money'] >= (property_data['price'] // 2)]
+        auction_message = f"🔨 AUCTION: {property_data['name']} is up for auction!"
+        self.add_message(auction_message)
+        
+        eligible_players = [p for p in self.players 
+                          if not p.get('in_jail', False) 
+                          and p['money'] >= (property_data['price'] // 2)]
+        
         if not eligible_players:
             self.add_message(f"No eligible players for auction. {property_data['name']} remains unsold.")
             property_data['owner'] = None
@@ -610,73 +708,116 @@ class GameLogic:
         winning_bid_info = self.placeBids(eligible_players, property_data)
         
         if not winning_bid_info:
-            self.add_message(f"Square remains unsold")
+            self.add_message(f"{property_data['name']} remains unsold")
             property_data['owner'] = None
         else:
             winner, bid = winning_bid_info
-            self.add_message(f"{winner['name']} has won the bid, with a total of £{bid}")
             if winner['money'] >= bid:
                 winner['money'] -= bid
                 self.bank_money += bid
-                self.buy_property_after_auction(winner, property_data)
+                property_data['owner'] = winner['name']
+                self.add_message(f"🎊 {winner['name']} won {property_data['name']} for £{bid}")
+                self.check_property_group_completion(winner['name'])
             else:
-                self.add_message(f"Error: {winner['name']} does not have enough funds to complete the bid.")
+                self.add_message(f"Error: {winner['name']} cannot afford the winning bid")
+                property_data['owner'] = None
 
     def placeBids(self, player_list, property_data):
+        print("\n=== Property Auction Debug ===")
+        print(f"Starting auction for {property_data['name']}")
+        print(f"Property position: {property_data.get('position', 'Unknown')}")
+        print(f"Starting price: £{property_data['price'] // 2}")
+        
         current_minimum = property_data['price'] // 2
         active_players = player_list[:]
-        current_bids = {p['name']: 0 for p in active_players}
+        current_bids = {}
+        round_count = 1
+
         while len(active_players) > 1:
+            print(f"\n=== Auction Round {round_count} ===")
+            print(f"Active players: {[p['name'] for p in active_players]}")
+            print(f"Current minimum bid: £{current_minimum}")
+            
             round_bids = {}
             for player in active_players[:]:
+                print(f"\nPlayer {player['name']}'s turn")
+                print(f"Available money: £{player['money']}")
+                
                 if player.get('in_jail', False):
-                    self.add_message(f"{player['name']} is in jail and cannot bid.")
+                    print(f"{player['name']} is in jail - skipping")
                     active_players.remove(player)
                     continue
+
+                bid = None
                 if player.get('is_ai', False):
                     bid = self.get_ai_bid(player, current_minimum, property_data)
-                    if bid is None:
-                        self.add_message(f"{player['name']} passes on bidding.")
-                        active_players.remove(player)
-                        continue
+                    if bid:
+                        print(f"AI {player['name']} bids £{bid}")
+                        self.add_message(f"AI {player['name']} bids £{bid}")
                     else:
-                        round_bids[player['name']] = bid
-                        self.add_message(f"{player['name']} bids £{bid}")
+                        print(f"AI {player['name']} passes")
+                        self.add_message(f"AI {player['name']} passes")
+                        active_players.remove(player)
                 else:
-                    bid = self.get_human_bid(player, current_minimum, property_data)
-                    if bid is None:
-                        self.add_message(f"{player['name']} did not bid in time and is considered as passing.")
+                    current_bids[player['name']] = current_minimum
+                    continue
+
+                if bid and bid >= current_minimum and bid <= player['money']:
+                    round_bids[player['name']] = bid
+                    current_bids[player['name']] = bid
+                else:
+                    if player in active_players:
                         active_players.remove(player)
-                        continue
-                    else:
-                        round_bids[player['name']] = bid
-                        self.add_message(f"{player['name']} bids £{bid}")
-            
-            if not round_bids:
-                return None
-            
-            highest_bid = max(round_bids.values())
-            active_players = [p for p in active_players if round_bids.get(p['name'], 0) == highest_bid]
-            current_minimum = highest_bid + 10
-            if len(active_players) == 1:
-                return active_players[0], highest_bid
-            self.add_message(f"Multiple players tied with £{highest_bid}. Next round of bidding begins.")
+
+            if not round_bids and not any(p for p in active_players if not p.get('is_ai', False)):
+                print("\nNo valid bids this round")
+                break
+
+            if round_bids:
+                highest_bid = max(round_bids.values())
+                highest_bidders = [p for p in active_players if round_bids.get(p['name'], 0) == highest_bid]
+                
+                print(f"\nRound {round_count} Results:")
+                print(f"Highest bid: £{highest_bid}")
+                print(f"Highest bidders: {[p['name'] for p in highest_bidders]}")
+                
+                active_players = highest_bidders
+                current_minimum = highest_bid + 10
+
+            round_count += 1
+
+        winner = None
+        final_bid = 0
         
-        if active_players:
-            final_winner = active_players[0]
-            final_bid = round_bids.get(final_winner['name'], current_minimum)
-            return final_winner, final_bid
+        if len(active_players) == 1:
+            winner = active_players[0]
+            final_bid = current_bids.get(winner['name'], current_minimum)
+            
+        if winner:
+            print(f"\n=== Auction Complete ===")
+            print(f"Winner: {winner['name']}")
+            print(f"Winning bid: £{final_bid}")
+            return winner, final_bid
+            
+        print("\nAuction ended with no winner")
         return None
-    
+
     def get_ai_bid(self, player, current_minimum, property_data):
-        import random
-        print(f"DEBUG: AI Player {player['name']} evaluating bid. Current minimum: {current_minimum}, Money: {player['money']}, Property Price: {property_data['price']}")
+        print(f"\n=== AI Bid Evaluation ===")
+        print(f"AI Player: {player['name']}")
+        print(f"Property: {property_data['name']}")
+        print(f"Current minimum: £{current_minimum}")
+        print(f"Available money: £{player['money']}")
+
         if player['money'] < current_minimum:
-            print(f"DEBUG: {player['name']} does not have enough money to bid. Money: {player['money']} < {current_minimum}")
+            print("DECISION: Cannot bid - insufficient funds")
             return None
             
         base_value = property_data['price']
         value_multiplier = 1.0
+
+        print(f"Base value assessment:")
+        print(f"- Property price: £{base_value}")
 
         if 'group' in property_data:
             owned_in_group = sum(1 for p in self.properties.values() 
@@ -684,49 +825,72 @@ class GameLogic:
                                and p.get('owner') == player['name'])
             total_in_group = sum(1 for p in self.properties.values() 
                                if p.get('group') == property_data['group'])
+            
+            print(f"Group analysis:")
+            print(f"- Group: {property_data['group']}")
+            print(f"- Owned in group: {owned_in_group}/{total_in_group}")
+            
             if owned_in_group > 0:
-                value_multiplier += 0.3 * (owned_in_group / total_in_group)
+                group_bonus = 0.3 * (owned_in_group / total_in_group)
+                value_multiplier += group_bonus
+                print(f"- Adding group bonus: +{group_bonus:.2f}x")
 
         if "Station" in property_data['name']:
             owned_stations = sum(1 for p in self.properties.values()
                                if "Station" in p.get('name', '')
                                and p.get('owner') == player['name'])
-            value_multiplier += 0.25 * owned_stations
+            station_bonus = 0.25 * owned_stations
+            value_multiplier += station_bonus
+            print(f"Station analysis:")
+            print(f"- Owned stations: {owned_stations}")
+            print(f"- Adding station bonus: +{station_bonus:.2f}x")
 
         elif property_data['name'] in ["Tesla Power Co", "Edison Water"]:
             owned_utilities = sum(1 for p in self.properties.values()
                                 if p.get('name') in ["Tesla Power Co", "Edison Water"]
                                 and p.get('owner') == player['name'])
+            print(f"Utility analysis:")
+            print(f"- Owned utilities: {owned_utilities}")
             if owned_utilities > 0:
                 value_multiplier += 0.5
-
-        if hasattr(self, 'ai_difficulty') and self.ai_difficulty == 'hard':
-            value_multiplier *= 1.2
+                print("- Adding utility bonus: +0.5x")
 
         perceived_value = base_value * value_multiplier
-        print(f"DEBUG: {player['name']} perceived_value: {perceived_value}")
+        print(f"\nValue calculation:")
+        print(f"- Base value: £{base_value}")
+        print(f"- Final multiplier: {value_multiplier:.2f}x")
+        print(f"- Perceived value: £{perceived_value}")
 
         max_bid = min(player['money'], perceived_value)
-        print(f"DEBUG: {player['name']} max_bid computed as: {max_bid}")
+        print(f"Maximum possible bid: £{max_bid}")
 
         if max_bid <= current_minimum:
-            print(f"DEBUG: {player['name']} max_bid ({max_bid}) <= current_minimum ({current_minimum}); passing.")
+            print("DECISION: Pass - maximum bid below minimum")
             return None
 
-        min_increment = 10
-        max_increment = 50 if player['money'] > 1000 else 25
-
-        bid = current_minimum + random.randint(min_increment, max_increment)
+        import random
+        bid_headroom = max_bid - current_minimum
+        increment = min(50, max(10, int(bid_headroom * 0.2)))
+        bid = current_minimum + random.randint(10, increment)
         bid = min(bid, max_bid)
-        print(f"DEBUG: {player['name']} candidate bid before random pass check: {bid}")
+        
+        print(f"Bid calculation:")
+        print(f"- Bid headroom: £{bid_headroom}")
+        print(f"- Chosen increment: £{increment}")
+        print(f"- Initial bid: £{bid}")
 
-        if bid > perceived_value * 0.8 and random.random() < 0.3:
-            print(f"DEBUG: {player['name']} decides to pass despite candidate bid {bid}")
-            return None
+        if bid > perceived_value * 0.8:
+            risky_bid_chance = random.random()
+            print(f"\nRisk assessment:")
+            print(f"- Bid (£{bid}) is above 80% of perceived value")
+            print(f"- Risk check: {risky_bid_chance:.2f} (will pass if < 0.3)")
+            if risky_bid_chance < 0.3:
+                print("DECISION: Pass due to risk assessment")
+                return None
 
-        print(f"DEBUG: {player['name']} bids {bid}")
+        print(f"FINAL DECISION: Bid £{bid}")
         return bid
-    
+
     def get_human_bid(self, player, current_minimum, property_data):
         import time
         self.add_message(f"Player {player['name']}, would you like to bid? (Yes/No) Current minimum bid: £{current_minimum}")
@@ -766,11 +930,22 @@ class GameLogic:
                 continue
 
     def buy_property_after_auction(self, player, property_data):
-        property_data['owner'] = player['name']
-        if 'properties' not in player:
-            player['properties'] = []
-        player['properties'].append(property_data['name'])
-        self.add_message(f"{player['name']} now owns {property_data['name']}.")
+        if self.completed_circuits.get(player['name'], 0) < 1:
+            self.add_message(f"{player['name']} must pass GO before buying property")
+            return False
+            
+        position = str(property_data.get('position', ''))
+        if position in self.properties:
+            self.properties[position]['owner'] = player['name']
+            if 'properties' not in player:
+                player['properties'] = []
+            player['properties'].append(property_data['name'])
+            self.add_message(f"{player['name']} now owns {property_data['name']}.")
+            self.check_property_group_completion(player['name'])
+            return True
+        else:
+            print(f"Warning: Property position {position} not found in properties list")
+            return False
 
     def handle_bankruptcy(self, player):
         total_liquidated = 0
@@ -1015,7 +1190,7 @@ class GameLogic:
         elif player['money'] > 500:
             mortgaged_properties = [p for p in owned_properties if p.get('is_mortgaged', True)]
             for prop in mortgaged_properties:
-                if self.ai_player.should_unmortgage_property(prop, player['money']):
+                if self.ai_player.should_unmortgage_property(prop, player['money']): 
                     self.unmortgage_property(prop, player)
 
         return None
@@ -1026,9 +1201,12 @@ class GameLogic:
 
         owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
         if self.ai_player.should_buy_property(property_data, player['money'], owned_properties):
-            return self.buy_property(player)
-        else:
-            return self.auction_property(property_data['position'])
+            if property_data['price'] <= player['money']:
+                self.pay_to_bank(player, property_data['price'])
+                property_data['owner'] = player['name']
+                self.add_message(f"{player['name']} buys {property_data['name']} for £{property_data['price']}")
+                return True
+        return False
 
     def get_ai_auction_bid(self, player, property_data, current_bid):
         if not player.get('is_ai', False):
@@ -1073,20 +1251,31 @@ class GameLogic:
         if property_data.get('is_mortgaged', False):
             return "Property is mortgaged and cannot be purchased"
 
+        print("\n=== Property Purchase Decision ===")
+        print(f"Property: {property_data['name']}")
+        print(f"Player: {player['name']}")
+        print(f"Decision: {decision}")
+
         if player.get('is_ai', False):
             if self.process_ai_property_purchase(player, property_data):
-                return f"{player['name']} bought {property_data['name']}"
+                self.add_message(f"{player['name']} bought {property_data['name']}")
+                return "purchase_completed"
             else:
-                return f"{property_data['name']} goes to auction"
+                self.add_message(f"\n{property_data['name']} goes to auction!")
+                self.auction_property(position)
+                return "auction_started"
 
         if decision == 'buy':
             if self.buy_property(player):
-                return f"{player['name']} bought {property_data['name']}"
+                self.add_message(f"{player['name']} bought {property_data['name']}")
+                return "purchase_completed"
             else:
+                self.add_message(f"\nInsufficient funds - {property_data['name']} goes to auction!")
                 self.auction_property(position)
-                return f"Insufficient funds. {property_data['name']} goes to auction"
+                return "auction_started"
         elif decision == 'auction':
+            self.add_message(f"\n{player['name']} declined to buy {property_data['name']}")
             self.auction_property(position)
-            return f"{property_data['name']} goes to auction"
+            return "auction_started"
         else:
             return "Invalid decision. Must be 'buy' or 'auction'"

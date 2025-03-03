@@ -1,28 +1,16 @@
 import random
-from Property import Property
-from Player import Player
+from src.Property import Property
+from src.Player import Player
 
-class SimpleAIPlayer:
-    def __init__(self, difficulty='normal'):
-        self.difficulty = difficulty
+class EasyAIPlayer:
+    def __init__(self, difficulty='easy'):
+        self.difficulty = 'easy'  
         self.strategy = {
             'easy': {
                 'max_bid_multiplier': 0.8,
                 'development_threshold': 0.7,
                 'jail_stay_threshold': 0.3,
                 'mortgage_threshold': 0.2
-            },
-            'normal': {
-                'max_bid_multiplier': 1.0,
-                'development_threshold': 0.5,
-                'jail_stay_threshold': 0.5,
-                'mortgage_threshold': 0.3
-            },
-            'hard': {
-                'max_bid_multiplier': 1.2,
-                'development_threshold': 0.3,
-                'jail_stay_threshold': 0.7,
-                'mortgage_threshold': 0.4
             }
         }
 
@@ -44,8 +32,12 @@ class SimpleAIPlayer:
         return property.houses <= min_houses
 
     def get_property_value(self, property_data, ai_player, board_properties):
+        print("\n=== AI Property Value Calculation Debug ===")
+        print(f"Evaluating property: {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
+        
         base_value = property_data.price
         multiplier = 1.0
+        print(f"Base value: £{base_value}")
 
         if hasattr(property_data, 'group'):
             owned_in_group = sum(1 for p in board_properties 
@@ -53,21 +45,38 @@ class SimpleAIPlayer:
                                and p.owner == ai_player)
             total_in_group = sum(1 for p in board_properties 
                                if hasattr(p, 'group') and p.group == property_data.group)
+            print(f"Color group analysis:")
+            print(f"- Group: {property_data.group}")
+            print(f"- Owned in group: {owned_in_group}/{total_in_group}")
+            
             if owned_in_group > 0:
-                multiplier += 0.3 * (owned_in_group / total_in_group)
+                group_bonus = 0.3 * (owned_in_group / total_in_group)
+                multiplier += group_bonus
+                print(f"- Adding group ownership bonus: +{group_bonus:.2f}x")
 
         if property_data.is_station:
             owned_stations = sum(1 for p in board_properties 
                                if p.is_station and p.owner == ai_player)
-            multiplier += 0.25 * owned_stations
+            station_bonus = 0.25 * owned_stations
+            multiplier += station_bonus
+            print(f"Station analysis:")
+            print(f"- Owned stations: {owned_stations}")
+            print(f"- Adding station bonus: +{station_bonus:.2f}x")
 
         elif property_data.is_utility:
             owned_utilities = sum(1 for p in board_properties 
                                 if p.is_utility and p.owner == ai_player)
+            print(f"Utility analysis:")
+            print(f"- Owned utilities: {owned_utilities}")
             if owned_utilities > 0:
                 multiplier += 0.5
+                print("- Adding utility bonus: +0.5x")
 
-        return base_value * multiplier
+        final_value = base_value * multiplier
+        print(f"Final calculations:")
+        print(f"- Total multiplier: {multiplier:.2f}x")
+        print(f"- Final perceived value: £{final_value:.2f}")
+        return final_value
 
     def handle_turn(self, ai_player, current_location, board_properties, is_first_round=False):
         actions = {"bought_property": False, "built_house": False, "paid_rent": False}
@@ -173,15 +182,15 @@ class SimpleAIPlayer:
         property_data = next((p for p in board_properties if p.position == position), None)
         
         if not property_data:
-            if position == 1:
+            if position == 1:  # GO is now at position 1 (bottom-left)
                 return "Go"
-            elif position == 11:
+            elif position == 11:  # Jail position remains the same
                 return "jail"
-            elif position == 21:
+            elif position == 21:  # Free parking position remains the same
                 return "free_parking"
-            elif position in [3, 18, 34]:
+            elif position in [3, 18, 34]:  # Lucky area positions remain the same
                 return "lucky_area"
-            elif position in [8, 23, 37]:
+            elif position in [8, 23, 37]:  # Lucky area positions remain the same
                 return "lucky_area"
             return "other"
         
@@ -192,24 +201,64 @@ class SimpleAIPlayer:
         return property_data.name if property_data else None
 
     def get_auction_bid(self, current_minimum, property_data, ai_player, board_properties):
+        # Clear any previous bid state
+        if hasattr(self, 'last_bid_property'):
+            if self.last_bid_property != property_data['name']:
+                self.last_bid_amount = 0
+                self.last_bid_property = property_data['name']
+        else:
+            self.last_bid_amount = 0
+            self.last_bid_property = property_data['name']
+
+        print("\n=== AI Auction Bid Logic Debug ===")
+        print(f"AI Player: {ai_player}")
+        print(f"Current minimum bid: £{current_minimum}")
+        print(f"Available money: £{ai_player.money}")
+        print(f"Previous bid on this property: £{self.last_bid_amount}")
+
         if ai_player.money < current_minimum:
+            print("DECISION: Cannot bid - insufficient funds")
             return None
 
         perceived_value = self.get_property_value(property_data, ai_player, board_properties)
-        max_bid = min(ai_player.money, perceived_value * self.auction_max_multiplier)
+        max_bid = min(ai_player.money, perceived_value * self.strategy['easy']['max_bid_multiplier'])
+        
+        # Don't bid if we've already bid more than we want to
+        if self.last_bid_amount >= max_bid * 0.8:
+            print("DECISION: Already reached maximum desired bid")
+            return None
+
+        print(f"\nBid limit calculation:")
+        print(f"- Perceived value: £{perceived_value}")
+        print(f"- Easy difficulty multiplier: {self.strategy['easy']['max_bid_multiplier']}x")
+        print(f"- Maximum possible bid: £{max_bid}")
         
         if max_bid <= current_minimum:
+            print("DECISION: Cannot bid - maximum possible bid is below minimum")
             return None
 
         bid_headroom = max_bid - current_minimum
         increment = min(50, max(10, int(bid_headroom * 0.2)))
+        print(f"\nBid increment analysis:")
+        print(f"- Bid headroom: £{bid_headroom}")
+        print(f"- Calculated increment: £{increment}")
         
+        import random
         bid = current_minimum + random.randint(10, increment)
         bid = min(bid, max_bid)
+        print(f"- Initial bid calculation: £{bid}")
 
-        if bid > perceived_value * 0.6 and random.random() < 0.3:
-            return None
+        if bid > perceived_value * 0.6:
+            risky_bid_chance = random.random()
+            print(f"\nRisk assessment:")
+            print(f"- Bid (£{bid}) is above 60% of perceived value (£{perceived_value * 0.6:.2f})")
+            print(f"- Random chance to pass: {risky_bid_chance:.2f} (will pass if < 0.3)")
+            if risky_bid_chance < 0.3:
+                print("DECISION: Passing due to risk assessment")
+                return None
 
+        self.last_bid_amount = bid
+        print(f"FINAL DECISION: Bidding £{bid}")
         return bid
 
     def handle_jail_strategy(self, ai_player, jail_free_cards):
@@ -303,6 +352,9 @@ class SimpleAIPlayer:
         return total_value_difference > 0 and random.random() < 0.8
 
     def get_property_value(self, property_data, owned_properties, total_money):
+        print("\n=== AI Property Valuation Debug ===")
+        print(f"DEBUG: Evaluating value of {property_data['name']}")
+        
         base_value = property_data['price']
         value_multiplier = 1.0
 
@@ -310,112 +362,172 @@ class SimpleAIPlayer:
             owned_in_group = sum(1 for p in owned_properties 
                                if p.get('group') == property_data['group'])
             total_in_group = property_data.get('group_size', 3)
+            print(f"DEBUG: Color group: {property_data['group']}")
+            print(f"DEBUG: Owned in group: {owned_in_group}/{total_in_group}")
+            
             if owned_in_group > 0:
                 value_multiplier += 0.3 * (owned_in_group / total_in_group)
+                print(f"DEBUG: Group ownership bonus applied: {0.3 * (owned_in_group / total_in_group)}")
 
         if "Station" in property_data['name']:
             owned_stations = sum(1 for p in owned_properties 
                                if "Station" in p.get('name', ''))
             value_multiplier += 0.25 * owned_stations
+            print(f"DEBUG: Owned stations: {owned_stations}")
+            print(f"DEBUG: Station bonus applied: {0.25 * owned_stations}")
 
         elif property_data['name'] in ["Tesla Power Co", "Edison Water"]:
             owned_utilities = sum(1 for p in owned_properties 
                                 if p.get('name') in ["Tesla Power Co", "Edison Water"])
             if owned_utilities > 0:
                 value_multiplier += 0.5
+                print(f"DEBUG: Utility bonus applied: 0.5")
 
-        value_multiplier *= self.strategy[self.difficulty]['max_bid_multiplier']
-
-        return base_value * value_multiplier
+        value_multiplier *= self.strategy['easy']['max_bid_multiplier']
+        final_value = base_value * value_multiplier
+        
+        print(f"DEBUG: Base value: £{base_value}")
+        print(f"DEBUG: Final multiplier: {value_multiplier}")
+        print(f"DEBUG: Final calculated value: £{final_value}")
+        
+        return final_value
 
     def should_buy_property(self, property_data, player_money, owned_properties):
+        print("\n=== AI Purchase Decision Debug ===")
+        print(f"DEBUG: Evaluating purchase of {property_data['name']}")
+        print(f"DEBUG: Property price: £{property_data['price']}")
+        print(f"DEBUG: AI money available: £{player_money}")
+        print(f"DEBUG: Currently owned properties: {[p.get('name', 'Unknown') for p in owned_properties]}")
+
         if player_money < property_data['price']:
+            print("DEBUG: AI cannot afford property")
             return False
 
         property_value = self.get_property_value(property_data, owned_properties, player_money)
+        print(f"DEBUG: Calculated property value: £{property_value}")
+        print(f"DEBUG: Decision: {'Buy' if property_value >= property_data['price'] else 'Pass'}")
+        
         return player_money >= property_data['price'] and property_value >= property_data['price']
 
     def make_auction_bid(self, property_data, current_bid, player_money, owned_properties):
+        """Determine how much to bid in an auction"""
+        print("\n=== AI Auction Bid Debug ===")
+        print(f"DEBUG: AI evaluating bid for {property_data['name']}")
+        print(f"DEBUG: Current bid: £{current_bid}")
+        print(f"DEBUG: AI money available: £{player_money}")
+
         if player_money <= current_bid:
+            print("DEBUG: AI cannot afford current bid")
             return None
-
+            
         property_value = self.get_property_value(property_data, owned_properties, player_money)
-        max_bid = min(player_money * 0.8, property_value)
-
-        if max_bid <= current_bid:
+        print(f"DEBUG: Calculated property value: £{property_value}")
+        
+        max_bid = min(player_money * 0.7, property_value * 1.1)
+        print(f"DEBUG: Maximum bid calculated: £{max_bid}")
+        
+        if current_bid >= max_bid:
+            print("DEBUG: Maximum bid too low - passing")
             return None
-
-        bid_increment = 10 if self.difficulty == 'easy' else (25 if self.difficulty == 'normal' else 50)
-        return min(current_bid + bid_increment, max_bid)
+            
+        # For easy difficulty, use smaller bid increments
+        bid_increment = 10  # Fixed for easy difficulty
+        final_bid = min(current_bid + bid_increment, max_bid)
+        print(f"DEBUG: Final bid decision: £{final_bid}")
+        
+        return final_bid
 
     def should_develop_property(self, property_data, player_money, owned_properties):
-        if player_money < property_data.get('house_cost', float('inf')):
-            return False
-
-        current_houses = property_data.get('houses', 0)
-        if current_houses >= 5:
-            return False
-
-        development_cost = property_data.get('house_cost', 0)
-        potential_rent = property_data.get('house_rents', [0])[current_houses] if current_houses < len(property_data.get('house_rents', [])) else 0
+        """Determine if a property should be developed"""
+        print("\n=== AI Development Decision Debug ===")
+        print(f"DEBUG: Evaluating development for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
+        print(f"DEBUG: AI money available: £{player_money}")
         
-        money_threshold = self.strategy[self.difficulty]['development_threshold'] * player_money
-        return (development_cost <= money_threshold and 
-                potential_rent >= development_cost * 0.2 * (3 if self.difficulty == 'hard' else 2))
+        if not property_data or not hasattr(property_data, 'price'):
+            print("DEBUG: Invalid property data")
+            return False
+            
+        development_cost = property_data.price / 2
+        print(f"DEBUG: Development cost: £{development_cost}")
+        
+        if development_cost >= player_money / 2:
+            print("DEBUG: Development cost too high relative to available funds")
+            return False
+            
+        # For easy difficulty, use a higher threshold (more conservative)
+        money_threshold = self.strategy['easy']['development_threshold'] * player_money
+        print(f"DEBUG: Money threshold for development: £{money_threshold}")
+        
+        potential_rent = property_data.calculate_rent() * 2
+        print(f"DEBUG: Potential rent after development: £{potential_rent}")
+        
+        should_develop = (development_cost <= money_threshold and 
+                          potential_rent >= development_cost * 0.2 * 2)  # Fixed for easy difficulty
+        
+        print(f"DEBUG: Development decision: {'Develop' if should_develop else 'Skip'}")
+        return should_develop
 
     def should_mortgage_property(self, property_data, player_money):
-        if property_data.get('is_mortgaged', False) or property_data.get('houses', 0) > 0:
+        """Determine if a property should be mortgaged"""
+        print("\n=== AI Mortgage Decision Debug ===")
+        print(f"DEBUG: Evaluating mortgage for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
+        print(f"DEBUG: AI money available: £{player_money}")
+        
+        if not property_data or not hasattr(property_data, 'price'):
+            print("DEBUG: Invalid property data")
             return False
-
-        mortgage_threshold = self.strategy[self.difficulty]['mortgage_threshold'] * 1500
-        return player_money < mortgage_threshold
+            
+        # For easy difficulty, use a lower threshold (more likely to mortgage)
+        mortgage_threshold = self.strategy['easy']['mortgage_threshold'] * 1500
+        print(f"DEBUG: Mortgage threshold: £{mortgage_threshold}")
+        
+        should_mortgage = player_money < mortgage_threshold
+        print(f"DEBUG: Mortgage decision: {'Mortgage' if should_mortgage else 'Keep'}")
+        
+        return should_mortgage
 
     def should_unmortgage_property(self, property_data, player_money):
-        if not property_data.get('is_mortgaged', False):
+        """Determine if a property should be unmortgaged"""
+        print("\n=== AI Unmortgage Decision Debug ===")
+        print(f"DEBUG: Evaluating unmortgage for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
+        print(f"DEBUG: AI money available: £{player_money}")
+        
+        if not property_data or not hasattr(property_data, 'price'):
+            print("DEBUG: Invalid property data")
             return False
-
-        unmortgage_cost = (property_data['price'] // 2) * 1.1
-        return (player_money > unmortgage_cost * 2 and 
-                unmortgage_cost < player_money * (0.4 if self.difficulty == 'hard' else 0.3))
-
-    def get_jail_decision(self, player, dice1, dice2):
-        if not player.get('is_ai', False):
-            has_jail_card = player.get('jail_free_cards', 0) > 0
-            can_pay_fine = player['money'] >= 50
-            is_doubles = dice1 == dice2
-            jail_turns = player.get('jail_turns', 0)
-
-            if jail_turns >= 2:
-                if has_jail_card:
-                    return 'use_card'
-                return 'pay'
-
-            if has_jail_card or can_pay_fine:
-                return None
             
-            if is_doubles:
-                return 'roll'
-
-            return 'stay'
-        else:
-            jail_turns = player.get('jail_turns', 0)
-            is_doubles = dice1 == dice2
-
-            if jail_turns >= 2:
-                return 'pay'
-            
-            if is_doubles:
-                return 'roll'
-            
-            return 'stay'
+        unmortgage_cost = property_data.price * 0.55
+        print(f"DEBUG: Unmortgage cost: £{unmortgage_cost}")
+        
+        money_threshold = player_money * 0.3  # Fixed for easy difficulty
+        print(f"DEBUG: Money threshold for unmortgage: £{money_threshold}")
+        
+        should_unmortgage = unmortgage_cost < money_threshold
+        print(f"DEBUG: Unmortgage decision: {'Unmortgage' if should_unmortgage else 'Keep mortgaged'}")
+        
+        return should_unmortgage
 
     def should_sell_houses(self, property_data, player_money, target_amount):
-        if property_data.get('houses', 0) == 0:
+        """Determine if houses should be sold from a property"""
+        print("\n=== AI House Selling Decision Debug ===")
+        print(f"DEBUG: Evaluating house selling for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
+        print(f"DEBUG: AI money available: £{player_money}")
+        print(f"DEBUG: Target amount needed: £{target_amount}")
+        
+        if not property_data or not hasattr(property_data, 'houses') or property_data.houses <= 0:
+            print("DEBUG: No houses to sell")
             return False
-
-        sell_threshold = target_amount * (1.2 if self.difficulty == 'easy' else 
-                                        1.1 if self.difficulty == 'normal' else 1.0)
-        return player_money < sell_threshold
+            
+        print(f"DEBUG: Current houses on property: {property_data.houses}")
+        
+        # For easy difficulty, use a higher threshold (more likely to sell)
+        sell_threshold = target_amount * 1.2  # Fixed for easy difficulty
+        print(f"DEBUG: Sell threshold: £{sell_threshold}")
+        
+        should_sell = player_money < sell_threshold
+        print(f"DEBUG: House selling decision: {'Sell' if should_sell else 'Keep'}")
+        
+        return should_sell
 
     def get_development_priority(self, properties):
         priorities = []
@@ -427,3 +539,50 @@ class SimpleAIPlayer:
                 priorities.append((prop, priority_score))
 
         return sorted(priorities, key=lambda x: x[1], reverse=True)
+
+class HardAIPlayer:
+    def __init__(self):
+        self.difficulty = 'hard'
+        print("HardAIPlayer initialized - This is a placeholder for future implementation")
+        
+    # Placeholder methods that return default values to prevent crashes
+    def get_property_value(self, property_data, ai_player, board_properties):
+        print("\n=== HARD AI Property Value Calculation Debug ===")
+        print(f"DEBUG: Hard AI evaluating property: {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
+        print(f"DEBUG: This is a placeholder implementation - using basic valuation")
+        value = property_data.price if hasattr(property_data, 'price') else 0
+        print(f"DEBUG: Returning basic value: £{value}")
+        return value
+        
+    def get_auction_bid(self, current_minimum, property_data, ai_player, board_properties):
+        print("\n=== HARD AI Auction Bid Logic Debug ===")
+        print(f"DEBUG: Hard AI evaluating bid for: {property_data['name'] if isinstance(property_data, dict) and 'name' in property_data else 'Unknown'}")
+        print(f"DEBUG: Current minimum bid: £{current_minimum}")
+        print(f"DEBUG: This is a placeholder implementation - always passing on auctions")
+        print(f"DEBUG: Hard AI decision: Pass")
+        return None  # Always pass on auctions
+        
+    def handle_jail_strategy(self, ai_player, jail_free_cards):
+        print("\n=== HARD AI Jail Strategy Debug ===")
+        print(f"DEBUG: Hard AI evaluating jail strategy")
+        print(f"DEBUG: This is a placeholder implementation - using basic strategy")
+        if not ai_player.get('in_jail', False):
+            print(f"DEBUG: Not in jail - no action needed")
+            return None
+        print(f"DEBUG: Hard AI decision: Roll for doubles")
+        return "roll_doubles"  # Default strategy
+        
+    def should_mortgage_property(self, ai_player, required_money):
+        print("\n=== HARD AI Mortgage Strategy Debug ===")
+        print(f"DEBUG: Hard AI evaluating mortgage strategy")
+        print(f"DEBUG: Required money: £{required_money}")
+        print(f"DEBUG: This is a placeholder implementation - not mortgaging any properties")
+        print(f"DEBUG: Hard AI decision: Don't mortgage any properties")
+        return []
+        
+    def handle_property_development(self, ai_player, board_properties):
+        print("\n=== HARD AI Development Strategy Debug ===")
+        print(f"DEBUG: Hard AI evaluating development strategy")
+        print(f"DEBUG: This is a placeholder implementation - not developing any properties")
+        print(f"DEBUG: Hard AI decision: Don't develop any properties")
+        return False

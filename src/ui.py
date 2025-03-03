@@ -3,7 +3,7 @@ import sys
 import time
 import math
 import random
-from text_scaler import text_scaler
+from src.text_scaler import text_scaler
 import os
 
 WHITE = (255, 255, 255)
@@ -22,7 +22,7 @@ AI_COLOR = (200, 100, 100)
 
 DEFAULT_RES = (854, 480)
 
-base_path = os.path.dirname(os.path.abspath(__file__))
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Play-Regular.ttf")
 
 def get_window_size():
@@ -53,7 +53,7 @@ class ModernButton:
             }
             
             if text in button_map:
-                image_path = f"assets/image/{button_map[text]}"
+                image_path = os.path.join(base_path, f"assets/image/{button_map[text]}")
                 self.image = pygame.image.load(image_path)
                 self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
         except (pygame.error, FileNotFoundError):
@@ -143,7 +143,8 @@ class BasePage:
         window_size = get_window_size()
         self.screen = pygame.display.set_mode(window_size)
         try:
-            self.logo_image = pygame.image.load("assets/image/Logo.png")
+            asset_path = os.path.join(base_path, "assets/image/Logo.png")
+            self.logo_image = pygame.image.load(asset_path)
             logo_width = int(window_size[0] * 0.3)
             logo_height = int(logo_width * (self.logo_image.get_height() / self.logo_image.get_width()))
             self.logo_image = pygame.transform.scale(self.logo_image, (logo_width, logo_height))
@@ -152,7 +153,8 @@ class BasePage:
             self.logo_image = None
             
         try:
-            self.background_image = pygame.image.load("assets/image/starterbackground.png")
+            asset_path = os.path.join(base_path, "assets/image/starterbackground.png")
+            self.background_image = pygame.image.load(asset_path)
             self.background_image = pygame.transform.scale(self.background_image, window_size)
         except (pygame.error, FileNotFoundError):
             print("Could not load background image")
@@ -280,7 +282,7 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        version_text = self.version_font.render("Build Version: 18.02.2025", True, GRAY)
+        version_text = self.version_font.render("Build Version: 03.03.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -1365,3 +1367,65 @@ class AIDifficultyPage(BasePage):
         elif event.key == pygame.K_h:
             return "hard"
         return None
+
+class DevelopmentNotification:
+    def __init__(self, screen, player_name, font=None):
+        self.screen = screen
+        self.player_name = player_name
+        self.window_size = screen.get_size()
+        
+        if font:
+            self.font = font
+        else:
+            self.font = pygame.font.Font(FONT_PATH, 24)
+            
+        self.dev_font = pygame.font.Font(FONT_PATH, 26)
+        
+        self.text = f"{self.player_name}, you may modify properties now"
+        
+        self.padding = 20
+        self.notification_text = self.dev_font.render(self.text, True, WHITE)
+        self.bg_width = self.notification_text.get_width() + self.padding * 2
+        self.bg_height = self.notification_text.get_height() + self.padding * 2
+        
+        self.x = (self.window_size[0] - self.bg_width) // 2
+        self.y = 80
+        
+        self.button_width = 150
+        self.button_height = 50
+        self.continue_button = pygame.Rect(
+            (self.window_size[0] - self.button_width) // 2, 
+            self.y + self.bg_height + 15,
+            self.button_width, 
+            self.button_height
+        )
+        
+        self.dev_color = (0, 180, 120)
+
+    def draw(self, mouse_pos):
+        bg_surface = pygame.Surface((self.bg_width, self.bg_height), pygame.SRCALPHA)
+        
+        pygame.draw.rect(bg_surface, (*self.dev_color, 230), bg_surface.get_rect(), border_radius=15)
+        
+        for i in range(4):
+            alpha = 80 - i * 20
+            pygame.draw.rect(bg_surface, (*self.dev_color, alpha), 
+                           (-i, -i, self.bg_width + i*2, self.bg_height + i*2), 
+                           border_radius=15)
+        
+        self.screen.blit(bg_surface, (self.x, self.y))
+        self.screen.blit(self.notification_text, (self.x + self.padding, self.y + self.padding))
+        
+        hover = self.continue_button.collidepoint(mouse_pos)
+        button_color = (50, 180, 100) if hover else (30, 150, 80)
+        
+        pygame.draw.rect(self.screen, button_color, self.continue_button, border_radius=10)
+        pygame.draw.rect(self.screen, (255, 255, 255), self.continue_button, 2, border_radius=10)
+        
+        button_text = self.font.render("Continue", True, WHITE)
+        text_x = self.continue_button.x + (self.continue_button.width - button_text.get_width()) // 2
+        text_y = self.continue_button.y + (self.continue_button.height - button_text.get_height()) // 2
+        self.screen.blit(button_text, (text_x, text_y))
+    
+    def check_button_click(self, pos):
+        return self.continue_button.collidepoint(pos)

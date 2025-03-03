@@ -6,7 +6,7 @@ import os
 
 def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
     try:
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
         file_path = os.path.join(current_dir, filename)
         print(f"Loading property data from: {file_path}")
         
@@ -26,7 +26,6 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
         properties_data = {}
         for _, row in df.iterrows():
             try:
-                # Skip rows without a valid position number
                 if not str(row['Position']).strip().isdigit():
                     continue
                     
@@ -37,13 +36,26 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                 
                 property_data = {
                     "name": property_name,
+                    "position": position,
                     "group": str(row['Group']).strip() if row['Group'] else None,
-                    "action": str(row['Action']).strip() if row['Action'] else None
+                    "action": str(row['Action']).strip() if row['Action'] else None,
+                    "can_be_bought": str(row['Can be bought?']).strip().lower() == 'yes'
                 }
 
-                # Handle stations
-                if "Station" in property_name:
+                # Handle special spaces
+                if property_name in ["Income Tax", "Super Tax"]:
                     property_data.update({
+                        "type": "tax",
+                        "amount": 200 if property_name == "Income Tax" else 100
+                    })
+                elif property_name in ["Jail", "Go to Jail", "Free Parking", "Go"]:
+                    property_data.update({
+                        "type": "special"
+                    })
+                # Handle stations
+                elif "Station" in property_name:
+                    property_data.update({
+                        "type": "station",
                         "price": 200,
                         "rent": 25,  # Base rent, multiplied based on number of stations owned
                         "owner": None,
@@ -51,21 +63,25 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                     })
                 elif property_name in ["Tesla Power Co", "Edison Water"]:
                     property_data.update({
+                        "type": "utility",
                         "price": 150,
                         "rent": 0, 
                         "owner": None,
                         "is_utility": True
                     })
-                elif str(row['Can be bought?']).strip().lower() == 'yes' and row['£']:
+                elif property_data["can_be_bought"] and row['£']:
                     try:
                         price_str = str(row['£']).replace('£', '').strip()
                         rent_str = str(row['£.1']).replace('£', '').strip() or '0'
                         
                         property_data.update({
+                            "type": "property",
                             "price": int(float(price_str)),
                             "rent": int(float(rent_str)),
                             "owner": None,
-                            "house_costs": []
+                            "house_costs": [],
+                            "houses": 0,
+                            "is_mortgaged": False
                         })
                         
                         for i in range(2, 7):
@@ -81,6 +97,10 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
                     except (ValueError, TypeError) as e:
                         print(f"Error processing costs for position {position}: {e}")
                         continue
+                else:
+                    property_data.update({
+                        "type": "special"
+                    })
 
                 properties_data[str(position)] = property_data
                 
@@ -101,7 +121,8 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
 
 def load_game_text(filename="assets/gamedata/PropertyTycoonCardData.xlsx", sheet_name="Game Text"):
     try:
-        file_path = os.path.join(os.path.dirname(__file__), filename)
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
+        file_path = os.path.join(current_dir, filename)
         df = pd.read_excel(file_path, sheet_name=sheet_name)
         card_data = {}
         for index, row in df.iterrows():

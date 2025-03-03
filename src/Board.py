@@ -5,10 +5,10 @@
 import pygame
 import math
 import os
-from Property import Property
+from src.Property import Property
 from typing import Optional, List
-from loadexcel import load_property_data
-from text_scaler import text_scaler
+from src.loadexcel import load_property_data
+from src.text_scaler import text_scaler
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -17,6 +17,8 @@ MODERN_BG = (18, 18, 18)
 ACCENT_COLOR = (75, 139, 190)
 SUCCESS_COLOR = (40, 167, 69)
 ERROR_COLOR = (220, 53, 69)
+
+base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class CameraControls:
     def __init__(self):
@@ -59,7 +61,7 @@ class Board:
         self.properties_data = load_property_data()
         self.camera = CameraControls()
         
-        self.project_root = os.path.abspath(os.path.dirname(__file__))
+        self.project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         
         try:
             self.board_image = pygame.image.load(os.path.join(self.project_root, "assets/image/board.png"))
@@ -106,29 +108,29 @@ class Board:
         for i in range(11):
             width = corner_size if (i == 0 or i == 10) else normal_width
             height = corner_size if (i == 0 or i == 10) else normal_height
-            x = start_x + board_size - (i + 1) * normal_width
-            y = start_y + board_size - height
+            x = start_x
+            y = start_y + board_size - height - (i * normal_width)
             rects.append(pygame.Rect(x, y, width, height))
         
         for i in range(11, 21):
-            width = corner_size if i == 20 else normal_height
-            height = corner_size if i == 20 else normal_width
-            x = start_x
-            y = start_y + board_size - ((i - 9) * normal_width)
-            rects.append(pygame.Rect(x, y, width, height))
-        
-        for i in range(21, 31):
-            width = corner_size if (i == 20 or i == 30) else normal_width
-            height = corner_size if (i == 20 or i == 30) else normal_height
-            x = start_x + (i - 20) * normal_width
+            width = corner_size if i == 20 else normal_width
+            height = corner_size if i == 20 else normal_height
+            x = start_x + ((i - 10) * normal_width)
             y = start_y
             rects.append(pygame.Rect(x, y, width, height))
         
-        for i in range(31, 40):
+        for i in range(21, 31):
             width = corner_size if i == 30 else normal_height
             height = corner_size if i == 30 else normal_width
             x = start_x + board_size - width
-            y = start_y + (i - 30) * normal_width
+            y = start_y + ((i - 20) * normal_width)
+            rects.append(pygame.Rect(x, y, width, height))
+        
+        for i in range(31, 40):
+            width = corner_size if i == 39 else normal_width
+            height = corner_size if i == 39 else normal_height
+            x = start_x + board_size - ((i - 29) * normal_width)
+            y = start_y + board_size - height
             rects.append(pygame.Rect(x, y, width, height))
         
         return rects
@@ -136,14 +138,73 @@ class Board:
     def update_board_positions(self):
         self.board_rects = self._create_board_rects()
         for player in self.players:
-            if 1 <= player.position <= 40:
-                player_rect = self.board_rects[player.position - 1]
-                player.rect = player_rect
+            if not isinstance(player.position, int) or not (1 <= player.position <= 40):
+                print(f"Warning: Invalid position {player.position} detected for {player.name} in update_board_positions, resetting to position 1")
+                player.position = 1
+                
+            player_rect = self.board_rects[player.position - 1]
+            player.rect = player_rect
 
     def draw_player(self, screen, player, rect, index):
         is_corner = rect.width > rect.height + 10 or rect.height > rect.width + 10
-        row = index // 2
-        col = index % 2
+        row = (player.player_number - 1) // 2
+        col = (player.player_number - 1) % 2
+        base_padding = 12 if is_corner else 8
+        spacing = 35 if is_corner else 30
+        
+        if player.is_moving and player.current_path_index < len(player.move_path):
+            if player.current_path_index == 0:
+                start_rect = self.board_rects[player.move_start_position - 1]
+                next_rect = self.board_rects[player.move_path[0] - 1]
+            else:
+                start_rect = self.board_rects[player.move_path[player.current_path_index - 1] - 1]
+                next_rect = self.board_rects[player.move_path[player.current_path_index] - 1]
+                
+            progress = player.move_progress
+            
+            start_x, start_y = self._get_player_position_on_rect(start_rect, player.player_number, is_corner, False)
+            target_x, target_y = self._get_player_position_on_rect(next_rect, player.player_number, is_corner, False)
+            
+            pos_x = int(start_x + (target_x - start_x) * progress)
+            pos_y = int(start_y + (target_y - start_y) * progress)
+            
+            board_margin = 10
+            pos_x = max(min(start_rect.x, next_rect.x) - board_margin, 
+                      min(pos_x, max(start_rect.x + start_rect.width, next_rect.x + next_rect.width) + board_margin))
+            pos_y = max(min(start_rect.y, next_rect.y) - board_margin, 
+                      min(pos_y, max(start_rect.y + start_rect.height, next_rect.y + next_rect.height) + board_margin))
+            
+        else:
+            if rect.width > rect.height + 10:
+                pos_x = rect.x + base_padding + (col * spacing)
+                pos_y = rect.y + (rect.height - 40) // 2 + (row * spacing // 2)
+            elif rect.height > rect.width + 10:
+                pos_x = rect.x + (rect.width - 40) // 2 + (col * spacing // 2)
+                pos_y = rect.y + base_padding + (row * spacing)
+            else:
+                pos_x = rect.x + base_padding + (col * spacing)
+                pos_y = rect.y + base_padding + (row * spacing)
+
+            pos_x = max(rect.x + 2, min(pos_x, rect.x + rect.width - 42))
+            pos_y = max(rect.y + 2, min(pos_y, rect.y + rect.height - 42))
+
+        glow_surface = pygame.Surface((44, 44), pygame.SRCALPHA)
+        for i in range(4):
+            alpha = int(100 * (1 - i/4))
+            pygame.draw.rect(glow_surface, (*player.color[:3], alpha),
+                          pygame.Rect(i, i, 44 - i*2, 44 - i*2),
+                          border_radius=5)
+        screen.blit(glow_surface, (pos_x - 2, pos_y - 2 - player.animation_offset))
+
+        if player.player_image:
+            token_rect = pygame.Rect(pos_x, pos_y - player.animation_offset, 40, 40)
+            screen.blit(player.player_image, token_rect)
+        else:
+            pygame.draw.circle(screen, player.color, (pos_x + 20, pos_y + 20 - player.animation_offset), 20)
+
+    def _get_player_position_on_rect(self, rect, player_number, is_corner, apply_bounds=True):
+        row = (player_number - 1) // 2
+        col = (player_number - 1) % 2
         base_padding = 12 if is_corner else 8
         spacing = 35 if is_corner else 30
         
@@ -156,20 +217,12 @@ class Board:
         else:
             pos_x = rect.x + base_padding + (col * spacing)
             pos_y = rect.y + base_padding + (row * spacing)
-
-        glow_surface = pygame.Surface((44, 44), pygame.SRCALPHA)
-        for i in range(4):
-            alpha = int(100 * (1 - i/4))
-            pygame.draw.rect(glow_surface, (*player.color[:3], alpha),
-                            pygame.Rect(i, i, 44 - i*2, 44 - i*2),
-                            border_radius=5)
-        screen.blit(glow_surface, (pos_x - 2, pos_y - 2 - player.animation_offset))
-
-        if player.player_image:
-            token_rect = pygame.Rect(pos_x, pos_y - player.animation_offset, 40, 40)
-            screen.blit(player.player_image, token_rect)
-        else:
-            pygame.draw.circle(screen, player.color, (pos_x + 20, pos_y + 20 - player.animation_offset), 20)
+        
+        if apply_bounds:
+            pos_x = max(rect.x + 2, min(pos_x, rect.x + rect.width - 42))
+            pos_y = max(rect.y + 2, min(pos_y, rect.y + rect.height - 42))
+            
+        return pos_x, pos_y
 
     def draw(self, screen):
         window_width = screen.get_width()
@@ -207,11 +260,31 @@ class Board:
         transparent_surface = pygame.Surface((window_width, window_height), pygame.SRCALPHA)
         
         for player in self.players:
-            if not isinstance(player.position, int):
+            if not isinstance(player.position, int) or not (1 <= player.position <= 40):
+                print(f"Warning: Invalid position {player.position} detected for {player.name} in draw, resetting to position 1")
                 player.position = 1
-            pos_index = max(0, min(player.position - 1, len(self.board_rects) - 1))
-            player_rect = self.board_rects[pos_index]
-            self.draw_player(transparent_surface, player, player_rect, player.player_number)
+                
+            if player.is_moving and player.current_path_index < len(player.move_path):
+                rect_for_animation = None
+                
+                if player.current_path_index == 0:
+                    start_pos = player.move_start_position - 1
+                    end_pos = player.move_path[0] - 1
+                else:
+                    start_pos = player.move_path[player.current_path_index - 1] - 1
+                    end_pos = player.move_path[player.current_path_index] - 1
+                
+                start_pos = max(0, min(start_pos, len(self.board_rects) - 1))
+                end_pos = max(0, min(end_pos, len(self.board_rects) - 1))
+                
+                if 0 <= start_pos < len(self.board_rects) and 0 <= end_pos < len(self.board_rects):
+                    rect_for_animation = self.board_rects[start_pos]
+                    is_corner = rect_for_animation.width > rect_for_animation.height + 10 or rect_for_animation.height > rect_for_animation.width + 10
+                    self.draw_player(transparent_surface, player, rect_for_animation, player.player_number)
+            else:
+                pos_index = max(0, min(player.position - 1, len(self.board_rects) - 1))
+                player_rect = self.board_rects[pos_index]
+                self.draw_player(transparent_surface, player, player_rect, player.player_number)
 
         info_panel_width = 300
         info_panel_height = 100
@@ -244,9 +317,18 @@ class Board:
         screen.blit(game_surface, (0, 0))
 
     def get_space(self, position):
-        array_pos = (position - 1) % 40
-        if 0 <= array_pos < len(self.spaces):
-            return self.spaces[array_pos]
+        array_pos = (position - 1) % 40 
+        if array_pos <= 9:
+            mapped_pos = array_pos
+        elif array_pos <= 19:
+            mapped_pos = array_pos
+        elif array_pos <= 29:
+            mapped_pos = array_pos 
+        else:
+            mapped_pos = array_pos
+            
+        if 0 <= mapped_pos < len(self.spaces):
+            return self.spaces[mapped_pos]
         return None
 
     def update_ownership(self, properties_data):
@@ -262,4 +344,35 @@ class Board:
     def get_property_group(self, position):
         if str(position) in self.properties_data:
             return self.properties_data[str(position)].get("group")
+        return None
+
+    def get_property_position(self, position):
+        if not 1 <= position <= 40:
+            return None
+            
+        pos_index = position - 1
+        if pos_index < len(self.board_rects):
+            rect = self.board_rects[pos_index]
+            return (rect.x + rect.width // 2, rect.y + rect.height // 2)
+        return None
+        
+    def board_to_screen(self, x, y):
+        return (x, y)
+        
+    def update_offset(self, dx, dy):
+        self.camera.offset_x += dx
+        self.camera.offset_y += dy
+        
+        window_size = pygame.display.get_surface().get_size()
+        max_offset = window_size[0] // 4
+        self.camera.offset_x = max(min(self.camera.offset_x, max_offset), -max_offset)
+        self.camera.offset_y = max(min(self.camera.offset_y, max_offset), -max_offset)
+        
+        self.update_board_positions()
+        
+    def property_clicked(self, pos):
+        for i, rect in enumerate(self.board_rects):
+            expanded_rect = rect.inflate(10, 10)
+            if expanded_rect.collidepoint(pos):
+                return i + 1 
         return None
