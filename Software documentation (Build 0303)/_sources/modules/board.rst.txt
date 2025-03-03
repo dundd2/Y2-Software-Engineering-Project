@@ -1,0 +1,9 @@
+Board Module
+===========
+
+This module contains the Board class that represents the game board.
+
+.. automodule:: src.Board
+   :members:
+   :undoc-members:
+   :show-inheritance: 

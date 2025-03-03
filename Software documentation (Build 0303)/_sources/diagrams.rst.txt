@@ -1,0 +1,881 @@
+Game Flow and Structure
+=====================
+
+This section provides visual representations of the game's flow and structure using diagrams.
+
+Game Flow
+--------
+
+The following flowchart shows the main game loop and turn sequence:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam activityBorderColor black
+   skinparam activityBackgroundColor lightGray
+   skinparam arrowColor black
+
+   start
+   :Initialize Players;
+   :Setup Board;
+   while (Game Not Over?) is (yes)
+     :Player's Turn;
+     :Roll Dice;
+     :Move Player;
+     if (Land on Property?) then (yes)
+       if (Property Owned?) then (yes)
+         :Pay Rent;
+       else (no)
+         if (Can Afford?) then (yes)
+           :Option to Buy;
+           if (Buy Property?) then (yes)
+             :Purchase Property;
+             :Update Player Balance;
+           endif
+         endif
+       endif
+     else (no)
+       if (Special Space?) then (yes)
+         :Draw Card;
+         :Execute Card Action;
+       else
+         :Handle Space Effect;
+       endif
+     endif
+     if (Player Bankrupt?) then (yes)
+       :Remove Player;
+     endif
+     :End Turn;
+   endwhile (no)
+   :Calculate Final Scores;
+   :Declare Winner;
+   stop
+   @enduml
+
+AI Decision Making
+---------------
+
+This diagram shows how the AI makes decisions during the game:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam activityBorderColor black
+   skinparam activityBackgroundColor lightGray
+   skinparam arrowColor black
+
+   start
+   :AI Turn Start;
+
+   partition "Property Analysis" {
+     if (On Property Space?) then (yes)
+       if (Property Owned?) then (yes)
+         :Calculate and Pay Rent;
+       else (no)
+         :Analyze Property Value;
+         :Check Property Set Completion;
+         :Calculate Expected Return;
+         :Evaluate Current Cash Position;
+         if (Worth Buying?) then (yes)
+           if (Can Afford?) then (yes)
+             :Purchase Property;
+           else (no)
+             :Consider Mortgage Options;
+             if (Can Free Up Cash?) then (yes)
+               :Mortgage Properties;
+               :Purchase Property;
+             endif
+           endif
+         endif
+       endif
+     endif
+   }
+
+   partition "Strategy Execution" {
+     :Update Strategy Based on Game State;
+     if (Need to Trade?) then (yes)
+       :Evaluate Trade Opportunities;
+       if (Beneficial Trade Found?) then (yes)
+         :Propose Trade;
+       endif
+     endif
+
+     if (Should Build?) then (yes)
+       :Analyze Building Opportunities;
+       if (Profitable Location?) then (yes)
+         :Build Houses/Hotels;
+       endif
+     endif
+
+     if (In Financial Trouble?) then (yes)
+       :Evaluate Assets;
+       :Prioritize Properties;
+       if (Need to Sell?) then (yes)
+         :Sell Buildings;
+         if (Still in Trouble?) then (yes)
+           :Mortgage Properties;
+         endif
+       endif
+     endif
+   }
+
+   partition "Risk Management" {
+     :Calculate Risk Level;
+     if (High Risk?) then (yes)
+       :Implement Conservative Strategy;
+       :Maintain Cash Reserve;
+     else (no)
+       :Implement Aggressive Strategy;
+       :Invest in Properties;
+     endif
+   }
+
+   :Update AI Knowledge Base;
+   :End AI Turn;
+   stop
+   @enduml
+
+AI Strategy Types
+--------------
+
+This diagram shows the different AI strategy types and their characteristics:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam classBackgroundColor lightGray
+   skinparam classBorderColor black
+   skinparam arrowColor black
+
+   abstract class AIStrategy {
+     + evaluate_move()
+     + make_decision()
+     + calculate_risk()
+     # update_knowledge()
+   }
+
+   class AggressiveAI {
+     - risk_tolerance: high
+     - investment_threshold: low
+     + prioritize_purchases()
+     + evaluate_trades()
+     + calculate_development_priority()
+   }
+
+   class ConservativeAI {
+     - risk_tolerance: low
+     - cash_reserve_target: high
+     + evaluate_safety_threshold()
+     + calculate_minimum_holdings()
+     + plan_emergency_sales()
+   }
+
+   class BalancedAI {
+     - risk_tolerance: medium
+     - strategy_adaptation_rate: high
+     + balance_portfolio()
+     + adjust_strategy()
+     + optimize_holdings()
+   }
+
+   class OpportunisticAI {
+     - market_analysis: detailed
+     - opportunity_threshold: dynamic
+     + identify_opportunities()
+     + calculate_market_trends()
+     + time_investments()
+   }
+
+   AIStrategy <|-- AggressiveAI
+   AIStrategy <|-- ConservativeAI
+   AIStrategy <|-- BalancedAI
+   AIStrategy <|-- OpportunisticAI
+
+   @enduml
+
+AI Decision Factors
+----------------
+
+This diagram shows the factors that influence AI decision making:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam componentBackgroundColor lightYellow
+   skinparam componentBorderColor black
+   skinparam arrowColor black
+
+   package "AI Decision Engine" {
+     [Property Evaluation] as PE
+     [Risk Assessment] as RA
+     [Strategy Selection] as SS
+     [Market Analysis] as MA
+   }
+
+   package "Input Factors" {
+     [Current Cash] as CC
+     [Property Portfolio] as PP
+     [Player Positions] as PPos
+     [Game Phase] as GP
+   }
+
+   package "Analysis Metrics" {
+     [Return on Investment] as ROI
+     [Risk Level] as RL
+     [Market Opportunity] as MO
+     [Competition Level] as CL
+   }
+
+   package "Decision Outputs" {
+     [Purchase Decision] as PD
+     [Development Plan] as DP
+     [Trade Proposals] as TP
+     [Asset Management] as AM
+   }
+
+   CC --> PE
+   PP --> PE
+   PPos --> MA
+   GP --> SS
+
+   PE --> ROI
+   RA --> RL
+   MA --> MO
+   MA --> CL
+
+   ROI --> PD
+   RL --> SS
+   MO --> TP
+   CL --> DP
+
+   SS --> AM
+   @enduml
+
+Class Hierarchy
+-------------
+
+This diagram shows the main class structure of the game:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam classBackgroundColor lightGray
+   skinparam classBorderColor black
+   skinparam arrowColor black
+
+   class Game {
+     + players: List[Player]
+     + board: Board
+     + current_player: Player
+     + dice: Dice
+     + cards: Dict[str, List[Card]]
+     + start()
+     + process_turn()
+     + handle_property_action()
+     + handle_special_space()
+     + check_game_over()
+   }
+
+   class Player {
+     + name: str
+     + money: int
+     + position: int
+     + properties: List[Property]
+     + is_bankrupt: bool
+     + move(spaces: int)
+     + buy_property(property: Property)
+     + pay_rent(amount: int)
+     + receive_money(amount: int)
+     + calculate_net_worth()
+   }
+
+   class Board {
+     + spaces: List[Space]
+     + properties: Dict[str, Property]
+     + get_space(position: int)
+     + get_property(name: str)
+     + initialize_board()
+   }
+
+   class Property {
+     + name: str
+     + price: int
+     + rent: int
+     + owner: Player
+     + position: int
+     + is_mortgaged: bool
+     + calculate_rent()
+     + mortgage()
+     + unmortgage()
+   }
+
+   class AI_Player {
+     + strategy: str
+     + make_decision()
+     + evaluate_purchase()
+     + choose_action()
+   }
+
+   class Space {
+     + name: str
+     + position: int
+     + type: str
+     + action()
+   }
+
+   class Card {
+     + type: str
+     + description: str
+     + action: str
+     + execute(player: Player)
+   }
+
+   class Dice {
+     + roll()
+     + get_total()
+     + is_doubles()
+   }
+
+   AI_Player --|> Player
+   Game *-- Player
+   Game *-- Board
+   Game *-- Dice
+   Game *-- Card
+   Board *-- Space
+   Board *-- Property
+   Player o-- Property
+   @enduml
+
+Game Components
+-------------
+
+Here's a component diagram showing the game's architecture:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam componentBackgroundColor lightBlue
+   skinparam componentBorderColor black
+   skinparam arrowColor black
+
+   package "Property Tycoon" {
+     [Game Engine] as GE
+     [User Interface] as UI
+     [Game Logic] as GL
+     [Data Management] as DM
+     [Event Handler] as EH
+     [State Manager] as SM
+   }
+
+   package "Game Components" {
+     [Players Manager] as PM
+     [Game Board] as GB
+     [Cards Manager] as CM
+     [Property Manager] as PRM
+   }
+
+   package "Player Types" {
+     [Human Players] as HP
+     [AI Players] as AI
+     [Player State] as PS
+   }
+
+   package "Board Elements" {
+     [Properties] as PR
+     [Special Spaces] as SS
+     [Corner Spaces] as CS
+   }
+
+   package "Card Types" {
+     [Chance Cards] as CC
+     [Community Chest] as CCH
+     [Card Actions] as CA
+   }
+
+   package "Data Layer" {
+     [Property Data] as PD
+     [Card Data] as CD
+     [Game State] as GS
+   }
+
+   GE --> PM
+   GE --> GB
+   GE --> CM
+   UI --> GE
+   GL --> GE
+   DM --> PD
+   DM --> CD
+   DM --> GS
+   EH --> UI
+   SM --> GS
+
+   PM --> HP
+   PM --> AI
+   PM --> PS
+
+   GB --> PR
+   GB --> SS
+   GB --> CS
+
+   CM --> CC
+   CM --> CCH
+   CC --> CA
+   CCH --> CA
+
+   PRM --> PR
+   @enduml
+
+Turn Sequence
+-----------
+
+This sequence diagram shows the detailed flow of a player's turn:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam sequenceParticipantBackgroundColor lightGray
+   skinparam sequenceParticipantBorderColor black
+   skinparam arrowColor black
+
+   participant Player
+   participant Game
+   participant Board
+   participant Space
+   participant Property
+   participant Cards
+
+   Player -> Game: Start Turn
+   activate Game
+   
+   Game -> Player: Request Roll Dice
+   activate Player
+   Player -> Game: Roll Dice
+   deactivate Player
+   
+   Game -> Board: Get New Position
+   activate Board
+   Board -> Space: Get Space Type
+   activate Space
+   Space --> Board: Return Space Info
+   deactivate Space
+   Board --> Game: Return Space
+   deactivate Board
+   
+   alt Property Space
+       Game -> Property: Get Property Info
+       activate Property
+       Property --> Game: Return Property Details
+       deactivate Property
+       
+       alt Property Not Owned
+           Game -> Player: Offer Purchase
+           activate Player
+           Player -> Game: Make Decision
+           deactivate Player
+           
+           alt Decides to Buy
+               Game -> Player: Deduct Money
+               Game -> Property: Set Owner
+           end
+       else Property Owned
+           Game -> Player: Request Rent Payment
+           activate Player
+           Player -> Game: Pay Rent
+           deactivate Player
+           Game -> Property: Get Owner
+           Game -> Player: Transfer Rent to Owner
+       end
+   else Special Space
+       Game -> Cards: Draw Card
+       activate Cards
+       Cards --> Game: Return Card Action
+       deactivate Cards
+       Game -> Player: Execute Card Action
+   end
+   
+   Game -> Player: Check Bankruptcy
+   activate Player
+   Player --> Game: Status Update
+   deactivate Player
+   
+   Game -> Game: Update Game State
+   Game -> Player: End Turn
+   deactivate Game
+   @enduml
+
+Data Flow
+--------
+
+This diagram shows how data flows through the game:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam componentBackgroundColor lightGreen
+   skinparam componentBorderColor black
+   skinparam arrowColor black
+
+   database "Excel Files" {
+     [Property Data]
+     [Card Data]
+     [Configuration]
+   }
+
+   package "Data Loading" {
+     [Excel Reader]
+     [Data Parser]
+     [Validator]
+   }
+
+   package "Game State" {
+     [Player States]
+     [Board State]
+     [Game Progress]
+   }
+
+   package "Game Logic" {
+     [Rules Engine]
+     [Action Handler]
+     [State Manager]
+   }
+
+   package "User Interface" {
+     [Display]
+     [Input Handler]
+     [Event System]
+   }
+
+   [Excel Files] --> [Excel Reader]
+   [Excel Reader] --> [Data Parser]
+   [Data Parser] --> [Validator]
+   [Validator] --> [Game State]
+
+   [Game State] --> [Rules Engine]
+   [Rules Engine] --> [Action Handler]
+   [Action Handler] --> [State Manager]
+   [State Manager] --> [Game State]
+
+   [Game State] --> [Display]
+   [Input Handler] --> [Action Handler]
+   [Event System] --> [State Manager]
+   @enduml
+
+State Machine
+-----------
+
+This diagram shows the game's state transitions:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam stateBorderColor black
+   skinparam stateBackgroundColor lightGray
+
+   [*] --> Initialize
+
+   state Initialize {
+     [*] --> LoadData
+     LoadData --> SetupPlayers
+     SetupPlayers --> SetupBoard
+     SetupBoard --> [*]
+   }
+
+   Initialize --> GameLoop
+
+   state GameLoop {
+     [*] --> PlayerTurn
+     
+     state PlayerTurn {
+       [*] --> RollDice
+       RollDice --> MovePlayer
+       MovePlayer --> HandleSpace
+       HandleSpace --> CheckGameState
+       CheckGameState --> EndTurn
+       EndTurn --> [*]
+     }
+     
+     PlayerTurn --> CheckEndGame
+     CheckEndGame --> PlayerTurn : Game Continues
+   }
+
+   GameLoop --> GameOver : Game Ends
+   GameOver --> [*]
+
+   @enduml 
+
+Player Flow
+----------
+
+This diagram shows the player lifecycle and actions:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam activityBorderColor black
+   skinparam activityBackgroundColor lightGray
+   skinparam arrowColor black
+
+   start
+   :Initialize Player;
+   note right
+     - Set name, money, position
+     - Set AI/Human status
+     - Initialize properties list
+     - Load player image
+   end note
+
+   while (Player Active?) is (yes)
+     if (Is AI Player?) then (yes)
+       :Execute AI Strategy;
+       note right
+         - Evaluate purchases
+         - Manage properties
+         - Handle trades
+       end note
+     else (no)
+       :Wait for Player Input;
+     endif
+
+     if (In Jail?) then (yes)
+       :Handle Jail Turn;
+       if (Has Jail Card?) then (yes)
+         :Use Jail Card;
+       else (no)
+         if (Can Pay Fine?) then (yes)
+           :Pay £50;
+         else (no)
+           :Increment Jail Turns;
+           if (Jail Turns >= 3) then (yes)
+             :Force Payment;
+           endif
+         endif
+       endif
+     endif
+
+     if (On Property?) then (yes)
+       if (Can Afford?) then (yes)
+         :Consider Purchase;
+         if (Buy Decision?) then (yes)
+           :Buy Property;
+           :Update Assets;
+         endif
+       endif
+     endif
+
+     if (Bankrupt?) then (yes)
+       :Process Bankruptcy;
+       stop
+     endif
+
+   endwhile (no)
+
+   if (Game Over?) then (yes)
+     :Calculate Final Assets;
+   endif
+
+   stop
+   @enduml
+
+Board Flow
+---------
+
+This diagram illustrates the board management and player movement:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam activityBorderColor black
+   skinparam activityBackgroundColor lightGray
+   skinparam arrowColor black
+
+   start
+   :Initialize Board;
+   note right
+     - Create board layout
+     - Set up spaces
+     - Initialize player positions
+   end note
+
+   while (Game Active?) is (yes)
+     :Update Board State;
+     
+     if (Player Moving?) then (yes)
+       :Calculate Path;
+       :Animate Movement;
+       while (Animation in Progress?) is (yes)
+         :Update Position;
+         :Draw Animation Frame;
+       endwhile (no)
+       :Update Final Position;
+     endif
+
+     if (Property Change?) then (yes)
+       :Update Property Ownership;
+       :Refresh Display;
+     endif
+
+     :Draw Board;
+     note right
+       - Draw properties
+       - Draw players
+       - Show messages
+       - Update UI
+     end note
+
+     if (Special Space?) then (yes)
+       :Handle Special Action;
+       note right
+         - Chance
+         - Community Chest
+         - Tax
+         - Go to Jail
+       end note
+     endif
+
+   endwhile (no)
+
+   stop
+   @enduml
+
+Card Handling Flow
+---------------
+
+This diagram shows the card drawing and action processing:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam activityBorderColor black
+   skinparam activityBackgroundColor lightGray
+   skinparam arrowColor black
+
+   start
+   :Player Lands on Card Space;
+
+   if (Space Type?) then (Pot Luck)
+     :Draw Pot Luck Card;
+   else (Opportunity Knocks)
+     :Draw Opportunity Knocks Card;
+   endif
+
+   :Display Card;
+   note right
+     Show card text and
+     wait for acknowledgment
+   end note
+
+   :Process Card Action;
+
+   if (Action Type?) then (Move Player)
+     :Calculate New Position;
+     if (Pass GO?) then (yes)
+       :Add £200;
+     endif
+     :Move Player;
+   else if (Money Transaction?) then
+     if (Receive Money?) then (yes)
+       :Add to Player Balance;
+     else (no)
+       :Deduct from Player Balance;
+     endif
+   else if (Get Out of Jail?) then
+     :Add Jail Card to Player;
+   else if (Property Related?)
+     :Handle Property Action;
+     note right
+       - Repairs
+       - Rent changes
+       - Property effects
+     end note
+   endif
+
+   :Return Card to Deck;
+   :Update Game State;
+
+   stop
+   @enduml
+
+Game Logic Flow
+-------------
+
+This diagram shows the core game logic and state management:
+
+.. uml::
+
+   @startuml
+   skinparam backgroundColor white
+   skinparam activityBorderColor black
+   skinparam activityBackgroundColor lightGray
+   skinparam arrowColor black
+
+   start
+   :Initialize Game Logic;
+   note right
+     - Load properties
+     - Set up bank
+     - Initialize decks
+   end note
+
+   while (Game Active?) is (yes)
+     :Process Player Turn;
+     
+     if (Player Type?) then (AI)
+       :Execute AI Logic;
+       note right
+         - Strategy selection
+         - Decision making
+         - Action execution
+       end note
+     else (Human)
+       :Handle Player Input;
+     endif
+
+     if (Transaction?) then (yes)
+       :Validate Transaction;
+       if (Valid?) then (yes)
+         :Process Money Transfer;
+         :Update Bank Balance;
+       endif
+     endif
+
+     if (Property Action?) then (yes)
+       :Handle Property Transaction;
+       note right
+         - Buying
+         - Selling
+         - Mortgaging
+         - Development
+       end note
+     endif
+
+     :Check Win Conditions;
+     if (Game Mode?) then (Full)
+       if (One Player Left?) then (yes)
+         :End Game;
+         stop
+       endif
+     else (Abridged)
+       if (Time Limit Reached?) then (yes)
+         :Calculate Final Assets;
+         :Determine Winner;
+         stop
+       endif
+     endif
+
+     :Next Player Turn;
+   endwhile (no)
+
+   stop
+   @enduml 

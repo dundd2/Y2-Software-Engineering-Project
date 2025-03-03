@@ -1,0 +1,9 @@
+Property Module
+==============
+
+This module contains the Property class that represents properties in the game.
+
+.. automodule:: src.Property
+   :members:
+   :undoc-members:
+   :show-inheritance: 

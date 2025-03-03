@@ -1,0 +1,9 @@
+AI Player Logic Module
+===================
+
+This module contains the logic for AI players in the game.
+
+.. automodule:: src.ai_player_logic
+   :members:
+   :undoc-members:
+   :show-inheritance: 

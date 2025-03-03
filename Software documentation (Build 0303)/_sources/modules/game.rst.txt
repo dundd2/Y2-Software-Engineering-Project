@@ -1,0 +1,54 @@
+Game Module
+==========
+
+This module contains the main Game class which orchestrates the game flow and manages the overall game state.
+
+Key Features
+-----------
+
+* Game initialization and setup
+* Turn management
+* Player actions handling
+* Game state management
+* Win condition checking
+* Save/Load game functionality
+
+Usage Example
+------------
+
+Here's a basic example of how to start a new game:
+
+.. code-block:: python
+
+    from src.Game import Game
+    
+    # Create a new game with 4 players
+    game = Game(num_players=4)
+    
+    # Start the game
+    game.start()
+    
+    # Main game loop
+    while not game.is_game_over():
+        game.process_turn()
+
+Class Documentation
+-----------------
+
+.. automodule:: src.Game
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Common Operations
+---------------
+
+The Game class provides several key operations:
+
+* ``start()``: Initialize and start a new game
+* ``process_turn()``: Handle a player's turn
+* ``move_player(player, steps)``: Move a player on the board
+* ``handle_property_purchase(player, property)``: Process property purchases
+* ``handle_rent_payment(player, property)``: Handle rent payments
+* ``save_game(filename)``: Save the current game state
+* ``load_game(filename)``: Load a previously saved game 

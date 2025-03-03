@@ -1,0 +1,9 @@
+Cards Module
+===========
+
+This module contains classes and functions related to the game cards.
+
+.. automodule:: src.cards
+   :members:
+   :undoc-members:
+   :show-inheritance: 

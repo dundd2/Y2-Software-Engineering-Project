@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Module &mdash; Property Tycoon build-2025.03.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=bb89e53f" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=976f84ab"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Player Module" href="player.html" />
+    <link rel="prev" title="Game Flow and Structure" href="../diagrams.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../diagrams.html">Game Flow and Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#game-flow">Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#ai-decision-making">AI Decision Making</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#ai-strategy-types">AI Strategy Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#ai-decision-factors">AI Decision Factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#game-components">Game Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#turn-sequence">Turn Sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#data-flow">Data Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#state-machine">State Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#player-flow">Player Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#board-flow">Board Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#card-handling-flow">Card Handling Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../diagrams.html#game-logic-flow">Game Logic Flow</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.add_message"><code class="docutils literal notranslate"><span class="pre">Game.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.add_to_free_parking"><code class="docutils literal notranslate"><span class="pre">Game.add_to_free_parking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.calculate_player_assets"><code class="docutils literal notranslate"><span class="pre">Game.calculate_player_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_game_over"><code class="docutils literal notranslate"><span class="pre">Game.check_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_one_player_remains"><code class="docutils literal notranslate"><span class="pre">Game.check_one_player_remains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_passing_go"><code class="docutils literal notranslate"><span class="pre">Game.check_passing_go()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_time_limit"><code class="docutils literal notranslate"><span class="pre">Game.check_time_limit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.collect_free_parking"><code class="docutils literal notranslate"><span class="pre">Game.collect_free_parking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw"><code class="docutils literal notranslate"><span class="pre">Game.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_auction"><code class="docutils literal notranslate"><span class="pre">Game.draw_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_button"><code class="docutils literal notranslate"><span class="pre">Game.draw_button()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_buy_options"><code class="docutils literal notranslate"><span class="pre">Game.draw_buy_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_card_alert"><code class="docutils literal notranslate"><span class="pre">Game.draw_card_alert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_development_ui"><code class="docutils literal notranslate"><span class="pre">Game.draw_development_ui()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_dice"><code class="docutils literal notranslate"><span class="pre">Game.draw_dice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_free_parking_pot"><code class="docutils literal notranslate"><span class="pre">Game.draw_free_parking_pot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_jail_options"><code class="docutils literal notranslate"><span class="pre">Game.draw_jail_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_notification"><code class="docutils literal notranslate"><span class="pre">Game.draw_notification()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_popup_message"><code class="docutils literal notranslate"><span class="pre">Game.draw_popup_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_property_card"><code class="docutils literal notranslate"><span class="pre">Game.draw_property_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_property_tooltip"><code class="docutils literal notranslate"><span class="pre">Game.draw_property_tooltip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.draw_time_remaining"><code class="docutils literal notranslate"><span class="pre">Game.draw_time_remaining()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.end_abridged_game"><code class="docutils literal notranslate"><span class="pre">Game.end_abridged_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.end_full_game"><code class="docutils literal notranslate"><span class="pre">Game.end_full_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.finish_dice_animation"><code class="docutils literal notranslate"><span class="pre">Game.finish_dice_animation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.get_jail_choice"><code class="docutils literal notranslate"><span class="pre">Game.get_jail_choice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">Game.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_auction_click"><code class="docutils literal notranslate"><span class="pre">Game.handle_auction_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_auction_input"><code class="docutils literal notranslate"><span class="pre">Game.handle_auction_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">Game.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">Game.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_card_action"><code class="docutils literal notranslate"><span class="pre">Game.handle_card_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">Game.handle_card_draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_click"><code class="docutils literal notranslate"><span class="pre">Game.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_development_click"><code class="docutils literal notranslate"><span class="pre">Game.handle_development_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_fine_payment"><code class="docutils literal notranslate"><span class="pre">Game.handle_fine_payment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_game_over"><code class="docutils literal notranslate"><span class="pre">Game.handle_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_jail_turn"><code class="docutils literal notranslate"><span class="pre">Game.handle_jail_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_key"><code class="docutils literal notranslate"><span class="pre">Game.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_motion"><code class="docutils literal notranslate"><span class="pre">Game.handle_motion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_space"><code class="docutils literal notranslate"><span class="pre">Game.handle_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_voluntary_exit"><code class="docutils literal notranslate"><span class="pre">Game.handle_voluntary_exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.move_player"><code class="docutils literal notranslate"><span class="pre">Game.move_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.play_turn"><code class="docutils literal notranslate"><span class="pre">Game.play_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_card_popup"><code class="docutils literal notranslate"><span class="pre">Game.show_card_popup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_notification"><code class="docutils literal notranslate"><span class="pre">Game.show_notification()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_time_stats"><code class="docutils literal notranslate"><span class="pre">Game.show_time_stats()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.start_auction"><code class="docutils literal notranslate"><span class="pre">Game.start_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.synchronize_player_positions"><code class="docutils literal notranslate"><span class="pre">Game.synchronize_player_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.wait_for_animations"><code class="docutils literal notranslate"><span class="pre">Game.wait_for_animations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.wrap_text"><code class="docutils literal notranslate"><span class="pre">Game.wrap_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#common-operations">Common Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="player.html#player-types">Player Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#player-properties">Player Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="player.html#src.Player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.add_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.add_jail_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.add_property"><code class="docutils literal notranslate"><span class="pre">Player.add_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.buy_property"><code class="docutils literal notranslate"><span class="pre">Player.buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.can_afford"><code class="docutils literal notranslate"><span class="pre">Player.can_afford()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.can_build_hotels"><code class="docutils literal notranslate"><span class="pre">Player.can_build_hotels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.can_build_houses"><code class="docutils literal notranslate"><span class="pre">Player.can_build_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.create_fallback_token"><code class="docutils literal notranslate"><span class="pre">Player.create_fallback_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.draw_player"><code class="docutils literal notranslate"><span class="pre">Player.draw_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.generate_move_path"><code class="docutils literal notranslate"><span class="pre">Player.generate_move_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.get_mortgageable_properties"><code class="docutils literal notranslate"><span class="pre">Player.get_mortgageable_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.get_properties_with_hotels"><code class="docutils literal notranslate"><span class="pre">Player.get_properties_with_hotels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.get_properties_with_houses"><code class="docutils literal notranslate"><span class="pre">Player.get_properties_with_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.get_total_assets"><code class="docutils literal notranslate"><span class="pre">Player.get_total_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.get_total_offset"><code class="docutils literal notranslate"><span class="pre">Player.get_total_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.get_unmortgageable_properties"><code class="docutils literal notranslate"><span class="pre">Player.get_unmortgageable_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">Player.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.handle_jail_turn"><code class="docutils literal notranslate"><span class="pre">Player.handle_jail_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.handle_voluntary_exit"><code class="docutils literal notranslate"><span class="pre">Player.handle_voluntary_exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.is_animation_complete"><code class="docutils literal notranslate"><span class="pre">Player.is_animation_complete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.load_player_image"><code class="docutils literal notranslate"><span class="pre">Player.load_player_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.move"><code class="docutils literal notranslate"><span class="pre">Player.move()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.pay"><code class="docutils literal notranslate"><span class="pre">Player.pay()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.receive"><code class="docutils literal notranslate"><span class="pre">Player.receive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.remove_property"><code class="docutils literal notranslate"><span class="pre">Player.remove_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.set_active"><code class="docutils literal notranslate"><span class="pre">Player.set_active()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.set_winner"><code class="docutils literal notranslate"><span class="pre">Player.set_winner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.update_animation"><code class="docutils literal notranslate"><span class="pre">Player.update_animation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.use_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.use_jail_card()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#trading">Trading</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="board.html#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="property.html#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification.check_button_click"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.check_button_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification.draw"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.ModernButton"><code class="docutils literal notranslate"><span class="pre">ModernButton</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernButton.check_hover"><code class="docutils literal notranslate"><span class="pre">ModernButton.check_hover()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernButton.draw"><code class="docutils literal notranslate"><span class="pre">ModernButton.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.ModernInput"><code class="docutils literal notranslate"><span class="pre">ModernInput</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernInput.draw"><code class="docutils literal notranslate"><span class="pre">ModernInput.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#src.cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#src.cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#src.cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="loadexcel.html#src.loadexcel.load_game_text"><code class="docutils literal notranslate"><span class="pre">load_game_text()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="loadexcel.html#src.loadexcel.load_property_data"><code class="docutils literal notranslate"><span class="pre">load_property_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-module">
+<h1>Game Module<a class="headerlink" href="#game-module" title="Link to this heading"></a></h1>
+<p>This module contains the main Game class which orchestrates the game flow and manages the overall game state.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Game initialization and setup</p></li>
+<li><p>Turn management</p></li>
+<li><p>Player actions handling</p></li>
+<li><p>Game state management</p></li>
+<li><p>Win condition checking</p></li>
+<li><p>Save/Load game functionality</p></li>
+</ul>
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading"></a></h2>
+<p>Here’s a basic example of how to start a new game:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">src.Game</span><span class="w"> </span><span class="kn">import</span> <span class="n">Game</span>
+
+<span class="c1"># Create a new game with 4 players</span>
+<span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">num_players</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Start the game</span>
+<span class="n">game</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c1"># Main game loop</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">is_game_over</span><span class="p">():</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">process_turn</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-src.Game">
+<dt class="sig sig-object py" id="src.Game.Game">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Game.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">players</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_difficulty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'easy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.add_message">
+<span class="sig-name descname"><span class="pre">add_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.add_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.add_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.add_to_free_parking">
+<span class="sig-name descname"><span class="pre">add_to_free_parking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.add_to_free_parking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.add_to_free_parking" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.calculate_player_assets">
+<span class="sig-name descname"><span class="pre">calculate_player_assets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.calculate_player_assets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.calculate_player_assets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_game_over">
+<span class="sig-name descname"><span class="pre">check_game_over</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_game_over"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_game_over" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_one_player_remains">
+<span class="sig-name descname"><span class="pre">check_one_player_remains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_one_player_remains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_one_player_remains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_passing_go">
+<span class="sig-name descname"><span class="pre">check_passing_go</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_passing_go"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_passing_go" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_time_limit">
+<span class="sig-name descname"><span class="pre">check_time_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_time_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_time_limit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.collect_free_parking">
+<span class="sig-name descname"><span class="pre">collect_free_parking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.collect_free_parking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.collect_free_parking" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_auction">
+<span class="sig-name descname"><span class="pre">draw_auction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auction_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_auction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_auction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_button">
+<span class="sig-name descname"><span class="pre">draw_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_button"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_button" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_buy_options">
+<span class="sig-name descname"><span class="pre">draw_buy_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_buy_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_buy_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_card_alert">
+<span class="sig-name descname"><span class="pre">draw_card_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_card_alert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_card_alert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_development_ui">
+<span class="sig-name descname"><span class="pre">draw_development_ui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_development_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_development_ui" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_dice">
+<span class="sig-name descname"><span class="pre">draw_dice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dice1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dice2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_rolling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_dice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_dice" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_free_parking_pot">
+<span class="sig-name descname"><span class="pre">draw_free_parking_pot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_free_parking_pot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_free_parking_pot" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_jail_options">
+<span class="sig-name descname"><span class="pre">draw_jail_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_jail_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_jail_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_notification">
+<span class="sig-name descname"><span class="pre">draw_notification</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_notification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_notification" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_popup_message">
+<span class="sig-name descname"><span class="pre">draw_popup_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_popup_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_popup_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_property_card">
+<span class="sig-name descname"><span class="pre">draw_property_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_property_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_property_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_property_tooltip">
+<span class="sig-name descname"><span class="pre">draw_property_tooltip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouse_pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_property_tooltip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_property_tooltip" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.draw_time_remaining">
+<span class="sig-name descname"><span class="pre">draw_time_remaining</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.draw_time_remaining"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.draw_time_remaining" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.end_abridged_game">
+<span class="sig-name descname"><span class="pre">end_abridged_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.end_abridged_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.end_abridged_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.end_full_game">
+<span class="sig-name descname"><span class="pre">end_full_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.end_full_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.end_full_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.finish_dice_animation">
+<span class="sig-name descname"><span class="pre">finish_dice_animation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.finish_dice_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.finish_dice_animation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.get_jail_choice">
+<span class="sig-name descname"><span class="pre">get_jail_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.get_jail_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.get_jail_choice" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_ai_turn">
+<span class="sig-name descname"><span class="pre">handle_ai_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_ai_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_ai_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_auction_click">
+<span class="sig-name descname"><span class="pre">handle_auction_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_auction_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_auction_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_auction_input">
+<span class="sig-name descname"><span class="pre">handle_auction_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_auction_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_auction_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_bankruptcy">
+<span class="sig-name descname"><span class="pre">handle_bankruptcy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_bankruptcy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_bankruptcy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_buy_decision">
+<span class="sig-name descname"><span class="pre">handle_buy_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wants_to_buy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_buy_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_buy_decision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_card_action">
+<span class="sig-name descname"><span class="pre">handle_card_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_card_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_card_action" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_card_draw">
+<span class="sig-name descname"><span class="pre">handle_card_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_card_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_card_draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_development_click">
+<span class="sig-name descname"><span class="pre">handle_development_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_development_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_development_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_fine_payment">
+<span class="sig-name descname"><span class="pre">handle_fine_payment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fine'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_fine_payment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_fine_payment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_game_over">
+<span class="sig-name descname"><span class="pre">handle_game_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">winner_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_game_over"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_game_over" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_jail_turn">
+<span class="sig-name descname"><span class="pre">handle_jail_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_jail_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_jail_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_space">
+<span class="sig-name descname"><span class="pre">handle_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_space" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_voluntary_exit">
+<span class="sig-name descname"><span class="pre">handle_voluntary_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_assets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_voluntary_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_voluntary_exit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.move_player">
+<span class="sig-name descname"><span class="pre">move_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spaces</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.move_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.move_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.play_turn">
+<span class="sig-name descname"><span class="pre">play_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.play_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.play_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_card_popup">
+<span class="sig-name descname"><span class="pre">show_card_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_card_popup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_card_popup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_notification">
+<span class="sig-name descname"><span class="pre">show_notification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_notification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_notification" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_time_stats">
+<span class="sig-name descname"><span class="pre">show_time_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_time_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_time_stats" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.start_auction">
+<span class="sig-name descname"><span class="pre">start_auction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.start_auction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.start_auction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.synchronize_player_positions">
+<span class="sig-name descname"><span class="pre">synchronize_player_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.synchronize_player_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.synchronize_player_positions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.wait_for_animations">
+<span class="sig-name descname"><span class="pre">wait_for_animations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.wait_for_animations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.wait_for_animations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.wrap_text">
+<span class="sig-name descname"><span class="pre">wrap_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.wrap_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.wrap_text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="common-operations">
+<h2>Common Operations<a class="headerlink" href="#common-operations" title="Link to this heading"></a></h2>
+<p>The Game class provides several key operations:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start()</span></code>: Initialize and start a new game</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">process_turn()</span></code>: Handle a player’s turn</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">move_player(player,</span> <span class="pre">steps)</span></code>: Move a player on the board</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_property_purchase(player,</span> <span class="pre">property)</span></code>: Process property purchases</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_rent_payment(player,</span> <span class="pre">property)</span></code>: Handle rent payments</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save_game(filename)</span></code>: Save the current game state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_game(filename)</span></code>: Load a previously saved game</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../diagrams.html" class="btn btn-neutral float-left" title="Game Flow and Structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="player.html" class="btn btn-neutral float-right" title="Player Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Group 5 Eric Shi,Stuart Baker,Lin Moe Hein (kit),Duncan Law,Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

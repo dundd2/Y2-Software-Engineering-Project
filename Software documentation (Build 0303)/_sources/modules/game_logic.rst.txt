@@ -1,0 +1,9 @@
+Game Logic Module
+===============
+
+This module contains the game logic functions and classes that drive the game mechanics.
+
+.. automodule:: src.game_logic
+   :members:
+   :undoc-members:
+   :show-inheritance: 

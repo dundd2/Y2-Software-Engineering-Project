@@ -1,0 +1,70 @@
+Player Module
+============
+
+This module contains the Player class that represents a player in the game and manages player-specific actions and states.
+
+Player Types
+-----------
+
+The game supports two types of players:
+
+* **Human Players**: Controlled by user input
+* **AI Players**: Controlled by computer AI (see :doc:`ai_player_logic`)
+
+Player Properties
+---------------
+
+Each player has the following key attributes:
+
+* Name and token
+* Current position on the board
+* Money balance
+* Owned properties
+* Get out of jail cards
+* Bankruptcy status
+
+Usage Example
+------------
+
+.. code-block:: python
+
+    from src.Player import Player
+    
+    # Create a new player
+    player = Player(name="Player 1", token="Car")
+    
+    # Basic player operations
+    player.add_money(200)  # Add money to player's balance
+    player.move_to(10)     # Move player to position 10
+    player.add_property(property)  # Add a property to player's portfolio
+
+Class Documentation
+-----------------
+
+.. automodule:: src.Player
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Common Operations
+---------------
+
+Players can perform various actions during the game:
+
+* ``roll_dice()``: Roll dice for movement
+* ``buy_property(property)``: Purchase a property
+* ``pay_rent(amount, to_player)``: Pay rent to another player
+* ``mortgage_property(property)``: Mortgage a property for cash
+* ``unmortgage_property(property)``: Unmortgage a property
+* ``trade(other_player, offer)``: Initiate a trade with another player
+* ``declare_bankruptcy()``: Declare bankruptcy and exit the game
+
+Trading
+-------
+
+Players can trade properties and money with other players. A trade can include:
+
+* Properties
+* Money
+* Get out of jail cards
+* Rent immunity agreements 

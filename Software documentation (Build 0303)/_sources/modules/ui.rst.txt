@@ -1,0 +1,9 @@
+UI Module
+========
+
+This module contains the user interface components of the game.
+
+.. automodule:: src.ui
+   :members:
+   :undoc-members:
+   :show-inheritance: 

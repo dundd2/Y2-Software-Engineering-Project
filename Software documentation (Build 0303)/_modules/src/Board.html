@@ -1,0 +1,887 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.Board &mdash; Property Tycoon build-2025.03.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=bb89e53f" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=976f84ab"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../diagrams.html">Game Flow and Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#game-flow">Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#ai-decision-making">AI Decision Making</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#ai-strategy-types">AI Strategy Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#ai-decision-factors">AI Decision Factors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#game-components">Game Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#turn-sequence">Turn Sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#data-flow">Data Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#state-machine">State Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#player-flow">Player Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#board-flow">Board Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#card-handling-flow">Card Handling Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../diagrams.html#game-logic-flow">Game Logic Flow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/game.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/game.html#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/game.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game.html#src.Game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.add_message"><code class="docutils literal notranslate"><span class="pre">Game.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.add_to_free_parking"><code class="docutils literal notranslate"><span class="pre">Game.add_to_free_parking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.calculate_player_assets"><code class="docutils literal notranslate"><span class="pre">Game.calculate_player_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.check_game_over"><code class="docutils literal notranslate"><span class="pre">Game.check_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.check_one_player_remains"><code class="docutils literal notranslate"><span class="pre">Game.check_one_player_remains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.check_passing_go"><code class="docutils literal notranslate"><span class="pre">Game.check_passing_go()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.check_time_limit"><code class="docutils literal notranslate"><span class="pre">Game.check_time_limit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.collect_free_parking"><code class="docutils literal notranslate"><span class="pre">Game.collect_free_parking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw"><code class="docutils literal notranslate"><span class="pre">Game.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_auction"><code class="docutils literal notranslate"><span class="pre">Game.draw_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_button"><code class="docutils literal notranslate"><span class="pre">Game.draw_button()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_buy_options"><code class="docutils literal notranslate"><span class="pre">Game.draw_buy_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_card_alert"><code class="docutils literal notranslate"><span class="pre">Game.draw_card_alert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_development_ui"><code class="docutils literal notranslate"><span class="pre">Game.draw_development_ui()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_dice"><code class="docutils literal notranslate"><span class="pre">Game.draw_dice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_free_parking_pot"><code class="docutils literal notranslate"><span class="pre">Game.draw_free_parking_pot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_jail_options"><code class="docutils literal notranslate"><span class="pre">Game.draw_jail_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_notification"><code class="docutils literal notranslate"><span class="pre">Game.draw_notification()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_popup_message"><code class="docutils literal notranslate"><span class="pre">Game.draw_popup_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_property_card"><code class="docutils literal notranslate"><span class="pre">Game.draw_property_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_property_tooltip"><code class="docutils literal notranslate"><span class="pre">Game.draw_property_tooltip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.draw_time_remaining"><code class="docutils literal notranslate"><span class="pre">Game.draw_time_remaining()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.end_abridged_game"><code class="docutils literal notranslate"><span class="pre">Game.end_abridged_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.end_full_game"><code class="docutils literal notranslate"><span class="pre">Game.end_full_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.finish_dice_animation"><code class="docutils literal notranslate"><span class="pre">Game.finish_dice_animation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.get_jail_choice"><code class="docutils literal notranslate"><span class="pre">Game.get_jail_choice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">Game.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_auction_click"><code class="docutils literal notranslate"><span class="pre">Game.handle_auction_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_auction_input"><code class="docutils literal notranslate"><span class="pre">Game.handle_auction_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">Game.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">Game.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_card_action"><code class="docutils literal notranslate"><span class="pre">Game.handle_card_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">Game.handle_card_draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_click"><code class="docutils literal notranslate"><span class="pre">Game.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_development_click"><code class="docutils literal notranslate"><span class="pre">Game.handle_development_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_fine_payment"><code class="docutils literal notranslate"><span class="pre">Game.handle_fine_payment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_game_over"><code class="docutils literal notranslate"><span class="pre">Game.handle_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_jail_turn"><code class="docutils literal notranslate"><span class="pre">Game.handle_jail_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_key"><code class="docutils literal notranslate"><span class="pre">Game.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_motion"><code class="docutils literal notranslate"><span class="pre">Game.handle_motion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_space"><code class="docutils literal notranslate"><span class="pre">Game.handle_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.handle_voluntary_exit"><code class="docutils literal notranslate"><span class="pre">Game.handle_voluntary_exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.move_player"><code class="docutils literal notranslate"><span class="pre">Game.move_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.play_turn"><code class="docutils literal notranslate"><span class="pre">Game.play_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.show_card_popup"><code class="docutils literal notranslate"><span class="pre">Game.show_card_popup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.show_notification"><code class="docutils literal notranslate"><span class="pre">Game.show_notification()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.show_time_stats"><code class="docutils literal notranslate"><span class="pre">Game.show_time_stats()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.start_auction"><code class="docutils literal notranslate"><span class="pre">Game.start_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.synchronize_player_positions"><code class="docutils literal notranslate"><span class="pre">Game.synchronize_player_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.wait_for_animations"><code class="docutils literal notranslate"><span class="pre">Game.wait_for_animations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/game.html#src.Game.Game.wrap_text"><code class="docutils literal notranslate"><span class="pre">Game.wrap_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/game.html#common-operations">Common Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/player.html#player-types">Player Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/player.html#player-properties">Player Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/player.html#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/player.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/player.html#src.Player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.add_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.add_jail_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.add_property"><code class="docutils literal notranslate"><span class="pre">Player.add_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.buy_property"><code class="docutils literal notranslate"><span class="pre">Player.buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.can_afford"><code class="docutils literal notranslate"><span class="pre">Player.can_afford()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.can_build_hotels"><code class="docutils literal notranslate"><span class="pre">Player.can_build_hotels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.can_build_houses"><code class="docutils literal notranslate"><span class="pre">Player.can_build_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.create_fallback_token"><code class="docutils literal notranslate"><span class="pre">Player.create_fallback_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.draw_player"><code class="docutils literal notranslate"><span class="pre">Player.draw_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.generate_move_path"><code class="docutils literal notranslate"><span class="pre">Player.generate_move_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.get_mortgageable_properties"><code class="docutils literal notranslate"><span class="pre">Player.get_mortgageable_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.get_properties_with_hotels"><code class="docutils literal notranslate"><span class="pre">Player.get_properties_with_hotels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.get_properties_with_houses"><code class="docutils literal notranslate"><span class="pre">Player.get_properties_with_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.get_total_assets"><code class="docutils literal notranslate"><span class="pre">Player.get_total_assets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.get_total_offset"><code class="docutils literal notranslate"><span class="pre">Player.get_total_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.get_unmortgageable_properties"><code class="docutils literal notranslate"><span class="pre">Player.get_unmortgageable_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">Player.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.handle_jail_turn"><code class="docutils literal notranslate"><span class="pre">Player.handle_jail_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.handle_voluntary_exit"><code class="docutils literal notranslate"><span class="pre">Player.handle_voluntary_exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.is_animation_complete"><code class="docutils literal notranslate"><span class="pre">Player.is_animation_complete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.load_player_image"><code class="docutils literal notranslate"><span class="pre">Player.load_player_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.move"><code class="docutils literal notranslate"><span class="pre">Player.move()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.pay"><code class="docutils literal notranslate"><span class="pre">Player.pay()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.receive"><code class="docutils literal notranslate"><span class="pre">Player.receive()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.remove_property"><code class="docutils literal notranslate"><span class="pre">Player.remove_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.set_active"><code class="docutils literal notranslate"><span class="pre">Player.set_active()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.set_winner"><code class="docutils literal notranslate"><span class="pre">Player.set_winner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.update_animation"><code class="docutils literal notranslate"><span class="pre">Player.update_animation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../modules/player.html#src.Player.Player.use_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.use_jail_card()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/player.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/player.html#trading">Trading</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/board.html#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/board.html#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/board.html#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/property.html#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/property.html#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/game_logic.html#src.game_logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.DevelopmentNotification"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.DevelopmentNotification.check_button_click"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.check_button_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.DevelopmentNotification.draw"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.ModernButton"><code class="docutils literal notranslate"><span class="pre">ModernButton</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.ModernButton.check_hover"><code class="docutils literal notranslate"><span class="pre">ModernButton.check_hover()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.ModernButton.draw"><code class="docutils literal notranslate"><span class="pre">ModernButton.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.ModernInput"><code class="docutils literal notranslate"><span class="pre">ModernInput</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.ModernInput.draw"><code class="docutils literal notranslate"><span class="pre">ModernInput.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ui.html#src.ui.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ui.html#src.ui.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/cards.html#src.cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/cards.html#src.cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modules/cards.html#src.cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/loadexcel.html#src.loadexcel.load_game_text"><code class="docutils literal notranslate"><span class="pre">load_game_text()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modules/loadexcel.html#src.loadexcel.load_property_data"><code class="docutils literal notranslate"><span class="pre">load_property_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.Board</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.Board</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Base on PropertyTycoonCardData.xlsx from canvas </span>
+<span class="c1"># script based on Eric&#39;s provided flowchart photo (flowchart.drawio.png)</span>
+<span class="c1"># will add more comment later to reference for which part of code is based on which part of the flowchart</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Property</span><span class="w"> </span><span class="kn">import</span> <span class="n">Property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.loadexcel</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_property_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.text_scaler</span><span class="w"> </span><span class="kn">import</span> <span class="n">text_scaler</span>
+
+<span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">MODERN_BG</span> <span class="o">=</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+<span class="n">ACCENT_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="mi">139</span><span class="p">,</span> <span class="mi">190</span><span class="p">)</span>
+<span class="n">SUCCESS_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">167</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+<span class="n">ERROR_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+
+<span class="n">base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="CameraControls">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.CameraControls">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CameraControls</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_speed</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoom_speed</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_zoom</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_zoom</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<div class="viewcode-block" id="CameraControls.handle_camera_controls">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.CameraControls.handle_camera_controls">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_camera_controls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_PLUS</span><span class="p">]</span> <span class="ow">or</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_EQUALS</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_zoom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_speed</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_MINUS</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_zoom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_speed</span><span class="p">)</span>
+
+        <span class="n">adjusted_speed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_speed</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span><span class="p">]</span> <span class="ow">or</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_UP</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">-=</span> <span class="n">adjusted_speed</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span><span class="p">]</span> <span class="ow">or</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_DOWN</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">+=</span> <span class="n">adjusted_speed</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span><span class="p">]</span> <span class="ow">or</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_LEFT</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">-=</span> <span class="n">adjusted_speed</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span><span class="p">]</span> <span class="ow">or</span> <span class="n">keys</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">K_RIGHT</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">+=</span> <span class="n">adjusted_speed</span>
+
+        <span class="n">window_size</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="n">max_offset</span> <span class="o">=</span> <span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset_x</span><span class="p">,</span> <span class="n">max_offset</span><span class="p">),</span> <span class="o">-</span><span class="n">max_offset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset_y</span><span class="p">,</span> <span class="n">max_offset</span><span class="p">),</span> <span class="o">-</span><span class="n">max_offset</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset_y</span></div>
+</div>
+
+
+<div class="viewcode-block" id="Board">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Board</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">players</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">players</span> <span class="o">=</span> <span class="n">players</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spaces</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">40</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties_data</span> <span class="o">=</span> <span class="n">load_property_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">CameraControls</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">,</span> <span class="s2">&quot;assets/image/board.png&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span><span class="o">.</span><span class="n">convert_alpha</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span><span class="o">.</span><span class="n">get_alpha</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load board image: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span> <span class="o">=</span> <span class="kc">None</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">background_image</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">,</span> <span class="s2">&quot;assets/image/background.jpg&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">background_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_image</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load background image: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">background_image</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_board_rects</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="s1">&#39;assets/font/Play-Regular.ttf&#39;</span><span class="p">,</span> <span class="n">text_scaler</span><span class="o">.</span><span class="n">get_scaled_size</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Board.add_message">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.add_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">message_times</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_board_rects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">screen_info</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Info</span><span class="p">()</span>
+        <span class="n">window_width</span> <span class="o">=</span> <span class="n">screen_info</span><span class="o">.</span><span class="n">current_w</span>
+        <span class="n">window_height</span> <span class="o">=</span> <span class="n">screen_info</span><span class="o">.</span><span class="n">current_h</span>
+        <span class="n">base_board_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">window_width</span><span class="p">,</span> <span class="n">window_height</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.8</span>
+        <span class="n">board_size</span> <span class="o">=</span> <span class="n">base_board_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">zoom_level</span>
+        
+        <span class="n">corner_size</span> <span class="o">=</span> <span class="n">board_size</span> <span class="o">//</span> <span class="mi">11</span>
+        <span class="n">normal_width</span> <span class="o">=</span> <span class="n">corner_size</span>
+        <span class="n">normal_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">normal_width</span> <span class="o">*</span> <span class="p">(</span><span class="mi">5</span><span class="o">/</span><span class="mi">8</span><span class="p">))</span>
+        
+        <span class="n">start_x</span> <span class="o">=</span> <span class="p">((</span><span class="n">window_width</span> <span class="o">-</span> <span class="n">board_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_x</span>
+        <span class="n">start_y</span> <span class="o">=</span> <span class="p">((</span><span class="n">window_height</span> <span class="o">-</span> <span class="n">board_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_y</span>
+        
+        <span class="n">rects</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">10</span><span class="p">)</span> <span class="k">else</span> <span class="n">normal_width</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">10</span><span class="p">)</span> <span class="k">else</span> <span class="n">normal_height</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">start_x</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">start_y</span> <span class="o">+</span> <span class="n">board_size</span> <span class="o">-</span> <span class="n">height</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">normal_width</span><span class="p">)</span>
+            <span class="n">rects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">21</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">20</span> <span class="k">else</span> <span class="n">normal_width</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">20</span> <span class="k">else</span> <span class="n">normal_height</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">start_x</span> <span class="o">+</span> <span class="p">((</span><span class="n">i</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal_width</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">start_y</span>
+            <span class="n">rects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">31</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">30</span> <span class="k">else</span> <span class="n">normal_height</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">30</span> <span class="k">else</span> <span class="n">normal_width</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">start_x</span> <span class="o">+</span> <span class="n">board_size</span> <span class="o">-</span> <span class="n">width</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">start_y</span> <span class="o">+</span> <span class="p">((</span><span class="n">i</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal_width</span><span class="p">)</span>
+            <span class="n">rects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span> <span class="mi">40</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">39</span> <span class="k">else</span> <span class="n">normal_width</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">corner_size</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">39</span> <span class="k">else</span> <span class="n">normal_height</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">start_x</span> <span class="o">+</span> <span class="n">board_size</span> <span class="o">-</span> <span class="p">((</span><span class="n">i</span> <span class="o">-</span> <span class="mi">29</span><span class="p">)</span> <span class="o">*</span> <span class="n">normal_width</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">start_y</span> <span class="o">+</span> <span class="n">board_size</span> <span class="o">-</span> <span class="n">height</span>
+            <span class="n">rects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">rects</span>
+
+<div class="viewcode-block" id="Board.update_board_positions">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.update_board_positions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_board_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_board_rects</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">&lt;=</span> <span class="mi">40</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Invalid position </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">position</span><span class="si">}</span><span class="s2"> detected for </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in update_board_positions, resetting to position 1&quot;</span><span class="p">)</span>
+                <span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">1</span>
+                
+            <span class="n">player_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">player</span><span class="o">.</span><span class="n">rect</span> <span class="o">=</span> <span class="n">player_rect</span></div>
+
+
+<div class="viewcode-block" id="Board.draw_player">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.draw_player">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_player</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">is_corner</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="mi">10</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">player_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">player_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">base_padding</span> <span class="o">=</span> <span class="mi">12</span> <span class="k">if</span> <span class="n">is_corner</span> <span class="k">else</span> <span class="mi">8</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">35</span> <span class="k">if</span> <span class="n">is_corner</span> <span class="k">else</span> <span class="mi">30</span>
+        
+        <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="ow">and</span> <span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">start_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">move_start_position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">next_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">next_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                
+            <span class="n">progress</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">move_progress</span>
+            
+            <span class="n">start_x</span><span class="p">,</span> <span class="n">start_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_player_position_on_rect</span><span class="p">(</span><span class="n">start_rect</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">player_number</span><span class="p">,</span> <span class="n">is_corner</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">target_x</span><span class="p">,</span> <span class="n">target_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_player_position_on_rect</span><span class="p">(</span><span class="n">next_rect</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">player_number</span><span class="p">,</span> <span class="n">is_corner</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_x</span> <span class="o">+</span> <span class="p">(</span><span class="n">target_x</span> <span class="o">-</span> <span class="n">start_x</span><span class="p">)</span> <span class="o">*</span> <span class="n">progress</span><span class="p">)</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start_y</span> <span class="o">+</span> <span class="p">(</span><span class="n">target_y</span> <span class="o">-</span> <span class="n">start_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">progress</span><span class="p">)</span>
+            
+            <span class="n">board_margin</span> <span class="o">=</span> <span class="mi">10</span>
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">start_rect</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">next_rect</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">board_margin</span><span class="p">,</span> 
+                      <span class="nb">min</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">start_rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">start_rect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">next_rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">next_rect</span><span class="o">.</span><span class="n">width</span><span class="p">)</span> <span class="o">+</span> <span class="n">board_margin</span><span class="p">))</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">start_rect</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">next_rect</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">board_margin</span><span class="p">,</span> 
+                      <span class="nb">min</span><span class="p">(</span><span class="n">pos_y</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">start_rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">start_rect</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">next_rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">next_rect</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="o">+</span> <span class="n">board_margin</span><span class="p">))</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="n">pos_x</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+                <span class="n">pos_y</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">40</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">spacing</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="mi">10</span><span class="p">:</span>
+                <span class="n">pos_x</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">40</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">spacing</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">pos_y</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pos_x</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+                <span class="n">pos_y</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">42</span><span class="p">))</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos_y</span><span class="p">,</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">42</span><span class="p">))</span>
+
+        <span class="n">glow_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="mi">44</span><span class="p">,</span> <span class="mi">44</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">glow_surface</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">player</span><span class="o">.</span><span class="n">color</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">alpha</span><span class="p">),</span>
+                          <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">44</span> <span class="o">-</span> <span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">44</span> <span class="o">-</span> <span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span>
+                          <span class="n">border_radius</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">glow_surface</span><span class="p">,</span> <span class="p">(</span><span class="n">pos_x</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pos_y</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">player</span><span class="o">.</span><span class="n">animation_offset</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">player_image</span><span class="p">:</span>
+            <span class="n">token_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span> <span class="o">-</span> <span class="n">player</span><span class="o">.</span><span class="n">animation_offset</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">player_image</span><span class="p">,</span> <span class="n">token_rect</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="p">(</span><span class="n">pos_x</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span> <span class="n">pos_y</span> <span class="o">+</span> <span class="mi">20</span> <span class="o">-</span> <span class="n">player</span><span class="o">.</span><span class="n">animation_offset</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_player_position_on_rect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">player_number</span><span class="p">,</span> <span class="n">is_corner</span><span class="p">,</span> <span class="n">apply_bounds</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">player_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="p">(</span><span class="n">player_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">base_padding</span> <span class="o">=</span> <span class="mi">12</span> <span class="k">if</span> <span class="n">is_corner</span> <span class="k">else</span> <span class="mi">8</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">35</span> <span class="k">if</span> <span class="n">is_corner</span> <span class="k">else</span> <span class="mi">30</span>
+        
+        <span class="k">if</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">40</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">spacing</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">40</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">spacing</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">base_padding</span> <span class="o">+</span> <span class="p">(</span><span class="n">row</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">apply_bounds</span><span class="p">:</span>
+            <span class="n">pos_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">42</span><span class="p">))</span>
+            <span class="n">pos_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">pos_y</span><span class="p">,</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">42</span><span class="p">))</span>
+            
+        <span class="k">return</span> <span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span>
+
+<div class="viewcode-block" id="Board.draw">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.draw">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">screen</span><span class="p">):</span>
+        <span class="n">window_width</span> <span class="o">=</span> <span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span>
+        <span class="n">window_height</span> <span class="o">=</span> <span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span>
+        <span class="n">base_board_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_height</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="n">board_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">base_board_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">zoom_level</span><span class="p">)</span>
+        <span class="n">board_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">board_size</span><span class="p">)</span>
+
+        <span class="n">game_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">window_width</span><span class="p">,</span> <span class="n">window_height</span><span class="p">))</span>
+        <span class="n">game_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">WHITE</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_image</span><span class="p">:</span>
+            <span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background_image</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">game_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">MODERN_BG</span><span class="p">)</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">get_pressed</span><span class="p">()</span>
+        <span class="n">zoom</span><span class="p">,</span> <span class="n">offset_x</span><span class="p">,</span> <span class="n">offset_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">handle_camera_controls</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">zoom_level</span> <span class="o">=</span> <span class="n">zoom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">=</span> <span class="n">offset_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">=</span> <span class="n">offset_y</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_board_positions</span><span class="p">()</span>
+
+        <span class="n">board_x</span> <span class="o">=</span> <span class="p">((</span><span class="n">window_width</span> <span class="o">-</span> <span class="n">board_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_x</span>
+        <span class="n">board_y</span> <span class="o">=</span> <span class="p">((</span><span class="n">window_height</span> <span class="o">-</span> <span class="n">board_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_y</span>
+
+        <span class="n">board_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">board_size</span><span class="p">,</span> <span class="n">board_size</span><span class="p">))</span>
+        <span class="n">board_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">WHITE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_image</span><span class="p">:</span>
+            <span class="n">scaled_board</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_image</span><span class="p">,</span> <span class="p">(</span><span class="n">board_size</span><span class="p">,</span> <span class="n">board_size</span><span class="p">))</span>
+            <span class="n">board_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">scaled_board</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">board_surface</span><span class="p">,</span> <span class="p">(</span><span class="n">board_x</span><span class="p">,</span> <span class="n">board_y</span><span class="p">))</span>
+
+        <span class="n">transparent_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">window_width</span><span class="p">,</span> <span class="n">window_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">&lt;=</span> <span class="mi">40</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Invalid position </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">position</span><span class="si">}</span><span class="s2"> detected for </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in draw, resetting to position 1&quot;</span><span class="p">)</span>
+                <span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">1</span>
+                
+            <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="ow">and</span> <span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">):</span>
+                <span class="n">rect_for_animation</span> <span class="o">=</span> <span class="kc">None</span>
+                
+                <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">start_pos</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">move_start_position</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">end_pos</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">start_pos</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">end_pos</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">move_path</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">current_path_index</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                
+                <span class="n">start_pos</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_pos</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">end_pos</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">end_pos</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start_pos</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">)</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">end_pos</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">):</span>
+                    <span class="n">rect_for_animation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">start_pos</span><span class="p">]</span>
+                    <span class="n">is_corner</span> <span class="o">=</span> <span class="n">rect_for_animation</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">rect_for_animation</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="mi">10</span> <span class="ow">or</span> <span class="n">rect_for_animation</span><span class="o">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">rect_for_animation</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="mi">10</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">draw_player</span><span class="p">(</span><span class="n">transparent_surface</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">rect_for_animation</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">player_number</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pos_index</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">player_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">pos_index</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_player</span><span class="p">(</span><span class="n">transparent_surface</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">player_rect</span><span class="p">,</span> <span class="n">player</span><span class="o">.</span><span class="n">player_number</span><span class="p">)</span>
+
+        <span class="n">info_panel_width</span> <span class="o">=</span> <span class="mi">300</span>
+        <span class="n">info_panel_height</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">info_panel_x</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">info_panel_y</span> <span class="o">=</span> <span class="n">window_height</span> <span class="o">-</span> <span class="n">info_panel_height</span> <span class="o">-</span> <span class="mi">20</span>
+
+        <span class="n">panel_shadow</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">info_panel_width</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">info_panel_height</span> <span class="o">+</span> <span class="mi">8</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="o">/</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">panel_shadow</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">BLACK</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),</span>
+                           <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">info_panel_width</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">info_panel_height</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">-</span> <span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span>
+                           <span class="n">border_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">transparent_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">panel_shadow</span><span class="p">,</span> <span class="p">(</span><span class="n">info_panel_x</span> <span class="o">-</span> <span class="mi">4</span><span class="p">,</span> <span class="n">info_panel_y</span> <span class="o">-</span> <span class="mi">4</span><span class="p">))</span>
+        
+        <span class="n">info_panel</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">info_panel_width</span><span class="p">,</span> <span class="n">info_panel_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">info_panel</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">MODERN_BG</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span> <span class="n">info_panel</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(),</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">transparent_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">info_panel</span><span class="p">,</span> <span class="p">(</span><span class="n">info_panel_x</span><span class="p">,</span> <span class="n">info_panel_y</span><span class="p">))</span>
+        
+        <span class="n">line_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_font</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">+</span> <span class="mi">5</span>
+        <span class="n">max_messages</span> <span class="o">=</span> <span class="p">(</span><span class="n">info_panel_height</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">//</span> <span class="n">line_height</span>
+        <span class="n">visible_messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">[</span><span class="o">-</span><span class="n">max_messages</span><span class="p">:]</span>
+        <span class="n">text_y</span> <span class="o">=</span> <span class="n">info_panel_y</span> <span class="o">+</span> <span class="mi">10</span>
+        
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">visible_messages</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">WHITE</span><span class="p">)</span>
+            <span class="n">transparent_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">(</span><span class="n">info_panel_x</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="n">text_y</span><span class="p">))</span>
+            <span class="n">text_y</span> <span class="o">+=</span> <span class="n">line_height</span>
+            
+        <span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">transparent_surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">game_surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Board.get_space">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.get_space">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="n">array_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">40</span> 
+        <span class="k">if</span> <span class="n">array_pos</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">:</span>
+            <span class="n">mapped_pos</span> <span class="o">=</span> <span class="n">array_pos</span>
+        <span class="k">elif</span> <span class="n">array_pos</span> <span class="o">&lt;=</span> <span class="mi">19</span><span class="p">:</span>
+            <span class="n">mapped_pos</span> <span class="o">=</span> <span class="n">array_pos</span>
+        <span class="k">elif</span> <span class="n">array_pos</span> <span class="o">&lt;=</span> <span class="mi">29</span><span class="p">:</span>
+            <span class="n">mapped_pos</span> <span class="o">=</span> <span class="n">array_pos</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mapped_pos</span> <span class="o">=</span> <span class="n">array_pos</span>
+            
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">mapped_pos</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spaces</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spaces</span><span class="p">[</span><span class="n">mapped_pos</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Board.update_ownership">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.update_ownership">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties_data</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">position_str</span><span class="p">,</span> <span class="n">prop_data</span> <span class="ow">in</span> <span class="n">properties_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">position_str</span><span class="p">)</span>
+                <span class="n">array_pos</span> <span class="o">=</span> <span class="n">position</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">array_pos</span> <span class="o">&lt;</span> <span class="mi">40</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">spaces</span><span class="p">[</span><span class="n">array_pos</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spaces</span><span class="p">[</span><span class="n">array_pos</span><span class="p">]</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">prop_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error updating ownership for position </span><span class="si">{</span><span class="n">position_str</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Board.get_property_group">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.get_property_group">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties_data</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Board.get_property_position">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.get_property_position">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">position</span> <span class="o">&lt;=</span> <span class="mi">40</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+            
+        <span class="n">pos_index</span> <span class="o">=</span> <span class="n">position</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">pos_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">):</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">[</span><span class="n">pos_index</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+        
+<div class="viewcode-block" id="Board.board_to_screen">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.board_to_screen">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">board_to_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="Board.update_offset">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.update_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">+=</span> <span class="n">dx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">+=</span> <span class="n">dy</span>
+        
+        <span class="n">window_size</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="n">max_offset</span> <span class="o">=</span> <span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_x</span><span class="p">,</span> <span class="n">max_offset</span><span class="p">),</span> <span class="o">-</span><span class="n">max_offset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">offset_y</span><span class="p">,</span> <span class="n">max_offset</span><span class="p">),</span> <span class="o">-</span><span class="n">max_offset</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_board_positions</span><span class="p">()</span></div>
+
+        
+<div class="viewcode-block" id="Board.property_clicked">
+<a class="viewcode-back" href="../../modules/board.html#src.Board.Board.property_clicked">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">property_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rect</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board_rects</span><span class="p">):</span>
+            <span class="n">expanded_rect</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">inflate</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">expanded_rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> 
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Group 5 Eric Shi,Stuart Baker,Lin Moe Hein (kit),Duncan Law,Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
