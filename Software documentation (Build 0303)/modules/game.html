@@ -63,7 +63,8 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Game Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-modes">Game Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-interface-components">User Interface Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#src.Game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.add_message"><code class="docutils literal notranslate"><span class="pre">Game.add_message()</span></code></a></li>
@@ -121,13 +122,19 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#game-initialization">Game Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#turn-management">Turn Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#property-management">Property Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-handling">Event Handling</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="player.html#player-types">Player Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="player.html#player-properties">Player Properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="player.html#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#visual-representation">Visual Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#movement-and-animation">Movement and Animation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#financial-management">Financial Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="player.html#class-documentation">Class Documentation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="player.html#src.Player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="player.html#src.Player.Player.add_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.add_jail_card()</span></code></a></li>
@@ -162,248 +169,320 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#player-initialization">Player Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#player-state">Player State</a></li>
 <li class="toctree-l2"><a class="reference internal" href="player.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#jail-management">Jail Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="player.html#property-management">Property Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="player.html#trading">Trading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="board.html#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#board-structure">Board Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#camera-controls">Camera Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="board.html#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="board.html#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="board.html#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#cameracontrols-class">CameraControls Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#board-visualization">Board Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="board.html#common-operations">Common Operations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="property.html#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#property-types">Property Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#property-groups">Property Groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#rent-calculation">Rent Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#development-rules">Development Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="property.html#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="property.html#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#property-attributes">Property Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="property.html#common-operations">Common Operations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#game-constants">Game Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#game-initialization">Game Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#card-systems">Card Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#property-management">Property Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_logic.html#src.game_logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#turn-processing">Turn Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#financial-system">Financial System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#auction-system">Auction System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#ai-player-integration">AI Player Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_logic.html#common-operations">Common Operations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#ui-components">UI Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#color-scheme">Color Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#game-pages">Game Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#input-handling">Input Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification.check_button_click"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.check_button_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification.draw"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification.check_button_click"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.check_button_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.DevelopmentNotification.draw"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.draw()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.ModernButton"><code class="docutils literal notranslate"><span class="pre">ModernButton</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernButton.check_hover"><code class="docutils literal notranslate"><span class="pre">ModernButton.check_hover()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernButton.draw"><code class="docutils literal notranslate"><span class="pre">ModernButton.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernButton"><code class="docutils literal notranslate"><span class="pre">ModernButton</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.ModernButton.check_hover"><code class="docutils literal notranslate"><span class="pre">ModernButton.check_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.ModernButton.draw"><code class="docutils literal notranslate"><span class="pre">ModernButton.draw()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.ModernInput"><code class="docutils literal notranslate"><span class="pre">ModernInput</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernInput.draw"><code class="docutils literal notranslate"><span class="pre">ModernInput.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.ModernInput"><code class="docutils literal notranslate"><span class="pre">ModernInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.ModernInput.draw"><code class="docutils literal notranslate"><span class="pre">ModernInput.draw()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ui.html#src.ui.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ui.html#src.ui.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ui.html#src.ui.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#basepage-class">BasePage Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#modernbutton-class">ModernButton Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#moderninput-class">ModernInput Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#page-navigation">Page Navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui.html#responsive-design">Responsive Design</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#ai-player-types">AI Player Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#ai-strategy-components">AI Strategy Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#property-valuation-system">Property Valuation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ai_player_logic.html#src.ai_player_logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#easyaiplayer-class">EasyAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#hardaiplayer-class">HardAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#decision-making-process">Decision-Making Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ai_player_logic.html#difficulty-adjustment">Difficulty Adjustment</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cards.html#src.cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="cards.html#src.cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#card-types">Card Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#card-structure">Card Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#card-effects">Card Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cards.html#src.cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cards.html#src.cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cards.html#src.cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#cardtype-enum">CardType Enum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#card-class">Card Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#carddeck-class">CardDeck Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cards.html#card-data">Card Data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a><ul>
@@ -439,34 +518,44 @@
              
   <section id="game-module">
 <h1>Game Module<a class="headerlink" href="#game-module" title="Link to this heading"></a></h1>
-<p>This module contains the main Game class which orchestrates the game flow and manages the overall game state.</p>
+<p>This module contains the main Game class which orchestrates the game flow and manages the overall game state. It serves as the central controller for the Property Tycoon game, handling everything from game initialization to player turns, property management, and win conditions.</p>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Game initialization and setup</p></li>
-<li><p>Turn management</p></li>
-<li><p>Player actions handling</p></li>
-<li><p>Game state management</p></li>
-<li><p>Win condition checking</p></li>
-<li><p>Save/Load game functionality</p></li>
+<li><p><strong>Game initialization and setup</strong>: Creates and configures the game environment, board, and players</p></li>
+<li><p><strong>Turn management</strong>: Controls the flow of player turns and actions</p></li>
+<li><p><strong>Player actions handling</strong>: Processes player decisions like buying properties, paying rent, and development</p></li>
+<li><p><strong>Game state management</strong>: Tracks and updates the state of the game, including player positions and property ownership</p></li>
+<li><p><strong>Win condition checking</strong>: Determines when the game ends and identifies the winner</p></li>
+<li><p><strong>Save/Load game functionality</strong>: Allows games to be saved and resumed later</p></li>
+<li><p><strong>Multiple game modes</strong>: Supports different game modes including full game and time-limited games</p></li>
+<li><p><strong>AI player support</strong>: Includes AI players with different difficulty levels</p></li>
+<li><p><strong>Visual rendering</strong>: Handles the graphical representation of the game state</p></li>
+<li><p><strong>User interface</strong>: Manages buttons, notifications, and interactive elements</p></li>
 </ul>
 </section>
-<section id="usage-example">
-<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading"></a></h2>
-<p>Here’s a basic example of how to start a new game:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">src.Game</span><span class="w"> </span><span class="kn">import</span> <span class="n">Game</span>
-
-<span class="c1"># Create a new game with 4 players</span>
-<span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">num_players</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-<span class="c1"># Start the game</span>
-<span class="n">game</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-<span class="c1"># Main game loop</span>
-<span class="k">while</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">is_game_over</span><span class="p">():</span>
-    <span class="n">game</span><span class="o">.</span><span class="n">process_turn</span><span class="p">()</span>
-</pre></div>
-</div>
+<section id="game-modes">
+<h2>Game Modes<a class="headerlink" href="#game-modes" title="Link to this heading"></a></h2>
+<p>The Game class supports multiple game modes:</p>
+<ol class="arabic simple">
+<li><p><strong>Full Game</strong>: The traditional game that continues until only one player remains solvent</p></li>
+<li><p><strong>Time-Limited Game</strong>: A game that ends after a specified time limit, with the winner determined by total assets</p></li>
+<li><p><strong>Abridged Game</strong>: A shorter version of the game with modified rules for quicker play</p></li>
+</ol>
+</section>
+<section id="user-interface-components">
+<h2>User Interface Components<a class="headerlink" href="#user-interface-components" title="Link to this heading"></a></h2>
+<p>The Game class manages several UI components:</p>
+<ul class="simple">
+<li><p><strong>Board visualization</strong>: Renders the game board with property ownership indicators</p></li>
+<li><p><strong>Player information</strong>: Displays player stats including money, properties, and position</p></li>
+<li><p><strong>Action buttons</strong>: Provides interactive buttons for player decisions</p></li>
+<li><p><strong>Dice animation</strong>: Visualizes dice rolls with animated graphics</p></li>
+<li><p><strong>Property cards</strong>: Shows detailed information about properties</p></li>
+<li><p><strong>Notifications</strong>: Displays game events and important messages</p></li>
+<li><p><strong>Development UI</strong>: Interface for building houses and hotels</p></li>
+<li><p><strong>Auction system</strong>: UI for property auctions when players decline to purchase</p></li>
+</ul>
 </section>
 <section id="class-documentation">
 <h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
@@ -732,6 +821,36 @@
 </dd></dl>
 
 </section>
+<section id="game-initialization">
+<h2>Game Initialization<a class="headerlink" href="#game-initialization" title="Link to this heading"></a></h2>
+<p>The Game class is initialized with the following parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">players</span></code>: List of Player objects representing the game participants</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">game_mode</span></code>: String indicating the game mode (“full”, “abridged”, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_limit</span></code>: Optional time limit in milliseconds for time-limited games</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ai_difficulty</span></code>: String indicating AI difficulty level (“easy”, “hard”)</p></li>
+</ul>
+</section>
+<section id="turn-management">
+<h2>Turn Management<a class="headerlink" href="#turn-management" title="Link to this heading"></a></h2>
+<p>The game manages player turns through several key methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">play_turn()</span></code>: Processes a player’s turn, including dice rolling, movement, and action handling</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_space(player)</span></code>: Determines the action to take based on the space a player lands on</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_ai_turn(player)</span></code>: Manages turns for AI players with automated decision-making</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_jail_turn(player)</span></code>: Special handling for players currently in jail</p></li>
+</ul>
+</section>
+<section id="property-management">
+<h2>Property Management<a class="headerlink" href="#property-management" title="Link to this heading"></a></h2>
+<p>The Game class provides comprehensive property management:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_buy_decision(wants_to_buy)</span></code>: Processes a player’s decision to buy a property</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_auction(property_data)</span></code>: Initiates an auction when a player declines to buy a property</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">draw_development_ui(property_data)</span></code>: Displays the interface for property development</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_development_click(pos,</span> <span class="pre">property_data)</span></code>: Processes player interactions with the development UI</p></li>
+</ul>
+</section>
 <section id="common-operations">
 <h2>Common Operations<a class="headerlink" href="#common-operations" title="Link to this heading"></a></h2>
 <p>The Game class provides several key operations:</p>
@@ -743,6 +862,22 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">handle_rent_payment(player,</span> <span class="pre">property)</span></code>: Handle rent payments</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">save_game(filename)</span></code>: Save the current game state</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">load_game(filename)</span></code>: Load a previously saved game</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">check_game_over()</span></code>: Determine if the game has ended</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_bankruptcy(player)</span></code>: Process a player’s bankruptcy</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calculate_player_assets(player)</span></code>: Calculate a player’s total assets</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">show_notification(text,</span> <span class="pre">duration)</span></code>: Display a notification message</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_card_draw(player,</span> <span class="pre">card_type)</span></code>: Process drawing a card from a deck</p></li>
+</ul>
+</section>
+<section id="event-handling">
+<h2>Event Handling<a class="headerlink" href="#event-handling" title="Link to this heading"></a></h2>
+<p>The Game class includes comprehensive event handling:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_click(pos)</span></code>: Process mouse click events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_motion(pos)</span></code>: Process mouse movement events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_key(event)</span></code>: Process keyboard input events</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_auction_input(event)</span></code>: Process input during auctions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_auction_click(pos)</span></code>: Process clicks during auctions</p></li>
 </ul>
 </section>
 </section>

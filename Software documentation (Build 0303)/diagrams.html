@@ -63,7 +63,8 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/game.html">Game Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/game.html#key-features">Key Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/game.html#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#game-modes">Game Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#user-interface-components">User Interface Components</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/game.html#class-documentation">Class Documentation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/game.html#src.Game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/game.html#src.Game.Game.add_message"><code class="docutils literal notranslate"><span class="pre">Game.add_message()</span></code></a></li>
@@ -121,13 +122,19 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#game-initialization">Game Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#turn-management">Turn Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#property-management">Property Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/game.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#event-handling">Event Handling</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/player.html">Player Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-types">Player Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-properties">Player Properties</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/player.html#usage-example">Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#visual-representation">Visual Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#movement-and-animation">Movement and Animation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#financial-management">Financial Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/player.html#class-documentation">Class Documentation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/player.html#src.Player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/player.html#src.Player.Player.add_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.add_jail_card()</span></code></a></li>
@@ -162,248 +169,320 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-initialization">Player Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-state">Player State</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/player.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#jail-management">Jail Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#property-management">Property Management</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/player.html#trading">Trading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/board.html">Board Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/board.html#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#board-structure">Board Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#camera-controls">Camera Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/board.html#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/board.html#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/board.html#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#cameracontrols-class">CameraControls Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#board-visualization">Board Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#common-operations">Common Operations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/property.html">Property Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/property.html#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#property-types">Property Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#property-groups">Property Groups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#rent-calculation">Rent Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#development-rules">Development Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/property.html#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/property.html#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#property-attributes">Property Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#common-operations">Common Operations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/game_logic.html">Game Logic Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#game-constants">Game Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#game-initialization">Game Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#card-systems">Card Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#property-management">Property Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/game_logic.html#src.game_logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#turn-processing">Turn Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#financial-system">Financial System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#auction-system">Auction System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#ai-player-integration">AI Player Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#common-operations">Common Operations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/ui.html">UI Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#ui-components">UI Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#color-scheme">Color Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#game-pages">Game Pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#input-handling">Input Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.DevelopmentNotification"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.DevelopmentNotification.check_button_click"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.check_button_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.DevelopmentNotification.draw"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.DevelopmentNotification"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.DevelopmentNotification.check_button_click"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.check_button_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.DevelopmentNotification.draw"><code class="docutils literal notranslate"><span class="pre">DevelopmentNotification.draw()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.ModernButton"><code class="docutils literal notranslate"><span class="pre">ModernButton</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.ModernButton.check_hover"><code class="docutils literal notranslate"><span class="pre">ModernButton.check_hover()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.ModernButton.draw"><code class="docutils literal notranslate"><span class="pre">ModernButton.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.ModernButton"><code class="docutils literal notranslate"><span class="pre">ModernButton</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.ModernButton.check_hover"><code class="docutils literal notranslate"><span class="pre">ModernButton.check_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.ModernButton.draw"><code class="docutils literal notranslate"><span class="pre">ModernButton.draw()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.ModernInput"><code class="docutils literal notranslate"><span class="pre">ModernInput</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.ModernInput.draw"><code class="docutils literal notranslate"><span class="pre">ModernInput.draw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.ModernInput"><code class="docutils literal notranslate"><span class="pre">ModernInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.ModernInput.draw"><code class="docutils literal notranslate"><span class="pre">ModernInput.draw()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ui.html#src.ui.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#src.ui.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ui.html#src.ui.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#basepage-class">BasePage Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#modernbutton-class">ModernButton Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#moderninput-class">ModernInput Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#page-navigation">Page Navigation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#responsive-design">Responsive Design</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/ai_player_logic.html">AI Player Logic Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-player-types">AI Player Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-strategy-components">AI Strategy Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#property-valuation-system">Property Valuation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/ai_player_logic.html#src.ai_player_logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#easyaiplayer-class">EasyAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#hardaiplayer-class">HardAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#decision-making-process">Decision-Making Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#difficulty-adjustment">Difficulty Adjustment</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/cards.html">Cards Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#src.cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-types">Card Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-structure">Card Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-effects">Card Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#src.cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/cards.html#src.cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/cards.html#src.cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#cardtype-enum">CardType Enum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-class">Card Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#carddeck-class">CardDeck Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-data">Card Data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules/loadexcel.html">Load Excel Module</a><ul>
@@ -442,57 +521,218 @@
 <p>This section provides visual representations of the game’s flow and structure using diagrams.</p>
 <section id="game-flow">
 <h2>Game Flow<a class="headerlink" href="#game-flow" title="Link to this heading"></a></h2>
-<p>The following flowchart shows the main game loop and turn sequence:</p>
+<p>The following flowchart shows the main game loop and turn sequence based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-3768fe04410545f6b328c90bb1c5446038255423.png" alt="&#64;startuml
+<img src="_images/plantuml-660012138acc912751453c20028987d94d154713.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam activityBorderColor black
 skinparam activityBackgroundColor lightGray
 skinparam arrowColor black
 
 start
-:Initialize Players;
+:Initialize Game;
+note right
+  - Create players with starting money (£1500)
+  - Set up bank with initial money (£50000)
+  - Load property data from Excel
+  - Initialize board with 40 spaces
+  - Set game mode (full/abridged)
+  - Set AI difficulty (easy/hard)
+end note
+
 :Setup Board;
+note right
+  - Create board layout with property positions
+  - Initialize player tokens on board
+  - Load board and background images
+  - Set up camera controls for zoom/pan
+end note
+
 while (Game Not Over?) is (yes)
-  :Player's Turn;
-  :Roll Dice;
-  :Move Player;
+  :Get Current Player;
+  note right
+    - Track active player with visual highlight
+    - Update player animation state
+  end note
+
+  if (Player in Jail?) then (yes)
+    :Handle Jail Turn;
+    note right
+      - Check for jail cards
+      - Offer options: pay £50, use card, roll for doubles
+      - Track jail turns (max 3)
+      - Update jail status
+    end note
+  else (no)
+    if (Is AI Player?) then (yes)
+      :Execute AI Logic;
+      note right
+        - Determine strategy based on difficulty
+        - Evaluate property purchases
+        - Make decisions on development
+        - Handle auctions and trades
+      end note
+    else (no)
+      :Wait for Player Input;
+    endif
+
+    :Roll Dice;
+    note right
+      - Generate two random numbers (1-6)
+      - Display dice animation
+      - Check for doubles
+      - Handle triple doubles (go to jail)
+    end note
+
+    :Move Player;
+    note right
+      - Calculate path around board
+      - Animate movement with smooth transitions
+      - Check for passing GO (collect £200)
+      - Update player position
+    end note
+
+    :Handle Space;
+    note right
+      - Get space type at player position
+      - Process space-specific actions
+    end note
+  endif
+
   if (Land on Property?) then (yes)
     if (Property Owned?) then (yes)
+      :Calculate Rent;
+      note right
+        - Check for monopoly (double rent)
+        - Check for houses/hotels
+        - Handle utilities (based on dice roll)
+        - Handle stations (based on ownership count)
+      end note
+
       :Pay Rent;
+      note right
+        - Transfer money from player to owner
+        - Check for bankruptcy
+        - Update player balances
+      end note
     else (no)
       if (Can Afford?) then (yes)
-        :Option to Buy;
+        :Offer Purchase Option;
+        note right
+          - Display property card with details
+          - Show buy/pass buttons
+          - Wait for player decision
+        end note
+
         if (Buy Property?) then (yes)
           :Purchase Property;
-          :Update Player Balance;
+          note right
+            - Transfer money to bank
+            - Add property to player's portfolio
+            - Update property ownership
+            - Update board display
+          end note
+        else (no)
+          :Start Auction;
+          note right
+            - Allow all players to bid
+            - Track highest bidder
+            - Handle auction timer
+            - Award property to winner
+          end note
         endif
       endif
     endif
   else (no)
     if (Special Space?) then (yes)
-      :Draw Card;
-      :Execute Card Action;
-    else
-      :Handle Space Effect;
+      if (Card Space?) then (yes)
+        :Draw Card;
+        note right
+          - Get card from appropriate deck
+          - Display card to player
+          - Wait for acknowledgment
+        end note
+
+        :Execute Card Action;
+        note right
+          - Move player if required
+          - Process money transactions
+          - Handle jail cards
+          - Apply special effects
+        end note
+      else if (Tax Space?) then (yes)
+        :Pay Tax;
+        note right
+          - Deduct tax amount from player
+          - Add to Free Parking pot if enabled
+          - Check for bankruptcy
+        end note
+      else if (Go To Jail?) then (yes)
+        :Send Player to Jail;
+        note right
+          - Move player to jail position
+          - Set jail status
+          - End current turn
+        end note
+      else if (Free Parking?) then (yes)
+        :Collect Free Parking Money;
+        note right
+          - Add accumulated pot to player
+          - Reset free parking pot
+        end note
+      endif
     endif
   endif
+
+  :Check Player Status;
   if (Player Bankrupt?) then (yes)
-    :Remove Player;
+    :Process Bankruptcy;
+    note right
+      - Transfer assets to creditor
+      - Remove player from game
+      - Update player list
+    end note
   endif
+
+  :Check Game End Conditions;
+  note right
+    - Check if only one player remains
+    - Check time limit for abridged mode
+    - Check for voluntary exits
+  end note
+
   :End Turn;
+  note right
+    - Move to next player
+    - Update game state
+    - Refresh display
+  end note
 endwhile (no)
+
 :Calculate Final Scores;
+note right
+  - Add up property values
+  - Count houses and hotels
+  - Add cash on hand
+  - Determine total assets
+end note
+
 :Declare Winner;
+note right
+  - Highlight winning player
+  - Display final standings
+  - Show game statistics
+end note
+
 stop
 &#64;enduml"/>
 </p>
 </section>
 <section id="ai-decision-making">
 <h2>AI Decision Making<a class="headerlink" href="#ai-decision-making" title="Link to this heading"></a></h2>
-<p>This diagram shows how the AI makes decisions during the game:</p>
+<p>This diagram shows how the AI makes decisions during the game based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-4df787b249a5f897feefd705a2534256fec32301.png" alt="&#64;startuml
+<img src="_images/plantuml-933e35ba6f54c4635bef5c4dda7d34d4d5a901f6.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam activityBorderColor black
 skinparam activityBackgroundColor lightGray
@@ -500,71 +740,252 @@ skinparam arrowColor black
 
 start
 :AI Turn Start;
+note right
+  - Determine AI difficulty level (easy/hard)
+  - Load appropriate AI strategy
+  - Analyze current game state
+end note
+
+partition &quot;Pre-Turn Analysis&quot; {
+  :Evaluate Game State;
+  note right
+    - Check current position on board
+    - Analyze cash reserves
+    - Review property portfolio
+    - Assess opponent positions and assets
+  end note
+
+  :Calculate Risk Level;
+  note right
+    - Determine cash safety threshold
+    - Evaluate property development opportunities
+    - Assess bankruptcy risk
+    - Calculate expected returns
+  end note
+}
 
 partition &quot;Property Analysis&quot; {
   if (On Property Space?) then (yes)
     if (Property Owned?) then (yes)
       :Calculate and Pay Rent;
+      note right
+        - Determine rent amount based on property development
+        - Transfer funds to property owner
+        - Update cash reserves
+      end note
     else (no)
       :Analyze Property Value;
+      note right
+        - Check property price vs. available cash
+        - Calculate property's strategic value
+        - Assess property's position on board
+        - Evaluate rent potential
+      end note
+
       :Check Property Set Completion;
+      note right
+        - Identify if property completes a set
+        - Check how many properties in set are owned
+        - Determine monopoly potential
+      end note
+
       :Calculate Expected Return;
+      note right
+        - Estimate future rent income
+        - Calculate development potential
+        - Assess risk vs. reward ratio
+        - Compare to alternative investments
+      end note
+
       :Evaluate Current Cash Position;
+      note right
+        - Check if purchase maintains minimum cash reserve
+        - Calculate post-purchase financial position
+        - Assess impact on development plans
+      end note
+
       if (Worth Buying?) then (yes)
         if (Can Afford?) then (yes)
           :Purchase Property;
+          note right
+            - Transfer funds to bank
+            - Add property to portfolio
+            - Update ownership records
+            - Recalculate asset value
+          end note
         else (no)
           :Consider Mortgage Options;
+          note right
+            - Identify low-value properties to mortgage
+            - Calculate mortgage values
+            - Assess impact on strategy
+          end note
+
           if (Can Free Up Cash?) then (yes)
             :Mortgage Properties;
+            note right
+              - Select properties to mortgage
+              - Receive mortgage value
+              - Update property status
+            end note
+
             :Purchase Property;
           endif
         endif
+      else (no)
+        :Pass on Purchase;
+        note right
+          - Allow property to go to auction
+          - Prepare auction strategy
+          - Set maximum bid amount
+        end note
       endif
     endif
   endif
 }
 
-partition &quot;Strategy Execution&quot; {
-  :Update Strategy Based on Game State;
-  if (Need to Trade?) then (yes)
-    :Evaluate Trade Opportunities;
-    if (Beneficial Trade Found?) then (yes)
-      :Propose Trade;
-    endif
-  endif
+partition &quot;Development Strategy&quot; {
+  :Analyze Building Opportunities;
+  note right
+    - Check for complete property sets
+    - Calculate development costs
+    - Assess cash position after development
+    - Prioritize high-return properties
+  end note
 
   if (Should Build?) then (yes)
-    :Analyze Building Opportunities;
+    :Evaluate Development Options;
+    note right
+      - Calculate cost of houses/hotels
+      - Determine optimal distribution
+      - Assess rent increase potential
+    end note
+
     if (Profitable Location?) then (yes)
       :Build Houses/Hotels;
+      note right
+        - Select properties for development
+        - Pay development costs
+        - Update property status
+        - Recalculate asset value
+      end note
     endif
   endif
+}
+
+partition &quot;Financial Management&quot; {
+  :Assess Financial Health;
+  note right
+    - Calculate current assets vs. liabilities
+    - Project future cash flow
+    - Identify financial risks
+  end note
 
   if (In Financial Trouble?) then (yes)
     :Evaluate Assets;
+    note right
+      - Rank properties by strategic value
+      - Identify development to sell
+      - Calculate liquidation values
+    end note
+
     :Prioritize Properties;
+    note right
+      - Determine which properties to keep
+      - Identify non-essential properties
+      - Protect monopoly sets if possible
+    end note
+
     if (Need to Sell?) then (yes)
       :Sell Buildings;
+      note right
+        - Sell houses/hotels for cash
+        - Update property development status
+        - Recalculate asset value
+      end note
+
       if (Still in Trouble?) then (yes)
         :Mortgage Properties;
+        note right
+          - Mortgage low-value properties
+          - Receive mortgage value
+          - Update property status
+        end note
       endif
+    endif
+  endif
+}
+
+partition &quot;Auction Strategy&quot; {
+  if (Property in Auction?) then (yes)
+    :Evaluate Auction Property;
+    note right
+      - Calculate maximum bid value
+      - Assess strategic importance
+      - Determine bid increment strategy
+    end note
+
+    if (Worth Bidding?) then (yes)
+      :Place Strategic Bid;
+      note right
+        - Bid based on property value
+        - Adjust based on opponent behavior
+        - Stay within maximum bid limit
+      end note
     endif
   endif
 }
 
 partition &quot;Risk Management&quot; {
   :Calculate Risk Level;
+  note right
+    - Assess current financial position
+    - Evaluate opponent threats
+    - Calculate probability of negative events
+  end note
+
   if (High Risk?) then (yes)
     :Implement Conservative Strategy;
+    note right
+      - Reduce development spending
+      - Increase cash reserves
+      - Avoid non-essential purchases
+      - Prepare contingency plans
+    end note
+
     :Maintain Cash Reserve;
+    note right
+      - Set minimum cash threshold
+      - Prioritize liquidity
+      - Prepare for unexpected expenses
+    end note
   else (no)
     :Implement Aggressive Strategy;
+    note right
+      - Maximize property acquisition
+      - Accelerate development
+      - Accept higher risk for greater returns
+      - Target opponent vulnerabilities
+    end note
+
     :Invest in Properties;
+    note right
+      - Focus on high-value properties
+      - Complete monopoly sets
+      - Develop to optimal levels
+      - Maximize rent potential
+    end note
   endif
 }
 
 :Update AI Knowledge Base;
+note right
+  - Record transaction history
+  - Update player behavior models
+  - Refine strategy based on outcomes
+  - Prepare for next turn
+end note
+
 :End AI Turn;
 stop
 &#64;enduml"/>
@@ -686,9 +1107,9 @@ SS --&gt; AM
 </section>
 <section id="class-hierarchy">
 <h2>Class Hierarchy<a class="headerlink" href="#class-hierarchy" title="Link to this heading"></a></h2>
-<p>This diagram shows the main class structure of the game:</p>
+<p>This diagram shows the main class structure of the game based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-cfa7b9f98a4f233c58d4e88d389bb2009741a392.png" alt="&#64;startuml
+<img src="_images/plantuml-0cbccf20914d2ef13ff7ceab68f94ad6f20f9de4.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam classBackgroundColor lightGray
 skinparam classBorderColor black
@@ -700,95 +1121,221 @@ class Game {
   + current_player: Player
   + dice: Dice
   + cards: Dict[str, List[Card]]
+  + game_mode: str
+  + time_limit: int
+  + ai_difficulty: str
+  + bank_money: int
+  + game_over: bool
+  + winner_index: int
+  + logic: GameLogic
+  + auction_data: Dict
+  + notification: Dict
+  + popup_message: Dict
+  + free_parking_pot: int
   + start()
-  + process_turn()
-  + handle_property_action()
-  + handle_special_space()
+  + draw()
+  + play_turn()
+  + handle_space(player)
+  + handle_buy_decision(wants_to_buy)
+  + start_auction(property_data)
+  + handle_jail_turn(player)
+  + move_player(player, spaces)
+  + check_passing_go(player, old_position)
+  + handle_ai_turn(ai_player)
   + check_game_over()
+  + handle_bankruptcy(player)
+  + calculate_player_assets(player)
+  + draw_dice(dice1, dice2, is_rolling)
+  + draw_property_card(property_data)
+  + draw_auction(auction_data)
+  + draw_jail_options(player)
+  + draw_development_ui(property_data)
+  + handle_card_action(card, player)
+  + handle_fine_payment(player, amount, reason)
+  + add_to_free_parking(amount)
+  + collect_free_parking(player)
 }
 
 class Player {
   + name: str
+  + player_number: int
+  + is_ai: bool
   + money: int
-  + position: int
   + properties: List[Property]
-  + is_bankrupt: bool
-  + move(spaces: int)
-  + buy_property(property: Property)
-  + pay_rent(amount: int)
-  + receive_money(amount: int)
-  + calculate_net_worth()
+  + position: int
+  + in_jail: bool
+  + jail_turns: int
+  + jail_cards: int
+  + bankrupt: bool
+  + voluntary_exit: bool
+  + final_assets: int
+  + color: Tuple[int, int, int]
+  + player_image: Surface
+  + is_moving: bool
+  + move_progress: float
+  + move_path: List[int]
+  + is_active: bool
+  + is_winner: bool
+  + move(steps)
+  + generate_move_path(steps)
+  + is_animation_complete()
+  + pay(amount)
+  + receive(amount)
+  + buy_property(property)
+  + add_jail_card(card_type)
+  + use_jail_card()
+  + handle_jail_turn()
+  + can_afford(amount)
+  + add_property(property)
+  + remove_property(property)
+  + get_total_assets()
+  + get_mortgageable_properties()
+  + get_properties_with_houses()
+  + get_properties_with_hotels()
+  + can_build_houses()
+  + can_build_hotels()
+  + handle_bankruptcy(creditor)
+  + handle_voluntary_exit()
+  + draw_player(screen, x, y)
+  + update_animation()
+  + load_player_image()
+  + create_fallback_token()
 }
 
 class Board {
+  + players: List[Player]
   + spaces: List[Space]
-  + properties: Dict[str, Property]
-  + get_space(position: int)
-  + get_property(name: str)
-  + initialize_board()
+  + properties_data: Dict
+  + board_image: Surface
+  + background_image: Surface
+  + board_rects: List[Rect]
+  + camera: CameraControls
+  + messages: List[str]
+  + message_times: List[int]
+  + draw(screen)
+  + update_board_positions()
+  + draw_player(screen, player, rect, index)
+  + get_space(position)
+  + update_ownership(properties_data)
+  + get_property_group(position)
+  + get_property_position(position)
+  + board_to_screen(x, y)
+  + update_offset(dx, dy)
+  + property_clicked(pos)
+  + add_message(text)
 }
 
 class Property {
   + name: str
+  + group: str
   + price: int
-  + rent: int
+  + base_rent: int
   + owner: Player
-  + position: int
-  + is_mortgaged: bool
-  + calculate_rent()
+  + houses: int
+  + has_hotel: bool
+  + house_costs: List[int]
+  + is_station: bool
+  + is_utility: bool
+  + mortgaged: bool
+  + calculate_rent(dice_roll, properties)
+  + has_monopoly(properties)
+  + can_build_house(properties)
+  + can_build_hotel(properties)
+  + build_house()
+  + build_hotel()
+  + sell_house()
+  + sell_hotel()
   + mortgage()
   + unmortgage()
+  + get_mortgage_value()
+  + get_unmortgage_cost()
+  + get_house_sale_value()
+  + get_hotel_sale_value()
+  + charge_rent(player, dice_roll)
 }
 
-class AI_Player {
-  + strategy: str
-  + make_decision()
-  + evaluate_purchase()
-  + choose_action()
+class GameLogic {
+  + game: Game
+  + ai_difficulty: str
+  + ai_player: AIPlayer
+  + property_data: Dict
+  + card_data: Dict
+  + game_start()
+  + load_property_data()
+  + load_card_data()
+  + process_turn(player)
+  + handle_property_space(player, property_data)
+  + handle_card_space(player, card_type)
+  + handle_tax_space(player, amount)
+  + handle_jail_space(player)
+  + handle_free_parking(player)
+  + process_card_action(player, card)
+  + check_bankruptcy(player, amount, creditor)
+  + calculate_assets(player)
+  + determine_winner()
+}
+
+class CameraControls {
+  + zoom_level: float
+  + offset_x: int
+  + offset_y: int
+  + move_speed: int
+  + zoom_speed: float
+  + min_zoom: float
+  + max_zoom: float
+  + handle_camera_controls(keys)
 }
 
 class Space {
   + name: str
   + position: int
   + type: str
-  + action()
+  + action(player, game)
 }
 
 class Card {
   + type: str
   + description: str
   + action: str
-  + execute(player: Player)
+  + action_value: int
+  + execute(player, game)
 }
 
-class Dice {
-  + roll()
-  + get_total()
-  + is_doubles()
+class AIPlayer {
+  + difficulty: str
+  + evaluate_purchase(property, player, game)
+  + decide_development(player, game)
+  + handle_auction_bid(property, current_bid, player, game)
+  + choose_jail_strategy(player, game)
+  + evaluate_mortgage_options(player, amount_needed, game)
+  + calculate_property_value(property, player, game)
+  + determine_risk_level(player, game)
+  + make_decision(options, player, game)
 }
 
-AI_Player --|&gt; Player
 Game *-- Player
 Game *-- Board
-Game *-- Dice
+Game *-- GameLogic
 Game *-- Card
 Board *-- Space
-Board *-- Property
+Board *-- CameraControls
+Board o-- Property
 Player o-- Property
+GameLogic o-- AIPlayer
 &#64;enduml"/>
 </p>
 </section>
 <section id="game-components">
 <h2>Game Components<a class="headerlink" href="#game-components" title="Link to this heading"></a></h2>
-<p>Here’s a component diagram showing the game’s architecture:</p>
+<p>Here’s a component diagram showing the game’s architecture based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-b178fe1f3058eb31bb1917e61846ad3419ad6b48.png" alt="&#64;startuml
+<img src="_images/plantuml-308800f174cf8c8fbbdfefed894fd76fa7f82082.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam componentBackgroundColor lightBlue
 skinparam componentBorderColor black
 skinparam arrowColor black
 
-package &quot;Property Tycoon&quot; {
+package &quot;Property Tycoon Game&quot; {
   [Game Engine] as GE
   [User Interface] as UI
   [Game Logic] as GL
@@ -797,203 +1344,598 @@ package &quot;Property Tycoon&quot; {
   [State Manager] as SM
 }
 
-package &quot;Game Components&quot; {
-  [Players Manager] as PM
-  [Game Board] as GB
-  [Cards Manager] as CM
-  [Property Manager] as PRM
+package &quot;Core Components&quot; {
+  [Game Class] as GC
+  [Board Class] as BC
+  [Player Class] as PC
+  [Property Class] as PRC
+  [Camera Controls] as CC
+}
+
+package &quot;Game Logic Components&quot; {
+  [GameLogic Class] as GLC
+  [AI Logic] as AIL
+  [Turn Handler] as TH
+  [Space Handler] as SH
+  [Card Handler] as CH
+  [Auction System] as AS
+  [Development System] as DS
 }
 
 package &quot;Player Types&quot; {
-  [Human Players] as HP
-  [AI Players] as AI
-  [Player State] as PS
+  [Human Player] as HP
+  [AI Player] as AIP
+  [Easy AI] as EAI
+  [Hard AI] as HAI
 }
 
 package &quot;Board Elements&quot; {
   [Properties] as PR
   [Special Spaces] as SS
   [Corner Spaces] as CS
+  [Card Spaces] as CDS
+  [Tax Spaces] as TS
 }
 
 package &quot;Card Types&quot; {
-  [Chance Cards] as CC
-  [Community Chest] as CCH
+  [Pot Luck Cards] as PLC
+  [Opportunity Knocks] as OK
   [Card Actions] as CA
 }
 
-package &quot;Data Layer&quot; {
-  [Property Data] as PD
-  [Card Data] as CD
-  [Game State] as GS
+package &quot;UI Components&quot; {
+  [Main Menu] as MM
+  [Game Board UI] as GBUI
+  [Property Cards] as PRUI
+  [Dice Animation] as DA
+  [Player Tokens] as PT
+  [Auction UI] as AUI
+  [Development UI] as DUI
+  [Notification System] as NS
+  [Card Display] as CD
 }
 
-GE --&gt; PM
-GE --&gt; GB
-GE --&gt; CM
-UI --&gt; GE
-GL --&gt; GE
-DM --&gt; PD
-DM --&gt; CD
-DM --&gt; GS
-EH --&gt; UI
-SM --&gt; GS
+package &quot;Data Sources&quot; {
+  [Property Data Excel] as PDE
+  [Card Data Excel] as CDE
+  [Game Configuration] as GCF
+}
 
-PM --&gt; HP
-PM --&gt; AI
-PM --&gt; PS
+package &quot;Input Handling&quot; {
+  [Mouse Input] as MI
+  [Keyboard Input] as KI
+  [Button System] as BS
+}
 
-GB --&gt; PR
-GB --&gt; SS
-GB --&gt; CS
+package &quot;Animation System&quot; {
+  [Player Movement] as PM
+  [Dice Rolling] as DR
+  [UI Transitions] as UIT
+  [Visual Effects] as VE
+}
 
-CM --&gt; CC
-CM --&gt; CCH
-CC --&gt; CA
-CCH --&gt; CA
+package &quot;Game State&quot; {
+  [Player States] as PS
+  [Board State] as BS
+  [Property Ownership] as PO
+  [Game Progress] as GP
+  [Free Parking Pot] as FPP
+}
 
-PRM --&gt; PR
+' Core relationships
+GE --&gt; GC
+GE --&gt; GL
+GE --&gt; UI
+
+GC --&gt; BC
+GC --&gt; PC
+GC --&gt; GLC
+
+BC --&gt; CC
+BC --&gt; PR
+BC --&gt; SS
+
+PC --&gt; HP
+PC --&gt; AIP
+
+' Game Logic relationships
+GL --&gt; GLC
+GLC --&gt; AIL
+GLC --&gt; TH
+GLC --&gt; SH
+GLC --&gt; CH
+
+AIL --&gt; EAI
+AIL --&gt; HAI
+
+TH --&gt; SH
+TH --&gt; AS
+TH --&gt; DS
+
+' UI relationships
+UI --&gt; MM
+UI --&gt; GBUI
+UI --&gt; PRUI
+UI --&gt; DA
+UI --&gt; PT
+UI --&gt; AUI
+UI --&gt; DUI
+UI --&gt; NS
+UI --&gt; CD
+
+' Input handling
+EH --&gt; MI
+EH --&gt; KI
+EH --&gt; BS
+
+' Data management
+DM --&gt; PDE
+DM --&gt; CDE
+DM --&gt; GCF
+
+' State management
+SM --&gt; PS
+SM --&gt; BS
+SM --&gt; PO
+SM --&gt; GP
+SM --&gt; FPP
+
+' Animation system
+UI --&gt; PM
+UI --&gt; DR
+UI --&gt; UIT
+UI --&gt; VE
+
+' Card system
+CH --&gt; PLC
+CH --&gt; OK
+PLC --&gt; CA
+OK --&gt; CA
+
+' Board elements
+BC --&gt; PR
+BC --&gt; SS
+BC --&gt; CS
+BC --&gt; CDS
+BC --&gt; TS
+
+' Player interactions
+PC --&gt; PR : owns
+PC --&gt; PS : has
+
+' Game flow
+GC --&gt; SM : updates
+GC --&gt; EH : processes
+EH --&gt; GC : triggers actions
+
+' Data flow
+DM --&gt; GLC : provides data
+GLC --&gt; SM : updates state
+SM --&gt; UI : reflects changes
+
+' User interaction
+UI --&gt; EH : sends events
+EH --&gt; GL : processes events
+GL --&gt; SM : updates state
+SM --&gt; UI : updates display
 &#64;enduml"/>
 </p>
 </section>
 <section id="turn-sequence">
 <h2>Turn Sequence<a class="headerlink" href="#turn-sequence" title="Link to this heading"></a></h2>
-<p>This sequence diagram shows the detailed flow of a player’s turn:</p>
+<p>This sequence diagram shows the detailed flow of a player’s turn based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-6ce95bda93fbf93e5157299331b7594f8be2f0b5.png" alt="&#64;startuml
+<img src="_images/plantuml-ad1dfdb4373bb006be26e96c4a409fe5a77deb73.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam sequenceParticipantBackgroundColor lightGray
 skinparam sequenceParticipantBorderColor black
 skinparam arrowColor black
 
-participant Player
-participant Game
-participant Board
-participant Space
-participant Property
-participant Cards
+participant &quot;Game&quot; as Game
+participant &quot;Player&quot; as Player
+participant &quot;Board&quot; as Board
+participant &quot;GameLogic&quot; as Logic
+participant &quot;Property&quot; as Property
+participant &quot;Space&quot; as Space
+participant &quot;Card&quot; as Card
+participant &quot;AIPlayer&quot; as AI
 
-Player -&gt; Game: Start Turn
+== Turn Initialization ==
+
+Game -&gt; Game: play_turn()
 activate Game
-
-Game -&gt; Player: Request Roll Dice
+Game -&gt; Player: set_active(true)
 activate Player
-Player -&gt; Game: Roll Dice
-deactivate Player
+Player --&gt; Game: Update animation state
 
-Game -&gt; Board: Get New Position
-activate Board
-Board -&gt; Space: Get Space Type
-activate Space
-Space --&gt; Board: Return Space Info
-deactivate Space
-Board --&gt; Game: Return Space
-deactivate Board
+alt Player is in Jail
+    Game -&gt; Game: handle_jail_turn(player)
+    activate Game
 
-alt Property Space
-    Game -&gt; Property: Get Property Info
-    activate Property
-    Property --&gt; Game: Return Property Details
-    deactivate Property
+    Game -&gt; Player: Check jail status
+    Player --&gt; Game: Return jail_turns and jail_cards
 
-    alt Property Not Owned
-        Game -&gt; Player: Offer Purchase
-        activate Player
-        Player -&gt; Game: Make Decision
-        deactivate Player
+    alt Has Jail Card
+        Game -&gt; Player: Offer to use jail card
+        Player --&gt; Game: Decision to use card
 
-        alt Decides to Buy
-            Game -&gt; Player: Deduct Money
-            Game -&gt; Property: Set Owner
+        opt Uses Jail Card
+            Game -&gt; Player: use_jail_card()
+            Player --&gt; Game: Update jail status
         end
-    else Property Owned
-        Game -&gt; Player: Request Rent Payment
-        activate Player
-        Player -&gt; Game: Pay Rent
-        deactivate Player
-        Game -&gt; Property: Get Owner
-        Game -&gt; Player: Transfer Rent to Owner
+    else No Jail Card
+        Game -&gt; Player: Offer options (pay fine/roll)
+        Player --&gt; Game: Decision
+
+        alt Pay Fine
+            Game -&gt; Player: pay(50)
+            Player --&gt; Game: Update money
+            Game -&gt; Player: in_jail = False
+        else Roll for Doubles
+            Game -&gt; Game: Roll dice
+
+            alt Rolled Doubles
+                Game -&gt; Player: in_jail = False
+                Game -&gt; Game: Move player
+            else No Doubles
+                Game -&gt; Player: jail_turns += 1
+
+                alt 3 Turns in Jail
+                    Game -&gt; Player: Force payment
+                    Game -&gt; Player: pay(50)
+                    Game -&gt; Player: in_jail = False
+                end
+            end
+        end
     end
-else Special Space
-    Game -&gt; Cards: Draw Card
-    activate Cards
-    Cards --&gt; Game: Return Card Action
-    deactivate Cards
-    Game -&gt; Player: Execute Card Action
+
+    deactivate Game
+else Normal Turn
+    alt Player is AI
+        Game -&gt; AI: handle_ai_turn(player)
+        activate AI
+
+        AI -&gt; Logic: Evaluate game state
+        Logic --&gt; AI: Strategy recommendations
+
+        AI -&gt; Game: Make decisions
+        Game --&gt; AI: Execute actions
+
+        deactivate AI
+    else Human Player
+        Game -&gt; Game: Wait for player input
+    end
+
+    Game -&gt; Game: Roll dice
+    Game -&gt; Game: Display dice animation
+    Game -&gt; Game: Check for triples (go to jail)
+
+    alt Not Going to Jail
+        Game -&gt; Game: move_player(player, dice_total)
+        activate Game
+
+        Game -&gt; Player: generate_move_path(steps)
+        Player --&gt; Game: Return path
+
+        Game -&gt; Board: Update player position
+        Board --&gt; Game: Animate movement
+
+        Game -&gt; Game: check_passing_go(player, old_position)
+        opt Passing GO
+            Game -&gt; Player: receive(200)
+            Game -&gt; Board: add_message(&quot;Player collected £200&quot;)
+        end
+
+        Game -&gt; Board: get_space(player.position)
+        Board --&gt; Game: Return space
+
+        Game -&gt; Game: handle_space(player)
+        activate Game
+
+        alt Property Space
+            Game -&gt; Logic: handle_property_space(player, property)
+            activate Logic
+
+            Logic -&gt; Property: Get property details
+            Property --&gt; Logic: Return property data
+
+            alt Property is Owned
+                Logic -&gt; Property: calculate_rent(dice_roll, properties)
+                Property --&gt; Logic: Return rent amount
+
+                Logic -&gt; Player: pay(rent)
+                Player --&gt; Logic: Update money
+
+                Logic -&gt; Property: Get owner
+                Property --&gt; Logic: Return owner
+
+                Logic -&gt; Property.owner: receive(rent)
+
+                Logic -&gt; Game: Check for bankruptcy
+            else Property Not Owned
+                Logic -&gt; Player: can_afford(price)
+                Player --&gt; Logic: Return affordability
+
+                alt Can Afford
+                    Logic -&gt; Game: Offer purchase
+
+                    alt Human Player
+                        Game -&gt; Game: draw_property_card(property)
+                        Game -&gt; Game: draw_buy_options()
+                        Game -&gt; Game: Wait for decision
+                    else AI Player
+                        Game -&gt; AI: evaluate_purchase(property, player, game)
+                        AI --&gt; Game: Return decision
+                    end
+
+                    alt Decides to Buy
+                        Game -&gt; Player: buy_property(property)
+                        Player -&gt; Player: pay(price)
+                        Player -&gt; Player: add_property(property)
+                        Property -&gt; Property: owner = player
+                    else Decides Not to Buy
+                        Game -&gt; Game: start_auction(property)
+
+                        loop Until Auction Complete
+                            Game -&gt; Game: draw_auction(auction_data)
+                            Game -&gt; Game: handle_auction_input()
+
+                            alt AI Bidding
+                                Game -&gt; AI: handle_auction_bid(property, current_bid, player, game)
+                                AI --&gt; Game: Return bid amount
+                            end
+                        end
+
+                        alt Property Sold
+                            Game -&gt; Player: buy_property(property)
+                            Player -&gt; Player: pay(winning_bid)
+                            Player -&gt; Player: add_property(property)
+                            Property -&gt; Property: owner = player
+                        end
+                    end
+                end
+            end
+
+            deactivate Logic
+        else Card Space
+            Game -&gt; Logic: handle_card_space(player, card_type)
+            activate Logic
+
+            Logic -&gt; Card: Draw card
+            Card --&gt; Logic: Return card
+
+            Logic -&gt; Game: draw_card_alert(card, player)
+            Game -&gt; Game: Display card
+
+            Logic -&gt; Card: execute(player, game)
+            Card -&gt; Player: Apply card effect
+
+            deactivate Logic
+        else Tax Space
+            Game -&gt; Logic: handle_tax_space(player, amount)
+            Logic -&gt; Player: pay(amount)
+            Logic -&gt; Game: add_to_free_parking(amount)
+        else Go To Jail
+            Game -&gt; Logic: handle_jail_space(player)
+            Logic -&gt; Player: position = 10
+            Logic -&gt; Player: in_jail = true
+        else Free Parking
+            Game -&gt; Logic: handle_free_parking(player)
+            Logic -&gt; Game: collect_free_parking(player)
+            Game -&gt; Player: receive(free_parking_pot)
+        end
+
+        deactivate Game
+        deactivate Game
+    end
 end
 
-Game -&gt; Player: Check Bankruptcy
-activate Player
-Player --&gt; Game: Status Update
-deactivate Player
+Game -&gt; Game: check_game_over()
 
-Game -&gt; Game: Update Game State
-Game -&gt; Player: End Turn
+alt Game Over
+    Game -&gt; Game: Calculate final scores
+    Game -&gt; Game: Determine winner
+    Game -&gt; Game: handle_game_over(winner)
+else Game Continues
+    Game -&gt; Player: set_active(false)
+    Game -&gt; Game: Move to next player
+end
+
+deactivate Player
 deactivate Game
 &#64;enduml"/>
 </p>
 </section>
 <section id="data-flow">
 <h2>Data Flow<a class="headerlink" href="#data-flow" title="Link to this heading"></a></h2>
-<p>This diagram shows how data flows through the game:</p>
+<p>This diagram shows how data flows through the game based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-8cca15d527154638d512c47ac767bbe48f5079fe.png" alt="&#64;startuml
+<img src="_images/plantuml-3c8f1d947581d3de9026eaee3c1db7097fae1ed5.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam componentBackgroundColor lightGreen
 skinparam componentBorderColor black
 skinparam arrowColor black
 
-database &quot;Excel Files&quot; {
-  [Property Data]
-  [Card Data]
-  [Configuration]
+database &quot;Data Sources&quot; {
+  [Property Data Excel] as PDE
+  [Card Data Excel] as CDE
+  [Configuration Files] as CF
+  [Asset Files] as AF
 }
 
 package &quot;Data Loading&quot; {
-  [Excel Reader]
-  [Data Parser]
-  [Validator]
+  [Excel Reader] as ER
+  [Data Parser] as DP
+  [Validator] as V
+  [Asset Loader] as AL
+}
+
+package &quot;Game Initialization&quot; {
+  [Game Constructor] as GC
+  [Board Setup] as BS
+  [Player Creation] as PC
+  [Property Setup] as PS
+  [Card Deck Setup] as CDS
 }
 
 package &quot;Game State&quot; {
-  [Player States]
-  [Board State]
-  [Game Progress]
+  [Player States] as PST
+  [Board State] as BST
+  [Property Ownership] as PO
+  [Game Progress] as GP
+  [Free Parking Pot] as FPP
+  [Auction State] as AS
+  [Development State] as DS
+  [Jail Status] as JS
 }
 
 package &quot;Game Logic&quot; {
-  [Rules Engine]
-  [Action Handler]
-  [State Manager]
+  [Turn Processing] as TP
+  [Property Handling] as PH
+  [Card Processing] as CP
+  [Movement Logic] as ML
+  [Rent Calculation] as RC
+  [Bankruptcy Handling] as BH
+  [Auction Logic] as AL
+  [Development Logic] as DL
+  [AI Decision Making] as AIDM
 }
 
 package &quot;User Interface&quot; {
-  [Display]
-  [Input Handler]
-  [Event System]
+  [Board Rendering] as BR
+  [Player Tokens] as PT
+  [Property Cards] as PC
+  [Dice Animation] as DA
+  [Message Display] as MD
+  [Button System] as BS
+  [Auction UI] as AUI
+  [Development UI] as DUI
+  [Card Display] as CD
+  [Notification System] as NS
 }
 
-[Excel Files] --&gt; [Excel Reader]
-[Excel Reader] --&gt; [Data Parser]
-[Data Parser] --&gt; [Validator]
-[Validator] --&gt; [Game State]
+package &quot;Input Processing&quot; {
+  [Mouse Handler] as MH
+  [Keyboard Handler] as KH
+  [Button Handler] as BH
+  [Property Selector] as PS
+}
 
-[Game State] --&gt; [Rules Engine]
-[Rules Engine] --&gt; [Action Handler]
-[Action Handler] --&gt; [State Manager]
-[State Manager] --&gt; [Game State]
+package &quot;Output Generation&quot; {
+  [Screen Updates] as SU
+  [Animation System] as ANS
+  [Sound Effects] as SE
+  [Message Queue] as MQ
+}
 
-[Game State] --&gt; [Display]
-[Input Handler] --&gt; [Action Handler]
-[Event System] --&gt; [State Manager]
+package &quot;Game Flow Control&quot; {
+  [Main Game Loop] as MGL
+  [Turn Sequencer] as TS
+  [Event Dispatcher] as ED
+  [State Manager] as SM
+}
+
+' Data loading flow
+PDE --&gt; ER : Property data
+CDE --&gt; ER : Card data
+CF --&gt; DP : Game settings
+AF --&gt; AL : Images, sounds
+
+ER --&gt; DP : Raw data
+DP --&gt; V : Structured data
+V --&gt; GC : Validated data
+AL --&gt; GC : Loaded assets
+
+' Game initialization flow
+GC --&gt; BS : Board configuration
+GC --&gt; PC : Player settings
+GC --&gt; PS : Property data
+GC --&gt; CDS : Card data
+
+BS --&gt; BST : Initial board
+PC --&gt; PST : Initial players
+PS --&gt; PO : Initial properties
+CDS --&gt; GP : Initial card decks
+
+' Game state updates
+PST --&gt; TP : Player information
+BST --&gt; ML : Board information
+PO --&gt; PH : Property information
+GP --&gt; CP : Card information
+
+' Game logic flow
+TP --&gt; ML : Movement requests
+ML --&gt; BST : Position updates
+ML --&gt; PH : Land on property
+PH --&gt; RC : Calculate rent
+RC --&gt; PST : Update money
+PH --&gt; AL : Start auction
+AL --&gt; AS : Update auction state
+PH --&gt; DL : Development requests
+DL --&gt; DS : Update development
+CP --&gt; PST : Apply card effects
+CP --&gt; ML : Move player
+CP --&gt; JS : Jail effects
+
+' AI decision making
+TP --&gt; AIDM : AI turn
+AIDM --&gt; PH : Property decisions
+AIDM --&gt; AL : Auction decisions
+AIDM --&gt; DL : Development decisions
+
+' User interface flow
+BST --&gt; BR : Board data
+PST --&gt; PT : Player positions
+PO --&gt; PC : Property data
+GP --&gt; DA : Dice results
+
+' Input processing
+MH --&gt; PS : Property selection
+MH --&gt; BH : Button clicks
+KH --&gt; TP : Key commands
+BH --&gt; TP : Button actions
+PS --&gt; PH : Selected property
+
+' Output generation
+BR --&gt; SU : Board visuals
+PT --&gt; SU : Player visuals
+PC --&gt; SU : Property cards
+DA --&gt; SU : Dice visuals
+MD --&gt; SU : Messages
+AUI --&gt; SU : Auction interface
+DUI --&gt; SU : Development interface
+CD --&gt; SU : Card display
+NS --&gt; SU : Notifications
+
+' Game flow control
+MGL --&gt; TS : Turn management
+TS --&gt; TP : Process turn
+TP --&gt; ED : Generate events
+ED --&gt; SM : Update state
+SM --&gt; PST : Update player state
+SM --&gt; BST : Update board state
+SM --&gt; PO : Update property state
+SM --&gt; GP : Update game progress
+
+' Bankruptcy handling
+RC --&gt; BH : Check bankruptcy
+BH --&gt; PST : Remove bankrupt player
+BH --&gt; PO : Transfer properties
+BH --&gt; GP : Check game end
+
+' Final output
+SU --&gt; MGL : Display updates
+ANS --&gt; SU : Animation frames
+SE --&gt; MGL : Play sounds
+MQ --&gt; MD : Display messages
 &#64;enduml"/>
 </p>
 </section>
 <section id="state-machine">
 <h2>State Machine<a class="headerlink" href="#state-machine" title="Link to this heading"></a></h2>
-<p>This diagram shows the game’s state transitions:</p>
+<p>This diagram shows the game’s state transitions based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-c185301411f6c1d344a644f0c8d9789bc2ef8fcc.png" alt="&#64;startuml
+<img src="_images/plantuml-4c1b34432071fa7c04b88d512290fc6ac9ef8fbd.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam stateBorderColor black
 skinparam stateBackgroundColor lightGray
@@ -1002,8 +1944,21 @@ skinparam stateBackgroundColor lightGray
 
 state Initialize {
   [*] --&gt; LoadData
+  LoadData : Load property data from Excel
+  LoadData : Load card data from Excel
+  LoadData : Initialize game constants
+
   LoadData --&gt; SetupPlayers
+  SetupPlayers : Create player objects
+  SetupPlayers : Set starting money (£1500)
+  SetupPlayers : Initialize player tokens
+  SetupPlayers : Set AI difficulty
+
   SetupPlayers --&gt; SetupBoard
+  SetupBoard : Create board layout
+  SetupBoard : Initialize spaces
+  SetupBoard : Load board images
+  SetupBoard : Setup camera controls
   SetupBoard --&gt; [*]
 }
 
@@ -1013,19 +1968,243 @@ state GameLoop {
   [*] --&gt; PlayerTurn
 
   state PlayerTurn {
-    [*] --&gt; RollDice
-    RollDice --&gt; MovePlayer
+    [*] --&gt; CheckJailStatus
+
+    state CheckJailStatus {
+      [*] --&gt; InJail : Player in jail
+      [*] --&gt; NotInJail : Player not in jail
+
+      state InJail {
+        [*] --&gt; JailOptions
+        JailOptions : Offer jail options
+        JailOptions : - Use jail card
+        JailOptions : - Pay £50 fine
+        JailOptions : - Roll for doubles
+
+        JailOptions --&gt; UseJailCard : Has jail card
+        UseJailCard : Remove jail card
+        UseJailCard : Set in_jail = False
+        UseJailCard --&gt; EndJailTurn
+
+        JailOptions --&gt; PayFine : Choose to pay
+        PayFine : Deduct £50
+        PayFine : Set in_jail = False
+        PayFine --&gt; EndJailTurn
+
+        JailOptions --&gt; RollForDoubles : Choose to roll
+        RollForDoubles --&gt; FreeFromJail : Rolled doubles
+        FreeFromJail : Set in_jail = False
+        FreeFromJail --&gt; MovePlayer
+
+        RollForDoubles --&gt; StayInJail : No doubles
+        StayInJail : Increment jail_turns
+        StayInJail --&gt; ForcedPayment : jail_turns &gt;= 3
+        ForcedPayment : Deduct £50
+        ForcedPayment : Set in_jail = False
+        ForcedPayment --&gt; EndJailTurn
+
+        StayInJail --&gt; EndJailTurn : jail_turns &lt; 3
+      }
+
+      state NotInJail {
+        [*] --&gt; CheckPlayerType
+
+        state CheckPlayerType {
+          [*] --&gt; AITurn : is_ai = True
+          [*] --&gt; HumanTurn : is_ai = False
+
+          state AITurn {
+            [*] --&gt; ExecuteAILogic
+            ExecuteAILogic : Determine strategy
+            ExecuteAILogic : Make decisions
+            ExecuteAILogic --&gt; RollDice
+          }
+
+          state HumanTurn {
+            [*] --&gt; WaitForInput
+            WaitForInput : Wait for player action
+            WaitForInput --&gt; RollDice : Player rolls
+          }
+        }
+      }
+    }
+
+    NotInJail --&gt; RollDice
+
+    state RollDice {
+      [*] --&gt; GenerateDiceValues
+      GenerateDiceValues : Generate two random numbers
+      GenerateDiceValues : Check for doubles
+
+      GenerateDiceValues --&gt; CheckTripleDoubles : Third consecutive doubles
+      CheckTripleDoubles --&gt; GoToJail : Triple doubles
+      GoToJail : Move to jail position
+      GoToJail : Set in_jail = True
+      GoToJail --&gt; EndTurn
+
+      GenerateDiceValues --&gt; MovePlayer : Not triple doubles
+    }
+
+    state MovePlayer {
+      [*] --&gt; CalculatePath
+      CalculatePath : Generate movement path
+      CalculatePath : Animate player movement
+
+      CalculatePath --&gt; CheckPassingGo
+      CheckPassingGo : Check if player passes GO
+      CheckPassingGo --&gt; CollectPassingGoMoney : Passes GO
+      CollectPassingGoMoney : Add £200 to player
+      CollectPassingGoMoney --&gt; HandleSpace
+
+      CheckPassingGo --&gt; HandleSpace : Doesn't pass GO
+    }
+
+    state HandleSpace {
+      [*] --&gt; DetermineSpaceType
+      DetermineSpaceType : Get space at player position
+
+      DetermineSpaceType --&gt; HandlePropertySpace : Property space
+      DetermineSpaceType --&gt; HandleCardSpace : Card space
+      DetermineSpaceType --&gt; HandleTaxSpace : Tax space
+      DetermineSpaceType --&gt; HandleJailSpace : Go to jail space
+      DetermineSpaceType --&gt; HandleFreeParkingSpace : Free parking space
+      DetermineSpaceType --&gt; HandleGoSpace : GO space
+      DetermineSpaceType --&gt; HandleJustVisitingSpace : Just visiting space
+
+      state HandlePropertySpace {
+        [*] --&gt; CheckOwnership
+        CheckOwnership : Get property owner
+
+        CheckOwnership --&gt; PropertyOwned : Has owner
+        PropertyOwned : Calculate rent
+        PropertyOwned : Pay rent to owner
+        PropertyOwned : Check for bankruptcy
+        PropertyOwned --&gt; CheckGameState
+
+        CheckOwnership --&gt; PropertyNotOwned : No owner
+        PropertyNotOwned : Check if player can afford
+        PropertyNotOwned --&gt; OfferPurchase : Can afford
+        OfferPurchase : Display property card
+        OfferPurchase : Show buy options
+
+        OfferPurchase --&gt; BuyProperty : Decides to buy
+        BuyProperty : Pay purchase price
+        BuyProperty : Add to player properties
+        BuyProperty --&gt; CheckGameState
+
+        OfferPurchase --&gt; StartAuction : Decides not to buy
+        StartAuction : Allow all players to bid
+        StartAuction : Track highest bidder
+        StartAuction : Award property to winner
+        StartAuction --&gt; CheckGameState
+
+        PropertyNotOwned --&gt; CheckGameState : Cannot afford
+      }
+
+      state HandleCardSpace {
+        [*] --&gt; DrawCard
+        DrawCard : Get card from deck
+        DrawCard : Display card to player
+
+        DrawCard --&gt; ExecuteCardAction
+        ExecuteCardAction : Process card effect
+        ExecuteCardAction : - Move player
+        ExecuteCardAction : - Money transactions
+        ExecuteCardAction : - Property effects
+        ExecuteCardAction : - Jail effects
+        ExecuteCardAction --&gt; CheckGameState
+      }
+
+      state HandleTaxSpace {
+        [*] --&gt; PayTax
+        PayTax : Deduct tax amount
+        PayTax : Add to free parking pot
+        PayTax : Check for bankruptcy
+        PayTax --&gt; CheckGameState
+      }
+
+      state HandleJailSpace {
+        [*] --&gt; SendToJail
+        SendToJail : Move to jail position
+        SendToJail : Set in_jail = True
+        SendToJail --&gt; EndTurn
+      }
+
+      state HandleFreeParkingSpace {
+        [*] --&gt; CollectFreeParking
+        CollectFreeParking : Add pot to player
+        CollectFreeParking : Reset free parking pot
+        CollectFreeParking --&gt; CheckGameState
+      }
+
+      HandlePropertySpace --&gt; CheckGameState
+      HandleCardSpace --&gt; CheckGameState
+      HandleTaxSpace --&gt; CheckGameState
+      HandleFreeParkingSpace --&gt; CheckGameState
+      HandleGoSpace --&gt; CheckGameState
+      HandleJustVisitingSpace --&gt; CheckGameState
+    }
+
+    state CheckGameState {
+      [*] --&gt; CheckBankruptcy
+      CheckBankruptcy : Check if player is bankrupt
+
+      CheckBankruptcy --&gt; ProcessBankruptcy : Player bankrupt
+      ProcessBankruptcy : Transfer assets to creditor
+      ProcessBankruptcy : Remove player from game
+      ProcessBankruptcy --&gt; EndTurn
+
+      CheckBankruptcy --&gt; EndTurn : Player not bankrupt
+    }
+
     MovePlayer --&gt; HandleSpace
     HandleSpace --&gt; CheckGameState
     CheckGameState --&gt; EndTurn
-    EndTurn --&gt; [*]
+
+    state EndTurn {
+      [*] --&gt; UpdateGameState
+      UpdateGameState : Update player status
+      UpdateGameState : Update board display
+      UpdateGameState --&gt; [*]
+    }
+
+    EndJailTurn --&gt; EndTurn
   }
 
   PlayerTurn --&gt; CheckEndGame
+
+  state CheckEndGame {
+    [*] --&gt; EvaluateEndConditions
+    EvaluateEndConditions : Check player count
+    EvaluateEndConditions : Check time limit
+    EvaluateEndConditions : Check voluntary exits
+
+    EvaluateEndConditions --&gt; GameContinues : Game not over
+    EvaluateEndConditions --&gt; GameEnds : Game over
+  }
+
   CheckEndGame --&gt; PlayerTurn : Game Continues
+  CheckEndGame --&gt; GameOver : Game Ends
 }
 
 GameLoop --&gt; GameOver : Game Ends
+
+state GameOver {
+  [*] --&gt; CalculateFinalScores
+  CalculateFinalScores : Add up property values
+  CalculateFinalScores : Count houses and hotels
+  CalculateFinalScores : Add cash on hand
+
+  CalculateFinalScores --&gt; DetermineWinner
+  DetermineWinner : Find player with highest assets
+  DetermineWinner : Highlight winner
+
+  DetermineWinner --&gt; DisplayResults
+  DisplayResults : Show final standings
+  DisplayResults : Display game statistics
+  DisplayResults --&gt; [*]
+}
+
 GameOver --&gt; [*]
 
 &#64;enduml"/>
@@ -1033,9 +2212,9 @@ GameOver --&gt; [*]
 </section>
 <section id="player-flow">
 <h2>Player Flow<a class="headerlink" href="#player-flow" title="Link to this heading"></a></h2>
-<p>This diagram shows the player lifecycle and actions:</p>
+<p>This diagram shows the player lifecycle and actions based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-209a366071ffc57cf79549bb07a1ace2a977474a.png" alt="&#64;startuml
+<img src="_images/plantuml-dfee2eeb9e4471a47a081953aaaa40361bf244dc.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam activityBorderColor black
 skinparam activityBackgroundColor lightGray
@@ -1044,52 +2223,238 @@ skinparam arrowColor black
 start
 :Initialize Player;
 note right
-  - Set name, money, position
-  - Set AI/Human status
+  - Set name and player_number
+  - Set is_ai flag
+  - Initialize money to £1500
+  - Set position to 1 (GO)
   - Initialize properties list
-  - Load player image
+  - Set jail status to false
+  - Set jail_turns to 0
+  - Set jail_cards to 0
+  - Set bankrupt to false
+  - Set color based on player type
+  - Load player token image
+end note
+
+:Setup Player Animation;
+note right
+  - Initialize animation parameters
+  - Set up token appearance
+  - Create fallback token if image not found
+  - Set initial animation state
 end note
 
 while (Player Active?) is (yes)
   if (Is AI Player?) then (yes)
     :Execute AI Strategy;
     note right
-      - Evaluate purchases
-      - Manage properties
-      - Handle trades
+      - Determine AI difficulty level
+      - Evaluate property purchases
+      - Calculate risk level
+      - Make strategic decisions
+      - Handle auction bidding
+      - Manage property development
     end note
   else (no)
     :Wait for Player Input;
+    note right
+      - Process keyboard commands
+      - Handle mouse clicks
+      - Respond to UI interactions
+      - Display relevant options
+    end note
   endif
 
   if (In Jail?) then (yes)
     :Handle Jail Turn;
+    note right
+      - Display jail options
+      - Track jail turn count
+    end note
+
     if (Has Jail Card?) then (yes)
-      :Use Jail Card;
+      if (Use Card Decision?) then (yes)
+        :Use Jail Card;
+        note right
+          - Decrement jail_cards count
+          - Return card to deck
+          - Set in_jail to false
+        end note
+      endif
     else (no)
-      if (Can Pay Fine?) then (yes)
-        :Pay £50;
+      if (Pay Fine Decision?) then (yes)
+        :Pay £50 Fine;
+        note right
+          - Deduct money from player
+          - Add to free parking pot if enabled
+          - Set in_jail to false
+        end note
       else (no)
-        :Increment Jail Turns;
-        if (Jail Turns &gt;= 3) then (yes)
-          :Force Payment;
+        :Roll for Doubles;
+        note right
+          - Generate two dice values
+          - Check if values match
+        end note
+
+        if (Rolled Doubles?) then (yes)
+          :Free from Jail;
+          note right
+            - Set in_jail to false
+            - Move according to dice roll
+          end note
+        else (no)
+          :Increment Jail Turns;
+          if (Jail Turns &gt;= 3) then (yes)
+            :Force Payment;
+            note right
+              - Deduct £50 automatically
+              - Set in_jail to false
+              - Check for bankruptcy
+            end note
+          endif
         endif
       endif
     endif
-  endif
+  else (no)
+    :Process Normal Turn;
+    note right
+      - Roll dice
+      - Move player token
+      - Handle space action
+    end note
 
-  if (On Property?) then (yes)
-    if (Can Afford?) then (yes)
-      :Consider Purchase;
-      if (Buy Decision?) then (yes)
-        :Buy Property;
-        :Update Assets;
+    :Animate Movement;
+    note right
+      - Generate movement path
+      - Calculate animation frames
+      - Update position progressively
+      - Check for passing GO
+    end note
+
+    if (Passing GO?) then (yes)
+      :Collect £200;
+      note right
+        - Add money to player balance
+        - Display notification
+        - Update money display
+      end note
+    endif
+
+    if (On Property?) then (yes)
+      if (Property Owned?) then (yes)
+        if (Self-Owned?) then (yes)
+          :No Action Required;
+        else (no)
+          :Calculate Rent;
+          note right
+            - Check for monopoly (double rent)
+            - Check for houses/hotels
+            - Apply special rules for utilities/stations
+            - Calculate final amount
+          end note
+
+          :Pay Rent;
+          note right
+            - Transfer money to property owner
+            - Update both players' balances
+            - Display transaction notification
+          end note
+        endif
+      else (no)
+        if (Can Afford?) then (yes)
+          :Display Property Card;
+          note right
+            - Show property details
+            - Display purchase price
+            - Show rent information
+            - Present buy/pass options
+          end note
+
+          if (Buy Decision?) then (yes)
+            :Buy Property;
+            note right
+              - Deduct purchase price
+              - Add property to portfolio
+              - Update property ownership
+              - Update board display
+            end note
+          else (no)
+            :Trigger Auction;
+            note right
+              - Start bidding process
+              - Allow all players to participate
+              - Track highest bid
+              - Award to highest bidder
+            end note
+          endif
+        endif
       endif
+    else if (On Card Space?) then (yes)
+      :Draw Card;
+      note right
+        - Get card from appropriate deck
+        - Display card to player
+        - Process card action
+      end note
+
+      :Execute Card Effect;
+      note right
+        - Move player if required
+        - Process money transactions
+        - Handle property effects
+        - Apply special actions
+      end note
+    else if (On Tax Space?) then (yes)
+      :Pay Tax;
+      note right
+        - Deduct tax amount
+        - Add to free parking pot
+        - Update player balance
+      end note
+    else if (On Go To Jail?) then (yes)
+      :Move to Jail;
+      note right
+        - Set position to jail (10)
+        - Set in_jail to true
+        - End current turn
+      end note
+    else if (On Free Parking?) then (yes)
+      :Collect Free Parking Pot;
+      note right
+        - Add pot amount to player
+        - Reset free parking pot
+        - Display notification
+      end note
     endif
   endif
 
+  :Update Player Animation;
+  note right
+    - Update highlight effects
+    - Process bounce animation
+    - Handle active player glow
+    - Update token position
+  end note
+
+  :Check Financial Status;
   if (Bankrupt?) then (yes)
     :Process Bankruptcy;
+    note right
+      - Transfer assets to creditor
+      - Remove properties from player
+      - Set bankrupt flag to true
+      - Remove from active players
+    end note
+    stop
+  endif
+
+  if (Voluntary Exit?) then (yes)
+    :Handle Voluntary Exit;
+    note right
+      - Calculate final assets
+      - Record exit statistics
+      - Remove from active players
+    end note
     stop
   endif
 
@@ -1097,6 +2462,21 @@ endwhile (no)
 
 if (Game Over?) then (yes)
   :Calculate Final Assets;
+  note right
+    - Add up property values
+    - Add house/hotel values
+    - Add cash on hand
+    - Calculate total net worth
+  end note
+
+  if (Is Winner?) then (yes)
+    :Highlight as Winner;
+    note right
+      - Apply winner visual effects
+      - Display congratulations
+      - Show winning statistics
+    end note
+  endif
 endif
 
 stop
@@ -1165,9 +2545,9 @@ stop
 </section>
 <section id="card-handling-flow">
 <h2>Card Handling Flow<a class="headerlink" href="#card-handling-flow" title="Link to this heading"></a></h2>
-<p>This diagram shows the card drawing and action processing:</p>
+<p>This diagram shows the card drawing and action processing based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-ba9682f8891364e8aed70c6698a449043fb165e4.png" alt="&#64;startuml
+<img src="_images/plantuml-6c5785a6bf0bb5e23eb9a8523107d96b6e1f73e6.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam activityBorderColor black
 skinparam activityBackgroundColor lightGray
@@ -1175,46 +2555,175 @@ skinparam arrowColor black
 
 start
 :Player Lands on Card Space;
+note right
+  - Check space type (Pot Luck or Opportunity Knocks)
+  - Trigger card drawing sequence
+  - Pause game flow for card action
+end note
 
 if (Space Type?) then (Pot Luck)
   :Draw Pot Luck Card;
+  note right
+    - Select random card from Pot Luck deck
+    - Remove card from deck temporarily
+    - Load card data and action type
+  end note
 else (Opportunity Knocks)
   :Draw Opportunity Knocks Card;
+  note right
+    - Select random card from Opportunity Knocks deck
+    - Remove card from deck temporarily
+    - Load card data and action type
+  end note
 endif
 
 :Display Card;
 note right
-  Show card text and
-  wait for acknowledgment
+  - Show card popup with text and graphics
+  - Animate card appearance
+  - Wait for player acknowledgment
+  - Highlight card action
 end note
 
 :Process Card Action;
+note right
+  - Determine action type from card data
+  - Execute corresponding action function
+  - Update game state accordingly
+end note
 
 if (Action Type?) then (Move Player)
   :Calculate New Position;
+  note right
+    - Get target position from card
+    - Calculate movement path
+    - Handle special movement rules
+  end note
+
   if (Pass GO?) then (yes)
     :Add £200;
+    note right
+      - Credit player account
+      - Display passing GO message
+      - Update money display
+    end note
   endif
+
   :Move Player;
+  note right
+    - Animate player movement
+    - Update player position
+    - Handle landing on new space
+  end note
+
+  :Process Destination Space;
+  note right
+    - Check space type at new position
+    - Execute space-specific actions
+    - Handle property/tax/special spaces
+  end note
 else if (Money Transaction?) then
   if (Receive Money?) then (yes)
     :Add to Player Balance;
-  else (no)
+    note right
+      - Credit specified amount
+      - Display transaction message
+      - Update money display
+      - Check for game effects
+    end note
+  else if (Pay Bank?) then
     :Deduct from Player Balance;
+    note right
+      - Debit specified amount
+      - Transfer to bank
+      - Display transaction message
+      - Check for bankruptcy
+    end note
+  else if (Pay All Players?) then
+    :Process Multiple Payments;
+    note right
+      - Calculate total payment amount
+      - Deduct from current player
+      - Distribute to other players
+    end note
+  else if (Collect from All Players?) then
+    :Process Multiple Collections;
+    note right
+      - Calculate total collection amount
+      - Collect from each player
+      - Add to current player
+      - Check others for bankruptcy
+    end note
   endif
 else if (Get Out of Jail?) then
   :Add Jail Card to Player;
-else if (Property Related?)
+  note right
+    - Increment player's jail_cards count
+    - Mark card as held (remove from deck)
+    - Display confirmation message
+    - Update player status
+  end note
+else if (Go To Jail?) then
+  :Send Player to Jail;
+  note right
+    - Move player token to jail position
+    - Set player.in_jail = True
+    - Reset jail_turns counter
+    - End current turn
+  end note
+else if (Property Related?) then
   :Handle Property Action;
   note right
-    - Repairs
-    - Rent changes
-    - Property effects
+    - Identify affected properties
+    - Calculate costs/effects
+    - Apply changes to properties
+  end note
+
+  if (Action Subtype?) then (Repairs)
+    :Calculate Repair Costs;
+    note right
+      - Count houses and hotels
+      - Multiply by specified amounts
+      - Calculate total repair bill
+    end note
+
+    :Charge Repair Costs;
+    note right
+      - Deduct total from player
+      - Add to free parking pot
+      - Check for bankruptcy
+    end note
+  else if (Property Effect) then
+    :Apply Property Effect;
+    note right
+      - Modify property attributes
+      - Update rent calculations
+      - Apply temporary effects
+    end note
+  endif
+else if (Special Action?) then
+  :Execute Special Action;
+  note right
+    - Process unique card effects
+    - Apply game rule modifications
+    - Handle special case logic
   end note
 endif
 
 :Return Card to Deck;
+note right
+  - Return card to bottom of deck
+  - Shuffle deck if specified
+  - Reset card state
+end note
+
 :Update Game State;
+note right
+  - Refresh player displays
+  - Update board state
+  - Check for game-ending conditions
+  - Continue game flow
+end note
 
 stop
 &#64;enduml"/>
@@ -1222,9 +2731,9 @@ stop
 </section>
 <section id="game-logic-flow">
 <h2>Game Logic Flow<a class="headerlink" href="#game-logic-flow" title="Link to this heading"></a></h2>
-<p>This diagram shows the core game logic and state management:</p>
+<p>This diagram shows the core game logic and state management based on the actual code implementation:</p>
 <p class="plantuml">
-<img src="_images/plantuml-7fa35f96a58a2d47b87e4596cb22a33e8f7968c6.png" alt="&#64;startuml
+<img src="_images/plantuml-5fc902664bad77b0ffe13df26dbca7530635865f.png" alt="&#64;startuml
 skinparam backgroundColor white
 skinparam activityBorderColor black
 skinparam activityBackgroundColor lightGray
@@ -1233,59 +2742,269 @@ skinparam arrowColor black
 start
 :Initialize Game Logic;
 note right
-  - Load properties
-  - Set up bank
-  - Initialize decks
+  - Create GameLogic instance
+  - Load property data from Excel
+  - Load card data from Excel
+  - Initialize game constants
+  - Set up AI difficulty
+  - Create appropriate AI strategy
+end note
+
+:Setup Game Environment;
+note right
+  - Initialize pygame
+  - Set up display window
+  - Load fonts and UI elements
+  - Initialize audio system
+  - Set up camera controls
+end note
+
+:Create Game Objects;
+note right
+  - Create player objects
+  - Initialize board with spaces
+  - Set up property data
+  - Create card decks
+  - Initialize bank with money
 end note
 
 while (Game Active?) is (yes)
-  :Process Player Turn;
+  :Process Game Loop;
+  note right
+    - Handle events
+    - Update game state
+    - Render graphics
+    - Manage timing
+  end note
+
+  :Handle Player Turn;
 
   if (Player Type?) then (AI)
     :Execute AI Logic;
     note right
-      - Strategy selection
-      - Decision making
-      - Action execution
+      - Determine strategy based on difficulty
+      - Analyze game state
+      - Make property decisions
+      - Handle development choices
+      - Process auction bids
+    end note
+
+    :Apply AI Decisions;
+    note right
+      - Execute chosen actions
+      - Update game state
+      - Animate AI moves
+      - Display AI decisions
     end note
   else (Human)
-    :Handle Player Input;
+    :Process Player Input;
+    note right
+      - Handle keyboard commands
+      - Process mouse clicks
+      - Respond to UI interactions
+      - Validate player actions
+    end note
+
+    :Execute Player Actions;
+    note right
+      - Roll dice
+      - Move player token
+      - Buy properties
+      - Develop properties
+      - Pay/collect money
+    end note
   endif
 
-  if (Transaction?) then (yes)
-    :Validate Transaction;
-    if (Valid?) then (yes)
-      :Process Money Transfer;
-      :Update Bank Balance;
+  :Handle Space Actions;
+  note right
+    - Determine space type
+    - Execute space-specific logic
+    - Update player state
+    - Process transactions
+  end note
+
+  if (Space Type?) then (Property)
+    :Process Property Logic;
+    note right
+      - Check ownership status
+      - Calculate rent if owned
+      - Offer purchase if unowned
+      - Handle auctions
+      - Update property state
+    end note
+
+    if (Transaction?) then (yes)
+      :Validate Transaction;
+      note right
+        - Check player funds
+        - Verify transaction rules
+        - Calculate final amounts
+      end note
+
+      if (Valid?) then (yes)
+        :Process Money Transfer;
+        note right
+          - Update player balances
+          - Transfer property ownership
+          - Update UI displays
+          - Check for bankruptcy
+        end note
+
+        :Update Bank Balance;
+        note right
+          - Adjust bank funds
+          - Track transaction history
+          - Update game economy
+        end note
+      else (no)
+        :Handle Invalid Transaction;
+        note right
+          - Display error message
+          - Offer alternatives
+          - Revert to previous state
+        end note
+      endif
     endif
+  else if (Card Space) then
+    :Draw Card;
+    note right
+      - Select from appropriate deck
+      - Display card to player
+      - Process card action
+    end note
+  else if (Tax Space) then
+    :Process Tax Payment;
+    note right
+      - Calculate tax amount
+      - Deduct from player
+      - Add to free parking pot
+      - Check for bankruptcy
+    end note
+  else if (Jail Space) then
+    :Handle Jail Logic;
+    note right
+      - Process jail entry/exit
+      - Manage jail turns
+      - Handle jail cards
+      - Process jail payments
+    end note
+  else if (Free Parking) then
+    :Award Free Parking Pot;
+    note right
+      - Transfer pot to player
+      - Reset pot amount
+      - Display notification
+    end note
+  else if (GO Space) then
+    :Process GO Bonus;
+    note right
+      - Add salary amount
+      - Update player balance
+      - Display notification
+    end note
   endif
 
   if (Property Action?) then (yes)
     :Handle Property Transaction;
     note right
-      - Buying
-      - Selling
-      - Mortgaging
-      - Development
+      - Process buying/selling
+      - Handle mortgaging
+      - Manage development
+      - Update property status
     end note
+
+    if (Development?) then (yes)
+      :Process Development;
+      note right
+        - Check monopoly ownership
+        - Verify even development rule
+        - Calculate development cost
+        - Update property improvements
+        - Update rent values
+      end note
+    else if (Mortgage?) then
+      :Process Mortgage;
+      note right
+        - Calculate mortgage value
+        - Add funds to player
+        - Mark property as mortgaged
+        - Update rent calculations
+      end note
+    else if (Unmortgage?) then
+      :Process Unmortgage;
+      note right
+        - Calculate unmortgage cost
+        - Deduct funds from player
+        - Mark property as active
+        - Restore rent calculations
+      end note
+    endif
   endif
 
   :Check Win Conditions;
+  note right
+    - Evaluate player statuses
+    - Check bankruptcy conditions
+    - Verify time limits
+    - Assess victory conditions
+  end note
+
   if (Game Mode?) then (Full)
     if (One Player Left?) then (yes)
       :End Game;
+      note right
+        - Declare winner
+        - Calculate final scores
+        - Display game statistics
+        - Show victory screen
+      end note
       stop
     endif
   else (Abridged)
     if (Time Limit Reached?) then (yes)
       :Calculate Final Assets;
+      note right
+        - Add property values
+        - Count houses/hotels
+        - Add cash on hand
+        - Determine total worth
+      end note
+
       :Determine Winner;
+      note right
+        - Compare player assets
+        - Identify player with most assets
+        - Handle tie conditions
+        - Display final standings
+      end note
       stop
     endif
   endif
 
+  :Update Game State;
+  note right
+    - Refresh UI elements
+    - Update animations
+    - Process queued events
+    - Prepare for next turn
+  end note
+
   :Next Player Turn;
+  note right
+    - Move to next active player
+    - Skip bankrupt players
+    - Reset turn variables
+    - Update active player highlight
+  end note
 endwhile (no)
+
+:Game Cleanup;
+note right
+  - Save game statistics
+  - Release resources
+  - Close file handles
+  - Shut down systems
+end note
 
 stop
 &#64;enduml"/>
