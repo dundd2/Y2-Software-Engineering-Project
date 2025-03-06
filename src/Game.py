@@ -142,6 +142,13 @@ class Game:
                 button_height
             )
             
+            self.quit_button = pygame.Rect(
+                window_size[0] - (button_width * 2) - (button_margin * 2),
+                button_y,
+                button_width,
+                button_height
+            )
+            
             self.yes_button = pygame.Rect(
                 window_size[0] - (button_width * 2) - (button_margin * 2),
                 button_y,
@@ -296,6 +303,7 @@ class Game:
 
     def draw(self):
         self.synchronize_player_positions()
+        self.synchronize_free_parking_pot()  
         
         if not pygame.display.get_surface():
             return
@@ -371,6 +379,8 @@ class Game:
             
             if player_obj and player_obj.player_image:
                 scaled_logo = pygame.transform.scale(player_obj.player_image, (logo_size, logo_size))
+                if player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
+                    scaled_logo.set_alpha(128)
                 self.screen.blit(scaled_logo, logo_rect)
             
             info_x = logo_rect.right + 15
@@ -380,6 +390,9 @@ class Game:
             if player_data.get('in_jail', False):
                 name_text = f"{player_data['name']} [JAIL]"
                 name_color = ERROR_COLOR if is_current else GRAY
+            elif player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
+                name_text = f"{player_data['name']} [EXITED]"
+                name_color = (200, 0, 0)  
             else:
                 name_text = player_data['name']
             
@@ -387,7 +400,8 @@ class Game:
             self.screen.blit(name_surface, (info_x, info_y))
             
             money_y = info_y + 30
-            money_text = f"$ {player_data['money']:,}"
+            
+            money_text = f"£ {player_data['money']:,}"
             money_color = SUCCESS_COLOR if player_data['money'] > 500 else ERROR_COLOR if player_data['money'] < 200 else WHITE
             money_surface = self.small_font.render(money_text, True, money_color)
             self.screen.blit(money_surface, (info_x, money_y))
@@ -455,8 +469,35 @@ class Game:
                 self.draw_button(self.roll_button, "Roll", 
                                hover=self.roll_button.collidepoint(mouse_pos))
                 
+                quit_hover = self.quit_button.collidepoint(mouse_pos)
+                base_color = BUTTON_HOVER if quit_hover else ERROR_COLOR
+                
+                shadow_rect = self.quit_button.copy()
+                shadow_rect.y += 2
+                shadow = pygame.Surface(self.quit_button.size, pygame.SRCALPHA)
+                pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
+                self.screen.blit(shadow, shadow_rect)
+
+                pygame.draw.rect(self.screen, base_color, self.quit_button, border_radius=5)
+                gradient = pygame.Surface(self.quit_button.size, pygame.SRCALPHA)
+                for i in range(self.quit_button.height):
+                    alpha = int(100 * (1 - i/self.quit_button.height))
+                    pygame.draw.line(gradient, (255, 255, 255, alpha), 
+                                   (0, i), (self.quit_button.width, i))
+                self.screen.blit(gradient, self.quit_button)
+
+                quit_text = self.font.render("Leave Game", True, WHITE)
+                text_rect = quit_text.get_rect(center=self.quit_button.center)
+                text_shadow = self.font.render("Leave Game", True, BLACK)
+                text_shadow_rect = text_shadow.get_rect(center=self.quit_button.center)
+                text_shadow_rect.x += 1
+                text_shadow_rect.y += 1
+                self.screen.blit(text_shadow, text_shadow_rect)
+                self.screen.blit(quit_text, text_rect)
+                
             elif not self.dice_animation and not any_player_moving:
                 self.play_turn()
+                
         elif self.state == "BUY" and self.current_property is not None:
             self.draw_property_card(self.current_property)
             self.draw_buy_options(mouse_pos)
@@ -981,6 +1022,16 @@ class Game:
                 return {"winner": winner,
                         "bankrupted_players": self.logic.bankrupted_players,
                         "voluntary_exits": self.logic.voluntary_exits}
+            
+            human_players = [p for p in self.players if not p.is_ai and not p.bankrupt and not p.voluntary_exit]
+            ai_players = [p for p in self.players if p.is_ai and not p.bankrupt and not p.voluntary_exit]
+            
+            if len(human_players) == 0 and len(ai_players) == 1:
+                winner = ai_players[0].name
+                self.game_over = True
+                return {"winner": winner,
+                        "bankrupted_players": self.logic.bankrupted_players,
+                        "voluntary_exits": self.logic.voluntary_exits}
                 
         elif self.game_mode == "abridged":
             if self.time_limit and (current_time - self.start_time) // 1000 >= self.time_limit:
@@ -1164,6 +1215,30 @@ class Game:
         if self.state == "ROLL":
             if not self.current_player_is_ai and self.roll_button.collidepoint(pos):
                 return self.play_turn()
+                
+            if not self.current_player_is_ai and self.quit_button.collidepoint(pos):
+                confirm_exit = self.show_exit_confirmation()
+                
+                if confirm_exit:
+                    current_player = self.logic.players[self.logic.current_player_index]
+                    
+                    final_assets = self.calculate_player_assets(current_player)
+                    
+                    result = self.handle_voluntary_exit(current_player['name'], final_assets)
+                    
+                    if result:
+                        self.board.add_message(f"{current_player['name']} has voluntarily exited the game")
+                        self.show_notification(f"{current_player['name']} has voluntarily exited the game", 3000)
+                        
+                        game_over_result = self.check_game_over()
+                        if game_over_result:
+                            return game_over_result
+                        
+                        if len(self.logic.players) > 0:
+                            self.state = "ROLL"
+                        else:
+                            return self.check_game_over()
+                return False
             
             if self.development_mode:
                 current_player = self.logic.players[self.logic.current_player_index]
@@ -1230,7 +1305,7 @@ class Game:
 
     def handle_motion(self, pos):
         if self.state == "ROLL":
-            return self.roll_button.collidepoint(pos)
+            return self.roll_button.collidepoint(pos) or self.quit_button.collidepoint(pos)
         elif self.state == "BUY":
             return self.yes_button.collidepoint(pos) or self.no_button.collidepoint(pos)
         elif self.state == "AUCTION":
@@ -1250,6 +1325,21 @@ class Game:
         if self.state == "ROLL":
             if not self.current_player_is_ai and event.key in KEY_ROLL:
                 return self.play_turn()
+            elif event.key == pygame.K_q and not self.current_player_is_ai:
+                confirm_exit = self.show_exit_confirmation()
+                
+                if confirm_exit:
+                    current_player = self.logic.players[self.logic.current_player_index]
+                    final_assets = self.calculate_player_assets(current_player)
+                    result = self.handle_voluntary_exit(current_player['name'], final_assets)
+                    if result:
+                        self.board.add_message(f"{current_player['name']} has voluntarily exited the game")
+                        self.show_notification(f"{current_player['name']} has voluntarily exited the game", 3000)
+                        if len(self.logic.players) > 0:
+                            self.state = "ROLL"
+                        else:
+                            return self.check_game_over()
+                return False
             elif event.key == pygame.K_t and self.game_mode == "abridged":
                 self.show_time_stats()
         elif self.state == "BUY":
@@ -1293,18 +1383,6 @@ class Game:
             max_rounds = max(self.rounds_completed.values())
             if min_rounds != max_rounds:
                 self.board.add_message(f"Rounds: {min_rounds}-{max_rounds}")
-
-    def handle_voluntary_exit(self, player_name):
-        if self.game_mode != "full":
-            self.board.add_message("Exit only in full mode")
-            return False
-            
-        self.board.add_message(f"{player_name} exits game")
-        
-        if self.logic.remove_player(player_name, voluntary=True):
-            self.board.update_ownership(self.logic.properties)
-            return True
-        return False
 
     def handle_bankruptcy(self, player):
         if self.logic.remove_player(player['name']):
@@ -1547,7 +1625,7 @@ class Game:
             if success:
                 print(f"{current_bidder['name']} passed successfully")
             else:
-                print(f"Pass failed: {message}")
+                print("Pass failed: {message}")
         
         result_message = self.logic.check_auction_end()
         print(f"Auction end check result: {result_message}")
@@ -1721,6 +1799,8 @@ class Game:
                 return True
             elif player['money'] >= 50 and random.random() < 0.5:
                 player['money'] -= 50
+                self.logic.free_parking_fund += 50
+                self.synchronize_free_parking_pot() 
                 player['in_jail'] = False
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
                 return True
@@ -1737,6 +1817,8 @@ class Game:
                 return True
             elif choice == "pay" and player['money'] >= 50:
                 player['money'] -= 50
+                self.logic.free_parking_fund += 50
+                self.synchronize_free_parking_pot() 
                 player['in_jail'] = False
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
                 return True
@@ -1745,6 +1827,8 @@ class Game:
         if player['jail_turns'] >= 3:
             if player['money'] >= 50:
                 player['money'] -= 50
+                self.logic.free_parking_fund += 50
+                self.synchronize_free_parking_pot() 
                 self.board.add_message(f"{player['name']} paid £50 after 3 turns in jail!")
             else:
                 self.board.add_message(f"{player['name']} couldn't pay jail fine!")
@@ -1990,8 +2074,18 @@ class Game:
         return result
 
     def check_one_player_remains(self):
-        active_players = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
-        return len(active_players) == 1
+        active_player_objects = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
+        active_player_data = [p for p in self.logic.players if p["money"] > 0 and not p.get('exited', False)]
+        
+        if len(active_player_objects) == 1 and len(active_player_data) == 1:
+            if active_player_objects[0].is_ai:
+                self.game_over = True
+                winner = active_player_objects[0]
+                self.handle_game_over(winner.name)
+                return True
+            return True
+        
+        return len(active_player_objects) <= 1 and len(active_player_data) <= 1
         
     def check_time_limit(self):
         if not self.time_limit or not self.start_time:
@@ -2031,11 +2125,54 @@ class Game:
         return total
         
     def handle_voluntary_exit(self, player_name, final_assets):
-        for player in self.players:
-            if player.name == player_name:
-                player.final_assets = final_assets
-                player.handle_voluntary_exit()
-                break
+        print(f"\n=== Voluntary Exit Debug ===")
+        print(f"Player {player_name} is exiting the game")
+        print(f"Final assets: {final_assets}")
+        print(f"Current number of players: {len(self.logic.players)}")
+        
+
+        self.board.add_message(f"{player_name} exits game")
+        
+        player_obj = next((p for p in self.players if p.name == player_name), None)
+        if not player_obj:
+            print(f"Error: Could not find player object for {player_name}")
+            return False
+            
+        print(f"Found player object: {player_obj.name}")
+        
+        player_properties = [p for p in self.logic.properties.values() 
+                           if p.get('owner') == player_name]
+        print(f"Player has {len(player_properties)} properties that will be returned to bank")
+        
+        if hasattr(player_obj, 'handle_voluntary_exit'):
+            print(f"Setting voluntary_exit flag for {player_name}")
+            player_obj.final_assets = final_assets
+            player_obj.handle_voluntary_exit()
+        
+        result = self.logic.remove_player(player_name, voluntary=True)
+        print(f"Game logic marked player as exited: {result}")
+        
+        if result:
+            exited_player = next((p for p in self.logic.players if p['name'] == player_name), None)
+            if exited_player and exited_player.get('exited', False):
+                print(f"Player {player_name} successfully marked as exited")
+            else:
+                print(f"Warning: Player {player_name} not properly marked as exited")
+            
+            self.board.update_ownership(self.logic.properties)
+            
+            active_players = [p for p in self.logic.players if not p.get('exited', False)]
+            if len(active_players) <= 1:
+                print(f"Only {len(active_players)} active player(s) left - game should end soon")
+                if self.check_one_player_remains():
+                    print("Game ending due to only one player remaining")
+                    return self.check_game_over()
+                
+            self.show_notification(f"{player_name} has left the game. Their properties return to the bank.", 3000)
+            return True
+        else:
+            print("Failed to mark player as exited in game logic")
+            return False
 
     def move_player(self, player, spaces):
         if not isinstance(player.position, int) or not (1 <= player.position <= 40):
@@ -2507,3 +2644,121 @@ class Game:
         else:
             self.board.add_message(f"{player['name']} cannot pay £{amount} {reason}")
             return False
+
+    def synchronize_free_parking_pot(self):
+        if hasattr(self.logic, 'free_parking_fund'):
+            self.free_parking_pot = self.logic.free_parking_fund
+
+    def show_exit_confirmation(self):
+        window_size = self.screen.get_size()
+        
+        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        
+        dialog_width = int(window_size[0] * 0.4)
+        dialog_height = int(window_size[1] * 0.25)
+        dialog_x = (window_size[0] - dialog_width) // 2
+        dialog_y = (window_size[1] - dialog_height) // 2
+        
+        shadow_rect = pygame.Rect(dialog_x + 6, dialog_y + 6, dialog_width, dialog_height)
+        shadow = pygame.Surface((dialog_width, dialog_height), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        
+        button_width = 100
+        button_height = 40
+        button_spacing = 30
+        total_width = (button_width * 2) + button_spacing
+        start_x = dialog_x + (dialog_width - total_width) // 2
+        button_y = dialog_y + dialog_height - 60
+        
+        yes_button = pygame.Rect(start_x, button_y, button_width, button_height)
+        no_button = pygame.Rect(start_x + button_width + button_spacing, button_y, button_width, button_height)
+        
+        title_text = self.font.render("Leave Game?", True, ERROR_COLOR)
+        title_rect = title_text.get_rect(centerx=dialog_x + dialog_width//2, top=dialog_y + 20)
+        
+        warning_text = self.small_font.render("Warning: You will lose the game if you leave!", True, BLACK)
+        warning_rect = warning_text.get_rect(centerx=dialog_x + dialog_width//2, top=title_rect.bottom + 20)
+        
+        message_text = self.small_font.render("All your properties will be returned to the bank.", True, BLACK)
+        message_rect = message_text.get_rect(centerx=dialog_x + dialog_width//2, top=warning_rect.bottom + 10)
+        
+        yes_text = self.font.render("Yes", True, WHITE)
+        no_text = self.font.render("No", True, WHITE)
+        
+        last_yes_hover = False
+        last_no_hover = False
+        
+        def draw_dialog(force_redraw=False, yes_hover=False, no_hover=False):
+            if force_redraw or yes_hover != last_yes_hover or no_hover != last_no_hover:
+                screen_backup = self.screen.copy()
+                
+                self.screen.blit(overlay, (0, 0))
+                
+                self.screen.blit(shadow, shadow_rect)
+                pygame.draw.rect(self.screen, WHITE, (dialog_x, dialog_y, dialog_width, dialog_height), border_radius=15)
+                self.screen.blit(title_text, title_rect)
+                self.screen.blit(warning_text, warning_rect)
+                self.screen.blit(message_text, message_rect)
+                
+                pygame.draw.rect(self.screen, BUTTON_HOVER if yes_hover else ERROR_COLOR, yes_button, border_radius=5)
+                pygame.draw.rect(self.screen, BUTTON_HOVER if no_hover else ACCENT_COLOR, no_button, border_radius=5)
+                
+                yes_rect = yes_text.get_rect(center=yes_button.center)
+                self.screen.blit(yes_text, yes_rect)
+                
+                no_rect = no_text.get_rect(center=no_button.center)
+                self.screen.blit(no_text, no_rect)
+                
+                pygame.display.flip()
+                return yes_hover, no_hover
+            return last_yes_hover, last_no_hover
+        
+        last_yes_hover, last_no_hover = draw_dialog(force_redraw=True)
+        
+        waiting = True
+        confirm_exit = False
+        last_update_time = pygame.time.get_ticks()
+        
+        while waiting:
+            current_time = pygame.time.get_ticks()
+            
+            if current_time - last_update_time < 16: 
+                pygame.time.wait(5)
+                continue
+                
+            last_update_time = current_time
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                    
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if yes_button.collidepoint(event.pos):
+                        confirm_exit = True
+                        waiting = False
+                    elif no_button.collidepoint(event.pos):
+                        confirm_exit = False
+                        waiting = False
+                        
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        confirm_exit = True
+                        waiting = False
+                    elif event.key == pygame.K_n or event.key == pygame.K_ESCAPE:
+                        confirm_exit = False
+                        waiting = False
+                
+                elif event.type == pygame.MOUSEMOTION:
+                    mouse_pos = pygame.mouse.get_pos()
+                    yes_hover = yes_button.collidepoint(mouse_pos)
+                    no_hover = no_button.collidepoint(mouse_pos)
+                    last_yes_hover, last_no_hover = draw_dialog(force_redraw=False, yes_hover=yes_hover, no_hover=no_hover)
+        
+        pygame.time.wait(100)
+        
+        self.draw()
+        pygame.display.flip()
+        
+        return confirm_exit

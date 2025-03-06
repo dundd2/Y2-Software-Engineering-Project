@@ -282,7 +282,7 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        version_text = self.version_font.render("Build Version: 03.03.2025", True, GRAY)
+        version_text = self.version_font.render("Build Version: 06.03.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -1105,6 +1105,13 @@ class EndGamePage(BasePage):
         self.bankrupted_players = bankrupted_players or []
         self.voluntary_exits = voluntary_exits or []
         
+        self.screen = pygame.display.get_surface()
+        if not self.screen:
+            self.screen = pygame.display.set_mode(get_window_size())
+            print("Created new surface for EndGamePage")
+        else:
+            print("Using existing surface for EndGamePage")
+            
         button_width = 300
         button_height = 60
         self.play_again_button = ModernButton(

@@ -250,14 +250,15 @@ async def run_game(game, game_settings):
                     if result_message == "auction_completed":
                         print("Auction completed in main loop - setting up delay")
                         
-                        if game.logic.current_auction["highest_bidder"]:
-                            winner = game.logic.current_auction["highest_bidder"]
-                            property_name = game.logic.current_auction["property"]["name"]
-                            bid_amount = game.logic.current_auction["current_bid"]
-                            game.show_notification(f"{winner['name']} won {property_name} for £{bid_amount}", 3000)
-                        else:
-                            property_name = game.logic.current_auction["property"]["name"]
-                            game.show_notification(f"No one bid on {property_name}", 3000)
+                        if hasattr(game.logic, 'current_auction') and game.logic.current_auction is not None:
+                            if game.logic.current_auction.get("highest_bidder"):
+                                winner = game.logic.current_auction["highest_bidder"]
+                                property_name = game.logic.current_auction["property"]["name"]
+                                bid_amount = game.logic.current_auction["current_bid"]
+                                game.show_notification(f"{winner['name']} won {property_name} for £{bid_amount}", 3000)
+                            else:
+                                property_name = game.logic.current_auction["property"]["name"]
+                                game.show_notification(f"No one bid on {property_name}", 3000)
                         
                         game.auction_end_time = pygame.time.get_ticks()
                         game.auction_end_delay = 3000
@@ -276,16 +277,22 @@ async def run_game(game, game_settings):
             print("State is AUCTION but no auction data exists - resetting to ROLL")
             game.state = "ROLL"
         
-        if game_settings["mode"] == "abridged" and game.check_time_limit():
-            game_over_data = game.end_abridged_game()
-            running = False
-        elif game_settings["mode"] == "full" and game.check_one_player_remains():
+        if game_settings["mode"] == "full" and game.check_one_player_remains() and not game_over_data:
+            print("Only one player remains - ending game")
             game_over_data = game.end_full_game()
+            running = False
+        elif game_settings["mode"] == "abridged" and game.check_time_limit():
+            game_over_data = game.end_abridged_game()
             running = False
     
     return game_over_data
 
 async def handle_end_game(game_over_data):
+    print("Entering handle_end_game function")
+    print(f"Game over data: {game_over_data}")
+    
+    pygame.display.flip()
+    
     end_page = EndGamePage(
         winner_name=game_over_data["winner"],
         final_assets=game_over_data.get("final_assets"),
@@ -293,9 +300,18 @@ async def handle_end_game(game_over_data):
         voluntary_exits=game_over_data.get("voluntary_exits")
     )
     
+    print("EndGamePage created successfully")
+    
+    debug_drawn = False
+    
     while True:
         await asyncio.sleep(0)
         end_page.draw()
+        pygame.display.flip()
+        
+        if not debug_drawn:
+            print("EndGamePage drawn")
+            debug_drawn = True
         
         for end_event in pygame.event.get():
             if end_event.type == pygame.QUIT:

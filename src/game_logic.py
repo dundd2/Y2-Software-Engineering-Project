@@ -120,11 +120,28 @@ class GameLogic:
             return True, f"Added player {player_name} with {token} token"
         return False, "Maximum number of players reached"
 
+    def advance_to_next_player(self):
+        if not self.players:
+            return
+            
+        self.current_player_index = (self.current_player_index + 1) % len(self.players)
+        current_player = self.players[self.current_player_index]
+        
+        while current_player.get('exited', False):
+            self.current_player_index = (self.current_player_index + 1) % len(self.players)
+            current_player = self.players[self.current_player_index]
+            
+        return current_player
+        
     def play_turn(self):
         if not self.players:
             return None, None
 
         current_player = self.players[self.current_player_index]
+        while current_player.get('exited', False):
+            self.current_player_index = (self.current_player_index + 1) % len(self.players)
+            current_player = self.players[self.current_player_index]
+            
         self.is_going_to_jail = False
 
         dice1 = random.randint(1, 6)
@@ -134,7 +151,7 @@ class GameLogic:
         if current_player.get('in_jail', False):
             success, message = self.try_leave_jail(current_player, dice1, dice2)
             if not success:
-                self.current_player_index = (self.current_player_index + 1) % len(self.players)
+                self.advance_to_next_player()
                 return dice1, dice2
 
         if dice1 == dice2:
@@ -142,7 +159,7 @@ class GameLogic:
             if self.doubles_count == 3:
                 print(f"{current_player['name']} rolled three doubles and goes to jail!")
                 self.handle_jail(current_player)
-                self.current_player_index = (self.current_player_index + 1) % len(self.players)
+                self.advance_to_next_player()
                 return dice1, dice2
         else:
             self.doubles_count = 0
@@ -168,7 +185,7 @@ class GameLogic:
             self.doubles_count = 0
 
         if not dice1 == dice2 or self.is_going_to_jail:
-            self.current_player_index = (self.current_player_index + 1) % len(self.players)
+            self.advance_to_next_player()
             self.doubles_count = 0
 
         return dice1, dice2
@@ -658,12 +675,12 @@ class GameLogic:
         print(f"Timer reset for next bidder")
 
     def is_game_over(self):
-        active_players = [p for p in self.players if p["money"] > 0]
+        active_players = [p for p in self.players if p["money"] > 0 and not p.get('exited', False)]
         return len(active_players) <= 1
 
     def get_winner(self):
         if self.is_game_over():
-            active_players = [p for p in self.players if p["money"] > 0]
+            active_players = [p for p in self.players if p["money"] > 0 and not p.get('exited', False)]
             if active_players:
                 return active_players[0]["name"]
         return None
@@ -677,10 +694,11 @@ class GameLogic:
                     if 'houses' in prop:
                         prop['houses'] = 0
             
-            self.players.remove(player)
             if voluntary:
+                player['exited'] = True
                 self.voluntary_exits.append(player_name)
             else:
+                self.players.remove(player)
                 self.bankrupted_players.append(player_name)
             
             if len(self.players) > 0:

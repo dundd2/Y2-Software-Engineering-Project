@@ -44,20 +44,22 @@
 
 **Bug Fixes:**
 
-*   Fixed: Resolved an issue where the game state would become inconsistent after certain player actions.
-*   Fixed: Addressed several edge cases in player movement and property ownership.
-*   Fixed: Corrected issues with animation timing and display.
-*   Fixed: Ensured that AI players handled various game states and events properly.
-*   Fixed: Fixed a bug that a player could not buy properties if it didn't complete a round.
-*   Fixed: Fixed an issue that will crash the game when a player is in jail
-*   Fixed: Fixed a bug that a  player who was not in the game could still buy property
-*   Fixed: Player Position Bug:** Resolved an issue where AI players could have positions outside the valid board range (1-40).  Positions are now validated and corrected if necessary.
-*   Fixed: Auction System Inconsistency:** Corrected the auction system to accurately track and display the correct property being auctioned.
-*   Fixed: Duplicate Messages:** Eliminated redundant message processing to prevent duplicate prompts and log entries.
-*   Fixed: Player/AI Purchase Confusion:**  Fixed logic to ensure that AI decision-making functions are only called for AI players, preventing incorrect attribution of actions.
-*   Fixed: Inconsistent Turn Flow: Improved the turn management logic to ensure players take turns in the correct sequence, preventing issues like players getting multiple consecutive turns.
+- Resolved an issue where the game state could become inconsistent after certain player actions.
+- Addressed edge cases in player movement and property ownership.
+- Ensured AI players properly handled various game states and events.
+- Fixed errors related to missing or invalid property data.
+- Fixed a bug preventing property purchases before completing a full round.
+- Prevented players from controlling AI during auctions.
+- Resolved a crash when a player was in jail.
+- Prevented an infinite loop when all players were in an auction, and the current bidder was AI.
+- Player Position Bug: Ensured AI positions remained within the valid board range (1-40).
+- Auction System Inconsistency: Fixed incorrect property tracking in auctions.
+- Duplicate Messages: Eliminated redundant prompts and log entries.
+- Player/AI Purchase Confusion: Ensured AI decision-making applies only to AI players.
+- Inconsistent Turn Flow: Improved turn management to prevent extra turns.
 
-  
-  **Documentation**
-  
-   Created software documentation in HTML format using the Sphinx documentation generator. 
+**Documentation:**  
+Created comprehensive software documentation in HTML using Sphinx, including:  
+
+- Detailed class and function descriptions  
+- Flowchart diagrams of game logic, player interactions, and AI decisions  s
