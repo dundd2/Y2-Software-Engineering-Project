@@ -282,7 +282,7 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        version_text = self.version_font.render("Build Version: 06.03.2025", True, GRAY)
+        version_text = self.version_font.render("Build Version: 07.03.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -943,8 +943,21 @@ class GameModePage(BasePage):
         
         self.game_mode = "full"
         self.time_limit = None
-        self.time_options = [10, 20, 30]
-        self.current_time_option = 2
+        self.custom_time_input = ModernInput(
+            pygame.Rect(
+                (get_window_size()[0] - 300) // 2,
+                get_window_size()[1] // 2,
+                300,
+                60
+            ),
+            "30",
+            self.button_font,
+            active_color=TIME_COLOR
+        )
+        
+        self.custom_time_input.placeholder = "Enter time..."
+        
+        self.last_time_input = "30"
         
         mode_button_width = 400
         button_height = 60
@@ -960,18 +973,7 @@ class GameModePage(BasePage):
             color=MODE_COLOR
         )
         
-        time_button_width = 300
-        self.time_button = ModernButton(
-            pygame.Rect(
-                (get_window_size()[0] - time_button_width) // 2,
-                get_window_size()[1] // 2,
-                time_button_width,
-                button_height
-            ),
-            "Time Limit: 30 min",
-            self.button_font,
-            color=TIME_COLOR
-        )
+        self.time_label = "Time Limit (minutes):"
         
         button_width = 300
         self.start_button = ModernButton(
@@ -998,6 +1000,7 @@ class GameModePage(BasePage):
         
         self.full_game_text = "Full Game: Last player standing wins"
         self.abridged_text = "Abridged Game: Highest value after time limit wins"
+        self.input_error = None
 
     def draw(self):
         self.draw_background()
@@ -1012,14 +1015,25 @@ class GameModePage(BasePage):
         self.screen.blit(info_text, info_rect)
         
         if self.game_mode == "abridged":
-            minutes = self.time_options[self.current_time_option]
-            self.time_button.text = f"Time Limit: {minutes} minutes"
-            self.time_button.draw(self.screen)
+            label_text = self.small_font.render(self.time_label, True, LIGHT_GRAY)
+            label_rect = label_text.get_rect(centerx=get_window_size()[0]//2, bottom=self.custom_time_input.rect.top - 10)
+            self.screen.blit(label_text, label_rect)
             
-            time_info = f"Game will end after {minutes} minutes"
-            time_text = self.small_font.render(time_info, True, LIGHT_GRAY)
-            time_rect = time_text.get_rect(centerx=get_window_size()[0]//2, top=self.time_button.rect.bottom + 5)
-            self.screen.blit(time_text, time_rect)
+            self.custom_time_input.draw(self.screen)
+            
+            if self.input_error:
+                error_text = self.small_font.render(self.input_error, True, ERROR_COLOR)
+                error_rect = error_text.get_rect(centerx=get_window_size()[0]//2, top=self.custom_time_input.rect.bottom + 5)
+                self.screen.blit(error_text, error_rect)
+            else:
+                try:
+                    minutes = int(self.custom_time_input.text)
+                    time_info = f"Game will end after {minutes} minutes"
+                    time_text = self.small_font.render(time_info, True, LIGHT_GRAY)
+                    time_rect = time_text.get_rect(centerx=get_window_size()[0]//2, top=self.custom_time_input.rect.bottom + 5)
+                    self.screen.blit(time_text, time_rect)
+                except ValueError:
+                    pass
         
         self.start_button.draw(self.screen)
         self.back_button.draw(self.screen)
@@ -1029,7 +1043,7 @@ class GameModePage(BasePage):
             "M - Change game mode",
         ]
         if self.game_mode == "abridged":
-            controls.append("T - Change time limit")
+            controls.append("Click on time input to enter custom time")
             
         y_offset = get_window_size()[1] - 80
         for hint in controls:
@@ -1044,42 +1058,109 @@ class GameModePage(BasePage):
         if self.mode_button.check_hover(pos):
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
-                self.time_limit = self.time_options[self.current_time_option] * 60
+                try:
+                    minutes = int(self.custom_time_input.text)
+                    self.time_limit = minutes * 60
+                    print(f"Custom time limit set: {minutes} minutes")
+                except ValueError:
+                    self.time_limit = 30 * 60  # Default to 30 minutes
+                    print("Default time limit set: 30 minutes")
             else:
                 self.time_limit = None
+                print("Game mode changed to Full Game (no time limit)")
             return False
             
-        if self.game_mode == "abridged" and self.time_button.check_hover(pos):
-            self.current_time_option = (self.current_time_option + 1) % len(self.time_options)
-            self.time_limit = self.time_options[self.current_time_option] * 60
+        if self.game_mode == "abridged" and self.custom_time_input.rect.collidepoint(pos):
+            self.custom_time_input.active = True
             return False
             
         if self.start_button.check_hover(pos):
+            if self.game_mode == "abridged":
+                try:
+                    minutes = int(self.custom_time_input.text)
+                    if minutes <= 0:
+                        self.input_error = "Time must be greater than 0"
+                        return False
+                    self.time_limit = minutes * 60
+                    self.input_error = None
+                    print(f"Starting abridged game with time limit: {minutes} minutes")
+                except ValueError:
+                    self.input_error = "Please enter a valid number"
+                    return False
+            else:
+                print("Starting full game (no time limit)")
             return True
             
         if self.back_button.check_hover(pos):
             return "back"
-            
+        
+        self.custom_time_input.active = False
         return False
 
     def handle_motion(self, pos):
         self.mode_button.check_hover(pos)
-        if (self.game_mode == "abridged"):
-            self.time_button.check_hover(pos)
         self.start_button.check_hover(pos)
         self.back_button.check_hover(pos)
         
     def handle_key(self, event):
+        if self.custom_time_input.active and self.game_mode == "abridged":
+            if event.key == pygame.K_RETURN:
+                try:
+                    minutes = int(self.custom_time_input.text)
+                    if minutes <= 0:
+                        self.input_error = "Time must be greater than 0"
+                        return False
+                    self.time_limit = minutes * 60
+                    self.input_error = None
+                    self.custom_time_input.active = False
+                    print(f"Custom time limit set: {minutes} minutes")
+                except ValueError:
+                    self.input_error = "Please enter a valid number"
+                return False
+            elif event.key == pygame.K_ESCAPE:
+                self.custom_time_input.active = False
+                return False
+            else:
+                if event.key == pygame.K_BACKSPACE:
+                    self.custom_time_input.text = self.custom_time_input.text[:-1]
+                    self.input_error = None
+                    return False
+                
+                if event.unicode.isdigit():
+                    if len(self.custom_time_input.text) < 4:
+                        self.custom_time_input.text += event.unicode
+                        self.input_error = None
+                    return False
+                return False
+        
         if event.key == pygame.K_m:
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
-                self.time_limit = self.time_options[self.current_time_option] * 60
+                try:
+                    minutes = int(self.custom_time_input.text)
+                    self.time_limit = minutes * 60
+                    print(f"Custom time limit set: {minutes} minutes")
+                except ValueError:
+                    self.time_limit = 30 * 60  # Default to 30 minutes
+                    print("Default time limit set: 30 minutes")
             else:
                 self.time_limit = None
-        elif event.key == pygame.K_t and self.game_mode == "abridged":
-            self.current_time_option = (self.current_time_option + 1) % len(self.time_options)
-            self.time_limit = self.time_options[self.current_time_option] * 60
+                print("Game mode changed to Full Game (no time limit)")
         elif event.key == pygame.K_RETURN:
+            if self.game_mode == "abridged":
+                try:
+                    minutes = int(self.custom_time_input.text)
+                    if minutes <= 0:
+                        self.input_error = "Time must be greater than 0"
+                        return False
+                    self.time_limit = minutes * 60
+                    self.input_error = None
+                    print(f"Starting abridged game with time limit: {minutes} minutes")
+                except ValueError:
+                    self.input_error = "Please enter a valid number"
+                    return False
+            else:
+                print("Starting full game (no time limit)")
             return True
         elif event.key == pygame.K_ESCAPE:
             return "back"
@@ -1092,18 +1173,32 @@ class GameModePage(BasePage):
         }
         
         if self.game_mode == "abridged":
-            settings["time_limit"] = self.time_options[self.current_time_option] * 60
+            try:
+                minutes = int(self.custom_time_input.text)
+                if minutes > 0:
+                    settings["time_limit"] = minutes * 60
+                    print(f"Game settings: Abridged mode with {minutes} minutes time limit")
+                else:
+                    settings["time_limit"] = 30 * 60  # Default to 30 minutes if invalid
+                    print("Game settings: Abridged mode with default 30 minutes time limit (invalid input)")
+            except ValueError:
+                settings["time_limit"] = 30 * 60  # Default to 30 minutes if invalid
+                print("Game settings: Abridged mode with default 30 minutes time limit (invalid input)")
+        else:
+            print("Game settings: Full game mode (no time limit)")
             
         return settings
 
 class EndGamePage(BasePage):
-    def __init__(self, winner_name, final_assets=None, bankrupted_players=None, voluntary_exits=None):
+    def __init__(self, winner_name, final_assets=None, bankrupted_players=None, voluntary_exits=None, tied_winners=None, lap_count=None):
         super().__init__()
         self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         self.winner_name = winner_name
         self.final_assets = final_assets or {}
         self.bankrupted_players = bankrupted_players or []
         self.voluntary_exits = voluntary_exits or []
+        self.tied_winners = tied_winners or []
+        self.lap_count = lap_count or {}
         
         self.screen = pygame.display.get_surface()
         if not self.screen:
@@ -1117,7 +1212,7 @@ class EndGamePage(BasePage):
         self.play_again_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] - 120,
+                get_window_size()[1] - 100,
                 button_width,
                 button_height
             ),
@@ -1129,7 +1224,7 @@ class EndGamePage(BasePage):
         self.quit_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] - 200,
+                get_window_size()[1] - 180,
                 button_width,
                 button_height
             ),
@@ -1137,22 +1232,43 @@ class EndGamePage(BasePage):
             self.button_font,
             color=ERROR_COLOR
         )
+        
+        self.confetti = []
+        for _ in range(100):
+            self.confetti.append({
+                'x': random.randint(0, get_window_size()[0]),
+                'y': random.randint(-100, 0),
+                'speed': random.uniform(1, 3),
+                'size': random.randint(5, 15),
+                'color': random.choice([
+                    (255, 223, 0),  
+                    (255, 0, 0),  
+                    (0, 255, 0),  
+                    (0, 0, 255),  
+                    (255, 0, 255), 
+                    (0, 255, 255), 
+                ])
+            })
 
     def draw(self):
         self.draw_background()
         
-        current_time = pygame.time.get_ticks()
-        if self.winner_name:
-            for i in range(50):
-                x = (current_time // 10 + i * 37) % get_window_size()[0]
-                y = ((current_time // 20 + i * 23) % get_window_size()[1]) + math.sin(current_time/500 + i) * 10
-                color = [random.randint(100, 255) for _ in range(3)]
-                pygame.draw.rect(self.screen, color, (x, y, 10, 10))
-
-        card_width = 600
-        card_height = 400
+        for particle in self.confetti:
+            particle['y'] += particle['speed']
+            if particle['y'] > get_window_size()[1]:
+                particle['y'] = random.randint(-100, 0)
+                particle['x'] = random.randint(0, get_window_size()[0])
+            
+            pygame.draw.rect(
+                self.screen, 
+                particle['color'], 
+                (particle['x'], particle['y'], particle['size'], particle['size'])
+            )
+        
+        card_width = 700
+        card_height = 500
         card_x = (get_window_size()[0] - card_width) // 2
-        card_y = (get_window_size()[1] - card_height) // 2
+        card_y = (get_window_size()[1] - card_height) // 2 - 30
 
         shadow = pygame.Surface((card_width + 8, card_height + 8), pygame.SRCALPHA)
         pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
@@ -1163,30 +1279,161 @@ class EndGamePage(BasePage):
         winner_text = self.title_font.render("Game Over!", True, ACCENT_COLOR)
         self.screen.blit(winner_text, (card_x + (card_width - winner_text.get_width()) // 2, card_y + 30))
 
-        winner_name = self.button_font.render(f"Winner: {self.winner_name}", True, SUCCESS_COLOR)
-        self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 100))
+        trophy_size = 60
+        trophy_x = card_x + (card_width - trophy_size) // 2
+        trophy_y = card_y + 80
+        
+        gold_color = (255, 215, 0)
+        
+        pygame.draw.rect(
+            self.screen,
+            gold_color,
+            (trophy_x + 15, trophy_y + 45, 30, 15),
+            border_radius=5
+        )
+        
+        pygame.draw.rect(
+            self.screen,
+            gold_color,
+            (trophy_x + 25, trophy_y + 25, 10, 25)
+        )
+        
+        pygame.draw.ellipse(
+            self.screen,
+            gold_color,
+            (trophy_x + 10, trophy_y, 40, 30)
+        )
+        
+        pygame.draw.ellipse(
+            self.screen,
+            gold_color,
+            (trophy_x, trophy_y + 10, 15, 20)
+        )
+        pygame.draw.ellipse(
+            self.screen,
+            gold_color,
+            (trophy_x + 45, trophy_y + 10, 15, 20)
+        )
 
-        y_offset = card_y + 160
+        if self.winner_name == "Tie" and self.tied_winners:
+            winner_text = "It's a Tie!"
+            winner_name = self.button_font.render(winner_text, True, SUCCESS_COLOR)
+            self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 150))
+            
+            tied_text = self.small_font.render(
+                f"Tied players: {', '.join(self.tied_winners)}", True, ACCENT_COLOR
+            )
+            self.screen.blit(tied_text, (card_x + (card_width - tied_text.get_width()) // 2, card_y + 180))
+        else:
+            winner_name = self.button_font.render(f"Winner: {self.winner_name}", True, SUCCESS_COLOR)
+            self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 150))
+
+        pygame.draw.line(
+            self.screen, 
+            LIGHT_GRAY, 
+            (card_x + 50, card_y + 190), 
+            (card_x + card_width - 50, card_y + 190), 
+            2
+        )
+
+        y_offset = card_y + 210
         if self.final_assets:
             assets_title = self.button_font.render("Final Assets", True, BLACK)
-            self.screen.blit(assets_title, (card_x + 30, y_offset))
+            self.screen.blit(assets_title, (card_x + (card_width - assets_title.get_width()) // 2, y_offset))
             y_offset += 40
             
             sorted_assets = sorted(self.final_assets.items(), key=lambda x: x[1], reverse=True)
-            for name, amount in sorted_assets:
+            col_width = (card_width - 100) // 2
+            
+            for i, (name, amount) in enumerate(sorted_assets):
+                col = i % 2
+                row = i // 2
+                
+                x_pos = card_x + 50 + col * col_width
+                y_pos = y_offset + row * 35
+                
+                # Determine text color
+                if self.tied_winners and name in self.tied_winners:
+                    text_color = SUCCESS_COLOR
+                elif name == self.winner_name and not self.tied_winners:
+                    text_color = SUCCESS_COLOR
+                else:
+                    text_color = LIGHT_GRAY
+                
+                # Draw player name and amount
                 player_text = self.small_font.render(
-                    f"{name}: £{amount:,}", True, 
-                    SUCCESS_COLOR if name == self.winner_name else LIGHT_GRAY
+                    f"{name}: £{amount:,}", True, text_color
                 )
-                self.screen.blit(player_text, (card_x + 40, y_offset))
-                y_offset += 30
+                self.screen.blit(player_text, (x_pos, y_pos))
 
         if self.bankrupted_players:
-            y_offset += 20
+            y_offset = y_offset + (len(sorted_assets) // 2 + (1 if len(sorted_assets) % 2 else 0)) * 35 + 20
+            
+            bankrupt_title = self.small_font.render("Bankrupted Players:", True, ERROR_COLOR)
+            self.screen.blit(bankrupt_title, (card_x + 50, y_offset))
+            y_offset += 30
+            
             bankrupt_text = self.small_font.render(
-                f"Bankrupted: {', '.join(self.bankrupted_players)}", True, ERROR_COLOR
+                f"{', '.join(self.bankrupted_players)}", True, ERROR_COLOR
             )
-            self.screen.blit(bankrupt_text, (card_x + 40, y_offset))
+            self.screen.blit(bankrupt_text, (card_x + 70, y_offset))
+            y_offset += 40  
+
+        if self.voluntary_exits:
+            y_offset += 20 
+            voluntary_title = self.small_font.render("Voluntary Exits:", True, ACCENT_COLOR)
+            self.screen.blit(voluntary_title, (card_x + 50, y_offset))
+            y_offset += 30
+            
+            voluntary_text = self.small_font.render(
+                f"{', '.join(self.voluntary_exits)}", True, ACCENT_COLOR
+            )
+            self.screen.blit(voluntary_text, (card_x + 70, y_offset))
+            y_offset += 40 
+
+        if self.lap_count:
+            y_offset += 50 
+            
+            lap_title = self.small_font.render("Laps Completed:", True, ACCENT_COLOR)
+            self.screen.blit(lap_title, (card_x + 50, y_offset))
+            y_offset += 30
+            
+            sorted_laps = sorted(self.lap_count.items(), key=lambda x: x[1], reverse=True)
+            
+            lap_text_parts = []
+            for name, laps in sorted_laps:
+                if (self.tied_winners and name in self.tied_winners) or (name == self.winner_name and not self.tied_winners):
+                    lap_text_parts.append(f"{name}: {laps}")
+                else:
+                    lap_text_parts.append(f"{name}: {laps}")
+            
+            lap_text_combined = ", ".join(lap_text_parts)
+            max_width = card_width - 140 
+            
+            test_text = self.small_font.render(lap_text_combined, True, ACCENT_COLOR)
+            if test_text.get_width() > max_width:
+                current_line = ""
+                current_y = y_offset
+                
+                for i, part in enumerate(lap_text_parts):
+                    test_line = current_line + (", " if current_line else "") + part
+                    test_render = self.small_font.render(test_line, True, ACCENT_COLOR)
+                    
+                    if test_render.get_width() > max_width and current_line:
+                        line_text = self.small_font.render(current_line, True, ACCENT_COLOR)
+                        self.screen.blit(line_text, (card_x + 70, current_y))
+                        current_y += 25
+                        current_line = part
+                    else:
+                        current_line = test_line if not current_line else current_line + ", " + part
+                
+                if current_line:
+                    line_text = self.small_font.render(current_line, True, ACCENT_COLOR)
+                    self.screen.blit(line_text, (card_x + 70, current_y))
+            else:
+                # Single line is fine
+                lap_text = self.small_font.render(lap_text_combined, True, ACCENT_COLOR)
+                self.screen.blit(lap_text, (card_x + 70, y_offset))
 
         self.play_again_button.draw(self.screen)
         self.quit_button.draw(self.screen)

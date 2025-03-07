@@ -332,12 +332,16 @@ class Player:
         for prop in self.properties:
             if not prop.mortgaged:
                 total += prop.price
+            else:
+                total += prop.price // 2
             
-            if prop.houses > 0:
-                total += prop.get_house_sale_value() * prop.houses
+            if hasattr(prop, 'houses') and prop.houses > 0:
+                house_value = prop.get_house_sale_value()
+                total += house_value * prop.houses
             
-            if prop.has_hotel:
-                total += prop.get_hotel_sale_value()
+            if hasattr(prop, 'has_hotel') and prop.has_hotel:
+                hotel_value = prop.get_hotel_sale_value()
+                total += hotel_value
         
         return total
         

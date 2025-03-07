@@ -13,7 +13,6 @@ from src.Player import Player
 from src.ui import MainMenuPage, StartPage, GameModePage, EndGamePage, SettingsPage, HowToPlayPage, AIDifficultyPage
 from src.text_scaler import text_scaler
 
-# Constants
 WINDOW_SIZE = (1280, 720)  
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -295,9 +294,11 @@ async def handle_end_game(game_over_data):
     
     end_page = EndGamePage(
         winner_name=game_over_data["winner"],
-        final_assets=game_over_data.get("final_assets"),
-        bankrupted_players=game_over_data.get("bankrupted_players"),
-        voluntary_exits=game_over_data.get("voluntary_exits")
+        final_assets=game_over_data.get("final_assets", {}),
+        bankrupted_players=game_over_data.get("bankrupted_players", []),
+        voluntary_exits=game_over_data.get("voluntary_exits", []),
+        tied_winners=game_over_data.get("tied_winners", []),
+        lap_count=game_over_data.get("lap_count", {})
     )
     
     print("EndGamePage created successfully")

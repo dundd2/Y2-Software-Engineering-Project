@@ -12,8 +12,10 @@ import os
 import random
 import string
 from src.ui import DevelopmentNotification
+from src.text_scaler import text_scaler
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FONT_PATH = os.path.join(base_path, "assets", "font", "Play-Regular.ttf")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -52,14 +54,24 @@ class Game:
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
         pygame.display.set_caption("Property Tycoon")
-        self.font = pygame.font.Font(None, 42)
-        self.small_font = pygame.font.Font(None, 32)
+
+        self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(32))
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         
         self.game_mode = game_mode
         self.time_limit = time_limit
         self.ai_difficulty = ai_difficulty
         self.start_time = pygame.time.get_ticks() if time_limit else None
+        
+        if self.game_mode == "abridged" and self.time_limit:
+            minutes = self.time_limit // 60
+            print(f"Game initialized in Abridged mode with {minutes} minutes time limit")
+            print(f"Time limit in seconds: {self.time_limit}")
+        else:
+            print(f"Game initialized in Full mode (no time limit)")
+            
         self.rounds_completed = {player.name: 0 for player in players}
+        self.lap_count = {player.name: 0 for player in players}
         
         self.game_over = False
         self.winner_index = None
@@ -250,9 +262,9 @@ class Game:
                     self.add_message(f"Warning: {remaining} seconds remaining!")
 
             panel_width = 200
-            panel_height = 100
+            panel_height = 120
             panel_x = 10
-            panel_y = 120
+            panel_y = 70 
             
             glow_surface = pygame.Surface((panel_width + 10, panel_height + 10), pygame.SRCALPHA)
             for i in range(5):
@@ -266,39 +278,47 @@ class Game:
             panel.fill(MODERN_BG)
             self.screen.blit(panel, (panel_x, panel_y))
             
-            title_text = self.small_font.render("Time Remaining", True, LIGHT_GRAY)
-            title_rect = title_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 10)
-            self.screen.blit(title_text, title_rect)
+            panel_title = self.small_font.render("GAME STATUS", True, LIGHT_GRAY)
+            panel_title_rect = panel_title.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 10)
+            self.screen.blit(panel_title, panel_title_rect)
+            
+            active_players = [p['name'] for p in self.logic.players if not p.get('exited', False)]
+            min_lap = min([self.lap_count[p] for p in active_players]) if active_players else 0
             
             time_color = ERROR_COLOR if remaining < 300 else ACCENT_COLOR
+            
+            lap_y = panel_title_rect.bottom + 7
+            lap_icon_text = "🏁"  
+            lap_icon = self.small_font.render(lap_icon_text, True, LIGHT_GRAY)
+            self.screen.blit(lap_icon, (panel_x + 15, lap_y))
+            
+            lap_text = self.font.render(f"Lap {min_lap}", True, ACCENT_COLOR)
+            self.screen.blit(lap_text, (panel_x + 40, lap_y - 5))
+            
+            time_y = lap_y + 25
+            time_icon_text = "⏱️"  
+            time_icon = self.small_font.render(time_icon_text, True, LIGHT_GRAY)
+            self.screen.blit(time_icon, (panel_x + 15, time_y))
+            
             time_text = self.font.render(f"{minutes:02d}:{seconds:02d}", True, time_color)
-            time_rect = time_text.get_rect(centerx=panel_x + panel_width//2, top=title_rect.bottom + 10)
-            self.screen.blit(time_text, time_rect)
+            self.screen.blit(time_text, (panel_x + 40, time_y - 5))
             
-            if remaining < 300:
-                rules_text = "Game will end when all players complete equal rounds"
-                rules_surface = self.small_font.render(rules_text, True, LIGHT_GRAY)
-                rules_rect = rules_surface.get_rect(
-                    centerx=panel_x + panel_width//2, 
-                    bottom=panel_y + panel_height - 25
-                )
-                self.screen.blit(rules_surface, rules_rect)
-            
-            progress_width = panel_width - 40
+            progress_width = panel_width - 30
             progress_height = 8
-            progress_x = panel_x + 20
-            progress_y = panel_y + panel_height - 15
+            progress_x = panel_x + 15
+            progress_y = panel_y + panel_height - 20
+            
+            progress_percent = 1 - (remaining / self.time_limit)
             
             pygame.draw.rect(self.screen, GRAY, 
                            pygame.Rect(progress_x, progress_y, progress_width, progress_height),
                            border_radius=4)
             
-            progress = remaining / self.time_limit
-            if progress > 0:
-                progress_color = time_color
-                pygame.draw.rect(self.screen, progress_color,
-                               pygame.Rect(progress_x, progress_y, 
-                                         int(progress_width * progress), progress_height),
+            fill_width = int(progress_width * progress_percent)
+            fill_color = ERROR_COLOR if remaining < 300 else ACCENT_COLOR
+            if fill_width > 0:
+                pygame.draw.rect(self.screen, fill_color, 
+                               pygame.Rect(progress_x, progress_y, fill_width, progress_height),
                                border_radius=4)
 
     def draw(self):
@@ -521,17 +541,23 @@ class Game:
                 self.auction_completed = True
                 self.board.update_ownership(self.logic.properties)
         elif self.state == "DEVELOPMENT" and self.selected_property is not None:
-            self.draw_development_ui(self.selected_property)
+            if hasattr(self.logic, 'current_auction') and self.logic.current_auction:
+                print("Auction in progress - not showing development UI")
+            else:
+                self.draw_development_ui(self.selected_property)
             
         if self.development_mode and not any_player_moving and not self.dice_animation:
-            current_player = self.logic.players[self.logic.current_player_index]
-            owned_properties = [p for p in self.logic.properties.values() if p.get('owner') == current_player['name']]
-            if owned_properties:
-                if not self.dev_notification:
-                    self.dev_notification = DevelopmentNotification(self.screen, current_player['name'], self.font)
-                
-                self.dev_notification.draw(mouse_pos)
-                
+            if hasattr(self.logic, 'current_auction') and self.logic.current_auction:
+                print("Auction in progress - not showing development notification")
+            else:
+                current_player = self.logic.players[self.logic.current_player_index]
+                owned_properties = [p for p in self.logic.properties.values() if p.get('owner') == current_player['name']]
+                if owned_properties:
+                    if not self.dev_notification:
+                        self.dev_notification = DevelopmentNotification(self.screen, current_player['name'], self.font)
+                    
+                    self.dev_notification.draw(mouse_pos)
+        
         current_time = pygame.time.get_ticks()
         if self.dice_animation:
             if current_time - self.animation_start < self.animation_duration:
@@ -956,6 +982,9 @@ class Game:
             
         old_position = current_player['position']
 
+        self.lap_count[current_player['name']] += 1
+        print(f"Lap count for {current_player['name']}: {self.lap_count[current_player['name']]}")
+        
         self.dice_animation = True
         self.animation_start = pygame.time.get_ticks()
         
@@ -1035,24 +1064,41 @@ class Game:
                 
         elif self.game_mode == "abridged":
             if self.time_limit and (current_time - self.start_time) // 1000 >= self.time_limit:
-                min_rounds = min(self.rounds_completed.values())
-                if all(rounds == min_rounds for rounds in self.rounds_completed.values()):
-                    assets = {}
-                    for player in self.logic.players:
-                        total = player['money']
-                        for prop in self.logic.properties.values():
-                            if prop.get('owner') == player['name']:
-                                total += prop.get('price', 0)
-                                if 'houses' in prop:
-                                    total += sum(prop.get('house_costs', []))[:prop['houses']]
-                        assets[player['name']] = total
-                    
-                    winner = max(assets.items(), key=lambda x: x[1])[0]
-                    self.game_over = True
-                    return {"winner": winner,
+                active_players = [p['name'] for p in self.logic.players if not p.get('exited', False)]
+                
+                if active_players:
+                    min_laps = min([self.lap_count[p] for p in active_players])
+                    if all(self.lap_count[p] == min_laps for p in active_players):
+                        assets = {}
+                        for player in self.logic.players:
+                            total = player['money']
+                            for prop in self.logic.properties.values():
+                                if prop.get('owner') == player['name']:
+                                    total += prop.get('price', 0)
+                                    if 'houses' in prop:
+                                        house_costs = prop.get('house_costs', [])
+                                        houses_count = prop['houses']
+                                        if house_costs and houses_count > 0:
+                                            total += sum(house_costs[:houses_count])
+                            assets[player['name']] = total
+                        
+                        max_asset_value = max(assets.values())
+                        
+                        winners = [player for player, value in assets.items() if value == max_asset_value]
+                        
+                        if len(winners) == 1:
+                            winner = winners[0]
+                        else:
+                            winner = "Tie"
+                            
+                        self.game_over = True
+                        return {
+                            "winner": winner,
+                            "tied_winners": winners if len(winners) > 1 else None,
                             "final_assets": assets,
                             "bankrupted_players": self.logic.bankrupted_players,
-                            "voluntary_exits": self.logic.voluntary_exits}
+                            "voluntary_exits": self.logic.voluntary_exits
+                        }
         
         return None
 
@@ -1110,6 +1156,10 @@ class Game:
             
     def start_auction(self, property_data):
         print(f"\n=== Starting Auction for {property_data['name']} ===")
+        
+        self.development_mode = False
+        self.selected_property = None
+        self.dev_notification = None
         
         any_eligible = False
         for player in self.logic.players:
@@ -1226,7 +1276,9 @@ class Game:
                     
                     result = self.handle_voluntary_exit(current_player['name'], final_assets)
                     
-                    if result:
+                    if isinstance(result, dict):
+                        return result
+                    elif result:
                         self.board.add_message(f"{current_player['name']} has voluntarily exited the game")
                         self.show_notification(f"{current_player['name']} has voluntarily exited the game", 3000)
                         
@@ -1241,6 +1293,10 @@ class Game:
                 return False
             
             if self.development_mode:
+                if hasattr(self.logic, 'current_auction') and self.logic.current_auction:
+                    print("Auction in progress - ignoring development click")
+                    return False
+                    
                 current_player = self.logic.players[self.logic.current_player_index]
                 print(f"Checking property clicks for player {current_player['name']}")
                 
@@ -1426,13 +1482,17 @@ class Game:
         card_y = (window_size[1] - card_height) // 2
         
         overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 120))
+        overlay.fill((0, 0, 0, 150)) 
         self.screen.blit(overlay, (0, 0))
         
-        shadow_rect = pygame.Rect(card_x + 6, card_y + 6, card_width, card_height)
-        shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
-        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
-        self.screen.blit(shadow, shadow_rect)
+        for i in range(5):
+            shadow_offset = 6 - i
+            shadow_rect = pygame.Rect(card_x + shadow_offset, card_y + shadow_offset, 
+                                    card_width, card_height)
+            shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
+            shadow_alpha = 100 - (i * 20)
+            pygame.draw.rect(shadow, (*BLACK, shadow_alpha), shadow.get_rect(), border_radius=15)
+            self.screen.blit(shadow, shadow_rect)
         
         pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
         
@@ -1472,9 +1532,6 @@ class Game:
         
         if is_human and can_bid:
             self.auction_input = pygame.Rect(card_x + 20, card_y + card_height - 120, 200, 40)
-            self.auction_buttons['bid'].topleft = (card_x + 20, card_y + card_height - 60)
-            self.auction_buttons['pass'].topleft = (card_x + 150, card_y + card_height - 60)
-            
             pygame.draw.rect(self.screen, WHITE, self.auction_input)
             pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
             
@@ -1484,8 +1541,18 @@ class Game:
                 bid_text = self.small_font.render("Enter bid amount...", True, GRAY)
             self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + (self.auction_input.height - bid_text.get_height()) // 2))
             
+            button_width = 100
+            button_height = 40
+            button_margin = 20
+            
+            self.auction_buttons = {
+                'bid': pygame.Rect(card_x + 20, card_y + card_height - 60, button_width, button_height),
+                'pass': pygame.Rect(card_x + 20 + button_width + button_margin, card_y + card_height - 60, button_width, button_height)
+            }
+            
+            mouse_pos = pygame.mouse.get_pos()
             for btn_name, btn_rect in self.auction_buttons.items():
-                mouse_over = btn_rect.collidepoint(pygame.mouse.get_pos())
+                mouse_over = btn_rect.collidepoint(mouse_pos)
                 color = BUTTON_HOVER if mouse_over else ACCENT_COLOR
                 pygame.draw.rect(self.screen, color, btn_rect, border_radius=5)
                 
@@ -1526,6 +1593,7 @@ class Game:
         
         if current_bidder.get('in_jail', False):
             self.board.add_message(f"{current_bidder['name']} cannot bid while in jail!")
+            self.show_notification(f"{current_bidder['name']} cannot bid while in jail!", 2000)
             auction_data["passed_players"].add(current_bidder['name'])
             self.logic.move_to_next_bidder()
             return
@@ -1535,25 +1603,45 @@ class Game:
                 if event.key == pygame.K_BACKSPACE:
                     self.auction_bid_amount = self.auction_bid_amount[:-1]
                     print(f"Backspace pressed - new bid amount: {self.auction_bid_amount}")
+                
                 elif event.key in [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
                                  pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9]:
-                    self.auction_bid_amount += event.unicode
-                    print(f"Number key pressed - new bid amount: {self.auction_bid_amount}")
+                    if len(self.auction_bid_amount) < 6:
+                        self.auction_bid_amount += event.unicode
+                        print(f"Number key pressed - new bid amount: {self.auction_bid_amount}")
+                
                 elif event.key == pygame.K_RETURN:
                     print(f"Enter key pressed - submitting bid: {self.auction_bid_amount}")
-                    try:
-                        bid_amount = int(self.auction_bid_amount or "0")
-                        success, message = self.logic.process_auction_bid(current_bidder, bid_amount)
-                        if message:
-                            self.board.add_message(message)
-                        if success:
-                            self.auction_bid_amount = ""
-                            print(f"Bid successful: £{bid_amount}")
-                        else:
-                            print(f"Bid failed: {message}")
-                    except ValueError:
-                        self.board.add_message("Please enter a valid number!")
-                        print("Invalid bid amount")
+                    self._process_auction_bid(current_bidder)
+                
+                elif event.key == pygame.K_ESCAPE:
+                    print(f"Escape key pressed - passing")
+                    success, message = self.logic.process_auction_pass(current_bidder)
+                    if message:
+                        self.board.add_message(message)
+                        self.show_notification(message, 2000)
+                    if success:
+                        print(f"{current_bidder['name']} passed successfully")
+                    else:
+                        print(f"Pass failed: {message}")
+    
+    def _process_auction_bid(self, current_bidder):
+        """Helper method to process auction bids, used by both keyboard and mouse input handlers"""
+        try:
+            bid_amount = int(self.auction_bid_amount or "0")
+            success, message = self.logic.process_auction_bid(current_bidder, bid_amount)
+            if message:
+                self.board.add_message(message)
+                self.show_notification(message, 2000)
+            if success:
+                self.auction_bid_amount = ""
+                print(f"Bid successful: £{bid_amount}")
+            else:
+                print(f"Bid failed: {message}")
+        except ValueError:
+            self.board.add_message("Please enter a valid number!")
+            self.show_notification("Please enter a valid number!", 2000)
+            print("Invalid bid amount")
 
     def handle_auction_click(self, pos):
         print("\n=== Auction Click Debug ===")
@@ -1677,6 +1765,10 @@ class Game:
         card_x = (window_size[0] - card_width) // 2
         card_y = (window_size[1] - card_height) // 2
 
+        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 128))  # Semi-transparent black
+        self.screen.blit(overlay, (0, 0))
+
         shadow = pygame.Surface((card_width + 10, card_height + 10), pygame.SRCALPHA)
         for i in range(5):
             alpha = int(100 * (1 - i/5))
@@ -1698,7 +1790,8 @@ class Game:
             options.append(("[2] Pay £50 fine", pygame.K_2))
         options.append(("[3] Try rolling doubles", pygame.K_3))
 
-        y_offset = title_rect.bottom + 30
+        title_height = 50
+        y_offset = card_y + title_height + 20
         button_height = 40
         button_margin = 10
         mouse_pos = pygame.mouse.get_pos()
@@ -1730,11 +1823,43 @@ class Game:
         choice = None
         self.show_notification("Choose how to get out of jail", 5000)
         
-        self.draw()
-        self.draw_jail_options(player)
-        pygame.display.flip()
+        window_size = self.screen.get_size()
+        card_width = int(window_size[0] * 0.3)
+        card_height = int(window_size[1] * 0.3)
+        card_x = (window_size[0] - card_width) // 2
+        card_y = (window_size[1] - card_height) // 2
+        
+        button_height = 40
+        button_margin = 10
+        title_height = 50
+        y_start = card_y + title_height + 20
+        
+        options = []
+        if self.logic.jail_free_cards.get(player['name'], 0) > 0:
+            options.append(("[1] Use Get Out of Jail Free card", "card"))
+        if player['money'] >= 50:
+            options.append(("[2] Pay £50 fine", "pay"))
+        options.append(("[3] Try rolling doubles", "roll"))
+        
 
+        button_rects = []
+        y_offset = y_start
+        for option_text, option_value in options:
+            button_rect = pygame.Rect(card_x + 20, y_offset, card_width - 40, button_height)
+            button_rects.append((button_rect, option_value))
+            y_offset += button_height + button_margin
+
+        need_redraw = True
+        last_redraw_time = 0
+        last_click_time = 0
+        
         while waiting:
+            current_time = pygame.time.get_ticks()
+            
+            if current_time - last_redraw_time < 16:  # ~60 FPS
+                pygame.time.delay(5)
+                continue
+                
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1 and self.logic.jail_free_cards.get(player['name'], 0) > 0:
@@ -1747,38 +1872,34 @@ class Game:
                         choice = "roll"
                         waiting = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if current_time - last_click_time < 300: 
+                        continue
+                    last_click_time = current_time
+                    
                     mouse_pos = event.pos
-                    window_size = self.screen.get_size()
-                    card_width = int(window_size[0] * 0.3)
-                    card_height = int(window_size[1] * 0.3)
-                    card_x = (window_size[0] - card_width) // 2
-                    card_y = (window_size[1] - card_height) // 2
-                    
-                    button_height = 40
-                    button_margin = 10
-                    y_offset = card_y + 70
-                    
-                    for i, option in enumerate(["card", "pay", "roll"]):
-                        button_rect = pygame.Rect(card_x + 20, y_offset, card_width - 40, button_height)
+                    for button_rect, option_value in button_rects:
                         if button_rect.collidepoint(mouse_pos):
-                            if option == "card" and self.logic.jail_free_cards.get(player['name'], 0) > 0:
+                            if option_value == "card" and self.logic.jail_free_cards.get(player['name'], 0) > 0:
                                 choice = "card"
                                 waiting = False
-                            elif option == "pay" and player['money'] >= 50:
+                            elif option_value == "pay" and player['money'] >= 50:
                                 choice = "pay"
                                 waiting = False
-                            elif option == "roll":
+                            elif option_value == "roll":
                                 choice = "roll"
                                 waiting = False
-                        y_offset += button_height + button_margin
+                elif event.type == pygame.MOUSEMOTION:
+                    need_redraw = True
                 elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                
-                if event.type == pygame.MOUSEMOTION:
-                    self.draw()
-                    self.draw_jail_options(player)
-                    pygame.display.flip()
+            
+            if need_redraw:
+                self.draw()
+                self.draw_jail_options(player)
+                pygame.display.flip()
+                need_redraw = False
+                last_redraw_time = current_time
 
         return choice or "roll"
 
@@ -1787,7 +1908,11 @@ class Game:
             return False
 
         player_obj = next((p for p in self.players if p.name == player['name']), None)
-        if player_obj and player_obj.is_ai:
+        if not player_obj:
+            print(f"Warning: Could not find player object for {player['name']}")
+            return False
+            
+        if player_obj.is_ai:
             if self.logic.jail_free_cards.get(player['name'], 0) > 0:
                 card_type = player_obj.use_jail_card()
                 if card_type == CardType.POT_LUCK:
@@ -1795,17 +1920,25 @@ class Game:
                 else:
                     self.opportunity_deck.return_jail_card(card_type)
                 player['in_jail'] = False
+                player['jail_turns'] = 0
                 self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
+                self.show_notification(f"{player['name']} used Get Out of Jail Free card!", 2000)
                 return True
             elif player['money'] >= 50 and random.random() < 0.5:
                 player['money'] -= 50
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot() 
                 player['in_jail'] = False
+                player['jail_turns'] = 0
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
+                self.show_notification(f"{player['name']} paid £50 to get out of jail!", 2000)
                 return True
         else:
+            self.draw()
+            pygame.display.flip()
+            
             choice = self.get_jail_choice(player)
+            
             if choice == "card" and self.logic.jail_free_cards.get(player['name'], 0) > 0:
                 card_type = player_obj.use_jail_card()
                 if card_type == CardType.POT_LUCK:
@@ -1813,14 +1946,18 @@ class Game:
                 else:
                     self.opportunity_deck.return_jail_card(card_type)
                 player['in_jail'] = False
+                player['jail_turns'] = 0
                 self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
+                self.show_notification(f"{player['name']} used Get Out of Jail Free card!", 2000)
                 return True
             elif choice == "pay" and player['money'] >= 50:
                 player['money'] -= 50
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot() 
                 player['in_jail'] = False
+                player['jail_turns'] = 0
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
+                self.show_notification(f"{player['name']} paid £50 to get out of jail!", 2000)
                 return True
 
         player['jail_turns'] = player.get('jail_turns', 0) + 1
@@ -1830,8 +1967,10 @@ class Game:
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot() 
                 self.board.add_message(f"{player['name']} paid £50 after 3 turns in jail!")
+                self.show_notification(f"{player['name']} paid £50 after 3 turns in jail!", 2000)
             else:
                 self.board.add_message(f"{player['name']} couldn't pay jail fine!")
+                self.show_notification(f"{player['name']} couldn't pay jail fine!", 2000)
                 self.handle_bankruptcy(player)
             player['in_jail'] = False
             player['jail_turns'] = 0
@@ -2090,8 +2229,17 @@ class Game:
     def check_time_limit(self):
         if not self.time_limit or not self.start_time:
             return False
+        
         current_time = pygame.time.get_ticks()
-        return (current_time - self.start_time) >= (self.time_limit * 60 * 1000)
+        elapsed_time_ms = current_time - self.start_time
+        time_limit_ms = self.time_limit * 1000
+        
+        if elapsed_time_ms >= time_limit_ms and elapsed_time_ms < (time_limit_ms + 100):
+            minutes = self.time_limit // 60
+            print(f"TIME LIMIT REACHED: {minutes} minutes have elapsed!")
+            print("Game ending in Abridged mode - calculating winner based on assets...")
+        
+        return elapsed_time_ms >= time_limit_ms
         
     def end_full_game(self):
         active_players = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
@@ -2101,18 +2249,31 @@ class Game:
             "winner": winner.name if winner else "No winner",
             "final_assets": {p.name: p.get_total_assets() for p in self.players},
             "bankrupted_players": [p.name for p in self.players if p.bankrupt],
-            "voluntary_exits": [p.name for p in self.players if p.voluntary_exit]
+            "voluntary_exits": [p.name for p in self.players if p.voluntary_exit],
+            "tied_winners": []
         }
         
     def end_abridged_game(self):
         player_assets = {p: p.get_total_assets() for p in self.players}
-        winner = max(player_assets.items(), key=lambda x: x[1])[0]
+        
+        max_assets = max(player_assets.values())
+        
+        players_with_max_assets = [p for p, assets in player_assets.items() if assets == max_assets]
+        
+        if len(players_with_max_assets) > 1:
+            winner_name = "Tie"
+            tied_winners = [p.name for p in players_with_max_assets]
+        else:
+            winner_name = players_with_max_assets[0].name
+            tied_winners = []
         
         return {
-            "winner": winner.name,
+            "winner": winner_name,
             "final_assets": {p.name: assets for p, assets in player_assets.items()},
             "bankrupted_players": [p.name for p in self.players if p.bankrupt],
-            "voluntary_exits": [p.name for p in self.players if p.voluntary_exit]
+            "voluntary_exits": [p.name for p in self.players if p.voluntary_exit],
+            "tied_winners": tied_winners,
+            "lap_count": self.lap_count 
         }
         
     def calculate_player_assets(self, player):
@@ -2166,7 +2327,8 @@ class Game:
                 print(f"Only {len(active_players)} active player(s) left - game should end soon")
                 if self.check_one_player_remains():
                     print("Game ending due to only one player remaining")
-                    return self.check_game_over()
+                    game_over_data = self.end_full_game()
+                    return game_over_data
                 
             self.show_notification(f"{player_name} has left the game. Their properties return to the bank.", 3000)
             return True
@@ -2617,10 +2779,6 @@ class Game:
         money_rect = money_text.get_rect(centerx=panel_x + panel_width//2, top=title_rect.bottom + 10)
         self.screen.blit(money_text, money_rect)
         
-        if self.free_parking_pot == 0:
-            info_text = self.small_font.render("Waiting for fines...", True, LIGHT_GRAY)
-            info_rect = info_text.get_rect(centerx=panel_x + panel_width//2, bottom=panel_y + panel_height - 15)
-            self.screen.blit(info_text, info_rect)
 
     def add_to_free_parking(self, amount):
         self.free_parking_pot += amount
