@@ -75,8 +75,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: dist/${{ matrix.output_name }}
-        name: build-${{ steps.get_version.outputs.version }}
-        tag_name: build-${{ steps.get_version.outputs.version }}
+        name: Build-${{ steps.get_version.outputs.version }}
+        tag_name: Build-${{ steps.get_version.outputs.version }}
         draft: false
         prerelease: false
         fail_on_unmatched_files: false
