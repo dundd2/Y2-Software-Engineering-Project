@@ -31,7 +31,7 @@ To start coding with Pygame and run the game, follow these steps to install all 
 1. Open Command Prompt: Press the Windows key, type `cmd`, and press Enter.
 2. Install required packages: In the Command Prompt, type:
 ```
-pip install setuptools pygame pandas openpyxl
+pip install setuptools pygame pandas openpyxl pygbag pytest pytest-asyncio
 ```
    Wait for the installation to complete.
 
@@ -40,8 +40,20 @@ pip install setuptools pygame pandas openpyxl
 1. Open Terminal: Press Command + Space, type `terminal`, and press Enter.
 2. Install required packages: In the Terminal, type:
 ```
-pip3 install setuptools pygame pandas openpyxl
+pip3 install setuptools pygame pandas openpyxl pygbag pytest pytest-asyncio
 ```
    You might be prompted for your password. Wait for the installation to complete.
+
+### Alternative Installation Using requirements.txt
+
+install all dependencies directly using the requirements.txt file:
+
+```
+# For Windows
+pip install -r requirements.txt
+
+# For Mac
+pip3 install -r requirements.txt
+```
 
 Now you are ready to start coding and playing Property Tycoon!

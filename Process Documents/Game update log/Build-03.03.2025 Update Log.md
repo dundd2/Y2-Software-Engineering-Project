@@ -1,6 +1,6 @@
 ## Property Tycoon - Build-03.03.2025 Update Log
 
-**New Features:**
+## Changes
 
 *   **Improved AI Decision-Making:** AI players now have more sophisticated logic for:
     *   Evaluating property value based on color groups, stations, and utilities.

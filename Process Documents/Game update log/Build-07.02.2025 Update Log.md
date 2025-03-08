@@ -1,4 +1,4 @@
-# Property Tycoon - Build-06.03.2025 Update Log
+## Property Tycoon - Build-06.03.2025 Update Log
 
 ## Changes
 - Added initial game structure with Player, Game, Property, Board, and UI classes
@@ -13,27 +13,19 @@ After receiving Owen's work, which included the basic CMD Python code file:
 ## Current Features
 We've already developed this pretty cool basic game. 
 
-the current game flow is:
+The current game flow is:
 
-Start Page
-
-Rolling
-
-Moving
-
-Property Interaction
-
-If the player lands on an unowned property, they get the option to buy it (Y/N keys).
-
-If the player lands on an owned property, they pay rent to the owner.
-
-Turn End: The turn passes to the next player.
-
-Jail:
-- If player is in jail, increase jail turns
-- If turns are more than 3, player is released from jail
-
-Game End: The game ends when a player runs out of money.
+1. **Start Page**
+2. **Rolling**
+3. **Moving**
+4. **Property Interaction**
+   - If the player lands on an unowned property, they get the option to buy it (Y/N keys).
+   - If the player lands on an owned property, they pay rent to the owner.
+5. **Turn End**: The turn passes to the next player.
+6. **Jail**:
+   - If player is in jail, increase jail turns
+   - If turns are more than 3, player is released from jail
+7. **Game End**: The game ends when a player runs out of money.
 
 **Note:** Currently, the dice are not visible in the interface.
 

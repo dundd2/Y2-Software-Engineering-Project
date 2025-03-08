@@ -1,6 +1,6 @@
 ## Property Tycoon - Build-07.03.2025 Update Log
 
-#### Fixes & Improvements:
+## Changes
 - Ensure that when two players have the same amount of money at the end of an abridged game, the game correctly declares a tie instead of always making Player 1 the winner.  
 - Implement keyboard input for time settings, allowing users to set custom values beyond just 10, 30, and 60 seconds, while keeping 30 seconds as the default. Added command-line output for debugging this feature.  
 - Use the correct font for all in-game text.  
