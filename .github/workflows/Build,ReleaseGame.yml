@@ -65,7 +65,7 @@ jobs:
       id: get_version
       shell: bash
       run: |
-        VERSION=$(date +'%Y.%m.%d-%H%M%S')
+        VERSION=$(date +'%d.%m.%y-%H%M%S')
         echo "version=${VERSION}" >> $GITHUB_ENV
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
