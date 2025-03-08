@@ -1,3 +1,7 @@
+# Property Tycoon main.py
+# Created for Year 2 G6046: Software Engineering Project-Group 5
+# -*- coding: utf-8 -*-
+
 import pygame
 import sys
 import asyncio

@@ -3,3 +3,5 @@ pygame
 pandas
 openpyxl
 pygbag
+pytest
+pytest-asyncio
