@@ -108,9 +108,26 @@ def create_game(player_info, game_settings):
 async def run_game(game, game_settings):
     running = True
     game_over_data = None
+    last_time_check = pygame.time.get_ticks()
     
     while running:
         await asyncio.sleep(0)
+        
+        current_time = pygame.time.get_ticks()
+        if game_settings["mode"] == "abridged" and current_time - last_time_check > 1000:
+            last_time_check = current_time
+            if game.check_time_limit():
+                print("Time limit reached and all players completed same number of laps - ending game")
+                game_over_data = game.end_abridged_game()
+                running = False
+                continue  
+        
+        if game_settings["mode"] == "abridged" and game.check_time_limit():
+            print("Time limit reached and all players completed same number of laps - ending game")
+            game_over_data = game.end_abridged_game()
+            running = False
+            continue  
+        
         game.draw()
         
         if hasattr(game, 'waiting_for_animation') and game.waiting_for_animation:
@@ -283,9 +300,6 @@ async def run_game(game, game_settings):
         if game_settings["mode"] == "full" and game.check_one_player_remains() and not game_over_data:
             print("Only one player remains - ending game")
             game_over_data = game.end_full_game()
-            running = False
-        elif game_settings["mode"] == "abridged" and game.check_time_limit():
-            game_over_data = game.end_abridged_game()
             running = False
     
     return game_over_data

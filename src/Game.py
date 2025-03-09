@@ -75,6 +75,8 @@ class Game:
         
         self.game_over = False
         self.winner_index = None
+        self.time_limit_reached = False
+        self.final_lap = {}
         
         self.time_warning_start = 60
         self.warning_flash_rate = 500
@@ -251,6 +253,22 @@ class Game:
             
             window_size = self.screen.get_size()
             
+            if hasattr(self, 'time_limit_reached') and self.time_limit_reached and not self.game_over:
+                banner_height = 40
+                banner_surface = pygame.Surface((window_size[0], banner_height), pygame.SRCALPHA)
+                banner_color = (255, 0, 0, 150)  # Semi-transparent red
+                banner_surface.fill(banner_color)
+                self.screen.blit(banner_surface, (0, 0))
+                
+                font = pygame.font.Font(None, 28)
+                text = font.render("TIME'S UP! Finishing current lap...", True, (255, 255, 255))
+                text_rect = text.get_rect(center=(window_size[0] // 2, banner_height // 2))
+                self.screen.blit(text, text_rect)
+                
+                remaining = 0
+                minutes = 0
+                seconds = 0
+            
             if remaining <= self.time_warning_start:
                 flash_alpha = abs(math.sin(current_time / self.warning_flash_rate)) * 255
                 warning_surface = pygame.Surface(window_size, pygame.SRCALPHA)
@@ -322,7 +340,14 @@ class Game:
                                border_radius=4)
 
     def draw(self):
+        if self.game_mode == "abridged" and self.check_time_limit():
+            if not self.game_over:
+                print("Time limit reached during draw - forcing game to end")
+                self.game_over = True
+                return
+                
         self.synchronize_player_positions()
+        self.synchronize_player_money()  
         self.synchronize_free_parking_pot()  
         
         if not pygame.display.get_surface():
@@ -485,55 +510,66 @@ class Game:
             current_player = next((p for p in self.players if p.name == self.logic.players[self.logic.current_player_index]['name']), None)
             self.current_player_is_ai = current_player and current_player.is_ai
             
+            human_players_remaining = any(
+                not p.is_ai and not p.voluntary_exit and not p.bankrupt 
+                for p in self.players
+            )
+            
             if not self.current_player_is_ai:
                 self.draw_button(self.roll_button, "Roll", 
                                hover=self.roll_button.collidepoint(mouse_pos))
                 
-                quit_hover = self.quit_button.collidepoint(mouse_pos)
-                base_color = BUTTON_HOVER if quit_hover else ERROR_COLOR
-                
-                shadow_rect = self.quit_button.copy()
-                shadow_rect.y += 2
-                shadow = pygame.Surface(self.quit_button.size, pygame.SRCALPHA)
-                pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
-                self.screen.blit(shadow, shadow_rect)
-
-                pygame.draw.rect(self.screen, base_color, self.quit_button, border_radius=5)
-                gradient = pygame.Surface(self.quit_button.size, pygame.SRCALPHA)
-                for i in range(self.quit_button.height):
-                    alpha = int(100 * (1 - i/self.quit_button.height))
-                    pygame.draw.line(gradient, (255, 255, 255, alpha), 
-                                   (0, i), (self.quit_button.width, i))
-                self.screen.blit(gradient, self.quit_button)
-
-                quit_text = self.font.render("Leave Game", True, WHITE)
-                text_rect = quit_text.get_rect(center=self.quit_button.center)
-                text_shadow = self.font.render("Leave Game", True, BLACK)
-                text_shadow_rect = text_shadow.get_rect(center=self.quit_button.center)
-                text_shadow_rect.x += 1
-                text_shadow_rect.y += 1
-                self.screen.blit(text_shadow, text_shadow_rect)
-                self.screen.blit(quit_text, text_rect)
+                if human_players_remaining:
+                    quit_hover = self.quit_button.collidepoint(mouse_pos)
+                    base_color = BUTTON_HOVER if quit_hover else ERROR_COLOR
+                    
+                    shadow_rect = self.quit_button.copy()
+                    shadow_rect.y += 2
+                    shadow = pygame.Surface(self.quit_button.size, pygame.SRCALPHA)
+                    pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
+                    self.screen.blit(shadow, shadow_rect)
+    
+                    pygame.draw.rect(self.screen, base_color, self.quit_button, border_radius=5)
+                    gradient = pygame.Surface(self.quit_button.size, pygame.SRCALPHA)
+                    for i in range(self.quit_button.height):
+                        alpha = int(100 * (1 - i/self.quit_button.height))
+                        pygame.draw.line(gradient, (255, 255, 255, alpha), 
+                                       (0, i), (self.quit_button.width, i))
+                    self.screen.blit(gradient, self.quit_button)
+    
+                    quit_text = self.font.render("Leave Game", True, WHITE)
+                    text_rect = quit_text.get_rect(center=self.quit_button.center)
+                    text_shadow = self.font.render("Leave Game", True, BLACK)
+                    text_shadow_rect = text_shadow.get_rect(center=self.quit_button.center)
+                    text_shadow_rect.x += 1
+                    text_shadow_rect.y += 1
+                    self.screen.blit(text_shadow, text_shadow_rect)
+                    self.screen.blit(quit_text, text_rect)
                 
             elif not self.dice_animation and not any_player_moving:
-                self.play_turn()
+                self.check_and_trigger_ai_turn()
                 
         elif self.state == "BUY" and self.current_property is not None:
             self.draw_property_card(self.current_property)
             self.draw_buy_options(mouse_pos)
         elif self.state == "AUCTION" and hasattr(self.logic, 'current_auction'):
+            if self.logic.current_auction is None:
+                print("Warning: current_auction is None - resetting state to ROLL")
+                self.state = "ROLL"
+                return
+                
             self.draw_auction(self.logic.current_auction)
             result_message = self.logic.check_auction_end()
             if result_message == "auction_completed":
                 print("Auction completed in draw method - setting up delay")
                 
-                if self.logic.current_auction["highest_bidder"]:
+                if self.logic.current_auction and self.logic.current_auction.get("highest_bidder"):
                     winner = self.logic.current_auction["highest_bidder"]
-                    property_name = self.logic.current_auction["property"]["name"]
-                    bid_amount = self.logic.current_auction["current_bid"]
+                    property_name = self.logic.current_auction.get("property", {}).get("name", "Unknown property")
+                    bid_amount = self.logic.current_auction.get("current_bid", 0)
                     self.show_notification(f"{winner['name']} won {property_name} for £{bid_amount}", 3000)
                 else:
-                    property_name = self.logic.current_auction["property"]["name"]
+                    property_name = self.logic.current_auction.get("property", {}).get("name", "Unknown property")
                     self.show_notification(f"No one bid on {property_name}", 3000)
                 
                 self.auction_end_time = pygame.time.get_ticks()
@@ -1266,7 +1302,12 @@ class Game:
             if not self.current_player_is_ai and self.roll_button.collidepoint(pos):
                 return self.play_turn()
                 
-            if not self.current_player_is_ai and self.quit_button.collidepoint(pos):
+            human_players_remaining = any(
+                not p.is_ai and not p.voluntary_exit and not p.bankrupt 
+                for p in self.players
+            )
+                
+            if not self.current_player_is_ai and human_players_remaining and self.quit_button.collidepoint(pos):
                 confirm_exit = self.show_exit_confirmation()
                 
                 if confirm_exit:
@@ -1288,6 +1329,7 @@ class Game:
                         
                         if len(self.logic.players) > 0:
                             self.state = "ROLL"
+                            self.check_and_trigger_ai_turn()
                         else:
                             return self.check_game_over()
                 return False
@@ -1454,8 +1496,32 @@ class Game:
             
         if auction_data is None:
             print("Warning: Auction data is None in draw_auction")
+            self.state = "ROLL"  
             return
             
+        required_keys = ["property", "current_bid", "minimum_bid", "highest_bidder", 
+                         "current_bidder_index", "active_players"]
+        
+        for key in required_keys:
+            if key not in auction_data:
+                print(f"Warning: Auction data missing key '{key}' - resetting to ROLL state")
+                self.state = "ROLL"
+                return
+        
+        if not isinstance(auction_data["property"], dict) or "name" not in auction_data["property"]:
+            print("Warning: Auction property data is invalid - resetting to ROLL state")
+            self.state = "ROLL"
+            return
+        
+        current_bidder_index = auction_data.get("current_bidder_index", 0)
+        if (current_bidder_index < len(auction_data["active_players"])):
+            current_bidder = auction_data["active_players"][current_bidder_index]
+            if current_bidder.get('is_ai', False):
+                ai_player = current_bidder
+                print(f"Auto-handling AI auction turn for {ai_player['name']}")
+                self.handle_ai_turn(ai_player)
+                pygame.time.delay(500)
+        
         print(f"\n=== Drawing Auction UI ===")
         print(f"Property: {auction_data['property']['name']}")
         print(f"Current bid: £{auction_data['current_bid']}")
@@ -1766,7 +1832,7 @@ class Game:
         card_y = (window_size[1] - card_height) // 2
 
         overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 128))  # Semi-transparent black
+        overlay.fill((0, 0, 0, 128))  
         self.screen.blit(overlay, (0, 0))
 
         shadow = pygame.Surface((card_width + 10, card_height + 10), pygame.SRCALPHA)
@@ -1815,6 +1881,10 @@ class Game:
         self.screen.blit(turns_text, turns_rect)
 
     def get_jail_choice(self, player):
+        if self.game_mode == "abridged" and self.check_time_limit():
+            print("Time limit reached during jail choice - automatically returning 'roll'")
+            return "roll"
+            
         if player['money'] < 50 and not self.logic.jail_free_cards.get(player['name'], 0):
             self.show_notification("No options available - must try rolling doubles")
             return "roll"
@@ -1841,7 +1911,6 @@ class Game:
             options.append(("[2] Pay £50 fine", "pay"))
         options.append(("[3] Try rolling doubles", "roll"))
         
-
         button_rects = []
         y_offset = y_start
         for option_text, option_value in options:
@@ -1854,6 +1923,11 @@ class Game:
         last_click_time = 0
         
         while waiting:
+            if self.game_mode == "abridged" and self.check_time_limit():
+                print("Time limit reached during jail choice loop - breaking out")
+                choice = "roll"
+                break
+                
             current_time = pygame.time.get_ticks()
             
             if current_time - last_redraw_time < 16:  # ~60 FPS
@@ -2234,42 +2308,171 @@ class Game:
         elapsed_time_ms = current_time - self.start_time
         time_limit_ms = self.time_limit * 1000
         
-        if elapsed_time_ms >= time_limit_ms and elapsed_time_ms < (time_limit_ms + 100):
-            minutes = self.time_limit // 60
-            print(f"TIME LIMIT REACHED: {minutes} minutes have elapsed!")
-            print("Game ending in Abridged mode - calculating winner based on assets...")
+        if elapsed_time_ms >= time_limit_ms:
+            if not hasattr(self, '_time_limit_notified') or not self._time_limit_notified:
+                minutes = self.time_limit // 60
+                print(f"\n\n!!!TIME LIMIT REACHED!!!: {minutes} minutes have elapsed!")
+                print("Game will end after all players complete their current lap...")
+                
+                self.show_notification(f"TIME'S UP! Game will end after this lap.", 5000)
+                
+                if self.state == "AUCTION" and hasattr(self.logic, 'current_auction') and self.logic.current_auction:
+                    print("Time limit reached during auction - canceling auction")
+                    if isinstance(self.logic.current_auction, dict) and 'property' in self.logic.current_auction:
+                        property_name = self.logic.current_auction.get('property', {}).get('name', 'Unknown')
+                        print(f"Auction for {property_name} canceled due to time limit")
+                    self.logic.current_auction = None
+                
+                print("Clearing UI states to continue the game...")
+                self.state = "ROLL"  
+                self.auction_data = None  
+                self.jail_options_visible = False  
+                self.confirmation_dialog_visible = False 
+                self.popup_message = None  
+                self.card_alert_visible = False  
+                self.development_ui_visible = False  
+                
+                self._time_limit_notified = True
+                self.time_limit_reached = True
+                
+                self.final_lap = {}
+                for player_name, lap in self.lap_count.items():
+                    player_obj = next((p for p in self.players if p.name == player_name), None)
+                    if player_obj and not player_obj.bankrupt and not player_obj.voluntary_exit:
+                        self.final_lap[player_name] = lap
+                
+                print("\n===== CURRENT GAME STATE =====")
+                print(f"Active players: {len([p for p in self.players if not p.bankrupt and not p.voluntary_exit])}")
+                print(f"Current lap counts: {self.final_lap}")
+                print("Game will end after all players complete their current lap")
+                
+                print("\nCurrent Player Assets:")
+                try:
+                    for logic_player in self.logic.players:
+                        player_name = logic_player['name']
+                        player_obj = next((p for p in self.players if p.name == player_name), None)
+                        
+                        if player_obj and player_obj.voluntary_exit:
+                            assets = player_obj.final_assets
+                            status = "Voluntarily Exited"
+                        elif player_obj and player_obj.bankrupt:
+                            assets = 0
+                            status = "Bankrupt"
+                        else:
+                            try:
+                                assets = self.calculate_player_assets(logic_player)
+                                status = "Active"
+                            except Exception as e:
+                                print(f"Error calculating assets for {player_name}: {e}")
+                                assets = logic_player.get('money', 0)
+                                status = "Active (Fallback)"
+                        
+                        print(f"  {player_name}: £{assets} ({status})")
+                        print(f"  Lap count: {self.lap_count.get(player_name, 0)}")
+                except Exception as e:
+                    print(f"Error listing player assets: {e}")
+                print("============================\n")
+            
+            if hasattr(self, 'final_lap'):
+                all_completed = True
+                active_players = [p.name for p in self.players if not p.bankrupt and not p.voluntary_exit]
+                
+                for player_name in active_players:
+                    if player_name in self.final_lap:
+                        current_lap = self.lap_count.get(player_name, 0)
+                        final_lap = self.final_lap.get(player_name, 0)
+                        
+                        if current_lap <= final_lap:
+                            all_completed = False
+                            print(f"Waiting for {player_name} to complete their turn (lap {current_lap}, final lap {final_lap})")
+                            break
+                
+                if all_completed:
+                    print("All players have completed their final lap - ending game")
+                    self.game_over = True
+                    return True
+                else:
+                    return False
+            
+            return False
         
-        return elapsed_time_ms >= time_limit_ms
+        return False
         
     def end_full_game(self):
         active_players = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
         winner = active_players[0] if active_players else None
         
+        final_assets = {}
+        
+        for logic_player in self.logic.players:
+            player_name = logic_player['name']
+            player_obj = next((p for p in self.players if p.name == player_name), None)
+            
+            if player_obj and player_obj.voluntary_exit:
+                final_assets[player_name] = player_obj.final_assets
+            else:
+                final_assets[player_name] = self.calculate_player_assets(logic_player)
+        
+        print(f"End full game assets: {final_assets}")
+        
         return {
             "winner": winner.name if winner else "No winner",
-            "final_assets": {p.name: p.get_total_assets() for p in self.players},
+            "final_assets": final_assets,
             "bankrupted_players": [p.name for p in self.players if p.bankrupt],
             "voluntary_exits": [p.name for p in self.players if p.voluntary_exit],
             "tied_winners": []
         }
         
     def end_abridged_game(self):
-        player_assets = {p: p.get_total_assets() for p in self.players}
+        self.auction_data = None
+        self.jail_options_visible = False
+        self.confirmation_dialog_visible = False
+        self.popup_message = None
+        self.card_alert_visible = False
+        self.development_ui_visible = False
+        self.state = "ROLL"
+        self.game_over = True
         
-        max_assets = max(player_assets.values())
+        final_assets = {}
         
-        players_with_max_assets = [p for p, assets in player_assets.items() if assets == max_assets]
+        for logic_player in self.logic.players:
+            player_name = logic_player['name']
+            player_obj = next((p for p in self.players if p.name == player_name), None)
+            
+            if player_obj and player_obj.voluntary_exit:
+                final_assets[player_name] = player_obj.final_assets
+            else:
+                final_assets[player_name] = self.calculate_player_assets(logic_player)
         
-        if len(players_with_max_assets) > 1:
-            winner_name = "Tie"
-            tied_winners = [p.name for p in players_with_max_assets]
+        active_players = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
+        
+        if active_players:
+            active_player_assets = {p.name: final_assets.get(p.name, 0) for p in active_players}
+            
+            if active_player_assets:
+                max_assets = max(active_player_assets.values()) if active_player_assets else 0
+                players_with_max_assets = [name for name, assets in active_player_assets.items() if assets == max_assets]
+                
+                if len(players_with_max_assets) > 1:
+                    winner_name = "Tie"
+                    tied_winners = players_with_max_assets
+                else:
+                    winner_name = players_with_max_assets[0] if players_with_max_assets else "No winner"
+                    tied_winners = []
+            else:
+                winner_name = "No winner"
+                tied_winners = []
         else:
-            winner_name = players_with_max_assets[0].name
+            winner_name = "No winner"
             tied_winners = []
+        
+        print(f"End game assets: {final_assets}")
+        print(f"Winner: {winner_name}")
+        print(f"Tied winners: {tied_winners}")
         
         return {
             "winner": winner_name,
-            "final_assets": {p.name: assets for p, assets in player_assets.items()},
+            "final_assets": final_assets,
             "bankrupted_players": [p.name for p in self.players if p.bankrupt],
             "voluntary_exits": [p.name for p in self.players if p.voluntary_exit],
             "tied_winners": tied_winners,
@@ -2277,21 +2480,55 @@ class Game:
         }
         
     def calculate_player_assets(self, player):
-        total = player['money']
-        for prop in self.logic.properties.values():
-            if prop.get('owner') == player['name']:
-                total += prop.get('price', 0)
-                if 'houses' in prop:
-                    total += sum(prop.get('house_costs', []))[:prop['houses']]
-        return total
+        try:
+            if not player or not isinstance(player, dict):
+                print(f"Warning: Invalid player object in calculate_player_assets: {player}")
+                return 0
+                
+            total = player.get('money', 0)
+            
+            if not hasattr(self.logic, 'properties') or not self.logic.properties:
+                print("Warning: No properties found in game logic")
+                return total
+                
+            for prop_id, prop in self.logic.properties.items():
+                if not isinstance(prop, dict):
+                    continue
+                    
+                if prop.get('owner') == player.get('name'):
+                    total += prop.get('price', 0)
+                    
+                    if 'houses' in prop and prop['houses'] > 0:
+                        house_costs = prop.get('house_costs', [])
+                        
+                        if isinstance(house_costs, list) and house_costs:
+                            houses_count = min(prop['houses'], len(house_costs))
+                            for i in range(houses_count):
+                                total += house_costs[i]
+                        elif isinstance(house_costs, (int, float)):
+                            total += house_costs * prop['houses']
+            
+            return total
+            
+        except Exception as e:
+            print(f"Error in calculate_player_assets: {e}")
+            return player.get('money', 0)
         
     def handle_voluntary_exit(self, player_name, final_assets):
         print(f"\n=== Voluntary Exit Debug ===")
         print(f"Player {player_name} is exiting the game")
-        print(f"Final assets: {final_assets}")
-        print(f"Current number of players: {len(self.logic.players)}")
         
-
+        logic_player = next((p for p in self.logic.players if p['name'] == player_name), None)
+        if logic_player:
+            actual_final_assets = self.calculate_player_assets(logic_player)
+            print(f"Final assets calculated from game logic: {actual_final_assets}")
+        else:
+            actual_final_assets = final_assets
+            print(f"Using provided final assets: {final_assets}")
+        
+        print(f"Current number of players: {len(self.logic.players)}")
+        print(f"Current player index before exit: {self.logic.current_player_index}")
+        
         self.board.add_message(f"{player_name} exits game")
         
         player_obj = next((p for p in self.players if p.name == player_name), None)
@@ -2307,7 +2544,7 @@ class Game:
         
         if hasattr(player_obj, 'handle_voluntary_exit'):
             print(f"Setting voluntary_exit flag for {player_name}")
-            player_obj.final_assets = final_assets
+            player_obj.final_assets = actual_final_assets
             player_obj.handle_voluntary_exit()
         
         result = self.logic.remove_player(player_name, voluntary=True)
@@ -2323,6 +2560,24 @@ class Game:
             self.board.update_ownership(self.logic.properties)
             
             active_players = [p for p in self.logic.players if not p.get('exited', False)]
+            print(f"Active players after exit: {[p['name'] for p in active_players]}")
+            
+            next_player_found = False
+            original_index = self.logic.current_player_index
+            
+            while not next_player_found and active_players:
+                self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+                
+                if self.logic.current_player_index == original_index:
+                    break
+                
+                current_player = self.logic.players[self.logic.current_player_index]
+                if not current_player.get('exited', False):
+                    next_player_found = True
+                    print(f"Next active player: {current_player['name']} (index: {self.logic.current_player_index})")
+            
+            print(f"Current player index after exit: {self.logic.current_player_index}")
+            
             if len(active_players) <= 1:
                 print(f"Only {len(active_players)} active player(s) left - game should end soon")
                 if self.check_one_player_remains():
@@ -2331,6 +2586,11 @@ class Game:
                     return game_over_data
                 
             self.show_notification(f"{player_name} has left the game. Their properties return to the bank.", 3000)
+            
+            self.state = "ROLL"
+            print("Checking if next player is an AI...")
+            self.check_and_trigger_ai_turn()
+            
             return True
         else:
             print("Failed to mark player as exited in game logic")
@@ -2395,19 +2655,27 @@ class Game:
             for logic_player in self.logic.players:
                 if player.name == logic_player['name']:
                     if player.position != logic_player['position']:
+                        valid_player_pos = 1 <= player.position <= 40
+                        valid_logic_pos = 1 <= logic_player['position'] <= 40
+                        
                         position_diff = abs(player.position - logic_player['position'])
                         if position_diff > 1:
                             print(f"Synchronizing position for {player.name}: Player object: {player.position}, Game logic: {logic_player['position']}")
                         
-                        if 1 <= logic_player['position'] <= 40 and not player.is_moving:
+                        if valid_logic_pos and not player.is_moving:
                             player.position = logic_player['position']
-                        elif 1 <= player.position <= 40 and player.is_moving:
+                        elif valid_player_pos and player.is_moving:
                             pass
-                        elif 1 <= player.position <= 40:
+                        elif valid_player_pos:
                             logic_player['position'] = player.position
                         else:
+                            print(f"Invalid positions detected for {player.name} - resetting to Go")
                             player.position = 1
                             logic_player['position'] = 1
+                    
+                    if hasattr(player, 'money') and player.money != logic_player.get('money', 0):
+                        print(f"Money sync debug for {player.name}: Player object: {player.money}, Game logic: {logic_player.get('money', 0)}")
+                    
                     break
 
     def handle_ai_turn(self, ai_player):
@@ -2920,3 +3188,51 @@ class Game:
         pygame.display.flip()
         
         return confirm_exit
+
+    def synchronize_player_money(self):
+        for player in self.players:                
+            for logic_player in self.logic.players:
+                if player.name == logic_player['name']:
+                    if hasattr(player, 'money') and player.money != logic_player.get('money', 0):
+                        old_money = player.money
+                        player.money = logic_player.get('money', 0)
+                        print(f"Money synchronized for {player.name}: {old_money} -> {player.money}")
+                    break
+
+    def check_and_trigger_ai_turn(self):
+        """Check if the current player is an AI and trigger their turn if needed."""
+        if self.state != "ROLL":
+            print("Not in ROLL state, skipping AI turn check")
+            return False
+            
+        if not self.logic.players:
+            print("No players left in the game")
+            return False
+            
+        if self.logic.current_player_index >= len(self.logic.players):
+            print(f"Invalid current_player_index: {self.logic.current_player_index}, max: {len(self.logic.players) - 1}")
+            self.logic.current_player_index = 0
+            
+        current_player = self.logic.players[self.logic.current_player_index]
+        
+        if current_player.get('exited', False):
+            print(f"Current player {current_player['name']} has exited, moving to next player")
+            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+            return self.check_and_trigger_ai_turn()  
+            
+        player_obj = next((p for p in self.players if p.name == current_player['name']), None)
+        
+        if not player_obj:
+            print(f"Could not find Player object for {current_player['name']}")
+            return False
+            
+        if player_obj.is_ai:
+            print(f"Player {current_player['name']} is an AI - automatically triggering their turn")
+            self.current_player_is_ai = True
+            pygame.time.delay(500)
+            self.play_turn()
+            return True
+        else:
+            print(f"Player {current_player['name']} is not an AI - waiting for user input")
+            self.current_player_is_ai = False
+            return False

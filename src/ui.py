@@ -282,7 +282,7 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        version_text = self.version_font.render("Build Version: 07.03.2025", True, GRAY)
+        version_text = self.version_font.render("Build Version: 09.03.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -707,7 +707,7 @@ class StartPage(BasePage):
                 if len(self.player_names[self.active_input]) < 15:
                     self.player_names[self.active_input] += event.unicode
         else:
-            if event.key in [pygame.K_h, pygame.K_H]:
+            if event.key == pygame.K_h:
                 if event.mod & pygame.KMOD_SHIFT and self.human_count < 5 and self.total_players < 5:
                     self.human_count += 1
                     if len(self.player_names) < self.human_count:
@@ -716,7 +716,7 @@ class StartPage(BasePage):
                     self.human_count -= 1
                 self.total_players = self.human_count + self.ai_count
             
-            elif event.key in [pygame.K_a, pygame.K_A]:
+            elif event.key == pygame.K_a:
                 if event.mod & pygame.KMOD_SHIFT and self.ai_count < 4 and self.total_players < 5:
                     self.ai_count += 1
                     self.update_player_lists()

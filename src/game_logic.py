@@ -369,19 +369,21 @@ class GameLogic:
             result = None
         else:
             try:
-                new_pos, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund, self)
+                action_result, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund, self)
             except TypeError:
-                new_pos, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund)
+                action_result, new_bank, new_parking = card["action"](player, self.bank_money, self.free_parking_fund)
 
-            if isinstance(new_pos, int):
+            if isinstance(action_result, int) and action_result <= 40:
                 old_pos = player["position"]
-                player["position"] = new_pos
-                if new_pos < old_pos and new_pos != 11:
+                player["position"] = action_result
+                if action_result < old_pos and action_result != 11:
                     player["money"] += 200
                     self.bank_money -= 200
                     self.add_message("Collected £200 for passing GO")
             else:
-                player["money"] = new_pos
+                print(f"Updating player money from {player['money']} to {action_result}")
+                player["money"] = action_result
+
             self.bank_money = new_bank
             self.free_parking_fund = new_parking
 
@@ -481,26 +483,24 @@ class GameLogic:
         self.current_auction = {
             "property": property_data,
             "property_position": position,
+            "active_players": eligible_players.copy(),
+            "passed_players": set(),
+            "highest_bidder": None,
             "current_bid": 0,
             "minimum_bid": starting_bid,
-            "highest_bidder": None,
-            "start_time": pygame.time.get_ticks(),
-            "duration": 30000,
-            "passed_players": set(),
-            "completed": False,
             "current_bidder_index": 0,
-            "active_players": eligible_players,
+            "start_time": pygame.time.get_ticks(),
+            "duration": 30000, 
+            "completed": False,
             "message": f"Auction started for {property_data['name']} - Starting bid: £{starting_bid}"
         }
         
         print(f"Auction initialized with {len(eligible_players)} active players")
-        if eligible_players:
-            print(f"First bidder: {eligible_players[0]['name']}")
-            self.add_message(f"\n🔨 AUCTION: {property_data['name']}")
-            self.add_message(f"Starting bid: £{starting_bid}")
-            return "auction_in_progress"
-        else:
-            return "auction_completed"
+        print(f"First bidder: {self.current_auction['active_players'][0]['name']}")
+        self.add_message(f"\n🔨 AUCTION: {property_data['name']}")
+        self.add_message(f"Starting bid: £{starting_bid}")
+        
+        return "auction_in_progress" 
 
     def process_auction_bid(self, player, bid_amount):
         print(f"\n=== Processing Bid: {player['name']} ===")
@@ -1229,9 +1229,33 @@ class GameLogic:
     def get_ai_auction_bid(self, player, property_data, current_bid):
         if not player.get('is_ai', False):
             return None
-
-        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
-        return self.ai_player.make_auction_bid(property_data, current_bid, player['money'], owned_properties)
+            
+        try:
+            print(f"\n=== AI Auction Bid Logic ===")
+            print(f"AI Player: {player['name']}")
+            print(f"Property: {property_data['name']}")
+            print(f"Current bid: £{current_bid}")
+            print(f"Player money: £{player['money']}")
+            
+            minimum_bid = max(current_bid + 10, property_data['price'] // 2)
+            if player['money'] < minimum_bid:
+                print(f"AI can't afford minimum bid of £{minimum_bid}")
+                return None
+                
+            owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
+            
+            bid_amount = self.ai_player.make_auction_bid(property_data, current_bid, player['money'], owned_properties)
+            
+            if bid_amount and bid_amount > current_bid and bid_amount <= player['money']:
+                bid_amount = max(bid_amount, current_bid + 10)
+                print(f"AI {player['name']} decided to bid £{bid_amount}")
+                return bid_amount
+            else:
+                print(f"AI {player['name']} decided to pass")
+                return None
+        except Exception as e:
+            print(f"Error in AI auction bidding: {e}")
+            return None
 
     def handle_ai_bankruptcy_prevention(self, player, amount_needed):
         if not player.get('is_ai', False):
