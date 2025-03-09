@@ -1,0 +1,137 @@
+name: Build and Release Game (pyinstaller)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pygame
+        pip install pyinstaller
+        pip install -r requirements.txt
+
+    - name: Build executable for Windows
+      working-directory: ${{ github.workspace }}
+      run: |
+        pyinstaller --onefile --windowed --name PropertyTycoon --icon "${{ github.workspace }}/assets/image/icon.ico" --add-data "${{ github.workspace }}/assets;assets" main.py
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PropertyTycoon-Windows
+        path: dist/PropertyTycoon.exe
+        retention-days: 90
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pygame
+        pip install pyinstaller
+        pip install pillow
+        pip install -r requirements.txt
+
+    - name: Create icon script
+      run: |
+        echo '
+        from PIL import Image
+        import os
+        
+        os.makedirs("icon.iconset", exist_ok=True)
+        
+        img = Image.open("assets/image/icon.ico")
+        
+        sizes = [16, 32, 64, 128, 256, 512]
+        for size in sizes:
+            img_resized = img.resize((size, size))
+            img_resized.save(f"icon.iconset/icon_{size}x{size}.png")
+            img_resized.save(f"icon.iconset/icon_{size}x{size}@2x.png")
+        
+        os.system("iconutil -c icns icon.iconset")
+        ' > create_icns.py
+        python create_icns.py
+
+    - name: Build macOS app
+      working-directory: ${{ github.workspace }}
+      run: |
+        if [ -f "icon.icns" ]; then
+          pyinstaller --onefile --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+        else
+          pyinstaller --onefile --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+        fi
+        mv dist/PropertyTycoon.app dist/PropertyTycoon-macOS.app
+        chmod -R +x dist/PropertyTycoon-macOS.app
+        
+        cd dist
+        zip -r PropertyTycoon-macOS.zip PropertyTycoon-macOS.app
+        cd ..
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PropertyTycoon-macOS
+        path: dist/PropertyTycoon-macOS.zip
+        retention-days: 90
+
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Generate version number
+      id: get_version
+      shell: bash
+      run: |
+        VERSION=$(date +'%d.%m.%y-%H%M%S')
+        echo "version=${VERSION}" >> $GITHUB_ENV
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: PropertyTycoon-Windows
+        path: dist-windows
+
+    - name: Download macOS artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: PropertyTycoon-macOS
+        path: dist-macos
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: |
+          dist-windows/PropertyTycoon.exe
+          dist-macos/PropertyTycoon-macOS.zip
+        name: Build-${{ steps.get_version.outputs.version }}
+        tag_name: Build-${{ steps.get_version.outputs.version }}
+        draft: false
+        prerelease: false
+        fail_on_unmatched_files: false
