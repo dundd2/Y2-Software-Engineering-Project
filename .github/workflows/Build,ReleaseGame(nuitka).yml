@@ -165,8 +165,11 @@ jobs:
 
     - name: Build executable for Linux ARM64
       working-directory: ${{ github.workspace }}
+      env:
+        CC: aarch64-linux-gnu-gcc
+        CXX: aarch64-linux-gnu-g++
       run: |
-        python -m nuitka --standalone --onefile --linux-arm64 --assume-yes-for-downloads --include-data-dir="${{ github.workspace }}/assets=assets" --output-dir=dist main.py
+        python -m nuitka --standalone --onefile --assume-yes-for-downloads --target-arch=aarch64 --include-data-dir="${{ github.workspace }}/assets=assets" --output-dir=dist main.py
         mv dist/main.bin dist/PropertyTycoon-Linux-ARM64
         chmod +x dist/PropertyTycoon-Linux-ARM64
         
