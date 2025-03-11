@@ -40,7 +40,6 @@ class CardDeck:
         random.shuffle(self.cards)
 
     def draw_card(self):
-        """Draw a card and track it as the last drawn card"""
         if not self.cards:
             if self.discard_pile:
                 self.cards = self.discard_pile
@@ -53,14 +52,12 @@ class CardDeck:
         return self.last_drawn_card
 
     def return_card(self, card, to_bottom=True):
-        """Return a card to either the bottom or top of the discard pile"""
         if to_bottom:
             self.discard_pile.append(card)
         else:
             self.discard_pile.insert(0, card)
 
     def return_jail_card(self, card_type):
-        """Return a Get Out of Jail Free card to the appropriate deck"""
         jail_card = next(
             (card for card in self.cards + self.discard_pile 
              if "jail free" in card.text.lower()),
@@ -68,7 +65,6 @@ class CardDeck:
         )
         if not jail_card:
             jail_card = Card(
-                "Get out of jail free - This card may be kept until needed or sold",
                 next(c["action"] for c in (pot_luck_cards if card_type == CardType.POT_LUCK else opportunity_knocks_cards)
                      if "jail free" in c["text"].lower()),
                 card_type
@@ -76,7 +72,6 @@ class CardDeck:
         self.return_card(jail_card, to_bottom=True)
 
     def peek_top_card(self):
-        """Look at the top card without drawing it"""
         if not self.cards and self.discard_pile:
             self.cards = self.discard_pile
             self.discard_pile = []
@@ -84,9 +79,7 @@ class CardDeck:
         return self.cards[-1] if self.cards else None
 
     def get_remaining_count(self):
-        """Get the number of cards remaining in the deck"""
         return len(self.cards)
 
     def get_discard_count(self):
-        """Get the number of cards in the discard pile"""
         return len(self.discard_pile)

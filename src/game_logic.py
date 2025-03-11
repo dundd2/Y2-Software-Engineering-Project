@@ -12,17 +12,17 @@ pot_luck_cards = [
     {"text": "You are up the creek with no paddle - go back to the Old Creek", "action": lambda player, bank, free_parking: (2, bank, free_parking)},
     {"text": "Student loan refund. Collect £20", "action": lambda player, bank, free_parking: (player['money'] + 20, bank - 20, free_parking)},
     {"text": "Bank error in your favour. Collect £200", "action": lambda player, bank, free_parking: (player['money'] + 200, bank - 200, free_parking)},
-    {"text": "Pay bill for text books of £100", "action": lambda player, bank, free_parking: (player['money'] - 100, bank + 100, free_parking)},
-    {"text": "Mega late night taxi bill pay £50", "action": lambda player, bank, free_parking: (player['money'] - 50, bank + 50, free_parking)},
+    {"text": "Pay bill for text books of £100", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 100)},
+    {"text": "Mega late night taxi bill pay £50", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 50)},
     {"text": "Advance to go", "action": lambda player, bank, free_parking: (1, bank, free_parking)},
     {"text": "From sale of Bitcoin you get £50", "action": lambda player, bank, free_parking: (player['money'] + 50, bank - 50, free_parking)},
-    {"text": "Bitcoin assets fall - pay off Bitcoin short fall", "action": lambda player, bank, free_parking: (player['money'] - 50, bank + 50, free_parking)},
-    {"text": "Pay a £10 fine or take opportunity knocks", "action": lambda player, bank, free_parking: (player['money'] - 10, bank + 10, free_parking + 10)},
-    {"text": "Pay insurance fee of £50", "action": lambda player, bank, free_parking: (player['money'] - 50, bank + 50, free_parking + 50)},
+    {"text": "Bitcoin assets fall - pay off Bitcoin short fall", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 50)},
+    {"text": "Pay a £10 fine or take opportunity knocks", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 10, True)},
+    {"text": "Pay insurance fee of £50", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 50, True)},
     {"text": "Savings bond matures, collect £100", "action": lambda player, bank, free_parking: (player['money'] + 100, bank - 100, free_parking)},
     {"text": "Go to jail. Do not pass GO, do not collect £200", "action": lambda player, bank, free_parking: (11, bank, free_parking)},
     {"text": "Received interest on shares of £25", "action": lambda player, bank, free_parking: (player['money'] + 25, bank - 25, free_parking)},
-    {"text": "It's your birthday. Collect £10 from each player", "action": lambda player, bank, free_parking: (player['money'] + 10, bank - 10, free_parking)},
+    {"text": "It's your birthday. Collect £10 from each player", "action": lambda player, bank, free_parking, board=None: board.handle_birthday_collection(player)},
     {"text": "Get out of jail free", "action": lambda player, bank, free_parking: (player['position'], bank, free_parking)},
 ]
 
@@ -31,17 +31,17 @@ opportunity_knocks_cards = [
     {"text": "You have won a lip sync battle. Collect £100", "action": lambda player, bank, free_parking: (player['money'] + 100, bank - 100, free_parking)},
     {"text": "Advance to Turing Heights", "action": lambda player, bank, free_parking: (40, bank, free_parking)},
     {"text": "Advance to Han Xin Gardens", "action": lambda player, bank, free_parking: (25, bank + (200 if player['position'] > 25 else 0), free_parking)},
-    {"text": "Fined £15 for speeding", "action": lambda player, bank, free_parking: (player['money'] - 15, bank + 15, free_parking + 15)},
-    {"text": "Pay university fees of £150", "action": lambda player, bank, free_parking: (player['money'] - 150, bank + 150, free_parking)},
+    {"text": "Fined £15 for speeding", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 15, True)},
+    {"text": "Pay university fees of £150", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 150)},
     {"text": "Take a trip to Hove station", "action": lambda player, bank, free_parking: (16, bank + (200 if player['position'] > 16 else 0), free_parking)},
     {"text": "Loan matures, collect £150", "action": lambda player, bank, free_parking: (player['money'] + 150, bank - 150, free_parking)},
-    {"text": "You are assessed for repairs, £40/house, £115/hotel", "action": lambda player, bank, free_parking, game: (player['money'] - game.calculate_repair_cost(player, 40, 115), bank + game.calculate_repair_cost(player, 40, 115), free_parking)},
+    {"text": "You are assessed for repairs, £40/house, £115/hotel", "action": lambda player, bank, free_parking, board=None: board.handle_repair_assessment(player, 40, 115)},
     {"text": "Advance to GO", "action": lambda player, bank, free_parking: (1, bank, free_parking)},
-    {"text": "You are assessed for repairs, £25/house, £100/hotel", "action": lambda player, bank, free_parking, game: (player['money'] - game.calculate_repair_cost(player, 25, 100), bank + game.calculate_repair_cost(player, 25, 100), free_parking)},
+    {"text": "You are assessed for repairs, £25/house, £100/hotel", "action": lambda player, bank, free_parking, board=None: board.handle_repair_assessment(player, 25, 100)},
     {"text": "Go back 3 spaces", "action": lambda player, bank, free_parking: (((player['position'] - 1 - 3) % 40) + 1, bank, free_parking)},
     {"text": "Advance to Skywalker Drive", "action": lambda player, bank, free_parking: (12, bank + (200 if player['position'] > 12 else 0), free_parking)},
     {"text": "Go to jail. Do not pass GO, do not collect £200", "action": lambda player, bank, free_parking: (11, bank, free_parking)},
-    {"text": "Drunk in charge of a hoverboard. Fine £30", "action": lambda player, bank, free_parking: (player['money'] - 30, bank + 30, free_parking + 30)},
+    {"text": "Drunk in charge of a hoverboard. Fine £30", "action": lambda player, bank, free_parking, board=None: board.handle_payment_to_bank(player, 30, True)},
     {"text": "Get out of jail free", "action": lambda player, bank, free_parking: (player['position'], bank, free_parking)},
 ]
 
@@ -1258,27 +1258,31 @@ class GameLogic:
             return None
 
     def handle_ai_bankruptcy_prevention(self, player, amount_needed):
-        if not player.get('is_ai', False):
-            return False
-
-        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
         
+        owned_properties = [prop for prop in self.properties.values() if prop.get('owner') == player['name']]
+        if not owned_properties:
+            return False
+            
         for prop in owned_properties:
-            if self.ai_player.should_sell_houses(prop, player['money'], amount_needed):
-                if prop.get('houses', 0) == 5:
+            while prop.get('houses', 0) > 0 and player['money'] < amount_needed:
+                if prop.get('houses', 0) == 5: 
                     self.sell_hotel(prop, player)
+                    self.add_message(f"{player['name']} sold hotel on {prop['name']} to raise funds")
                 else:
                     self.sell_house(prop, player)
+                    self.add_message(f"{player['name']} sold house on {prop['name']} to raise funds")
                 if player['money'] >= amount_needed:
                     return True
-
+        
         for prop in owned_properties:
-            if self.ai_player.should_mortgage_property(prop, player['money']):
-                self.mortgage_property(prop, player)
-                if player['money'] >= amount_needed:
-                    return True
-
-        return False
+            if not prop.get('is_mortgaged', False) and player['money'] < amount_needed:
+                if prop.get('houses', 0) == 0: 
+                    self.mortgage_property(prop, player)
+                    self.add_message(f"{player['name']} mortgaged {prop['name']} to raise funds")
+                    if player['money'] >= amount_needed:
+                        return True
+        
+        return player['money'] >= amount_needed
 
     def handle_buy_decision(self, player, decision):
         position = str(player["position"])
@@ -1321,3 +1325,87 @@ class GameLogic:
             return "auction_started"
         else:
             return "Invalid decision. Must be 'buy' or 'auction'"
+
+    def handle_birthday_collection(self, birthday_player):
+
+        total_collected = 0
+        self.add_message(f"\n🎂 {birthday_player['name']}'s Birthday! Each player must pay £10")
+        
+        for player in self.players:
+            if player['name'] == birthday_player['name']:
+                continue  
+                
+            self.add_message(f"\n{player['name']} needs to pay £10")
+            if player['money'] >= 10:
+                player['money'] -= 10
+                total_collected += 10
+                self.add_message(f"{player['name']} paid £10")
+            else:
+                needed_amount = 10 - player['money']
+                self.add_message(f"{player['name']} needs to raise £{needed_amount}")
+                
+                success = self.handle_ai_bankruptcy_prevention(player, needed_amount)
+                
+                if player['money'] >= 10:
+                    player['money'] -= 10
+                    total_collected += 10
+                    self.add_message(f"{player['name']} raised funds and paid £10")
+                else:
+                    self.add_message(f"{player['name']} cannot pay and goes bankrupt")
+                    self.handle_bankruptcy(player)
+                    if player['money'] > 0:
+                        total_collected += player['money']
+                        player['money'] = 0
+        
+        birthday_player['money'] += total_collected
+        self.add_message(f"\n{birthday_player['name']} collected £{total_collected} in total!")
+        
+        return birthday_player['money'], self.bank_money, self.free_parking_fund
+
+    def handle_payment_to_bank(self, player, amount, to_free_parking=False):
+
+        self.add_message(f"\n{player['name']} needs to pay £{amount}")
+        
+        if player['money'] >= amount:
+            player['money'] -= amount
+            if to_free_parking:
+                self.free_parking_fund += amount
+            else:
+                self.bank_money += amount
+            self.add_message(f"{player['name']} paid £{amount}")
+            return player['money'], self.bank_money, self.free_parking_fund
+        else:
+            needed_amount = amount - player['money']
+            self.add_message(f"{player['name']} needs to raise £{needed_amount}")
+            
+            success = self.handle_ai_bankruptcy_prevention(player, needed_amount)
+            
+            if player['money'] >= amount:
+                player['money'] -= amount
+                if to_free_parking:
+                    self.free_parking_fund += amount
+                else:
+                    self.bank_money += amount
+                self.add_message(f"{player['name']} raised funds and paid £{amount}")
+            else:
+                self.add_message(f"{player['name']} cannot pay and goes bankrupt")
+                remaining_money = player['money']
+                self.handle_bankruptcy(player)
+                if remaining_money > 0:
+                    if to_free_parking:
+                        self.free_parking_fund += remaining_money
+                    else:
+                        self.bank_money += remaining_money
+            
+            return player['money'], self.bank_money, self.free_parking_fund
+
+    def handle_repair_assessment(self, player, house_cost, hotel_cost):
+
+        repair_cost = self.calculate_repair_cost(player, house_cost, hotel_cost)
+        
+        if repair_cost > 0:
+            self.add_message(f"\n{player['name']} is assessed £{repair_cost} for repairs (£{house_cost}/house, £{hotel_cost}/hotel)")
+            return self.handle_payment_to_bank(player, repair_cost)
+        else:
+            self.add_message(f"{player['name']} has no houses or hotels - no repair costs")
+            return player['money'], self.bank_money, self.free_parking_fund

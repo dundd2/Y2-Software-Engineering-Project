@@ -13,6 +13,7 @@ import random
 import string
 from src.ui import DevelopmentNotification
 from src.text_scaler import text_scaler
+from src.ui import AIEmotionUI
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Play-Regular.ttf")
@@ -163,6 +164,17 @@ class Game:
                 button_height
             )
             
+            self.pause_button = pygame.Rect(
+                window_size[0] - (button_width * 2) - (button_margin * 2), 
+                button_y - button_height - button_margin, 
+                button_width,
+                button_height
+            )
+            
+            self.game_paused = False
+            self.pause_start_time = 0
+            self.total_pause_time = 0
+            
             self.yes_button = pygame.Rect(
                 window_size[0] - (button_width * 2) - (button_margin * 2),
                 button_y,
@@ -205,11 +217,19 @@ class Game:
             self.dev_notification = None
             
             self.free_parking_pot = 0
+            
+            self.emotion_uis = {}
+            for player in self.players:
+                if player.is_ai and self.ai_difficulty == 'hard':
+                    self.emotion_uis[player.name] = AIEmotionUI(self.screen, player, self)
+                    print(f"Initialized emotion UI for {player.name}")
                     
         except Exception as e:
             print(f"Error during game initialization: {e}")
             pygame.quit()
             raise
+        
+        self.update_current_player()
 
     def draw_button(self, button, text, hover=False, active=True):
         base_color = BUTTON_HOVER if hover else ACCENT_COLOR
@@ -246,7 +266,13 @@ class Game:
     def draw_time_remaining(self):
         if self.game_mode == "abridged" and self.time_limit:
             current_time = pygame.time.get_ticks()
-            elapsed = (current_time - self.start_time) // 1000
+            
+            elapsed = (current_time - self.start_time - self.total_pause_time) // 1000
+            
+            if self.game_paused:
+                current_pause_duration = current_time - self.pause_start_time
+                elapsed = (current_time - self.start_time - self.total_pause_time - current_pause_duration) // 1000
+            
             remaining = max(0, self.time_limit - elapsed)
             minutes = remaining // 60
             seconds = remaining % 60
@@ -256,7 +282,7 @@ class Game:
             if hasattr(self, 'time_limit_reached') and self.time_limit_reached and not self.game_over:
                 banner_height = 40
                 banner_surface = pygame.Surface((window_size[0], banner_height), pygame.SRCALPHA)
-                banner_color = (255, 0, 0, 150)  # Semi-transparent red
+                banner_color = (255, 0, 0, 150) 
                 banner_surface.fill(banner_color)
                 self.screen.blit(banner_surface, (0, 0))
                 
@@ -341,15 +367,8 @@ class Game:
 
     def draw(self):
         if self.game_mode == "abridged" and self.check_time_limit():
-            if not self.game_over:
-                print("Time limit reached during draw - forcing game to end")
-                self.game_over = True
-                return
-                
-        self.synchronize_player_positions()
-        self.synchronize_player_money()  
-        self.synchronize_free_parking_pot()  
-        
+            return
+            
         if not pygame.display.get_surface():
             return
             
@@ -360,6 +379,15 @@ class Game:
             alpha = int(255 * (1 - i/window_size[1]))
             pygame.draw.line(gradient, (*ACCENT_COLOR[:3], alpha), (0, i), (window_size[0], i))
         self.screen.blit(gradient, (0, 0))
+        
+        self.board.draw(self.screen)
+        
+        for emotion_ui in self.emotion_uis.values():
+            emotion_ui.draw()
+            
+        self.synchronize_player_positions()
+        self.synchronize_player_money()  
+        self.synchronize_free_parking_pot()  
 
         for player in self.players:
             player.update_animation()
@@ -506,6 +534,9 @@ class Game:
         
         self.draw_notification()
         
+        for emotion_ui in self.emotion_uis.values():
+            emotion_ui.draw()
+        
         if self.state == "ROLL":
             current_player = next((p for p in self.players if p.name == self.logic.players[self.logic.current_player_index]['name']), None)
             self.current_player_is_ai = current_player and current_player.is_ai
@@ -516,8 +547,16 @@ class Game:
             )
             
             if not self.current_player_is_ai:
+                for emotion_ui in self.emotion_uis.values():
+                    emotion_ui.draw()
+                    
                 self.draw_button(self.roll_button, "Roll", 
                                hover=self.roll_button.collidepoint(mouse_pos))
+                
+                if self.game_mode == "abridged" and self.time_limit:
+                    pause_hover = self.pause_button.collidepoint(mouse_pos)
+                    button_text = "Continue" if self.game_paused else "Pause"
+                    self.draw_button(self.pause_button, button_text, hover=pause_hover)
                 
                 if human_players_remaining:
                     quit_hover = self.quit_button.collidepoint(mouse_pos)
@@ -580,7 +619,16 @@ class Game:
             if hasattr(self.logic, 'current_auction') and self.logic.current_auction:
                 print("Auction in progress - not showing development UI")
             else:
-                self.draw_development_ui(self.selected_property)
+                current_player = self.logic.players[self.logic.current_player_index]
+                player_obj = next((p for p in self.players if p.name == current_player['name']), None)
+                
+                if player_obj and player_obj.is_ai:
+                    print(f"Auto-closing development UI for AI player {current_player['name']}")
+                    self.state = "ROLL"
+                    self.selected_property = None
+                    self.development_mode = False
+                else:
+                    self.draw_development_ui(self.selected_property)
             
         if self.development_mode and not any_player_moving and not self.dice_animation:
             if hasattr(self.logic, 'current_auction') and self.logic.current_auction:
@@ -848,6 +896,8 @@ class Game:
         self.last_roll = (dice1, dice2)
         self.roll_time = pygame.time.get_ticks()
         current_player = self.logic.players[self.logic.current_player_index]
+        
+
         print(f"Current player: {current_player['name']}")
         print(f"Current position: {current_player['position']}")
 
@@ -979,6 +1029,10 @@ class Game:
             print("Not a property space or already processed by card handling")
             self.state = "ROLL"
 
+        self.update_current_player()
+        
+        self.wait_for_animations()
+
         while self.logic.message_queue:
             message = self.logic.message_queue.pop(0)
             print(f"Processing message: {message}")
@@ -1000,6 +1054,8 @@ class Game:
             self.development_mode = False
 
         self.logic.is_going_to_jail = False
+        
+        self.handle_space(current_player)
 
     def play_turn(self):
         if self.game_over:
@@ -1016,6 +1072,8 @@ class Game:
             self.board.add_message("Error: No current player found")
             return False
             
+        self.update_current_player()
+        
         old_position = current_player['position']
 
         self.lap_count[current_player['name']] += 1
@@ -1263,6 +1321,13 @@ class Game:
         return self.logic.handle_space(current_player)
 
     def handle_click(self, pos):
+        if self.game_over:
+            return
+            
+        for emotion_ui in self.emotion_uis.values():
+            if emotion_ui.handle_click(pos):
+                return
+                
         if self.show_popup:
             if self.popup_rect.collidepoint(pos):
                 self.show_popup = False
@@ -1299,8 +1364,29 @@ class Game:
             return False
         
         if self.state == "ROLL":
+            if not self.current_player_is_ai and self.game_mode == "abridged" and self.time_limit and self.pause_button.collidepoint(pos):
+                current_time = pygame.time.get_ticks()
+                
+                if self.game_paused:
+                    pause_duration = current_time - self.pause_start_time
+                    self.total_pause_time += pause_duration
+                    self.game_paused = False
+                    self.add_message("Game resumed")
+                    self.show_notification("Game resumed", 2000)
+                else:
+                    self.game_paused = True
+                    self.pause_start_time = current_time
+                    self.add_message("Game paused")
+                    self.show_notification("Game paused - Click Continue to resume", 2000)
+                
+                return False
+                
             if not self.current_player_is_ai and self.roll_button.collidepoint(pos):
-                return self.play_turn()
+                if self.game_mode == "abridged" and self.time_limit and self.game_paused:
+                    self.show_notification("Game is paused. Click Continue to resume.", 2000)
+                    return False
+                else:
+                    return self.play_turn()
                 
             human_players_remaining = any(
                 not p.is_ai and not p.voluntary_exit and not p.bankrupt 
@@ -1402,8 +1488,19 @@ class Game:
         return False
 
     def handle_motion(self, pos):
+        if self.game_over:
+            return
+            
+        for emotion_ui in self.emotion_uis.values():
+            emotion_ui.check_hover(pos)
+            
         if self.state == "ROLL":
-            return self.roll_button.collidepoint(pos) or self.quit_button.collidepoint(pos)
+            hover_buttons = [self.roll_button.collidepoint(pos), self.quit_button.collidepoint(pos)]
+            
+            if self.game_mode == "abridged" and self.time_limit:
+                hover_buttons.append(self.pause_button.collidepoint(pos))
+                
+            return any(hover_buttons)
         elif self.state == "BUY":
             return self.yes_button.collidepoint(pos) or self.no_button.collidepoint(pos)
         elif self.state == "AUCTION":
@@ -1692,7 +1789,6 @@ class Game:
                         print(f"Pass failed: {message}")
     
     def _process_auction_bid(self, current_bidder):
-        """Helper method to process auction bids, used by both keyboard and mouse input handlers"""
         try:
             bid_amount = int(self.auction_bid_amount or "0")
             success, message = self.logic.process_auction_bid(current_bidder, bid_amount)
@@ -1881,6 +1977,14 @@ class Game:
         self.screen.blit(turns_text, turns_rect)
 
     def get_jail_choice(self, player):
+        player_obj = next((p for p in self.players if p.name == player['name']), None)
+        if player_obj and player_obj.is_ai:
+            if self.logic.jail_free_cards.get(player['name'], 0) > 0:
+                return "card"
+            elif player['money'] >= 50 and random.random() < 0.5:
+                return "pay"
+            return "roll"
+
         if self.game_mode == "abridged" and self.check_time_limit():
             print("Time limit reached during jail choice - automatically returning 'roll'")
             return "roll"
@@ -1930,7 +2034,7 @@ class Game:
                 
             current_time = pygame.time.get_ticks()
             
-            if current_time - last_redraw_time < 16:  # ~60 FPS
+            if current_time - last_redraw_time < 16:  
                 pygame.time.delay(5)
                 continue
                 
@@ -2305,7 +2409,12 @@ class Game:
             return False
         
         current_time = pygame.time.get_ticks()
-        elapsed_time_ms = current_time - self.start_time
+        
+        elapsed_time_ms = current_time - self.start_time - self.total_pause_time
+        if self.game_paused:
+            current_pause_duration = current_time - self.pause_start_time
+            elapsed_time_ms -= current_pause_duration
+            
         time_limit_ms = self.time_limit * 1000
         
         if elapsed_time_ms >= time_limit_ms:
@@ -2597,29 +2706,56 @@ class Game:
             return False
 
     def move_player(self, player, spaces):
-        if not isinstance(player.position, int) or not (1 <= player.position <= 40):
-            print(f"Warning: Invalid position {player.position} detected for {player.name} in move_player, resetting to position 1")
-            player.position = 1
+        try:
+            if not isinstance(player.position, int) or not (1 <= player.position <= 40):
+                print(f"Warning: Invalid position {player.position} detected for {player.name} in move_player, resetting to position 1")
+                player.position = 1
+                
+            old_position = player.position
             
-        old_position = player.position
-        
-        if not isinstance(spaces, int) or spaces < 0 or spaces > 40:
-            print(f"Warning: Invalid spaces value {spaces} for {player.name}, adjusting to valid range")
-            spaces = max(0, min(spaces, 40))
+            if not isinstance(spaces, int):
+                print(f"Warning: Invalid spaces value {spaces} for {player.name}, defaulting to 0")
+                spaces = 0
+            elif spaces < 0 or spaces > 40:
+                print(f"Warning: Spaces value {spaces} out of range for {player.name}, adjusting to valid range")
+                spaces = max(0, min(spaces, 40))
+                
+            new_position = (old_position + spaces) % 40
+            if new_position == 0:
+                new_position = 40
+                
+            if not (1 <= new_position <= 40):
+                print(f"Warning: Invalid new position {new_position} calculated for {player.name}, correcting")
+                new_position = max(1, min(new_position, 40))
             
-        new_position = (old_position + spaces) % 40
-        if new_position == 0:
-            new_position = 40
+            print(f"Player.move: {player.name} from {old_position} to {new_position} ({spaces} steps)")
             
-        if not (1 <= new_position <= 40):
-            print(f"Warning: Invalid new position {new_position} calculated for {player.name}, resetting to position 1")
-            new_position = 1
-        
-        print(f"Moving {player.name} from position {old_position} to {new_position} ({spaces} spaces)")
-        
-        player.move(spaces)
-        
-        return new_position
+            path = []
+            for i in range(1, spaces + 1):
+                step_pos = (old_position + i) % 40
+                if step_pos == 0:
+                    step_pos = 40
+                path.append(step_pos)
+                
+            if path:
+                print(f"Generated move path for {player.name}: {path}")
+            
+            player.start_move(path)
+            
+            found = False
+            for logic_player in self.logic.players:
+                if logic_player['name'] == player.name:
+                    logic_player['position'] = new_position
+                    found = True
+                    break
+                    
+            if not found:
+                print(f"Warning: Could not find logic player for {player.name} during move_player")
+                
+            return new_position
+        except Exception as e:
+            print(f"Error in move_player: {e}")
+            return player.position
 
     def wait_for_animations(self):
         any_player_moving = any(player.is_moving for player in self.players)
@@ -2648,83 +2784,140 @@ class Game:
             self.board.add_message(f"{player.name} collected £200 for passing GO")
 
     def synchronize_player_positions(self):
-        for player in self.players:
-            if player.is_moving:
-                continue
+        try:
+            for player in self.players:
+                if player.bankrupt or player.voluntary_exit:
+                    continue
+                    
+                if not isinstance(player.position, int) or not (1 <= player.position <= 40):
+                    print(f"Fixing invalid position {player.position} for {player.name} in player object")
+                    player.position = 1 
                 
             for logic_player in self.logic.players:
-                if player.name == logic_player['name']:
-                    if player.position != logic_player['position']:
-                        valid_player_pos = 1 <= player.position <= 40
-                        valid_logic_pos = 1 <= logic_player['position'] <= 40
-                        
-                        position_diff = abs(player.position - logic_player['position'])
-                        if position_diff > 1:
-                            print(f"Synchronizing position for {player.name}: Player object: {player.position}, Game logic: {logic_player['position']}")
-                        
-                        if valid_logic_pos and not player.is_moving:
-                            player.position = logic_player['position']
-                        elif valid_player_pos and player.is_moving:
-                            pass
-                        elif valid_player_pos:
-                            logic_player['position'] = player.position
-                        else:
-                            print(f"Invalid positions detected for {player.name} - resetting to Go")
-                            player.position = 1
-                            logic_player['position'] = 1
+                if not isinstance(logic_player.get('position'), int) or not (1 <= logic_player.get('position', 0) <= 40):
+                    print(f"Fixing invalid position {logic_player.get('position')} for {logic_player['name']} in game logic")
+                    logic_player['position'] = 1 
                     
-                    if hasattr(player, 'money') and player.money != logic_player.get('money', 0):
-                        print(f"Money sync debug for {player.name}: Player object: {player.money}, Game logic: {logic_player.get('money', 0)}")
+            for player in self.players:
+                if player.bankrupt or player.voluntary_exit:
+                    continue
                     
-                    break
+                found = False
+                for logic_player in self.logic.players:
+                    if player.name == logic_player['name']:
+                        found = True
+                        
+                        if player.position != logic_player['position']:
+                            print(f"Position mismatch for {player.name}: Player object: {player.position}, Game logic: {logic_player['position']}")
+                            
+                            if player.is_ai:
+                                old_pos = player.position
+                                player.position = logic_player['position']
+                                print(f"Correcting position mismatch for AI {player.name}: Player object: {old_pos} -> {logic_player['position']}")
+                            else:
+                                if abs(player.position - logic_player['position']) <= 3:
+                                    old_pos = logic_player['position']
+                                    logic_player['position'] = player.position
+                                    print(f"Correcting position mismatch for human {player.name}: Game logic: {old_pos} -> {player.position}")
+                                else:
+                                    print(f"Large position discrepancy detected for {player.name} - monitoring")
+                        
+                        break
+                        
+                if not found and not player.bankrupt and not player.voluntary_exit:
+                    print(f"Warning: Player {player.name} exists in UI but not in game logic")
+                    
+            for logic_player in self.logic.players:
+                found = False
+                for player in self.players:
+                    if logic_player['name'] == player.name:
+                        found = True
+                        break
+                        
+                if not found:
+                    print(f"Warning: Player {logic_player['name']} exists in game logic but not in UI")
+        except Exception as e:
+            print(f"Error in synchronize_player_positions: {e}")
 
     def handle_ai_turn(self, ai_player):
-        if self.state != "ROLL" and self.state != "AUCTION":
-            return None
-            
-        player_obj = None
-        for player in self.players:
-            if player.name == ai_player['name']:
-                player_obj = player
-                break
-                
-        if not player_obj:
-            print(f"Error: Could not find player object for AI {ai_player['name']}")
-            return None
-            
-        if not player_obj.is_ai:
-            print(f"Error: Player {ai_player['name']} is not an AI player")
-            return None
-            
-        if not isinstance(player_obj.position, int) or not (1 <= player_obj.position <= 40):
-            print(f"Warning: Invalid position {player_obj.position} detected for AI {player_obj.name}, resetting to position 1")
-            player_obj.position = 1
-            ai_player['position'] = 1
-            
-        if player_obj.position != ai_player['position']:
-            print(f"Synchronizing position for AI {player_obj.name}: Player object: {player_obj.position}, Game logic: {ai_player['position']}")
-            if 1 <= ai_player['position'] <= 40:
-                player_obj.position = ai_player['position']
-            else:
-                ai_player['position'] = player_obj.position
+        MAX_ITERATIONS = 100
+        iteration_count = 0
         
+        try:
+            player_obj = next((player for player in self.players if player.name == ai_player['name']), None)
+                
+            if not player_obj:
+                print(f"Error: Could not find player object for AI {ai_player['name']}")
+                return None
+                
+            if not player_obj.is_ai:
+                print(f"Error: Player {ai_player['name']} is not an AI player")
+                return None
+                
+            player_pos_valid = isinstance(player_obj.position, int) and 1 <= player_obj.position <= 40
+            logic_pos_valid = isinstance(ai_player.get('position'), int) and 1 <= ai_player.get('position', 0) <= 40
+                
+            if not player_pos_valid and logic_pos_valid:
+                print(f"Warning: Invalid position {player_obj.position} detected for AI {player_obj.name}, fixing from game logic")
+                player_obj.position = ai_player['position']
+            elif player_pos_valid and not logic_pos_valid:
+                print(f"Warning: Invalid position {ai_player.get('position')} in game logic for AI {player_obj.name}, fixing from player object")
+                ai_player['position'] = player_obj.position
+            elif not player_pos_valid and not logic_pos_valid:
+                print(f"Warning: Both positions invalid for {player_obj.name}, resetting to position 1")
+                player_obj.position = 1
+                ai_player['position'] = 1
+            elif player_obj.position != ai_player['position']:
+
+                print(f"Synchronizing position for AI {player_obj.name}: Player object: {player_obj.position}, Game logic: {ai_player['position']}")
+                player_obj.position = ai_player['position']
+        except Exception as e:
+            print(f"Error handling AI turn: {e}")
+            return None
+        
+   
         if self.state == "ROLL":
             self.play_turn()
             
-            if self.state == "BUY" and self.current_property:
+
+            start_time = pygame.time.get_ticks()
+            while self.state == "BUY" and self.current_property:
+
+                current_time = pygame.time.get_ticks()
+                if current_time - start_time > 5000:  
+                    print(f"Timeout reached for AI {ai_player['name']} in BUY state - forcing decision")
+                    self.handle_buy_decision(False)  
+                    break
+                    
+                iteration_count += 1
+                if iteration_count > MAX_ITERATIONS:
+                    print(f"Maximum iterations reached for AI {ai_player['name']} in BUY state - forcing decision")
+                    self.handle_buy_decision(False)
+                    break
+                
                 print(f"\n=== AI Purchase Decision ===")
                 print(f"AI Player: {ai_player['name']}")
                 print(f"Property: {self.current_property['name']}")
                 print(f"Price: £{self.current_property['price']}")
                 print(f"AI Money: £{ai_player['money']}")
                 
-                if self.logic.ai_player.should_buy_property(self.current_property, ai_player['money'], 
-                    [p for p in self.logic.properties.values() if p.get('owner') == ai_player['name']]):
-                    print("AI Decision: Buy")
-                    self.handle_buy_decision(True)
-                else:
-                    print("AI Decision: Pass")
+                try:
+                    should_buy = self.logic.ai_player.should_buy_property(
+                        self.current_property, 
+                        ai_player['money'], 
+                        [p for p in self.logic.properties.values() if p.get('owner') == ai_player['name']]
+                    )
+                    
+                    if should_buy:
+                        print("AI Decision: Buy")
+                        self.handle_buy_decision(True)
+                    else:
+                        print("AI Decision: Pass")
+                        self.handle_buy_decision(False)
+                except Exception as e:
+                    print(f"Error in AI purchase decision: {e}")
                     self.handle_buy_decision(False)
+                break  
         
         elif self.state == "AUCTION" and hasattr(self.logic, 'current_auction'):
             auction_data = self.logic.current_auction
@@ -2732,8 +2925,25 @@ class Game:
             if auction_data is None:
                 print("Warning: Auction data is None in handle_ai_turn")
                 return None
+            
+            start_time = pygame.time.get_ticks()
+            while auction_data["active_players"][auction_data["current_bidder_index"]]['name'] == ai_player['name']:
+                current_time = pygame.time.get_ticks()
+                if current_time - start_time > 5000: 
+                    print(f"Timeout reached for AI {ai_player['name']} in AUCTION state - forcing pass")
+                    success, message = self.logic.process_auction_pass(ai_player)
+                    if message:
+                        self.board.add_message(message)
+                    break
+                    
+                iteration_count += 1
+                if iteration_count > MAX_ITERATIONS:
+                    print(f"Maximum iterations reached for AI {ai_player['name']} in AUCTION state - forcing pass")
+                    success, message = self.logic.process_auction_pass(ai_player)
+                    if message:
+                        self.board.add_message(message)
+                    break
                 
-            if auction_data["active_players"][auction_data["current_bidder_index"]]['name'] == ai_player['name']:
                 print(f"\n=== AI Auction Turn ===")
                 print(f"AI Player: {ai_player['name']}")
                 print(f"Property: {auction_data['property']['name']}")
@@ -2742,17 +2952,23 @@ class Game:
                 
                 if ai_player['name'] in auction_data.get("passed_players", set()):
                     print(f"AI {ai_player['name']} has already passed")
-                    return None
+                    break
                 
-                bid_amount = self.logic.get_ai_auction_bid(ai_player, auction_data['property'], auction_data['current_bid'])
-                
-                if bid_amount and bid_amount >= auction_data['minimum_bid']:
-                    print(f"AI Decision: Bid £{bid_amount}")
-                    success, message = self.logic.process_auction_bid(ai_player, bid_amount)
-                    if message:
-                        self.board.add_message(message)
-                else:
-                    print("AI Decision: Pass")
+                try:
+                    bid_amount = self.logic.get_ai_auction_bid(ai_player, auction_data['property'], auction_data['current_bid'])
+                    
+                    if bid_amount and bid_amount >= auction_data['minimum_bid']:
+                        print(f"AI Decision: Bid £{bid_amount}")
+                        success, message = self.logic.process_auction_bid(ai_player, bid_amount)
+                        if message:
+                            self.board.add_message(message)
+                    else:
+                        print("AI Decision: Pass")
+                        success, message = self.logic.process_auction_pass(ai_player)
+                        if message:
+                            self.board.add_message(message)
+                except Exception as e:
+                    print(f"Error in AI auction decision: {e}")
                     success, message = self.logic.process_auction_pass(ai_player)
                     if message:
                         self.board.add_message(message)
@@ -2762,6 +2978,7 @@ class Game:
                     self.board.add_message(result_message)
                     self.state = "ROLL"
                     self.board.update_ownership(self.logic.properties)
+                break 
                 
         return None
 
@@ -2772,7 +2989,17 @@ class Game:
         if not property_data:
             print("Warning: Property data is None in draw_development_ui")
             return
-            
+        
+        current_player = self.logic.players[self.logic.current_player_index]
+        player_obj = next((p for p in self.players if p.name == current_player['name']), None)
+        
+        if player_obj and player_obj.is_ai:
+            print(f"Auto-handling development decision for AI player {current_player['name']}")
+            self.state = "ROLL"
+            self.selected_property = None
+            self.development_mode = False
+            return
+        
         window_size = self.screen.get_size()
         card_width = int(window_size[0] * 0.35)
         card_height = int(window_size[1] * 0.5)
@@ -3199,8 +3426,11 @@ class Game:
                         print(f"Money synchronized for {player.name}: {old_money} -> {player.money}")
                     break
 
-    def check_and_trigger_ai_turn(self):
-        """Check if the current player is an AI and trigger their turn if needed."""
+    def check_and_trigger_ai_turn(self, recursion_depth=0):
+        if recursion_depth > len(self.logic.players):
+            print("Maximum recursion depth reached in check_and_trigger_ai_turn, aborting")
+            return False
+            
         if self.state != "ROLL":
             print("Not in ROLL state, skipping AI turn check")
             return False
@@ -3218,21 +3448,87 @@ class Game:
         if current_player.get('exited', False):
             print(f"Current player {current_player['name']} has exited, moving to next player")
             self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
-            return self.check_and_trigger_ai_turn()  
+            return self.check_and_trigger_ai_turn(recursion_depth + 1)  
             
         player_obj = next((p for p in self.players if p.name == current_player['name']), None)
         
         if not player_obj:
             print(f"Could not find Player object for {current_player['name']}")
-            return False
+            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+            return self.check_and_trigger_ai_turn(recursion_depth + 1)
             
         if player_obj.is_ai:
             print(f"Player {current_player['name']} is an AI - automatically triggering their turn")
             self.current_player_is_ai = True
             pygame.time.delay(500)
-            self.play_turn()
-            return True
+            try:
+                if self.state == "DEVELOPMENT":
+                    print(f"Closing development UI for AI player {current_player['name']}")
+                    self.state = "ROLL"
+                    self.selected_property = None
+                    self.development_mode = False
+                
+                self.play_turn()
+                return True
+            except Exception as e:
+                print(f"Error in AI turn for {current_player['name']}: {e}")
+                self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+                return False
         else:
             print(f"Player {current_player['name']} is not an AI - waiting for user input")
             self.current_player_is_ai = False
             return False
+
+    def update_ai_mood(self, ai_player_name, is_happy):
+
+        ai_player_obj = next((p for p in self.players if p.name == ai_player_name and p.is_ai), None)
+        
+        if not ai_player_obj:
+            print(f"Warning: Could not find AI player object for {ai_player_name}")
+            return False
+        
+        any_updated = False
+        
+        for player in self.players:
+            if player.is_ai and hasattr(player, 'ai_controller') and hasattr(player.ai_controller, 'update_mood'):
+                player.ai_controller.update_mood(is_happy)
+                any_updated = True
+        
+        if any_updated:
+            mood_text = "happier" if is_happy else "angrier"
+            self.board.add_message(f"All AI players are getting {mood_text}!")
+            self.show_notification(f"All AI players are getting {mood_text}!", 1500)
+            return True
+            
+        return False
+
+    def update_current_player(self):
+        current_player = next((p for p in self.players if p.name == self.logic.players[self.logic.current_player_index]['name']), None)
+        self.current_player_is_ai = current_player and current_player.is_ai
+        
+        for name, emotion_ui in self.emotion_uis.items():
+            if not self.current_player_is_ai:
+                print(f"Showing emotion UI for {name} during human turn")
+                emotion_ui.show()
+            else:
+                print(f"Hiding emotion UI for {name} during AI turn")
+                emotion_ui.hide()
+                
+        if current_player:
+            print(f"Current player: {current_player.name} (AI: {current_player.is_ai})")
+            if current_player.is_ai and hasattr(current_player, 'ai_controller'):
+                print(f"AI type: {type(current_player.ai_controller).__name__}")
+                if hasattr(current_player.ai_controller, 'mood_modifier'):
+                    print(f"Current mood: {current_player.ai_controller.mood_modifier}")
+
+    def handle_turn_end(self):
+        self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+        
+        self.update_current_player()
+        
+        self.state = "ROLL"
+        self.current_property = None
+        self.last_roll = None
+        self.roll_time = 0
+        self.dice_animation = False
+        self.dice_values = None

@@ -282,7 +282,7 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        version_text = self.version_font.render("Build Version: 09.03.2025", True, GRAY)
+        version_text = self.version_font.render("Build Version: 11.03.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -1063,7 +1063,7 @@ class GameModePage(BasePage):
                     self.time_limit = minutes * 60
                     print(f"Custom time limit set: {minutes} minutes")
                 except ValueError:
-                    self.time_limit = 30 * 60  # Default to 30 minutes
+                    self.time_limit = 30 * 60  # Default 30 
                     print("Default time limit set: 30 minutes")
             else:
                 self.time_limit = None
@@ -1141,7 +1141,7 @@ class GameModePage(BasePage):
                     self.time_limit = minutes * 60
                     print(f"Custom time limit set: {minutes} minutes")
                 except ValueError:
-                    self.time_limit = 30 * 60  # Default to 30 minutes
+                    self.time_limit = 30 * 60  # Default 30 
                     print("Default time limit set: 30 minutes")
             else:
                 self.time_limit = None
@@ -1179,10 +1179,10 @@ class GameModePage(BasePage):
                     settings["time_limit"] = minutes * 60
                     print(f"Game settings: Abridged mode with {minutes} minutes time limit")
                 else:
-                    settings["time_limit"] = 30 * 60  # Default to 30 minutes if invalid
+                    settings["time_limit"] = 30 * 60  # Default 30 min
                     print("Game settings: Abridged mode with default 30 minutes time limit (invalid input)")
             except ValueError:
-                settings["time_limit"] = 30 * 60  # Default to 30 minutes if invalid
+                settings["time_limit"] = 30 * 60  # Default 30 
                 print("Game settings: Abridged mode with default 30 minutes time limit (invalid input)")
         else:
             print("Game settings: Full game mode (no time limit)")
@@ -1352,7 +1352,6 @@ class EndGamePage(BasePage):
                 x_pos = card_x + 50 + col * col_width
                 y_pos = y_offset + row * 35
                 
-                # Determine text color
                 if self.tied_winners and name in self.tied_winners:
                     text_color = SUCCESS_COLOR
                 elif name == self.winner_name and not self.tied_winners:
@@ -1360,7 +1359,6 @@ class EndGamePage(BasePage):
                 else:
                     text_color = LIGHT_GRAY
                 
-                # Draw player name and amount
                 player_text = self.small_font.render(
                     f"{name}: £{amount:,}", True, text_color
                 )
@@ -1431,7 +1429,6 @@ class EndGamePage(BasePage):
                     line_text = self.small_font.render(current_line, True, ACCENT_COLOR)
                     self.screen.blit(line_text, (card_x + 70, current_y))
             else:
-                # Single line is fine
                 lap_text = self.small_font.render(lap_text_combined, True, ACCENT_COLOR)
                 self.screen.blit(lap_text, (card_x + 70, y_offset))
 
@@ -1683,3 +1680,131 @@ class DevelopmentNotification:
     
     def check_button_click(self, pos):
         return self.continue_button.collidepoint(pos)
+
+class AIEmotionUI:
+    
+    def __init__(self, screen, ai_player, game_instance):
+
+        self.screen = screen
+        self.ai_player = ai_player
+        self.game = game_instance
+        self.visible = False
+        self.window_size = get_window_size()
+        
+        button_size = (48, 48)
+        panel_width = 130
+        panel_height = 160
+        
+        self.panel_rect = pygame.Rect(
+            self.window_size[0] - panel_width - 20,  
+            200,  
+            panel_width,
+            panel_height
+        )
+        
+        self.happy_button_rect = pygame.Rect(
+            self.panel_rect.x + (self.panel_rect.width - button_size[0]) // 2,
+            self.panel_rect.y + 30,  
+            button_size[0],
+            button_size[1]
+        )
+        
+        self.angry_button_rect = pygame.Rect(
+            self.panel_rect.x + (self.panel_rect.width - button_size[0]) // 2,
+            self.panel_rect.y + 30 + button_size[1] + 15,   
+            button_size[0],
+            button_size[1]
+        )
+        
+        self.happy_image = None
+        self.angry_image = None
+        self.happy_hover = False
+        self.angry_hover = False
+        
+        try:
+            happy_path = os.path.join(base_path, "assets/image/Happy.png")
+            self.happy_image = pygame.image.load(happy_path)
+            self.happy_image = pygame.transform.scale(self.happy_image, button_size)
+            
+            angry_path = os.path.join(base_path, "assets/image/Angry.png")
+            self.angry_image = pygame.image.load(angry_path)
+            self.angry_image = pygame.transform.scale(self.angry_image, button_size)
+        except (pygame.error, FileNotFoundError):
+            print("Could not load emotion king images")
+            self.happy_image = pygame.Surface(button_size)
+            self.happy_image.fill((50, 200, 50))
+            self.angry_image = pygame.Surface(button_size)
+            self.angry_image.fill((200, 50, 50))
+        
+        self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(14))
+    
+    def show(self):
+        self.visible = True
+    
+    def hide(self):
+        self.visible = False
+    
+    def draw(self):
+        if not self.visible:
+            return
+            
+        if not self.ai_player or not self.ai_player.is_ai or not hasattr(self.ai_player, 'ai_controller') or not hasattr(self.ai_player.ai_controller, 'mood_modifier'):
+            return
+            
+        pygame.draw.rect(self.screen, (*MODERN_BG, 220), self.panel_rect, border_radius=10)
+        pygame.draw.rect(self.screen, ACCENT_COLOR, self.panel_rect, 2, border_radius=10)
+        
+        title_text = self.font.render("Taunt", True, WHITE)
+        title_rect = title_text.get_rect(centerx=self.panel_rect.centerx, y=self.panel_rect.y + 5)
+        self.screen.blit(title_text, title_rect)
+        
+        if self.happy_hover:
+            glow = pygame.Surface((self.happy_button_rect.width + 4, self.happy_button_rect.height + 4), pygame.SRCALPHA)
+            pygame.draw.rect(glow, (255, 255, 255, 128), glow.get_rect(), border_radius=5)
+            self.screen.blit(glow, (self.happy_button_rect.x - 2, self.happy_button_rect.y - 2))
+            
+        if self.angry_hover:
+            glow = pygame.Surface((self.angry_button_rect.width + 4, self.angry_button_rect.height + 4), pygame.SRCALPHA)
+            pygame.draw.rect(glow, (255, 255, 255, 128), glow.get_rect(), border_radius=5)
+            self.screen.blit(glow, (self.angry_button_rect.x - 2, self.angry_button_rect.y - 2))
+        
+        self.screen.blit(self.happy_image, self.happy_button_rect)
+        self.screen.blit(self.angry_image, self.angry_button_rect)
+        
+        mood_value = getattr(self.ai_player.ai_controller, 'mood_modifier', 0)
+        mood_text = f"Mood: {mood_value:.2f}"
+        mood_color = (
+            int(255 * min(1, max(0, (mood_value + 0.3) / 0.6))),
+            int(255 * min(1, max(0, (0.3 - mood_value) / 0.6))),
+            50
+        )
+        mood_surface = self.font.render(mood_text, True, mood_color)
+        mood_rect = mood_surface.get_rect(centerx=self.panel_rect.centerx, bottom=self.panel_rect.bottom - 5)
+        self.screen.blit(mood_surface, mood_rect)
+    
+    def check_hover(self, pos):
+
+        if not self.visible:
+            return False
+            
+        self.happy_hover = self.happy_button_rect.collidepoint(pos)
+        self.angry_hover = self.angry_button_rect.collidepoint(pos)
+        
+        return self.happy_hover or self.angry_hover
+    
+    def handle_click(self, pos):
+
+        if not self.visible:
+            return False
+            
+        if self.happy_button_rect.collidepoint(pos):
+            print(f"Happy button clicked for {self.ai_player.name} - making all AIs angry")
+            self.game.update_ai_mood(self.ai_player.name, False)
+            return True
+            
+        if self.angry_button_rect.collidepoint(pos):
+            print(f"Angry button clicked for {self.ai_player.name} - making all AIs happy")
+            self.game.update_ai_mood(self.ai_player.name, True)
+            return True
+            
+        return False

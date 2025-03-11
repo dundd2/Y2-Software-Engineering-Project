@@ -10,7 +10,7 @@ AI_COLOR = (190, 75, 75)
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Player:
-    def __init__(self, name, player_number=1, is_ai=False):
+    def __init__(self, name, player_number=1, is_ai=False, ai_difficulty="easy"):
         self.name = name
         self.player_number = player_number
         self.is_ai = is_ai
@@ -42,6 +42,15 @@ class Player:
         self.move_speed = 0.1
         self.move_path = []
         self.current_path_index = 0
+        
+        if self.is_ai:
+            from src.ai_player_logic import EasyAIPlayer, HardAIPlayer
+            if ai_difficulty.lower() == "hard":
+                self.ai_controller = HardAIPlayer()
+                print(f"Initialized Hard AI controller for {self.name} with emotion system")
+            else:
+                self.ai_controller = EasyAIPlayer()
+                print(f"Initialized Easy AI controller for {self.name}")
         
         self.load_player_image()
         print(f"Player {name} initial position: {self.position}")
@@ -232,6 +241,29 @@ class Player:
             print(f"Error: Invalid move resulting in position {new_position} for player {self.name}, resetting to position 1")
             self.position = 1
             self.move_target_position = 1
+    
+    def start_move(self, path):
+        if self.is_moving:
+            return
+            
+        if not path:
+            print(f"Warning: Empty path provided for {self.name}, not starting movement")
+            return
+            
+        self.move_start_position = self.position
+        self.move_target_position = path[-1] if path else self.position
+        
+        print(f"Player.start_move: {self.name} from {self.position} to {self.move_target_position} via path {path}")
+        
+        if path and all(1 <= pos <= 40 for pos in path):
+            self.move_path = path
+            self.is_moving = True
+            self.move_progress = 0.0
+            self.current_path_index = 0
+            self.animation_time = pygame.time.get_ticks()
+        else:
+            print(f"Error: Invalid path for player {self.name}: {path}")
+            self.is_moving = False
     
     def generate_move_path(self, steps):
         self.move_path = []

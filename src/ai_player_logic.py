@@ -182,15 +182,15 @@ class EasyAIPlayer:
         property_data = next((p for p in board_properties if p.position == position), None)
         
         if not property_data:
-            if position == 1:  # GO is now at position 1 (bottom-left)
+            if position == 1: 
                 return "Go"
-            elif position == 11:  # Jail position remains the same
+            elif position == 11:
                 return "jail"
-            elif position == 21:  # Free parking position remains the same
+            elif position == 21: 
                 return "free_parking"
-            elif position in [3, 18, 34]:  # Lucky area positions remain the same
+            elif position in [3, 18, 34]:
                 return "lucky_area"
-            elif position in [8, 23, 37]:  # Lucky area positions remain the same
+            elif position in [8, 23, 37]: 
                 return "lucky_area"
             return "other"
         
@@ -201,7 +201,6 @@ class EasyAIPlayer:
         return property_data.name if property_data else None
 
     def get_auction_bid(self, current_minimum, property_data, ai_player, board_properties):
-        # Clear any previous bid state
         if hasattr(self, 'last_bid_property'):
             if self.last_bid_property != property_data['name']:
                 self.last_bid_amount = 0
@@ -223,7 +222,6 @@ class EasyAIPlayer:
         perceived_value = self.get_property_value(property_data, ai_player, board_properties)
         max_bid = min(ai_player.money, perceived_value * self.strategy['easy']['max_bid_multiplier'])
         
-        # Don't bid if we've already bid more than we want to
         if self.last_bid_amount >= max_bid * 0.8:
             print("DECISION: Already reached maximum desired bid")
             return None
@@ -410,7 +408,6 @@ class EasyAIPlayer:
         return player_money >= property_data['price'] and property_value >= property_data['price']
 
     def make_auction_bid(self, property_data, current_bid, player_money, owned_properties):
-        """Determine how much to bid in an auction"""
         print("\n=== AI Auction Bid Debug ===")
         print(f"DEBUG: AI evaluating bid for {property_data['name']}")
         print(f"DEBUG: Current bid: £{current_bid}")
@@ -430,15 +427,13 @@ class EasyAIPlayer:
             print("DEBUG: Maximum bid too low - passing")
             return None
             
-        # For easy difficulty, use smaller bid increments
-        bid_increment = 10  # Fixed for easy difficulty
+        bid_increment = 10 
         final_bid = min(current_bid + bid_increment, max_bid)
         print(f"DEBUG: Final bid decision: £{final_bid}")
         
         return final_bid
 
     def should_develop_property(self, property_data, player_money, owned_properties):
-        """Determine if a property should be developed"""
         print("\n=== AI Development Decision Debug ===")
         print(f"DEBUG: Evaluating development for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
         print(f"DEBUG: AI money available: £{player_money}")
@@ -454,7 +449,6 @@ class EasyAIPlayer:
             print("DEBUG: Development cost too high relative to available funds")
             return False
             
-        # For easy difficulty, use a higher threshold (more conservative)
         money_threshold = self.strategy['easy']['development_threshold'] * player_money
         print(f"DEBUG: Money threshold for development: £{money_threshold}")
         
@@ -462,13 +456,12 @@ class EasyAIPlayer:
         print(f"DEBUG: Potential rent after development: £{potential_rent}")
         
         should_develop = (development_cost <= money_threshold and 
-                          potential_rent >= development_cost * 0.2 * 2)  # Fixed for easy difficulty
+                          potential_rent >= development_cost * 0.2 * 2) 
         
         print(f"DEBUG: Development decision: {'Develop' if should_develop else 'Skip'}")
         return should_develop
 
     def should_mortgage_property(self, property_data, player_money):
-        """Determine if a property should be mortgaged"""
         print("\n=== AI Mortgage Decision Debug ===")
         print(f"DEBUG: Evaluating mortgage for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
         print(f"DEBUG: AI money available: £{player_money}")
@@ -477,7 +470,6 @@ class EasyAIPlayer:
             print("DEBUG: Invalid property data")
             return False
             
-        # For easy difficulty, use a lower threshold (more likely to mortgage)
         mortgage_threshold = self.strategy['easy']['mortgage_threshold'] * 1500
         print(f"DEBUG: Mortgage threshold: £{mortgage_threshold}")
         
@@ -487,7 +479,6 @@ class EasyAIPlayer:
         return should_mortgage
 
     def should_unmortgage_property(self, property_data, player_money):
-        """Determine if a property should be unmortgaged"""
         print("\n=== AI Unmortgage Decision Debug ===")
         print(f"DEBUG: Evaluating unmortgage for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
         print(f"DEBUG: AI money available: £{player_money}")
@@ -499,7 +490,7 @@ class EasyAIPlayer:
         unmortgage_cost = property_data.price * 0.55
         print(f"DEBUG: Unmortgage cost: £{unmortgage_cost}")
         
-        money_threshold = player_money * 0.3  # Fixed for easy difficulty
+        money_threshold = player_money * 0.3  
         print(f"DEBUG: Money threshold for unmortgage: £{money_threshold}")
         
         should_unmortgage = unmortgage_cost < money_threshold
@@ -508,7 +499,6 @@ class EasyAIPlayer:
         return should_unmortgage
 
     def should_sell_houses(self, property_data, player_money, target_amount):
-        """Determine if houses should be sold from a property"""
         print("\n=== AI House Selling Decision Debug ===")
         print(f"DEBUG: Evaluating house selling for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
         print(f"DEBUG: AI money available: £{player_money}")
@@ -520,8 +510,7 @@ class EasyAIPlayer:
             
         print(f"DEBUG: Current houses on property: {property_data.houses}")
         
-        # For easy difficulty, use a higher threshold (more likely to sell)
-        sell_threshold = target_amount * 1.2  # Fixed for easy difficulty
+        sell_threshold = target_amount * 1.2  
         print(f"DEBUG: Sell threshold: £{sell_threshold}")
         
         should_sell = player_money < sell_threshold
@@ -543,46 +532,148 @@ class EasyAIPlayer:
 class HardAIPlayer:
     def __init__(self):
         self.difficulty = 'hard'
-        print("HardAIPlayer initialized - This is a placeholder for future implementation")
+        self.mood_modifier = 0.0 
+        self.easy_ai = EasyAIPlayer() 
+        print("HardAIPlayer initialized with emotion system")
         
-    # Placeholder methods that return default values to prevent crashes
+    def update_mood(self, is_happy):
+
+        if is_happy:
+            self.mood_modifier = max(-0.3, self.mood_modifier - 0.05)
+            print(f"DEBUG: AI is happier! Mood modifier: {self.mood_modifier}")
+        else:
+            self.mood_modifier = min(0.3, self.mood_modifier + 0.05)
+            print(f"DEBUG: AI is angrier! Mood modifier: {self.mood_modifier}")
+    
+    def get_adjusted_probability(self, base_probability):
+
+        adjusted = base_probability + self.mood_modifier
+        return max(0.0, min(1.0, adjusted))
+        
     def get_property_value(self, property_data, ai_player, board_properties):
         print("\n=== HARD AI Property Value Calculation Debug ===")
         print(f"DEBUG: Hard AI evaluating property: {property_data.name if hasattr(property_data, 'name') else 'Unknown'}")
-        print(f"DEBUG: This is a placeholder implementation - using basic valuation")
-        value = property_data.price if hasattr(property_data, 'price') else 0
-        print(f"DEBUG: Returning basic value: £{value}")
-        return value
+        print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
+        
+        base_value = self.easy_ai.get_property_value(property_data, ai_player, board_properties)
+        
+        mood_multiplier = 1.0 + self.mood_modifier
+        final_value = base_value * mood_multiplier
+        
+        print(f"DEBUG: Base value: £{base_value}")
+        print(f"DEBUG: Mood multiplier: {mood_multiplier}")
+        print(f"DEBUG: Final value: £{final_value}")
+        return final_value
         
     def get_auction_bid(self, current_minimum, property_data, ai_player, board_properties):
         print("\n=== HARD AI Auction Bid Logic Debug ===")
         print(f"DEBUG: Hard AI evaluating bid for: {property_data['name'] if isinstance(property_data, dict) and 'name' in property_data else 'Unknown'}")
         print(f"DEBUG: Current minimum bid: £{current_minimum}")
-        print(f"DEBUG: This is a placeholder implementation - always passing on auctions")
-        print(f"DEBUG: Hard AI decision: Pass")
-        return None  # Always pass on auctions
+        print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
+        
+        base_bid = self.easy_ai.get_auction_bid(current_minimum, property_data, ai_player, board_properties)
+        
+        if base_bid is None:
+            angry_bid_chance = self.get_adjusted_probability(0.0) 
+            print(f"DEBUG: Chance to bid anyway: {angry_bid_chance}")
+            
+            if random.random() < angry_bid_chance:
+                perceived_value = self.get_property_value(property_data, ai_player, board_properties)
+                bid = current_minimum + random.randint(10, 50)
+                bid = min(bid, ai_player.money * 0.7) 
+                print(f"DEBUG: Emotion triggered bid: £{bid}")
+                return bid
+            return None
+        
+        mood_multiplier = 1.0 + self.mood_modifier
+        final_bid = int(base_bid * mood_multiplier)
+        final_bid = min(final_bid, ai_player.money * 0.9) 
+        
+        print(f"DEBUG: Base bid: £{base_bid}")
+        print(f"DEBUG: Mood multiplier: {mood_multiplier}")
+        print(f"DEBUG: Final bid: £{final_bid}")
+        return final_bid
         
     def handle_jail_strategy(self, ai_player, jail_free_cards):
         print("\n=== HARD AI Jail Strategy Debug ===")
         print(f"DEBUG: Hard AI evaluating jail strategy")
-        print(f"DEBUG: This is a placeholder implementation - using basic strategy")
+        print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
+        
         if not ai_player.get('in_jail', False):
             print(f"DEBUG: Not in jail - no action needed")
             return None
-        print(f"DEBUG: Hard AI decision: Roll for doubles")
-        return "roll_doubles"  # Default strategy
+            
+        base_strategy = self.easy_ai.handle_jail_strategy(ai_player, jail_free_cards)
+        
+        if base_strategy == "roll_doubles" and ai_player['money'] >= 50:
+            pay_chance = self.get_adjusted_probability(0.5)
+            print(f"DEBUG: Chance to pay fine: {pay_chance}")
+            
+            if random.random() < pay_chance:
+                print(f"DEBUG: Emotion triggered decision to pay fine")
+                return "pay_fine"
+                
+        print(f"DEBUG: Using strategy: {base_strategy}")
+        return base_strategy
         
     def should_mortgage_property(self, ai_player, required_money):
         print("\n=== HARD AI Mortgage Strategy Debug ===")
         print(f"DEBUG: Hard AI evaluating mortgage strategy")
         print(f"DEBUG: Required money: £{required_money}")
-        print(f"DEBUG: This is a placeholder implementation - not mortgaging any properties")
-        print(f"DEBUG: Hard AI decision: Don't mortgage any properties")
-        return []
+        print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
+        
+        return self.easy_ai.should_mortgage_property(ai_player, required_money)
         
     def handle_property_development(self, ai_player, board_properties):
         print("\n=== HARD AI Development Strategy Debug ===")
         print(f"DEBUG: Hard AI evaluating development strategy")
-        print(f"DEBUG: This is a placeholder implementation - not developing any properties")
-        print(f"DEBUG: Hard AI decision: Don't develop any properties")
-        return False
+        print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
+        
+        base_result = self.easy_ai.handle_property_development(ai_player, board_properties)
+        
+        if not base_result and ai_player['money'] >= 200:
+            develop_chance = self.get_adjusted_probability(0.3) 
+            print(f"DEBUG: Chance to develop anyway: {develop_chance}")
+            
+            if random.random() < develop_chance:
+                print(f"DEBUG: Emotion triggered decision to develop property")
+                player_properties = []
+                for prop_key, prop in board_properties.items():
+                    if isinstance(prop, dict) and prop.get('owner') == ai_player['name']:
+                        player_properties.append(prop)
+                    elif hasattr(prop, 'owner') and prop.owner == ai_player['name']:
+                        player_properties.append(prop)
+                
+                for prop in player_properties:
+                    if hasattr(prop, 'group') and self.easy_ai.check_group_ownership(prop.group, board_properties, ai_player['name']):
+                        return prop
+                        
+        return base_result
+        
+    def should_buy_property(self, property_data, player_money, owned_properties):
+        print("\n=== HARD AI Purchase Decision Debug ===")
+        print(f"DEBUG: Hard AI evaluating purchase of {property_data['name']}")
+        print(f"DEBUG: Property price: £{property_data['price']}")
+        print(f"DEBUG: AI money available: £{player_money}")
+        print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
+        
+        base_decision = self.easy_ai.should_buy_property(property_data, player_money, owned_properties)
+        
+        if not base_decision and player_money >= property_data['price']:
+            buy_chance = self.get_adjusted_probability(0.2) 
+            print(f"DEBUG: Chance to buy anyway: {buy_chance}")
+            
+            if random.random() < buy_chance:
+                print(f"DEBUG: Emotion triggered decision to buy property")
+                return True
+                
+        elif base_decision and self.mood_modifier < 0:
+            pass_chance = -self.mood_modifier 
+            print(f"DEBUG: Chance to pass: {pass_chance}")
+            
+            if random.random() < pass_chance:
+                print(f"DEBUG: Emotion triggered decision to pass on property")
+                return False
+        
+        print(f"DEBUG: Final decision: {'Buy' if base_decision else 'Pass'}")
+        return base_decision

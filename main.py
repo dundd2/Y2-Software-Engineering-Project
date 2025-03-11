@@ -27,13 +27,14 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 MAGENTA = (255, 0, 255)
 
-# Game Constants
 STARTING_BANK_MONEY = 50000
 STARTING_PLAYER_MONEY = 1500
 JAIL_FINE = 50
 PASSING_GO_AMOUNT = 200
 HOTEL_VALUE_IN_HOUSES = 5  # A hotel is worth 5 houses
 HOTEL_REPLACES_HOUSES = True  # When building a hotel, houses are returned to bank
+
+FPS = 20
 
 GAME_INSTRUCTIONS = [
     "Use WASD or Arrow keys to move",
@@ -86,7 +87,8 @@ def create_game(player_info, game_settings):
     for name in player_names[total_players-ai_count:]:
         if not name.strip():
             continue
-        player = Player(name, is_ai=True, player_number=player_number)
+        player = Player(name, is_ai=True, player_number=player_number, 
+                       ai_difficulty=game_settings.get("ai_difficulty", "easy"))
         player.money = STARTING_PLAYER_MONEY
         bank_money -= STARTING_PLAYER_MONEY
         players.append(player)
@@ -109,12 +111,17 @@ async def run_game(game, game_settings):
     running = True
     game_over_data = None
     last_time_check = pygame.time.get_ticks()
+    last_ai_progress_time = pygame.time.get_ticks()
+    ai_timeout_duration = 10000  # 10 second
+    
+    clock = pygame.time.Clock()
     
     while running:
         await asyncio.sleep(0)
         
         current_time = pygame.time.get_ticks()
-        if game_settings["mode"] == "abridged" and current_time - last_time_check > 1000:
+        
+        if game_settings["mode"] == "abridged" and current_time - last_time_check > 1000 and not game.game_paused:
             last_time_check = current_time
             if game.check_time_limit():
                 print("Time limit reached and all players completed same number of laps - ending game")
@@ -122,11 +129,31 @@ async def run_game(game, game_settings):
                 running = False
                 continue  
         
-        if game_settings["mode"] == "abridged" and game.check_time_limit():
-            print("Time limit reached and all players completed same number of laps - ending game")
-            game_over_data = game.end_abridged_game()
-            running = False
-            continue  
+        if game.current_player_is_ai and not game.game_paused:
+            if current_time - last_ai_progress_time > ai_timeout_duration:
+                print(f"AI player turn timeout reached after {ai_timeout_duration/1000} seconds")
+                
+                if game.logic.players and len(game.logic.players) > 0:
+                    current_player = game.logic.players[game.logic.current_player_index]
+                    print(f"Forcing AI player {current_player['name']} to skip their turn due to timeout")
+                    
+                    if game.state == "DEVELOPMENT":
+                        game.state = "ROLL"
+                        game.selected_property = None
+                        game.development_mode = False
+                        print("Closing stuck development UI due to timeout")
+                    
+                    game.logic.current_player_index = (game.logic.current_player_index + 1) % len(game.logic.players)
+                    
+                    game.state = "ROLL"
+                    game.current_player_is_ai = False
+                    
+                    game.check_and_trigger_ai_turn()
+                    
+                last_ai_progress_time = current_time
+        
+        if not game.current_player_is_ai:
+            last_ai_progress_time = current_time
         
         game.draw()
         
@@ -301,6 +328,15 @@ async def run_game(game, game_settings):
             print("Only one player remains - ending game")
             game_over_data = game.end_full_game()
             running = False
+        
+        elif game_settings["mode"] == "abridged" and game.check_one_player_remains() and not game_over_data:
+            print("Only one player remains in abridged mode - ending game")
+            game_over_data = game.end_abridged_game()
+            running = False
+    
+        pygame.display.flip()
+        
+        clock.tick(FPS)
     
     return game_over_data
 
@@ -309,6 +345,8 @@ async def handle_end_game(game_over_data):
     print(f"Game over data: {game_over_data}")
     
     pygame.display.flip()
+    
+    clock = pygame.time.Clock()
     
     end_page = EndGamePage(
         winner_name=game_over_data["winner"],
@@ -327,6 +365,8 @@ async def handle_end_game(game_over_data):
         await asyncio.sleep(0)
         end_page.draw()
         pygame.display.flip()
+        
+        clock.tick(FPS)
         
         if not debug_drawn:
             print("EndGamePage drawn")
@@ -357,6 +397,8 @@ async def main():
     global WINDOW_SIZE
     text_scaler.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
+    
+    clock = pygame.time.Clock()
     
     while True:
         await asyncio.sleep(0)
@@ -432,6 +474,9 @@ async def main():
                     screen = await apply_screen_settings((event.w, event.h))
             
             pygame.display.flip()
+            
+            # Limit fps
+            clock.tick(FPS)
 
 if __name__ == "__main__":
     asyncio.run(main())
