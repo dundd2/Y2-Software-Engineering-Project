@@ -156,7 +156,7 @@ class BasePage:
         try:
             asset_path = os.path.join(base_path, "assets/image/starterbackground.png")
             self.background_image = pygame.image.load(asset_path)
-            self.background_image = pygame.transform.scale(self.background_image, window_size)
+            # Don't resize here, we'll handle proper scaling in draw_background
         except (pygame.error, FileNotFoundError):
             print("Could not load background image")
             self.background_image = None
@@ -170,7 +170,25 @@ class BasePage:
     def draw_background(self):
         window_size = get_window_size()
         if self.background_image:
-            self.screen.blit(self.background_image, (0, 0))
+            img_width, img_height = self.background_image.get_size()
+            window_width, window_height = window_size
+            
+            img_aspect = img_width / img_height
+            window_aspect = window_width / window_height
+            
+            if window_aspect > img_aspect:  
+                scaled_width = window_width
+                scaled_height = int(scaled_width / img_aspect)
+            else:  
+                scaled_height = window_height
+                scaled_width = int(scaled_height * img_aspect)
+            
+            pos_x = (window_width - scaled_width) // 2
+            pos_y = (window_height - scaled_height) // 2
+            
+            scaled_bg = pygame.transform.scale(self.background_image, (scaled_width, scaled_height))
+            self.screen.blit(scaled_bg, (pos_x, pos_y))
+            
             overlay = pygame.Surface(window_size, pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 128))
             self.screen.blit(overlay, (0, 0))
@@ -272,15 +290,15 @@ class MainMenuPage(BasePage):
         )
         
         try:
-            github_path = os.path.join(base_path, "assets/image/GitHub-Symbol.png")
-            self.github_logo = pygame.image.load(github_path)
-            self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
-            self.github_rect = self.github_logo.get_rect(topright=(get_window_size()[0] - 25, 25))
-            
             youtube_path = os.path.join(base_path, "assets/image/Youtube Logo.png")
             self.youtube_logo = pygame.image.load(youtube_path)
             self.youtube_logo = pygame.transform.scale(self.youtube_logo, (40, 40))
-            self.youtube_rect = self.youtube_logo.get_rect(topleft=(80, 20))
+            self.youtube_rect = self.youtube_logo.get_rect(topleft=(20, 20))
+            
+            github_path = os.path.join(base_path, "assets/image/GitHub-Symbol.png")
+            self.github_logo = pygame.image.load(github_path)
+            self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
+            self.github_rect = self.github_logo.get_rect(topleft=(80, 20))
             
             self.github_hover = False
             self.youtube_hover = False
@@ -300,15 +318,6 @@ class MainMenuPage(BasePage):
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
         
-        if hasattr(self, 'github_logo') and self.github_logo:
-            if self.github_hover:
-                glow_surface = pygame.Surface((self.github_rect.width + 10, self.github_rect.height + 10), pygame.SRCALPHA)
-                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150), 
-                               pygame.Rect(0, 0, glow_surface.get_width(), glow_surface.get_height()),
-                               border_radius=5)
-                self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
-            self.screen.blit(self.github_logo, self.github_rect)
-            
         if hasattr(self, 'youtube_logo') and self.youtube_logo:
             if self.youtube_hover:
                 glow_surface = pygame.Surface((self.youtube_rect.width + 10, self.youtube_rect.height + 10), pygame.SRCALPHA)
@@ -318,7 +327,16 @@ class MainMenuPage(BasePage):
                 self.screen.blit(glow_surface, (self.youtube_rect.x - 5, self.youtube_rect.y - 5))
             self.screen.blit(self.youtube_logo, self.youtube_rect)
         
-        version_text = self.version_font.render("Build Version: 11.03.2025", True, ERROR_COLOR)
+        if hasattr(self, 'github_logo') and self.github_logo:
+            if self.github_hover:
+                glow_surface = pygame.Surface((self.github_rect.width + 10, self.github_rect.height + 10), pygame.SRCALPHA)
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150), 
+                               pygame.Rect(0, 0, glow_surface.get_width(), glow_surface.get_height()),
+                               border_radius=5)
+                self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
+            self.screen.blit(self.github_logo, self.github_rect)
+        
+        version_text = self.version_font.render("Build Version: 12.03.2025", True, ERROR_COLOR)
         version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -1812,6 +1830,12 @@ class AIEmotionUI:
             self.angry_image.fill((200, 50, 50))
         
         self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(14))
+        
+        self.happy_clicks_after_limit = 0
+        self.angry_clicks_after_limit = 0
+        self.easter_egg_threshold = 5
+        self.youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs"
+        self.easter_egg_triggered = False
     
     def show(self):
         self.visible = True
@@ -1856,6 +1880,13 @@ class AIEmotionUI:
         mood_surface = self.font.render(mood_text, True, mood_color)
         mood_rect = mood_surface.get_rect(centerx=self.panel_rect.centerx, bottom=self.panel_rect.bottom - 5)
         self.screen.blit(mood_surface, mood_rect)
+        
+        total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
+        if total_clicks > 0 and total_clicks < self.easter_egg_threshold:
+            egg_text = f"{self.easter_egg_threshold - total_clicks} more..."
+            egg_surface = self.font.render(egg_text, True, (255, 215, 0))
+            egg_rect = egg_surface.get_rect(centerx=self.panel_rect.centerx, bottom=self.panel_rect.bottom - 25)
+            self.screen.blit(egg_surface, egg_rect)
     
     def check_hover(self, pos):
 
@@ -1873,13 +1904,36 @@ class AIEmotionUI:
             return False
             
         if self.happy_button_rect.collidepoint(pos):
-            print(f"Happy button clicked for {self.ai_player.name} - making all AIs angry")
+            mood_value = getattr(self.ai_player.ai_controller, 'mood_modifier', 0)
+            if mood_value >= 0.3:
+                self.happy_clicks_after_limit += 1
+                self._check_easter_egg()
+            
+            print(f"Happy button clicked for {self.ai_player.name} - making AI happier")
             self.game.update_ai_mood(self.ai_player.name, False)
             return True
             
         if self.angry_button_rect.collidepoint(pos):
-            print(f"Angry button clicked for {self.ai_player.name} - making all AIs happy")
+            mood_value = getattr(self.ai_player.ai_controller, 'mood_modifier', 0)
+            if mood_value <= -0.3:
+                self.angry_clicks_after_limit += 1
+                self._check_easter_egg()
+            
+            print(f"Angry button clicked for {self.ai_player.name} - making AI angrier")
             self.game.update_ai_mood(self.ai_player.name, True)
             return True
             
         return False
+        
+    def _check_easter_egg(self):
+        total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
+        
+        if total_clicks >= self.easter_egg_threshold and not self.easter_egg_triggered:
+            try:
+                print("Easter egg triggered: Opening YouTube...")
+                webbrowser.open(self.youtube_url)
+                self.easter_egg_triggered = True
+                self.happy_clicks_after_limit = 0
+                self.angry_clicks_after_limit = 0
+            except Exception as e:
+                print(f"Error opening YouTube URL: {e}")
