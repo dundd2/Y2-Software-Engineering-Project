@@ -5,4 +5,3 @@ openpyxl
 pygbag
 pytest
 pytest-asyncio
-pywin32

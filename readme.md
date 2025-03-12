@@ -31,7 +31,7 @@ To start coding with Pygame and run the game, follow these steps to install all 
 1. Open Command Prompt: Press the Windows key, type `cmd`, and press Enter.
 2. Install required packages: In the Command Prompt, type:
 ```
-pip install setuptools pygame pandas openpyxl pygbag pytest pytest-asyncio pywin32
+pip install setuptools pygame pandas openpyxl pygbag pytest pytest-asyncio
 ```
    Wait for the installation to complete.
 
@@ -55,7 +55,5 @@ pip install -r requirements.txt
 # For Mac
 pip3 install -r requirements.txt
 ```
-
-Note: The game uses win32gui for window management on Windows systems. This feature is only available on Windows platforms.
 
 Now you are ready to start coding and playing Property Tycoon!

@@ -7,9 +7,6 @@ import sys
 import asyncio
 import os 
 import random
-import ctypes
-import win32con
-import win32gui
 
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__))) 
@@ -19,22 +16,6 @@ from src.Game import Game
 from src.Player import Player
 from src.ui import MainMenuPage, StartPage, GameModePage, EndGamePage, SettingsPage, HowToPlayPage, AIDifficultyPage
 from src.text_scaler import text_scaler
-
-class Call_Window():
-    def __init__():
-        pass
-
-    def find_window(window_title):
-        window_handle = win32gui.FindWindow(None, window_title)
-        return window_handle
-
-    def maximize_window(window_handle):
-            window_placement = win32gui.GetWindowPlacement(window_handle)
-            
-            if window_placement[1] == win32con.SW_SHOWMINIMIZED:
-                win32gui.ShowWindow(window_handle, win32con.SW_RESTORE)
-            
-            win32gui.ShowWindow(window_handle, win32con.SW_MAXIMIZE)
 
 WINDOW_SIZE = (1280, 720)  
 WHITE = (255, 255, 255)
@@ -104,7 +85,6 @@ def create_game(player_info, game_settings):
         player_number += 1
         
     for name in player_names[total_players-ai_count:]:
-
         if not name.strip():
             continue
         player = Player(name, is_ai=True, player_number=player_number, 
@@ -205,6 +185,7 @@ async def run_game(game, game_settings):
                 if game_event.key == pygame.K_ESCAPE:
                     running = False
                     return None
+                    
                 if game.state == "AUCTION":
                     print("Handling auction key input in main loop")
                     game.handle_auction_input(game_event)
@@ -216,7 +197,7 @@ async def run_game(game, game_settings):
                 await apply_screen_settings((game_event.w, game_event.h))
             elif game_event.type == pygame.MOUSEMOTION:
                 game.handle_motion(game_event.pos)
-
+        
         current_time = pygame.time.get_ticks()
         if hasattr(game, 'last_debug_time') and current_time - game.last_debug_time < 1000:
             pass
@@ -263,15 +244,16 @@ async def run_game(game, game_settings):
                 if player.name == current_player['name']:
                     ai_player = player
                     break
+                    
             if ai_player and ai_player.is_ai:
                 if not isinstance(ai_player.position, int) or not (1 <= ai_player.position <= 40):
                     print(f"Warning: Invalid position {ai_player.position} detected for AI {ai_player.name}, resetting to position 1")
                     ai_player.position = 1
                     current_player['position'] = 1
                     
-            game_over_data = game.handle_ai_turn(current_player)
-            if game_over_data:
-                running = False
+                game_over_data = game.handle_ai_turn(current_player)
+                if game_over_data:
+                    running = False
         
         if game.state == "AUCTION" and hasattr(game.logic, 'current_auction') and not any(player.is_moving for player in game.players):
             auction_data = game.logic.current_auction
@@ -309,7 +291,7 @@ async def run_game(game, game_settings):
                             print(f"AI {current_bidder['name']} passes")
                             success, message = game.logic.process_auction_pass(current_bidder)
                             game.board.add_message(message)
-                        
+                
                 if hasattr(game.logic, 'current_auction') and game.logic.current_auction:
                     result_message = game.logic.check_auction_end()
                     if result_message == "auction_completed":
@@ -415,15 +397,6 @@ async def main():
     global WINDOW_SIZE
     text_scaler.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
-    
-    pygame.display.set_caption("Property Tycoon")
-    
-    window_handle = Call_Window.find_window("Property Tycoon")
-    if window_handle:
-        Call_Window.maximize_window(window_handle)
-        print("Game window maximized successfully")
-    else:
-        print("Could not find game window to maximize")
     
     clock = pygame.time.Clock()
     
