@@ -1,7 +1,5 @@
 # pyinstaller version, much faster but more laggy to the game
 # pls use the nuutka version if you have time to wait
-# the mac version for thiss workflot is not working
-# Windows only for this workflow
 # pyinstaller will pack the game in python with all the independent files 
 name: Build and Release Game (pyinstaller)
 
@@ -60,6 +58,7 @@ jobs:
         pip install pyinstaller
         pip install pillow
         pip install -r requirements.txt
+        brew install create-dmg
 
     - name: Create icon script
       run: |
@@ -85,21 +84,40 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: |
         if [ -f "icon.icns" ]; then
-          pyinstaller --onefile --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+          pyinstaller --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
         else
-          pyinstaller --onefile --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+          pyinstaller --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
         fi
-        mv dist/PropertyTycoon.app dist/PropertyTycoon-macOS.app
-        chmod -R +x dist/PropertyTycoon-macOS.app
         
+        # Ensure the app has proper permissions
+        chmod -R +x dist/PropertyTycoon.app
+        
+        # Create a DMG file
+        hdiutil create -volname "PropertyTycoon" -srcfolder dist/PropertyTycoon.app -ov -format UDZO dist/PropertyTycoon-macOS.dmg
+        
+        # Also create a zip as backup
         cd dist
-        zip -r PropertyTycoon-macOS.zip PropertyTycoon-macOS.app
+        zip -r PropertyTycoon-macOS.zip PropertyTycoon.app
         cd ..
 
-    - name: Upload build artifact
+    - name: Upload app bundle artifact
       uses: actions/upload-artifact@v4
       with:
-        name: PropertyTycoon-macOS
+        name: PropertyTycoon-macOS-app
+        path: dist/PropertyTycoon.app
+        retention-days: 90
+
+    - name: Upload DMG artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PropertyTycoon-macOS-dmg
+        path: dist/PropertyTycoon-macOS.dmg
+        retention-days: 90
+
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PropertyTycoon-macOS-zip
         path: dist/PropertyTycoon-macOS.zip
         retention-days: 90
 
@@ -121,11 +139,17 @@ jobs:
         name: PropertyTycoon-Windows
         path: dist-windows
 
-    - name: Download macOS artifact
+    - name: Download macOS DMG artifact
       uses: actions/download-artifact@v4
       with:
-        name: PropertyTycoon-macOS
-        path: dist-macos
+        name: PropertyTycoon-macOS-dmg
+        path: dist-macos-dmg
+        
+    - name: Download macOS ZIP artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: PropertyTycoon-macOS-zip
+        path: dist-macos-zip
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -134,7 +158,8 @@ jobs:
       with:
         files: |
           dist-windows/PropertyTycoon.exe
-          dist-macos/PropertyTycoon-macOS.zip
+          dist-macos-dmg/PropertyTycoon-macOS.dmg
+          dist-macos-zip/PropertyTycoon-macOS.zip
         name: Build-${{ steps.get_version.outputs.version }}
         tag_name: Build-${{ steps.get_version.outputs.version }}
         draft: false

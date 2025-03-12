@@ -240,7 +240,7 @@ class MainMenuPage(BasePage):
         self.start_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] // 2 - 80,
+                get_window_size()[1] // 2,
                 button_width,
                 button_height
             ),
@@ -251,7 +251,7 @@ class MainMenuPage(BasePage):
         self.how_to_play_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] // 2,
+                get_window_size()[1] // 2 + 80,
                 button_width,
                 button_height
             ),
@@ -262,7 +262,7 @@ class MainMenuPage(BasePage):
         
         self.settings_button = ModernButton(
             pygame.Rect(
-                get_window_size()[0] - button_width - 20,
+                20,
                 get_window_size()[1] - button_height - 20,
                 button_width,
                 button_height
@@ -275,7 +275,7 @@ class MainMenuPage(BasePage):
             github_path = os.path.join(base_path, "assets/image/GitHub-Symbol.png")
             self.github_logo = pygame.image.load(github_path)
             self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
-            self.github_rect = self.github_logo.get_rect(topleft=(20, 20))
+            self.github_rect = self.github_logo.get_rect(topright=(get_window_size()[0] - 25, 25))
             
             youtube_path = os.path.join(base_path, "assets/image/Youtube Logo.png")
             self.youtube_logo = pygame.image.load(youtube_path)
@@ -295,10 +295,6 @@ class MainMenuPage(BasePage):
     def draw(self):
         self.draw_background()
         self.draw_title()
-        
-        menu_text = self.button_font.render("Main Menu", True, WHITE)
-        menu_rect = menu_text.get_rect(centerx=get_window_size()[0]//2, y=180)
-        self.screen.blit(menu_text, menu_rect)
         
         self.start_button.draw(self.screen)
         self.how_to_play_button.draw(self.screen)
@@ -322,14 +318,19 @@ class MainMenuPage(BasePage):
                 self.screen.blit(glow_surface, (self.youtube_rect.x - 5, self.youtube_rect.y - 5))
             self.screen.blit(self.youtube_logo, self.youtube_rect)
         
-        version_text = self.version_font.render("Build Version: 11.03.2025", True, GRAY)
-        version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
+        version_text = self.version_font.render("Build Version: 11.03.2025", True, ERROR_COLOR)
+        version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
-        controls_text = self.small_font.render("Press ENTER to start, H for how to play, S for settings", True, LIGHT_GRAY)
-        controls_rect = controls_text.get_rect(left=20, bottom=get_window_size()[1]-20)
-        self.screen.blit(controls_text, controls_rect)
+        controls_text1 = self.small_font.render("Press ENTER to start", True, LIGHT_GRAY)
+        controls_text2 = self.small_font.render("H for how to play, S for settings", True, LIGHT_GRAY)
+
+        controls_rect1 = controls_text1.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-70)
+        controls_rect2 = controls_text2.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-45)
         
+        self.screen.blit(controls_text1, controls_rect1)
+        self.screen.blit(controls_text2, controls_rect2)
+
         pygame.display.flip()
 
     def handle_click(self, pos):
@@ -454,10 +455,10 @@ class SettingsPage(BasePage):
             "Enter/Space - Apply and return"
         ]
         
-        y_offset = get_window_size()[1] - 150
+        y_offset = get_window_size()[1] - 180
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(left=20, y=y_offset)
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
         
@@ -524,7 +525,7 @@ class StartPage(BasePage):
 
         button_width = 300
         button_height = 60
-        input_y_start = get_window_size()[1] // 2
+        input_y_start = get_window_size()[1] // 2 + 50
         input_width = 300
         input_height = 50
         count_x_offset = 250
@@ -626,7 +627,7 @@ class StartPage(BasePage):
         self.draw_background()
         self.draw_title()
 
-        input_y_start = get_window_size()[1] // 2
+        input_y_start = get_window_size()[1] // 2 + 50
         
         human_text = self.button_font.render(f"Human Players: {self.human_count}", True, HUMAN_COLOR)
         human_rect = human_text.get_rect(centerx=get_window_size()[0]//2 - 150, y=input_y_start - 200)
@@ -693,10 +694,10 @@ class StartPage(BasePage):
             "ESC/Back - Return to menu"
         ]
         
-        y_offset = get_window_size()[1] - 180
+        y_offset = get_window_size()[1] - 210
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(left=20, y=y_offset)
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)  
             self.screen.blit(hint_text, hint_rect)
             y_offset += 20
 
@@ -865,11 +866,11 @@ class PlayerSelectPage(BasePage):
         self.draw_title()
         
         section_title = self.button_font.render("Select Number of Players", True, WHITE)
-        title_rect = section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 220)
+        title_rect = section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 170)  
         self.screen.blit(section_title, title_rect)
         
         count_text = self.button_font.render(str(self.player_count), True, WHITE)
-        count_rect = count_text.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 180)
+        count_rect = count_text.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 130) 
         self.screen.blit(count_text, count_rect)
         
         self.minus_button.active = self.player_count > 2
@@ -880,7 +881,7 @@ class PlayerSelectPage(BasePage):
         self.plus_button.draw(self.screen)
         
         name_section_title = self.button_font.render("Enter Player Names", True, WHITE)
-        name_title_rect = name_section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 140)
+        name_title_rect = name_section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 90)
         self.screen.blit(name_section_title, name_title_rect)
         
         for i in range(self.player_count):
@@ -911,7 +912,7 @@ class PlayerSelectPage(BasePage):
             "Escape - Cancel editing"
         ]
         
-        y_offset = get_window_size()[1] - 100
+        y_offset = get_window_size()[1] - 80
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
             hint_rect = hint_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
@@ -993,6 +994,71 @@ class PlayerSelectPage(BasePage):
     def get_player_info(self):
         return self.player_count, [name.strip() for name in self.player_names[:self.player_count]]
 
+class HowToPlayPage(BasePage):
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        
+        button_width = 300
+        button_height = 60
+        self.back_button = ModernButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                get_window_size()[1] - 120,
+                button_width,
+                button_height
+            ),
+            "Back to Menu",
+            self.button_font
+        )
+        
+        self.instructions = [
+            "How to Play Property Tycoon",
+            "",
+            "To be updated...",
+        ]
+
+    def draw(self):
+        self.draw_background()
+        self.draw_title()
+        
+        y_offset = 280
+        for i, line in enumerate(self.instructions):
+            if i == 0:
+                text_surface = self.button_font.render(line, True, WHITE)
+            elif line == "":
+                y_offset += 10
+                continue
+            elif line.endswith(":"):
+                text_surface = self.button_font.render(line, True, ACCENT_COLOR)
+            else:
+                text_surface = self.small_font.render(line, True, LIGHT_GRAY)
+            
+            text_rect = text_surface.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
+            self.screen.blit(text_surface, text_rect)
+            y_offset += 30 if i == 0 else 25
+        
+        self.back_button.draw(self.screen)
+        
+        hint_text = self.small_font.render("Press ESC or BACKSPACE to return to menu", True, LIGHT_GRAY)
+        hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20) 
+        self.screen.blit(hint_text, hint_rect)
+        
+        pygame.display.flip()
+
+    def handle_click(self, pos):
+        if self.back_button.check_hover(pos):
+            return True
+        return None
+
+    def handle_motion(self, pos):
+        self.back_button.check_hover(pos)
+
+    def handle_key(self, event):
+        if event.key in [pygame.K_ESCAPE, pygame.K_BACKSPACE]:
+            return True
+        return None
+
 class GameModePage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -1021,7 +1087,7 @@ class GameModePage(BasePage):
         self.mode_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - mode_button_width) // 2,
-                get_window_size()[1] // 2 - 100,
+                get_window_size()[1] // 2 - 20,
                 mode_button_width,
                 button_height
             ),
@@ -1063,12 +1129,13 @@ class GameModePage(BasePage):
         self.draw_background()
         self.draw_title()
         
+        self.mode_button.rect.y = get_window_size()[1] // 2 - 20
         self.mode_button.text = f"Game Mode: {'Abridged' if self.game_mode == 'abridged' else 'Full Game'}"
         self.mode_button.draw(self.screen)
         
         mode_info = self.abridged_text if self.game_mode == "abridged" else self.full_game_text
         info_text = self.small_font.render(mode_info, True, LIGHT_GRAY)
-        info_rect = info_text.get_rect(centerx=get_window_size()[0]//2, top=self.mode_button.rect.bottom + 5)
+        info_rect = info_text.get_rect(centerx=get_window_size()[0]//2, top=self.mode_button.rect.bottom + 10)
         self.screen.blit(info_text, info_rect)
         
         if self.game_mode == "abridged":
@@ -1102,10 +1169,10 @@ class GameModePage(BasePage):
         if self.game_mode == "abridged":
             controls.append("Click on time input to enter custom time")
             
-        y_offset = get_window_size()[1] - 80
+        y_offset = get_window_size()[1] - 150
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(left=20, y=y_offset)
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset) 
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
         
@@ -1264,6 +1331,15 @@ class EndGamePage(BasePage):
         else:
             print("Using existing surface for EndGamePage")
             
+        try:
+            endgame_bg_path = os.path.join(base_path, "assets/image/EndgamePageBG.jpg")
+            self.endgame_bg = pygame.image.load(endgame_bg_path)
+            self.endgame_bg = pygame.transform.scale(self.endgame_bg, get_window_size())
+            print("Loaded EndgamePageBG.jpg successfully")
+        except (pygame.error, FileNotFoundError) as e:
+            print(f"Could not load end game background: {e}")
+            self.endgame_bg = None
+            
         button_width = 300
         button_height = 60
         self.play_again_button = ModernButton(
@@ -1308,7 +1384,14 @@ class EndGamePage(BasePage):
             })
 
     def draw(self):
-        self.draw_background()
+
+        if hasattr(self, 'endgame_bg') and self.endgame_bg:
+            self.screen.blit(self.endgame_bg, (0, 0))
+            overlay = pygame.Surface(get_window_size(), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 100))  
+            self.screen.blit(overlay, (0, 0))
+        else:
+            self.draw_background() 
         
         for particle in self.confetti:
             particle['y'] += particle['speed']
@@ -1510,78 +1593,13 @@ class EndGamePage(BasePage):
             return "quit"
         return None
 
-class HowToPlayPage(BasePage):
-    def __init__(self, instructions=None):
-        super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
-        
-        button_width = 300
-        button_height = 60
-        self.back_button = ModernButton(
-            pygame.Rect(
-                (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] - 120,
-                button_width,
-                button_height
-            ),
-            "Back to Menu",
-            self.button_font
-        )
-        
-        self.instructions = [
-            "How to Play Property Tycoon",
-            "",
-            "To be updated...",
-        ]
-
-    def draw(self):
-        self.draw_background()
-        self.draw_title()
-        
-        y_offset = 180
-        for i, line in enumerate(self.instructions):
-            if i == 0:
-                text_surface = self.button_font.render(line, True, WHITE)
-            elif line == "":
-                y_offset += 10
-                continue
-            elif line.endswith(":"):
-                text_surface = self.button_font.render(line, True, ACCENT_COLOR)
-            else:
-                text_surface = self.small_font.render(line, True, LIGHT_GRAY)
-            
-            text_rect = text_surface.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
-            self.screen.blit(text_surface, text_rect)
-            y_offset += 30 if i == 0 else 25
-        
-        self.back_button.draw(self.screen)
-        
-        hint_text = self.small_font.render("Press ESC or BACKSPACE to return to menu", True, LIGHT_GRAY)
-        hint_rect = hint_text.get_rect(centerx=get_window_size()[0]//2, bottom=get_window_size()[1]-20)
-        self.screen.blit(hint_text, hint_rect)
-        
-        pygame.display.flip()
-
-    def handle_click(self, pos):
-        if self.back_button.check_hover(pos):
-            return True
-        return None
-
-    def handle_motion(self, pos):
-        self.back_button.check_hover(pos)
-
-    def handle_key(self, event):
-        if event.key in [pygame.K_ESCAPE, pygame.K_BACKSPACE]:
-            return True
-        return None
-
 class AIDifficultyPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         button_width = 300
         button_height = 60
-        center_y = get_window_size()[1] // 2
+        center_y = get_window_size()[1] // 2 + 50 
 
         self.easy_button = ModernButton(
             pygame.Rect(
@@ -1623,7 +1641,7 @@ class AIDifficultyPage(BasePage):
         self.draw_title()
 
         difficulty_text = self.button_font.render("Select AI Difficulty", True, WHITE)
-        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=200)
+        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=250) 
         self.screen.blit(difficulty_text, text_rect)
 
         easy_desc = self.small_font.render("AI will make basic decisions", True, LIGHT_GRAY)
@@ -1642,10 +1660,10 @@ class AIDifficultyPage(BasePage):
             "Press E for Easy mode",
             "Press H for Hard mode"
         ]
-        y_offset = get_window_size()[1] - 80
+        y_offset = get_window_size()[1] - 150  
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(left=20, y=y_offset)
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)  
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
 
