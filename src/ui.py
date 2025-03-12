@@ -5,6 +5,7 @@ import math
 import random
 from src.text_scaler import text_scaler
 import os
+import webbrowser 
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -269,6 +270,27 @@ class MainMenuPage(BasePage):
             "Settings",
             self.button_font
         )
+        
+        try:
+            github_path = os.path.join(base_path, "assets/image/GitHub-Symbol.png")
+            self.github_logo = pygame.image.load(github_path)
+            self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
+            self.github_rect = self.github_logo.get_rect(topleft=(20, 20))
+            
+            youtube_path = os.path.join(base_path, "assets/image/Youtube Logo.png")
+            self.youtube_logo = pygame.image.load(youtube_path)
+            self.youtube_logo = pygame.transform.scale(self.youtube_logo, (40, 40))
+            self.youtube_rect = self.youtube_logo.get_rect(topleft=(80, 20))
+            
+            self.github_hover = False
+            self.youtube_hover = False
+            
+            self.github_url = "https://github.com/Minosaji/Software-Engineering-Project"
+            self.youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs"
+        except (pygame.error, FileNotFoundError) as e:
+            print(f"Could not load social media logos: {e}")
+            self.github_logo = None
+            self.youtube_logo = None
 
     def draw(self):
         self.draw_background()
@@ -281,6 +303,24 @@ class MainMenuPage(BasePage):
         self.start_button.draw(self.screen)
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
+        
+        if hasattr(self, 'github_logo') and self.github_logo:
+            if self.github_hover:
+                glow_surface = pygame.Surface((self.github_rect.width + 10, self.github_rect.height + 10), pygame.SRCALPHA)
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150), 
+                               pygame.Rect(0, 0, glow_surface.get_width(), glow_surface.get_height()),
+                               border_radius=5)
+                self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
+            self.screen.blit(self.github_logo, self.github_rect)
+            
+        if hasattr(self, 'youtube_logo') and self.youtube_logo:
+            if self.youtube_hover:
+                glow_surface = pygame.Surface((self.youtube_rect.width + 10, self.youtube_rect.height + 10), pygame.SRCALPHA)
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150), 
+                               pygame.Rect(0, 0, glow_surface.get_width(), glow_surface.get_height()),
+                               border_radius=5)
+                self.screen.blit(glow_surface, (self.youtube_rect.x - 5, self.youtube_rect.y - 5))
+            self.screen.blit(self.youtube_logo, self.youtube_rect)
         
         version_text = self.version_font.render("Build Version: 11.03.2025", True, GRAY)
         version_rect = version_text.get_rect(right=self.settings_button.rect.left - 20, bottom=get_window_size()[1]-20)
@@ -299,13 +339,30 @@ class MainMenuPage(BasePage):
             return "how_to_play"
         elif self.settings_button.check_hover(pos):
             return "settings"
+        elif hasattr(self, 'github_rect') and self.github_rect.collidepoint(pos):
+            try:
+                webbrowser.open(self.github_url)
+                print(f"Opening GitHub URL: {self.github_url}")
+            except Exception as e:
+                print(f"Error opening GitHub URL: {e}")
+        elif hasattr(self, 'youtube_rect') and self.youtube_rect.collidepoint(pos):
+            try:
+                webbrowser.open(self.youtube_url)
+                print(f"Opening YouTube URL: {self.youtube_url}")
+            except Exception as e:
+                print(f"Error opening YouTube URL: {e}")
         return None
 
     def handle_motion(self, pos):
         self.start_button.check_hover(pos)
         self.how_to_play_button.check_hover(pos)
         self.settings_button.check_hover(pos)
-
+        
+        if hasattr(self, 'github_rect'):
+            self.github_hover = self.github_rect.collidepoint(pos)
+        if hasattr(self, 'youtube_rect'):
+            self.youtube_hover = self.youtube_rect.collidepoint(pos)
+            
     def handle_key(self, event):
         if event.key == pygame.K_RETURN:
             return "start"
