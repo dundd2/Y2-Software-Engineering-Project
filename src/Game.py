@@ -16,7 +16,7 @@ from src.text_scaler import text_scaler
 from src.ui import AIEmotionUI
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FONT_PATH = os.path.join(base_path, "assets", "font", "ticketing.ttf")
+FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

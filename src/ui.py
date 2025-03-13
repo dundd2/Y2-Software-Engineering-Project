@@ -24,7 +24,7 @@ AI_COLOR = (200, 100, 100)
 DEFAULT_RES = (854, 480)
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FONT_PATH = os.path.join(base_path, "assets", "font", "ticketing.ttf")
+FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
 
 def get_window_size():
     surface = pygame.display.get_surface()
