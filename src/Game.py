@@ -23,12 +23,25 @@ BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 LIGHT_GRAY = (200, 200, 200)
 MODERN_BG = (18, 18, 18)
-ACCENT_COLOR = (75, 139, 190)
-BUTTON_HOVER = (95, 159, 210)
-SUCCESS_COLOR = (40, 167, 69)
-ERROR_COLOR = (220, 53, 69)
+
+DARK_RED = (139, 0, 0)
+DARK_GREEN = (0, 100, 0)
+DARK_BLUE = (0, 0, 139)
+GOLD = (218, 165, 32)
+CREAM = (255, 253, 208)
+BURGUNDY = (128, 0, 32)
+
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+
+ACCENT_COLOR = BURGUNDY
+BUTTON_HOVER = (160, 20, 40)
+ERROR_COLOR = (220, 53, 69)
+SUCCESS_COLOR = DARK_GREEN
+MODE_COLOR = DARK_BLUE
+TIME_COLOR = (255, 180, 100)
+HUMAN_COLOR = DARK_GREEN
+AI_COLOR = DARK_RED
 
 GROUP_COLORS = {
     "Brown": (139, 69, 19),    
@@ -265,31 +278,49 @@ class Game:
         self.update_current_player()
 
     def draw_button(self, button, text, hover=False, active=True):
-        base_color = BUTTON_HOVER if hover else ACCENT_COLOR
         if not active:
             base_color = GRAY
+        else:
+            base_color = BUTTON_HOVER if hover else ACCENT_COLOR
 
         shadow_rect = button.copy()
-        shadow_rect.y += 2
+        shadow_rect.y += 4
         shadow = pygame.Surface(button.size, pygame.SRCALPHA)
-        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=8)
         self.screen.blit(shadow, shadow_rect)
-
-        pygame.draw.rect(self.screen, base_color, button, border_radius=5)
+        
+        button_surface = pygame.Surface(button.size, pygame.SRCALPHA)
+        
         gradient = pygame.Surface(button.size, pygame.SRCALPHA)
         for i in range(button.height):
-            alpha = int(100 * (1 - i/button.height))
-            pygame.draw.line(gradient, (255, 255, 255, alpha), 
-                           (0, i), (button.width, i))
-        self.screen.blit(gradient, button)
-
+            alpha = 255 - int(i * 0.5)
+            pygame.draw.line(gradient, (*base_color, alpha), (0, i), (button.width, i))
+        
+        pygame.draw.rect(button_surface, base_color, button_surface.get_rect(), border_radius=8)
+        button_surface.blit(gradient, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        
+        border_color = GOLD if hover else CREAM
+        pygame.draw.rect(button_surface, border_color, button_surface.get_rect(), 
+                        width=2, border_radius=8)
+        
+        if hover:
+            highlight = pygame.Surface(button.size, pygame.SRCALPHA)
+            for i in range(4):
+                alpha = 100 - i * 25
+                pygame.draw.rect(highlight, (255, 255, 255, alpha), 
+                               highlight.get_rect().inflate(-i*2, -i*2), 
+                               border_radius=8)
+            button_surface.blit(highlight, (0, 0))
+        
+        self.screen.blit(button_surface, button)
+        
         text_shadow = self.font.render(text, True, BLACK)
         text_rect_shadow = text_shadow.get_rect(center=button.center)
         text_rect_shadow.x += 1
         text_rect_shadow.y += 1
         self.screen.blit(text_shadow, text_rect_shadow)
-
-        text_surface = self.font.render(text, True, WHITE)
+        
+        text_surface = self.font.render(text, True, CREAM)
         text_rect = text_surface.get_rect(center=button.center)
         self.screen.blit(text_surface, text_rect)
 
@@ -832,16 +863,9 @@ class Game:
         yes_hover = self.yes_button.collidepoint(mouse_pos)
         no_hover = self.no_button.collidepoint(mouse_pos)
         
-        pygame.draw.rect(self.screen, BUTTON_HOVER if yes_hover else ACCENT_COLOR, self.yes_button, border_radius=5)
-        pygame.draw.rect(self.screen, BUTTON_HOVER if no_hover else ACCENT_COLOR, self.no_button, border_radius=5)
+        self.draw_button(self.yes_button, "Buy", hover=yes_hover, active=True)
         
-        yes_text = self.font.render("Buy", True, WHITE)
-        no_text = self.font.render("Pass", True, WHITE)
-        
-        self.screen.blit(yes_text, (self.yes_button.centerx - yes_text.get_width()//2, 
-                                   self.yes_button.centery - yes_text.get_height()//2))
-        self.screen.blit(no_text, (self.no_button.centerx - no_text.get_width()//2, 
-                                  self.no_button.centery - no_text.get_height()//2))
+        self.draw_button(self.no_button, "Pass", hover=no_hover, active=True)
 
     def draw_property_tooltip(self, property_data, mouse_pos):
         padding = 10
@@ -1633,144 +1657,110 @@ class Game:
 
     def draw_auction(self, auction_data):
         if self.show_card:
-            print("Card is showing - not drawing auction UI")
-            return
+            window_size = self.screen.get_size()
+            card_width = int(window_size[0] * 0.35)
+            card_height = int(window_size[1] * 0.5)
+            card_x = (window_size[0] - card_width) // 2
+            card_y = (window_size[1] - card_height) // 2
             
-        if auction_data is None:
-            print("Warning: Auction data is None in draw_auction")
-            self.state = "ROLL"  
-            return
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 120))
+            self.screen.blit(overlay, (0, 0))
             
-        required_keys = ["property", "current_bid", "minimum_bid", "highest_bidder", 
-                         "current_bidder_index", "active_players"]
-        
-        for key in required_keys:
-            if key not in auction_data:
-                print(f"Warning: Auction data missing key '{key}' - resetting to ROLL state")
-                self.state = "ROLL"
-                return
-        
-        if not isinstance(auction_data["property"], dict) or "name" not in auction_data["property"]:
-            print("Warning: Auction property data is invalid - resetting to ROLL state")
-            self.state = "ROLL"
-            return
-        
-        current_bidder_index = auction_data.get("current_bidder_index", 0)
-        if (current_bidder_index < len(auction_data["active_players"])):
-            current_bidder = auction_data["active_players"][current_bidder_index]
-            if current_bidder.get('is_ai', False):
-                ai_player = current_bidder
-                print(f"Auto-handling AI auction turn for {ai_player['name']}")
-                self.handle_ai_turn(ai_player)
-                pygame.time.delay(500)
-        
-        print(f"\n=== Drawing Auction UI ===")
-        print(f"Property: {auction_data['property']['name']}")
-        print(f"Current bid: £{auction_data['current_bid']}")
-        print(f"Minimum bid: £{auction_data['minimum_bid']}")
-        
-        if auction_data["highest_bidder"]:
-            print(f"Highest bidder: {auction_data['highest_bidder']['name']}")
-        else:
-            print("No bids yet")
-            
-        print(f"Current bidder index: {auction_data['current_bidder_index']}")
-        if auction_data["active_players"]:
-            current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
-            print(f"Current bidder: {current_bidder['name']}")
-            
-        print(f"Passed players: {auction_data.get('passed_players', set())}")
-        print(f"Active players: {[p['name'] for p in auction_data.get('active_players', [])]}")
-        print(f"Completed: {auction_data.get('completed', False)}")
-            
-        window_size = self.screen.get_size()
-        card_width = int(window_size[0] * 0.35)
-        card_height = int(window_size[1] * 0.5)
-        card_x = (window_size[0] - card_width) // 2
-        card_y = (window_size[1] - card_height) // 2
-        
-        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 150)) 
-        self.screen.blit(overlay, (0, 0))
-        
-        for i in range(5):
-            shadow_offset = 6 - i
-            shadow_rect = pygame.Rect(card_x + shadow_offset, card_y + shadow_offset, 
-                                    card_width, card_height)
+            shadow_rect = pygame.Rect(card_x + 6, card_y + 6, card_width, card_height)
             shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
-            shadow_alpha = 100 - (i * 20)
-            pygame.draw.rect(shadow, (*BLACK, shadow_alpha), shadow.get_rect(), border_radius=15)
+            pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
             self.screen.blit(shadow, shadow_rect)
-        
-        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
-        
-        current_time = pygame.time.get_ticks()
-        time_remaining = max(0, (auction_data["start_time"] + auction_data["duration"] - current_time) // 1000)
-        
-        current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
-        current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
-        
-        header_color = ERROR_COLOR if time_remaining <= 10 else ACCENT_COLOR
-        header_text = self.font.render(f"{current_bidder['name']}'s Turn", True, header_color)
-        timer_text = self.font.render(f"Time: {time_remaining}s", True, header_color)
-        
-        header_y = card_y + 20
-        self.screen.blit(header_text, (card_x + 20, header_y))
-        self.screen.blit(timer_text, (card_x + card_width - timer_text.get_width() - 20, header_y))
-        
-        title_y = header_y + 50
-        title = self.font.render("AUCTION", True, BLACK)
-        property_name = self.font.render(auction_data["property"]["name"], True, BLACK)
-        self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, title_y))
-        self.screen.blit(property_name, (card_x + 20, title_y + 40))
-        
-        info_y = title_y + 90
-        current_bid = self.font.render(f"Current Bid: £{auction_data['current_bid']}", True, BLACK)
-        min_bid = self.font.render(f"Minimum Bid: £{auction_data['minimum_bid']}", True, BLACK)
-        self.screen.blit(current_bid, (card_x + 20, info_y))
-        self.screen.blit(min_bid, (card_x + 20, info_y + 40))
-        
-        if auction_data["highest_bidder"]:
-            highest_y = info_y + 80
-            highest_text = self.font.render(f"Highest Bidder: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
-            self.screen.blit(highest_text, (card_x + 20, highest_y))
-        
-        can_bid = current_bidder['name'] not in auction_data.get("passed_players", set())
-        is_human = current_bidder_obj and not current_bidder_obj.is_ai
-        
-        if is_human and can_bid:
-            self.auction_input = pygame.Rect(card_x + 20, card_y + card_height - 120, 200, 40)
-            pygame.draw.rect(self.screen, WHITE, self.auction_input)
-            pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
             
-            if self.auction_bid_amount:
-                bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
+            pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
+            
+            current_bidder_index = auction_data.get("current_bidder_index", 0)
+            if (current_bidder_index < len(auction_data["active_players"])):
+                current_bidder = auction_data["active_players"][current_bidder_index]
+                if current_bidder.get('is_ai', False):
+                    ai_player = current_bidder
+                    print(f"Auto-handling AI auction turn for {ai_player['name']}")
+                    self.handle_ai_turn(ai_player)
+                    pygame.time.delay(500)
+            
+            print(f"\n=== Drawing Auction UI ===")
+            print(f"Property: {auction_data['property']['name']}")
+            print(f"Current bid: £{auction_data['current_bid']}")
+            print(f"Minimum bid: £{auction_data['minimum_bid']}")
+            
+            if auction_data["highest_bidder"]:
+                print(f"Highest bidder: {auction_data['highest_bidder']['name']}")
             else:
-                bid_text = self.small_font.render("Enter bid amount...", True, GRAY)
-            self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + (self.auction_input.height - bid_text.get_height()) // 2))
-            
-            button_width = 100
-            button_height = 40
-            button_margin = 20
-            
-            self.auction_buttons = {
-                'bid': pygame.Rect(card_x + 20, card_y + card_height - 60, button_width, button_height),
-                'pass': pygame.Rect(card_x + 20 + button_width + button_margin, card_y + card_height - 60, button_width, button_height)
-            }
-            
-            mouse_pos = pygame.mouse.get_pos()
-            for btn_name, btn_rect in self.auction_buttons.items():
-                mouse_over = btn_rect.collidepoint(mouse_pos)
-                color = BUTTON_HOVER if mouse_over else ACCENT_COLOR
-                pygame.draw.rect(self.screen, color, btn_rect, border_radius=5)
+                print("No bids yet")
                 
-                btn_text = self.font.render(btn_name.title(), True, WHITE)
-                self.screen.blit(btn_text, (btn_rect.centerx - btn_text.get_width()//2, 
-                                        btn_rect.centery - btn_text.get_height()//2))
-        
-        if auction_data.get("passed_players"):
-            passed_text = self.small_font.render("Passed: " + ", ".join(auction_data["passed_players"]), True, GRAY)
-            self.screen.blit(passed_text, (card_x + 20, card_y + card_height - 30))
+            print(f"Current bidder index: {auction_data['current_bidder_index']}")
+            if auction_data["active_players"]:
+                current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
+                print(f"Current bidder: {current_bidder['name']}")
+                
+            print(f"Passed players: {auction_data.get('passed_players', set())}")
+            print(f"Active players: {[p['name'] for p in auction_data.get('active_players', [])]}")
+            print(f"Completed: {auction_data.get('completed', False)}")
+            
+            current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
+            current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
+            
+            header_color = ERROR_COLOR if auction_data["duration"] <= 10 else ACCENT_COLOR
+            header_text = self.font.render(f"{current_bidder['name']}'s Turn", True, header_color)
+            timer_text = self.font.render(f"Time: {auction_data['duration']}s", True, header_color)
+            
+            header_y = card_y + 20
+            self.screen.blit(header_text, (card_x + 20, header_y))
+            self.screen.blit(timer_text, (card_x + card_width - timer_text.get_width() - 20, header_y))
+            
+            title_y = header_y + 50
+            title = self.font.render("AUCTION", True, BLACK)
+            property_name = self.font.render(auction_data["property"]["name"], True, BLACK)
+            self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, title_y))
+            self.screen.blit(property_name, (card_x + 20, title_y + 40))
+            
+            info_y = title_y + 90
+            current_bid = self.font.render(f"Current Bid: £{auction_data['current_bid']}", True, BLACK)
+            min_bid = self.font.render(f"Minimum Bid: £{auction_data['minimum_bid']}", True, BLACK)
+            self.screen.blit(current_bid, (card_x + 20, info_y))
+            self.screen.blit(min_bid, (card_x + 20, info_y + 40))
+            
+            if auction_data["highest_bidder"]:
+                highest_y = info_y + 80
+                highest_text = self.font.render(f"Highest Bidder: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
+                self.screen.blit(highest_text, (card_x + 20, highest_y))
+            
+            can_bid = current_bidder['name'] not in auction_data.get("passed_players", set())
+            is_human = current_bidder_obj and not current_bidder_obj.is_ai
+            
+            if is_human and can_bid:
+                self.auction_input = pygame.Rect(card_x + 20, card_y + card_height - 120, 200, 40)
+                pygame.draw.rect(self.screen, WHITE, self.auction_input)
+                pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
+                
+                if self.auction_bid_amount:
+                    bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
+                else:
+                    bid_text = self.small_font.render("Enter bid amount...", True, GRAY)
+                self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + (self.auction_input.height - bid_text.get_height()) // 2))
+                
+                button_width = 100
+                button_height = 40
+                button_margin = 20
+                
+                self.auction_buttons = {
+                    'bid': pygame.Rect(card_x + 20, card_y + card_height - 60, button_width, button_height),
+                    'pass': pygame.Rect(card_x + 20 + button_width + button_margin, card_y + card_height - 60, button_width, button_height)
+                }
+                
+                mouse_pos = pygame.mouse.get_pos()
+                for btn_name, btn_rect in self.auction_buttons.items():
+                    mouse_over = btn_rect.collidepoint(mouse_pos)
+                    self.draw_button(btn_rect, btn_name.title(), hover=mouse_over, active=True)
+            
+            if auction_data.get("passed_players"):
+                passed_text = self.small_font.render("Passed: " + ", ".join(auction_data["passed_players"]), True, GRAY)
+                self.screen.blit(passed_text, (card_x + 20, card_y + card_height - 30))
 
     def handle_auction_input(self, event):
         if not hasattr(self.logic, 'current_auction') or self.logic.current_auction is None:
@@ -1965,58 +1955,48 @@ class Game:
     def draw_jail_options(self, player):
         if not player.get('in_jail', False):
             return
-
+            
         window_size = self.screen.get_size()
         card_width = int(window_size[0] * 0.3)
         card_height = int(window_size[1] * 0.3)
         card_x = (window_size[0] - card_width) // 2
         card_y = (window_size[1] - card_height) // 2
-
-        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 128))  
-        self.screen.blit(overlay, (0, 0))
-
-        shadow = pygame.Surface((card_width + 10, card_height + 10), pygame.SRCALPHA)
-        for i in range(5):
-            alpha = int(100 * (1 - i/5))
-            pygame.draw.rect(shadow, (*ERROR_COLOR[:3], alpha),
-                           (i, i, card_width + 10 - i*2, card_height + 10 - i*2),
-                           border_radius=15)
-        self.screen.blit(shadow, (card_x - 5, card_y - 5))
-
-        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=10)
         
-        title_text = self.font.render("JAIL OPTIONS", True, ERROR_COLOR)
-        title_rect = title_text.get_rect(centerx=card_x + card_width//2, top=card_y + 20)
+        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 120))
+        self.screen.blit(overlay, (0, 0))
+        
+        shadow_rect = pygame.Rect(card_x + 6, card_y + 6, card_width, card_height)
+        shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        self.screen.blit(shadow, shadow_rect)
+        
+        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
+        
+        title_text = self.font.render("Jail Options", True, ACCENT_COLOR)
+        title_rect = title_text.get_rect(centerx=card_x + card_width//2, y=card_y + 20)
         self.screen.blit(title_text, title_rect)
-
+        
         options = []
-        if self.logic.jail_free_cards.get(player['name'], 0) > 0:
-            options.append(("[1] Use Get Out of Jail Free card", pygame.K_1))
-        if player['money'] >= 50:
-            options.append(("[2] Pay £50 fine", pygame.K_2))
-        options.append(("[3] Try rolling doubles", pygame.K_3))
-        options.append(("[4] Stay in jail (skip 2 turns)", pygame.K_4))
-
-        title_height = 50
-        y_offset = card_y + title_height + 20
+        if player.get('jail_card', False):
+            options.append(("Use Get Out of Jail Free Card", 'card'))
+        if player.get('money', 0) >= 50:
+            options.append(("Pay £50 Fine", 'pay'))
+        options.append(("Roll for Doubles", 'roll'))
+        
         button_height = 40
         button_margin = 10
+        y_offset = card_y + 80
         mouse_pos = pygame.mouse.get_pos()
-
+        
         for i, (option_text, key) in enumerate(options):
             button_rect = pygame.Rect(card_x + 20, y_offset, card_width - 40, button_height)
             is_hovered = button_rect.collidepoint(mouse_pos)
             
-            pygame.draw.rect(self.screen, BUTTON_HOVER if is_hovered else ACCENT_COLOR, 
-                           button_rect, border_radius=5)
-            
-            text = self.small_font.render(option_text, True, WHITE)
-            text_rect = text.get_rect(center=button_rect.center)
-            self.screen.blit(text, text_rect)
+            self.draw_button(button_rect, option_text, hover=is_hovered, active=True)
             
             y_offset += button_height + button_margin
-
+        
         turns_text = self.small_font.render(f"Turns in jail: {player.get('jail_turns', 0)}/3", True, ERROR_COLOR)
         turns_rect = turns_text.get_rect(centerx=card_x + card_width//2, 
                                        bottom=card_y + card_height - 20)

@@ -12,14 +12,22 @@ BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 LIGHT_GRAY = (200, 200, 200)
 MODERN_BG = (18, 18, 18)
-ACCENT_COLOR = (75, 139, 190)
-BUTTON_HOVER = (95, 159, 210)
+
+DARK_RED = (139, 0, 0)
+DARK_GREEN = (0, 100, 0)
+DARK_BLUE = (0, 0, 139)
+GOLD = (218, 165, 32)
+CREAM = (255, 253, 208)
+BURGUNDY = (128, 0, 32)
+
+ACCENT_COLOR = BURGUNDY
+BUTTON_HOVER = (160, 20, 40)
 ERROR_COLOR = (220, 53, 69)
-SUCCESS_COLOR = (40, 167, 69)
-MODE_COLOR = (100, 200, 255)
+SUCCESS_COLOR = DARK_GREEN
+MODE_COLOR = DARK_BLUE
 TIME_COLOR = (255, 180, 100)
-HUMAN_COLOR = (100, 200, 100)
-AI_COLOR = (200, 100, 100)
+HUMAN_COLOR = DARK_GREEN
+AI_COLOR = DARK_RED
 
 DEFAULT_RES = (854, 480)
 
@@ -41,25 +49,53 @@ class ModernButton:
         self.hover = False
         self.active = True
         self.is_selected = False
-        
         self.image = None
-        try:
-            button_map = {
-                "Start Game": "Play_Button.png",
-                "Back to Menu": "Back_Button.png",
-                "Edit": "Edit_Button.png",
-                "Exit Game": "Exit_Button.png",
-                "+": "PlusHuman_Button.png" if color == HUMAN_COLOR else "PlusComputer_Button.png",
-                "Play Again": "Play_ButtonSmall.png"
-            }
-            
-            if text in button_map:
-                image_path = os.path.join(base_path, f"assets/image/{button_map[text]}")
-                self.image = pygame.image.load(image_path)
-                self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
-        except (pygame.error, FileNotFoundError):
-            print(f"Could not load button image for {text}")
-            
+        self.shadow_height = 4
+        self.border_width = 2
+        
+    def _draw_basic_button(self, screen, base_color):
+        shadow_rect = self.rect.copy()
+        shadow_rect.y += self.shadow_height
+        shadow = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=8)
+        screen.blit(shadow, shadow_rect)
+        
+        button_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        
+        gradient = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        for i in range(self.rect.height):
+            alpha = 255 - int(i * 0.5)
+            pygame.draw.line(gradient, (*base_color, alpha), (0, i), (self.rect.width, i))
+        
+        pygame.draw.rect(button_surface, base_color, button_surface.get_rect(), border_radius=8)
+        button_surface.blit(gradient, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        
+        border_color = GOLD if self.hover else CREAM
+        pygame.draw.rect(button_surface, border_color, button_surface.get_rect(), 
+                        width=self.border_width, border_radius=8)
+        
+        if self.hover:
+            highlight = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+            for i in range(4):
+                alpha = 100 - i * 25
+                pygame.draw.rect(highlight, (255, 255, 255, alpha), 
+                               highlight.get_rect().inflate(-i*2, -i*2), 
+                               border_radius=8)
+            button_surface.blit(highlight, (0, 0))
+        
+        screen.blit(button_surface, self.rect)
+        
+        text_shadow = self.font.render(self.text, True, BLACK)
+        text_surface = self.font.render(self.text, True, CREAM)
+        
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        shadow_rect = text_rect.copy()
+        shadow_rect.x += 1
+        shadow_rect.y += 1
+        
+        screen.blit(text_shadow, shadow_rect)
+        screen.blit(text_surface, text_rect)
+
     def draw(self, screen):
         if not self.active:
             base_color = GRAY
@@ -76,28 +112,6 @@ class ModernButton:
         else:
             base_color = BUTTON_HOVER if self.hover else self.color
             self._draw_basic_button(screen, base_color)
-            
-    def _draw_basic_button(self, screen, base_color):
-        shadow_rect = self.rect.copy()
-        shadow_rect.y += 2
-        shadow = pygame.Surface(self.rect.size, pygame.SRCALPHA)
-        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=5)
-        screen.blit(shadow, shadow_rect)
-
-        pygame.draw.rect(screen, base_color, self.rect, border_radius=5)
-        gradient = pygame.Surface(self.rect.size, pygame.SRCALPHA)
-        for i in range(self.rect.height):
-            alpha = int(100 * (1 - i/self.rect.height))
-            pygame.draw.line(gradient, (255, 255, 255, alpha), 
-                           (0, i), (self.rect.width, i))
-        screen.blit(gradient, self.rect)
-
-        if self.is_selected:
-            pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=5)
-
-        text_surface = self.font.render(self.text, True, WHITE)
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        screen.blit(text_surface, text_rect)
 
     def check_hover(self, pos):
         self.is_hovered = self.rect.collidepoint(pos)
@@ -438,7 +452,7 @@ class SettingsPage(BasePage):
                 back_button_width,
                 button_height
             ),
-            "Back to Menu",
+            "Back",
             self.button_font
         )
 
@@ -626,7 +640,7 @@ class StartPage(BasePage):
                 200,
                 button_height
             ),
-            "Back to Menu",
+            "Back",
             self.button_font
         )
 
@@ -1025,7 +1039,7 @@ class HowToPlayPage(BasePage):
                 button_width,
                 button_height
             ),
-            "Back to Menu",
+            "Back",
             self.button_font
         )
         
@@ -1135,7 +1149,7 @@ class GameModePage(BasePage):
                 200, 
                 button_height
             ),
-            "Back to Menu",  
+            "Back",  
             self.button_font
         )
         
@@ -1670,7 +1684,7 @@ class AIDifficultyPage(BasePage):
                 200,  
                 button_height
             ),
-            "Back to Menu", 
+            "Back", 
             self.button_font
         )
 
