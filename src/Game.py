@@ -16,7 +16,7 @@ from src.text_scaler import text_scaler
 from src.ui import AIEmotionUI
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FONT_PATH = os.path.join(base_path, "assets", "font", "Play-Regular.ttf")
+FONT_PATH = os.path.join(base_path, "assets", "font", "ticketing.ttf")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -58,6 +58,39 @@ class Game:
 
         self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(32))
         self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        
+        window_size = self.screen.get_size()
+        try:
+            bg_path = os.path.join(base_path, "assets/image/starterbackground.png")
+            background = pygame.image.load(bg_path)
+            background = pygame.transform.scale(background, window_size)
+            
+            shuffling_path = os.path.join(base_path, "assets/image/Cards shuffling.png")
+            shuffling_image = pygame.image.load(shuffling_path)
+            shuffling_image = pygame.transform.scale(shuffling_image, window_size)
+            
+            self.screen.blit(background, (0, 0))
+            self.screen.blit(shuffling_image, (0, 0))
+            pygame.display.flip()
+            pygame.time.wait(1000)  
+            
+            start_path = os.path.join(base_path, "assets/image/Gamestart.png")
+            start_image = pygame.image.load(start_path)
+            logo_width = int(window_size[0] * 0.5)
+            logo_height = int(logo_width * (start_image.get_height() / start_image.get_width()))
+            start_image = pygame.transform.scale(start_image, (logo_width, logo_height))
+            
+            self.screen.blit(background, (0, 0))
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128)) 
+            self.screen.blit(overlay, (0, 0))
+            logo_x = (window_size[0] - logo_width) // 2
+            logo_y = (window_size[1] - logo_height) // 2
+            self.screen.blit(start_image, (logo_x, logo_y))
+            pygame.display.flip()
+            pygame.time.wait(1000)  
+        except Exception as e:
+            print(f"Error loading startup animations: {e}")
         
         self.game_mode = game_mode
         self.time_limit = time_limit
@@ -1074,6 +1107,18 @@ class Game:
             
         self.update_current_player()
         
+        player_obj = next((p for p in self.players if p.name == current_player['name']), None)
+        if not player_obj:
+            print(f"Warning: Could not find player object for {current_player['name']}")
+            return False
+            
+        if player_obj.in_jail and player_obj.stay_in_jail:
+            print(f"Player {current_player['name']} chose to stay in jail - skipping turn")
+            self.board.add_message(f"{current_player['name']} is staying in jail - skipping turn")
+            self.show_notification(f"{current_player['name']} is staying in jail - skipping turn", 2000)
+            self.handle_turn_end()
+            return True
+        
         old_position = current_player['position']
 
         self.lap_count[current_player['name']] += 1
@@ -1951,6 +1996,7 @@ class Game:
         if player['money'] >= 50:
             options.append(("[2] Pay £50 fine", pygame.K_2))
         options.append(("[3] Try rolling doubles", pygame.K_3))
+        options.append(("[4] Stay in jail (skip 2 turns)", pygame.K_4))
 
         title_height = 50
         y_offset = card_y + title_height + 20
@@ -2014,6 +2060,7 @@ class Game:
         if player['money'] >= 50:
             options.append(("[2] Pay £50 fine", "pay"))
         options.append(("[3] Try rolling doubles", "roll"))
+        options.append(("[4] Stay in jail (skip 2 turns)", "stay"))
         
         button_rects = []
         y_offset = y_start
@@ -2049,6 +2096,9 @@ class Game:
                     elif event.key == pygame.K_3:
                         choice = "roll"
                         waiting = False
+                    elif event.key == pygame.K_4:
+                        choice = "stay"
+                        waiting = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if current_time - last_click_time < 300: 
                         continue
@@ -2065,6 +2115,9 @@ class Game:
                                 waiting = False
                             elif option_value == "roll":
                                 choice = "roll"
+                                waiting = False
+                            elif option_value == "stay":
+                                choice = "stay"
                                 waiting = False
                 elif event.type == pygame.MOUSEMOTION:
                     need_redraw = True
@@ -2099,6 +2152,9 @@ class Game:
                     self.opportunity_deck.return_jail_card(card_type)
                 player['in_jail'] = False
                 player['jail_turns'] = 0
+                player_obj.in_jail = False
+                player_obj.jail_turns = 0
+                player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
                 self.show_notification(f"{player['name']} used Get Out of Jail Free card!", 2000)
                 return True
@@ -2108,6 +2164,9 @@ class Game:
                 self.synchronize_free_parking_pot() 
                 player['in_jail'] = False
                 player['jail_turns'] = 0
+                player_obj.in_jail = False
+                player_obj.jail_turns = 0
+                player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
                 self.show_notification(f"{player['name']} paid £50 to get out of jail!", 2000)
                 return True
@@ -2125,6 +2184,9 @@ class Game:
                     self.opportunity_deck.return_jail_card(card_type)
                 player['in_jail'] = False
                 player['jail_turns'] = 0
+                player_obj.in_jail = False
+                player_obj.jail_turns = 0
+                player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
                 self.show_notification(f"{player['name']} used Get Out of Jail Free card!", 2000)
                 return True
@@ -2134,9 +2196,18 @@ class Game:
                 self.synchronize_free_parking_pot() 
                 player['in_jail'] = False
                 player['jail_turns'] = 0
+                player_obj.in_jail = False
+                player_obj.jail_turns = 0
+                player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
                 self.show_notification(f"{player['name']} paid £50 to get out of jail!", 2000)
                 return True
+            elif choice == "stay":
+                player_obj.stay_in_jail = True
+                player['jail_turns'] = player.get('jail_turns', 0) + 1
+                self.board.add_message(f"{player['name']} chose to stay in jail!")
+                self.show_notification(f"{player['name']} chose to stay in jail!", 2000)
+                return False
 
         player['jail_turns'] = player.get('jail_turns', 0) + 1
         if player['jail_turns'] >= 3:
@@ -2144,15 +2215,24 @@ class Game:
                 player['money'] -= 50
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot() 
+                player['in_jail'] = False
+                player['jail_turns'] = 0
+                player_obj.in_jail = False
+                player_obj.jail_turns = 0
+                player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} paid £50 after 3 turns in jail!")
                 self.show_notification(f"{player['name']} paid £50 after 3 turns in jail!", 2000)
+                return True
             else:
+                player['in_jail'] = False
+                player['jail_turns'] = 0
+                player_obj.in_jail = False
+                player_obj.jail_turns = 0
+                player_obj.stay_in_jail = False 
                 self.board.add_message(f"{player['name']} couldn't pay jail fine!")
                 self.show_notification(f"{player['name']} couldn't pay jail fine!", 2000)
                 self.handle_bankruptcy(player)
-            player['in_jail'] = False
-            player['jail_turns'] = 0
-            return True
+                return True
             
         return False
 
@@ -3454,6 +3534,13 @@ class Game:
         
         if not player_obj:
             print(f"Could not find Player object for {current_player['name']}")
+            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+            return self.check_and_trigger_ai_turn(recursion_depth + 1)
+            
+        if player_obj.in_jail and player_obj.stay_in_jail:
+            print(f"Player {current_player['name']} chose to stay in jail - skipping turn")
+            self.board.add_message(f"{current_player['name']} is staying in jail - skipping turn")
+            self.show_notification(f"{current_player['name']} is staying in jail - skipping turn", 2000)
             self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
             return self.check_and_trigger_ai_turn(recursion_depth + 1)
             

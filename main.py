@@ -52,6 +52,15 @@ async def apply_screen_settings(resolution):
     global WINDOW_SIZE
     WINDOW_SIZE = resolution
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
+    
+    pygame.display.set_caption("Property Tycoon Build 12.03.2025")
+    try:
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "image", "icon.ico")
+        icon = pygame.image.load(icon_path)
+        pygame.display.set_icon(icon)
+    except (pygame.error, FileNotFoundError) as e:
+        print(f"Could not load game icon: {e}")
+    
     text_scaler.update_scale_factor(resolution[0], resolution[1])
     
     if pygame.display.get_surface():
@@ -112,7 +121,7 @@ async def run_game(game, game_settings):
     game_over_data = None
     last_time_check = pygame.time.get_ticks()
     last_ai_progress_time = pygame.time.get_ticks()
-    ai_timeout_duration = 10000  # 10 second
+    ai_timeout_duration = 10000 
     
     clock = pygame.time.Clock()
     
@@ -393,10 +402,52 @@ async def handle_end_game(game_over_data):
             elif end_event.type == pygame.MOUSEMOTION:
                 end_page.handle_motion(end_event.pos)
 
+async def show_logo_screen(screen, logo_path, scale_factor=0.5):
+    try:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        bg_path = os.path.join(base_path, "assets/image/starterbackground.png")
+        background = pygame.image.load(bg_path)
+        window_size = screen.get_size()
+        background = pygame.transform.scale(background, window_size)
+        
+        logo = pygame.image.load(logo_path)
+        
+        logo_width = int(window_size[0] * scale_factor)
+        logo_height = int(logo_width * (logo.get_height() / logo.get_width()))
+        logo = pygame.transform.scale(logo, (logo_width, logo_height))
+        
+        x = (window_size[0] - logo_width) // 2
+        y = (window_size[1] - logo_height) // 2
+        
+        screen.blit(background, (0, 0))
+        
+        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 128))  
+        screen.blit(overlay, (0, 0))
+        
+        screen.blit(logo, (x, y))
+        pygame.display.flip()
+        
+        await asyncio.sleep(1.5)
+        
+    except Exception as e:
+        print(f"Error showing logo screen: {e}")
+
+async def show_company_logo(screen):
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    
+    logo_path = os.path.join(base_path, "assets/image/Watson Games 2025.png")
+    await show_logo_screen(screen, logo_path, scale_factor=0.7)
+    
+    group_logo_path = os.path.join(base_path, "assets/image/Group 5 Persent.png")
+    await show_logo_screen(screen, group_logo_path, scale_factor=0.9)
+
 async def main():
     global WINDOW_SIZE
     text_scaler.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
+    
+    await show_company_logo(screen)
     
     clock = pygame.time.Clock()
     

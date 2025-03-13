@@ -24,7 +24,7 @@ AI_COLOR = (200, 100, 100)
 DEFAULT_RES = (854, 480)
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FONT_PATH = os.path.join(base_path, "assets", "font", "Play-Regular.ttf")
+FONT_PATH = os.path.join(base_path, "assets", "font", "ticketing.ttf")
 
 def get_window_size():
     surface = pygame.display.get_surface()
@@ -156,7 +156,6 @@ class BasePage:
         try:
             asset_path = os.path.join(base_path, "assets/image/starterbackground.png")
             self.background_image = pygame.image.load(asset_path)
-            # Don't resize here, we'll handle proper scaling in draw_background
         except (pygame.error, FileNotFoundError):
             print("Could not load background image")
             self.background_image = None
@@ -336,7 +335,7 @@ class MainMenuPage(BasePage):
                 self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
             self.screen.blit(self.github_logo, self.github_rect)
         
-        version_text = self.version_font.render("Build Version: 12.03.2025", True, ERROR_COLOR)
+        version_text = self.version_font.render("Build Version: 13.03.2025", True, ERROR_COLOR)
         version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -1084,10 +1083,11 @@ class GameModePage(BasePage):
         
         self.game_mode = "full"
         self.time_limit = None
+        
         self.custom_time_input = ModernInput(
             pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
-                get_window_size()[1] // 2,
+                get_window_size()[1] // 2 + 80,
                 300,
                 60
             ),
@@ -1114,7 +1114,7 @@ class GameModePage(BasePage):
             color=MODE_COLOR
         )
         
-        self.time_label = "Time Limit (minutes):"
+        self.time_label = "Time Limit (minutes, max 180):"
         
         button_width = 300
         self.start_button = ModernButton(
@@ -1202,6 +1202,9 @@ class GameModePage(BasePage):
             if self.game_mode == "abridged":
                 try:
                     minutes = int(self.custom_time_input.text)
+                    if minutes > 180:
+                        minutes = 180
+                        self.custom_time_input.text = "180"
                     self.time_limit = minutes * 60
                     print(f"Custom time limit set: {minutes} minutes")
                 except ValueError:
@@ -1223,6 +1226,10 @@ class GameModePage(BasePage):
                     if minutes <= 0:
                         self.input_error = "Time must be greater than 0"
                         return False
+                    if minutes > 180:
+                        self.input_error = "Time cannot exceed 180 minutes"
+                        self.custom_time_input.text = "180"
+                        minutes = 180
                     self.time_limit = minutes * 60
                     self.input_error = None
                     print(f"Starting abridged game with time limit: {minutes} minutes")
@@ -1252,6 +1259,10 @@ class GameModePage(BasePage):
                     if minutes <= 0:
                         self.input_error = "Time must be greater than 0"
                         return False
+                    if minutes > 180:
+                        self.input_error = "Time cannot exceed 180 minutes"
+                        self.custom_time_input.text = "180"
+                        minutes = 180
                     self.time_limit = minutes * 60
                     self.input_error = None
                     self.custom_time_input.active = False
@@ -1280,6 +1291,9 @@ class GameModePage(BasePage):
             if self.game_mode == "abridged":
                 try:
                     minutes = int(self.custom_time_input.text)
+                    if minutes > 180:
+                        minutes = 180
+                        self.custom_time_input.text = "180"
                     self.time_limit = minutes * 60
                     print(f"Custom time limit set: {minutes} minutes")
                 except ValueError:
@@ -1295,6 +1309,10 @@ class GameModePage(BasePage):
                     if minutes <= 0:
                         self.input_error = "Time must be greater than 0"
                         return False
+                    if minutes > 180:
+                        self.input_error = "Time cannot exceed 180 minutes"
+                        self.custom_time_input.text = "180"
+                        minutes = 180
                     self.time_limit = minutes * 60
                     self.input_error = None
                     print(f"Starting abridged game with time limit: {minutes} minutes")
@@ -1318,6 +1336,8 @@ class GameModePage(BasePage):
             try:
                 minutes = int(self.custom_time_input.text)
                 if minutes > 0:
+                    if minutes > 180:
+                        minutes = 180
                     settings["time_limit"] = minutes * 60
                     print(f"Game settings: Abridged mode with {minutes} minutes time limit")
                 else:

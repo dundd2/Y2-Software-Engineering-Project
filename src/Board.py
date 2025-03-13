@@ -80,7 +80,7 @@ class Board:
         self.board_rects = self._create_board_rects()
         self.messages = []
         self.message_times = []
-        self.message_font = pygame.font.Font('assets/font/Play-Regular.ttf', text_scaler.get_scaled_size(20))
+        self.message_font = pygame.font.Font('assets/font/ticketing.ttf', text_scaler.get_scaled_size(20))
 
     def add_message(self, text):
         self.messages.append(text)

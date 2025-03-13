@@ -20,6 +20,7 @@ class Player:
         self.in_jail = False
         self.jail_turns = 0
         self.jail_cards = 0
+        self.stay_in_jail = False
         self.bankrupt = False
         self.voluntary_exit = False
         self.final_assets = 0
@@ -90,7 +91,7 @@ class Player:
             alpha = int(100 * (1 - i/10))
             pygame.draw.circle(self.player_image, (*highlight_color, alpha), (15, 15), 20-i)
             
-        number_font = pygame.font.Font('assets/font/Play-Regular.ttf', text_scaler.get_scaled_size(28))
+        number_font = pygame.font.Font('assets/font/ticketing.ttf', text_scaler.get_scaled_size(28))
         number_text = number_font.render(str(self.player_number), True, WHITE)
         number_rect = number_text.get_rect(center=(20, 20))
         
@@ -174,7 +175,7 @@ class Player:
         self.rect.y = y - self.animation_offset
         
         if self.voluntary_exit:
-            font = pygame.font.Font('assets/font/Play-Regular.ttf', text_scaler.get_scaled_size(12))
+            font = pygame.font.Font('assets/font/ticketing.ttf', text_scaler.get_scaled_size(12))
             exit_text = font.render("EXITED", True, (200, 0, 0))
             exit_rect = exit_text.get_rect(center=(self.rect.centerx, self.rect.y - 15))
             screen.blit(exit_text, exit_rect)
