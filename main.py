@@ -419,17 +419,41 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
         x = (window_size[0] - logo_width) // 2
         y = (window_size[1] - logo_height) // 2
         
-        screen.blit(background, (0, 0))
-        
-        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 128))  
-        screen.blit(overlay, (0, 0))
-        
-        screen.blit(logo, (x, y))
-        pygame.display.flip()
+        # Fade in
+        for alpha in range(0, 255, 5):
+            screen.blit(background, (0, 0))
+            
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128))
+            screen.blit(overlay, (0, 0))
+            
+            logo_surface = pygame.Surface((logo_width, logo_height), pygame.SRCALPHA)
+            logo_surface.fill((255, 255, 255, 0))
+            logo_surface.blit(logo, (0, 0))
+            logo_surface.set_alpha(alpha)
+            screen.blit(logo_surface, (x, y))
+            
+            pygame.display.flip()
+            await asyncio.sleep(0.01)
         
         await asyncio.sleep(1.5)
         
+        for alpha in range(255, -1, -5):
+            screen.blit(background, (0, 0))
+            
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128))
+            screen.blit(overlay, (0, 0))
+            
+            logo_surface = pygame.Surface((logo_width, logo_height), pygame.SRCALPHA)
+            logo_surface.fill((255, 255, 255, 0))
+            logo_surface.blit(logo, (0, 0))
+            logo_surface.set_alpha(alpha)
+            screen.blit(logo_surface, (x, y))
+            
+            pygame.display.flip()
+            await asyncio.sleep(0.01)
+            
     except Exception as e:
         print(f"Error showing logo screen: {e}")
 
