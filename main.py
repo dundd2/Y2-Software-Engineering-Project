@@ -473,6 +473,8 @@ async def main():
     text_scaler.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
     
+    await show_company_logo(screen)
+    
     clock = pygame.time.Clock()
     
     while True:

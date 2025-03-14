@@ -202,10 +202,6 @@ class BasePage:
             
             scaled_bg = pygame.transform.scale(self.background_image, (scaled_width, scaled_height))
             self.screen.blit(scaled_bg, (pos_x, pos_y))
-            
-            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 128))
-            self.screen.blit(overlay, (0, 0))
         else:
             self.screen.fill(MODERN_BG)
             gradient = pygame.Surface(window_size, pygame.SRCALPHA)
@@ -412,14 +408,14 @@ class SettingsPage(BasePage):
         self.font_options = [
             ("Ticketing", "Ticketing.ttf"),
             ("Play Regular", "Play-Regular.ttf"),
-            ("British Railway=", "britrdn_.ttf")
+            ("British Railway=", "britrdn_.ttf"),
         ]
         self.current_resolution = 0
         self.current_font = 0
         self.show_confirmation = False
         self.confirmation_time = 0
         
-        button_width = 400
+        button_width = 500  
         button_height = 60
         self.resolution_button = ModernButton(
             pygame.Rect(
@@ -444,7 +440,7 @@ class SettingsPage(BasePage):
             color=MODE_COLOR
         )
         
-        confirm_button_width = 300
+        confirm_button_width = 350  
         self.confirm_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - confirm_button_width) // 2,
@@ -456,7 +452,7 @@ class SettingsPage(BasePage):
             self.button_font
         )
         
-        back_button_width = 300
+        back_button_width = 350  
         self.back_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - back_button_width) // 2,
@@ -490,7 +486,7 @@ class SettingsPage(BasePage):
             current_time = pygame.time.get_ticks()
             if current_time - self.confirmation_time < self.CONFIRMATION_DURATION:
                 confirm_text = self.small_font.render("Press ENTER or click Confirm to apply changes", True, SUCCESS_COLOR)
-                confirm_rect = confirm_text.get_rect(centerx=get_window_size()[0]//2, top=self.font_button.rect.bottom + 20)
+                confirm_rect = confirm_text.get_rect(centerx=get_window_size()[0]//2, top=self.confirm_button.rect.bottom + 10)
                 self.screen.blit(confirm_text, confirm_rect)
             else:
                 self.show_confirmation = False
@@ -756,19 +752,26 @@ class StartPage(BasePage):
 
         input_y_start = get_window_size()[1] // 2 - 50
         
-        player_controls_y = input_y_start - 180
+        player_controls_y = input_y_start - 120
         
         human_text = self.button_font.render(f"Human Players: {self.human_count}", True, HUMAN_COLOR)
-        human_rect = human_text.get_rect(centerx=get_window_size()[0]//2 - 150, y=player_controls_y - 60)
+        human_rect = human_text.get_rect(centerx=get_window_size()[0]//2 - 150, y=player_controls_y - 40)
         self.screen.blit(human_text, human_rect)
 
         ai_text = self.button_font.render(f"AI Players: {self.ai_count}", True, AI_COLOR)
-        ai_rect = ai_text.get_rect(centerx=get_window_size()[0]//2 + 150, y=player_controls_y - 60)
+        ai_rect = ai_text.get_rect(centerx=get_window_size()[0]//2 + 150, y=player_controls_y - 40)
         self.screen.blit(ai_text, ai_rect)
 
         total_text = self.small_font.render(f"Total Players: {self.total_players}/5", True, LIGHT_GRAY)
-        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y - 30)
+        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y + 20)  # Moved down by 30 pixels
         self.screen.blit(total_text, total_rect)
+
+        button_y = player_controls_y + 60  
+        
+        self.human_minus_button.rect.y = button_y
+        self.human_plus_button.rect.y = button_y
+        self.ai_minus_button.rect.y = button_y
+        self.ai_plus_button.rect.y = button_y
 
         self.human_minus_button.active = self.human_count > 1
         self.human_plus_button.active = self.human_count < 5 and self.total_players < 5
@@ -883,8 +886,8 @@ class StartPage(BasePage):
         overlay.fill((0, 0, 0, 180))
         self.screen.blit(overlay, (0, 0))
         
-        panel_width = 400
-        panel_height = 300
+        panel_width = 500  
+        panel_height = 400  
         panel_x = (get_window_size()[0] - panel_width) // 2
         panel_y = (get_window_size()[1] - panel_height) // 2
         
@@ -901,7 +904,7 @@ class StartPage(BasePage):
         title_rect = title_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 20)
         self.screen.blit(title_text, title_rect)
         
-        hint_text = self.small_font.render("Click any token to select (tokens will swap if needed)", True, LIGHT_GRAY)
+        hint_text = self.small_font.render("Click any token to select", True, LIGHT_GRAY)
         hint_rect = hint_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 60)
         self.screen.blit(hint_text, hint_rect)
         
