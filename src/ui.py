@@ -409,7 +409,13 @@ class SettingsPage(BasePage):
             (1920, 1080),
             (2560, 1440)
         ]
+        self.font_options = [
+            ("Ticketing", "Ticketing.ttf"),
+            ("Play Regular", "Play-Regular.ttf"),
+            ("British Railway=", "britrdn_.ttf")
+        ]
         self.current_resolution = 0
+        self.current_font = 0
         self.show_confirmation = False
         self.confirmation_time = 0
         
@@ -425,17 +431,31 @@ class SettingsPage(BasePage):
             f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}",
             self.button_font
         )
+
+        self.font_button = ModernButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                get_window_size()[1] // 2 - 50,
+                button_width,
+                button_height
+            ),
+            f"Font: {self.font_options[self.current_font][0]}",
+            self.button_font,
+            color=MODE_COLOR
+        )
+        
         confirm_button_width = 300
         self.confirm_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - confirm_button_width) // 2,
-                get_window_size()[1] // 2,
+                get_window_size()[1] // 2 + 50,
                 confirm_button_width,
                 button_height
             ),
             "Confirm",
             self.button_font
         )
+        
         back_button_width = 300
         self.back_button = ModernButton(
             pygame.Rect(
@@ -462,12 +482,15 @@ class SettingsPage(BasePage):
         info_text = self.small_font.render("All resolutions maintain 16:9 aspect ratio", True, LIGHT_GRAY)
         info_rect = info_text.get_rect(centerx=get_window_size()[0]//2, top=self.resolution_button.rect.bottom + 10)
         self.screen.blit(info_text, info_rect)
-        
+
+        self.font_button.text = f"Font: {self.font_options[self.current_font][0]}"
+        self.font_button.draw(self.screen)
+
         if self.show_confirmation:
             current_time = pygame.time.get_ticks()
             if current_time - self.confirmation_time < self.CONFIRMATION_DURATION:
                 confirm_text = self.small_font.render("Press ENTER or click Confirm to apply changes", True, SUCCESS_COLOR)
-                confirm_rect = confirm_text.get_rect(left=20, top=info_rect.bottom + 10)
+                confirm_rect = confirm_text.get_rect(centerx=get_window_size()[0]//2, top=self.font_button.rect.bottom + 20)
                 self.screen.blit(confirm_text, confirm_rect)
             else:
                 self.show_confirmation = False
@@ -475,6 +498,7 @@ class SettingsPage(BasePage):
         controls = [
             "Controls:",
             "R - Change screen resolution",
+            "F - Change font",
             "Enter/Space - Apply and return"
         ]
         
@@ -496,35 +520,57 @@ class SettingsPage(BasePage):
             self.show_confirmation = True
             self.confirmation_time = pygame.time.get_ticks()
             return False
+        elif self.font_button.check_hover(pos):
+            self.current_font = (self.current_font + 1) % len(self.font_options)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
         elif self.confirm_button.check_hover(pos):
             current_resolution = get_window_size()
             new_resolution = self.resolution_options[self.current_resolution]
-            if current_resolution != new_resolution:
+            global FONT_PATH
+            new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
+            if current_resolution != new_resolution or FONT_PATH != new_font_path:
+                FONT_PATH = new_font_path
                 return True
         elif self.back_button.check_hover(pos):
-            return True
+            return "back"
         return False
 
     def handle_motion(self, pos):
         self.resolution_button.check_hover(pos)
+        self.font_button.check_hover(pos)
         self.confirm_button.check_hover(pos)
         self.back_button.check_hover(pos)
-
+        
     def handle_key(self, event):
         if event.key == pygame.K_r:
             self.current_resolution = (self.current_resolution + 1) % len(self.resolution_options)
             self.show_confirmation = True
             self.confirmation_time = pygame.time.get_ticks()
             return False
+        elif event.key == pygame.K_f:
+            self.current_font = (self.current_font + 1) % len(self.font_options)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
         elif event.key in [pygame.K_RETURN, pygame.K_SPACE]:
             current_resolution = get_window_size()
             new_resolution = self.resolution_options[self.current_resolution]
-            if current_resolution != new_resolution:
+            global FONT_PATH
+            new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
+            if current_resolution != new_resolution or FONT_PATH != new_font_path:
+                FONT_PATH = new_font_path
                 return True
+        elif event.key == pygame.K_ESCAPE:
+            return "back"
         return False
     
     def get_settings(self):
-        return {"resolution": self.resolution_options[self.current_resolution]}
+        return {
+            "resolution": self.resolution_options[self.current_resolution],
+            "font": os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
+        }
 
 class StartPage(BasePage):
     def __init__(self, instructions=None):
@@ -883,7 +929,7 @@ class StartPage(BasePage):
             token_is_ai = False
             
             for j, token_idx in enumerate(self.player_token_indices):
-                if token_idx == i:
+                if (token_idx == i):
                     token_in_use = True
                     token_user = j + 1 
                     token_is_ai = False
@@ -891,7 +937,7 @@ class StartPage(BasePage):
                     
             if not token_in_use:
                 for j, token_idx in enumerate(self.ai_token_indices):
-                    if token_idx == i:
+                    if (token_idx == i):
                         token_in_use = True
                         token_user = j + 1 
                         token_is_ai = True
