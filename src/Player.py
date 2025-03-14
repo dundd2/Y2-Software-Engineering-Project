@@ -58,7 +58,7 @@ class Player:
 
     def load_player_image(self):
         try:
-            image_path = os.path.join(base_path, "assets", "image", f"Playerlogo ({self.player_number}).png")
+            image_path = os.path.join(base_path, "assets", "image", f"Playertoken ({self.player_number}).png")
             print(f"Attempting to load player image from: {image_path}")
             
             if os.path.exists(image_path):
@@ -68,7 +68,7 @@ class Player:
             else:
                 print(f"Image file not found at {image_path}, trying absolute path...")
                 current_dir = os.getcwd()
-                abs_path = os.path.join(current_dir, "assets", "image", f"Playerlogo ({self.player_number}).png")
+                abs_path = os.path.join(current_dir, "assets", "image", f"Playertoken ({self.player_number}).png")
                 if os.path.exists(abs_path):
                     self.player_image = pygame.image.load(abs_path)
                     self.player_image = pygame.transform.scale(self.player_image, (40, 40))

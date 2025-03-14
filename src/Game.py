@@ -482,7 +482,7 @@ class Game:
         
         mouse_pos = pygame.mouse.get_pos()
         
-        panel_width = 320
+        panel_width = 280  
         panel_spacing = 10
         player_height = 100
         total_height = (player_height + panel_spacing) * len(self.logic.players) - panel_spacing
@@ -509,8 +509,8 @@ class Game:
                                highlight_surface.get_rect(), border_radius=15)
                 self.screen.blit(highlight_surface, player_rect)
 
-            logo_size = 60
-            logo_margin = 10
+            logo_size = 50  
+            logo_margin = 8  
             logo_rect = pygame.Rect(panel_x + logo_margin, current_y + (player_height - logo_size) // 2,
                                   logo_size, logo_size)
             
@@ -520,7 +520,7 @@ class Game:
                     scaled_logo.set_alpha(128)
                 self.screen.blit(scaled_logo, logo_rect)
             
-            info_x = logo_rect.right + 15
+            info_x = logo_rect.right + 10  
             info_y = current_y + 10
             
             name_color = ACCENT_COLOR if is_current else WHITE
@@ -551,7 +551,7 @@ class Game:
                 prop_y = money_y + 30
                 prop_size = 15
                 prop_spacing = 5
-                max_props_per_row = 8
+                max_props_per_row = 6 
                 
                 for idx, prop in enumerate(props):
                     row = idx // max_props_per_row
@@ -3369,7 +3369,7 @@ class Game:
         overlay.fill((0, 0, 0, 180))
         
         dialog_width = int(window_size[0] * 0.4)
-        dialog_height = int(window_size[1] * 0.25)
+        dialog_height = int(window_size[1] * 0.3)
         dialog_x = (window_size[0] - dialog_width) // 2
         dialog_y = (window_size[1] - dialog_height) // 2
         
@@ -3382,7 +3382,7 @@ class Game:
         button_spacing = 30
         total_width = (button_width * 2) + button_spacing
         start_x = dialog_x + (dialog_width - total_width) // 2
-        button_y = dialog_y + dialog_height - 60
+        button_y = dialog_y + dialog_height - 80
         
         yes_button = pygame.Rect(start_x, button_y, button_width, button_height)
         no_button = pygame.Rect(start_x + button_width + button_spacing, button_y, button_width, button_height)

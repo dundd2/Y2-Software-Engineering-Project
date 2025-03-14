@@ -101,12 +101,12 @@ class GameLogic:
 
     def add_player(self, player):
         if len(self.players) < 5:
-            if not self.available_tokens:
-                return False, "No tokens available"
             player_name = player.name if hasattr(player, 'name') else player
             player_is_ai = getattr(player, 'is_ai', False) if hasattr(player, 'is_ai') else False
-            token = random.choice(self.available_tokens)
-            self.available_tokens.remove(token)
+            
+            token_index = getattr(player, 'player_number', 1) if hasattr(player, 'player_number') else 1
+            token = self.GAME_TOKENS[min(token_index - 1, len(self.GAME_TOKENS) - 1) % len(self.GAME_TOKENS)]
+            
             new_player = {
                 "name": player_name,
                 "money": 1500,

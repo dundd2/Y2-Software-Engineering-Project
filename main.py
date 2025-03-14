@@ -53,7 +53,7 @@ async def apply_screen_settings(resolution):
     WINDOW_SIZE = resolution
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
     
-    pygame.display.set_caption("Property Tycoon Build 13.03.2025")
+    pygame.display.set_caption("Property Tycoon Build 14.03.2025")
     try:
         icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "image", "icon.ico")
         icon = pygame.image.load(icon_path)
@@ -75,7 +75,7 @@ def create_game(player_info, game_settings):
     if not player_info or not game_settings:
         raise ValueError("Missing player info or game settings")
         
-    total_players, player_names, ai_count = player_info
+    total_players, player_names, ai_count, token_indices = player_info
     if not isinstance(total_players, int) or not isinstance(ai_count, int):
         raise ValueError("Invalid player counts")
         
@@ -84,19 +84,21 @@ def create_game(player_info, game_settings):
     
     bank_money = STARTING_BANK_MONEY
     
-    for name in player_names[:total_players-ai_count]:
+    for i, name in enumerate(player_names[:total_players-ai_count]):
         if not name.strip():
             continue
-        player = Player(name, player_number=player_number)
+        token_index = token_indices[i] + 1  
+        player = Player(name, player_number=token_index)
         player.money = STARTING_PLAYER_MONEY
         bank_money -= STARTING_PLAYER_MONEY
         players.append(player)
         player_number += 1
         
-    for name in player_names[total_players-ai_count:]:
+    for i, name in enumerate(player_names[total_players-ai_count:]):
         if not name.strip():
             continue
-        player = Player(name, is_ai=True, player_number=player_number, 
+        token_index = token_indices[total_players-ai_count+i] + 1  
+        player = Player(name, is_ai=True, player_number=token_index, 
                        ai_difficulty=game_settings.get("ai_difficulty", "easy"))
         player.money = STARTING_PLAYER_MONEY
         bank_money -= STARTING_PLAYER_MONEY
@@ -470,8 +472,6 @@ async def main():
     global WINDOW_SIZE
     text_scaler.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
-    
-    await show_company_logo(screen)
     
     clock = pygame.time.Clock()
     

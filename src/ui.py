@@ -170,6 +170,7 @@ class BasePage:
         try:
             asset_path = os.path.join(base_path, "assets/image/starterbackground.png")
             self.background_image = pygame.image.load(asset_path)
+            self.background_image = pygame.transform.scale(self.background_image, window_size)
         except (pygame.error, FileNotFoundError):
             print("Could not load background image")
             self.background_image = None
@@ -215,20 +216,11 @@ class BasePage:
 
     def draw_title(self):
         window_size = get_window_size()
-        if self.logo_image:
-            logo_rect = self.logo_image.get_rect(centerx=window_size[0]//2, y=50)
-            
-            glow_surface = pygame.Surface((logo_rect.width + 20, logo_rect.height + 20), pygame.SRCALPHA)
-            current_time = pygame.time.get_ticks()
-            glow_intensity = abs(math.sin(current_time * 0.003))
-            for i in range(10):
-                alpha = int(25 * (1 - i/10) * glow_intensity)
-                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, alpha),
-                               pygame.Rect(i, i, glow_surface.get_width() - i*2, glow_surface.get_height() - i*2),
-                               border_radius=5)
-            self.screen.blit(glow_surface, (logo_rect.x - 10, logo_rect.y - 10))
+        
+        if hasattr(self, 'logo_image') and self.logo_image is not None and (isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage)):
+            logo_rect = self.logo_image.get_rect(centerx=window_size[0]//2, y=80)
             self.screen.blit(self.logo_image, logo_rect)
-        else:
+        elif isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage):
             title_shadow = self.title_font.render("Property Tycoon", True, BLACK)
             title_glow = self.title_font.render("Property Tycoon", True, ACCENT_COLOR)
             title_text = self.title_font.render("Property Tycoon", True, WHITE)
@@ -349,7 +341,7 @@ class MainMenuPage(BasePage):
                 self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
             self.screen.blit(self.github_logo, self.github_rect)
         
-        version_text = self.version_font.render("Build Version: 13.03.2025", True, ERROR_COLOR)
+        version_text = self.version_font.render("Build Version: 14.03.2025", True, ERROR_COLOR)
         version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -426,7 +418,7 @@ class SettingsPage(BasePage):
         self.resolution_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] // 2 - 100,
+                get_window_size()[1] // 2 - 150,
                 button_width,
                 button_height
             ),
@@ -437,7 +429,7 @@ class SettingsPage(BasePage):
         self.confirm_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - confirm_button_width) // 2,
-                get_window_size()[1] // 2 + 50,
+                get_window_size()[1] // 2,
                 confirm_button_width,
                 button_height
             ),
@@ -461,7 +453,7 @@ class SettingsPage(BasePage):
         self.draw_title()
         
         settings_text = self.button_font.render("Game Settings", True, WHITE)
-        settings_rect = settings_text.get_rect(centerx=get_window_size()[0]//2, y=180)
+        settings_rect = settings_text.get_rect(centerx=get_window_size()[0]//2, y=100)
         self.screen.blit(settings_text, settings_rect)
         
         self.resolution_button.text = f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}"
@@ -553,18 +545,42 @@ class StartPage(BasePage):
         self.player_names = ["Human Player 1"]
         self.ai_names = ["AI-1"]
         self.ai_name_counter = 1
+        
+        self.token_images = []
+        for i in range(1, 7): 
+            try:
+                image_path = os.path.join(base_path, "assets", "image", f"Playertoken ({i}).png")
+                if os.path.exists(image_path):
+                    token_image = pygame.image.load(image_path)
+                    token_image = pygame.transform.scale(token_image, (40, 40))
+                    self.token_images.append(token_image)
+                else:
+                    print(f"Token image {i} not found at {image_path}")
+                    fallback = pygame.Surface((40, 40), pygame.SRCALPHA)
+                    pygame.draw.circle(fallback, (50*i, 100, 150), (20, 20), 20)
+                    self.token_images.append(fallback)
+            except Exception as e:
+                print(f"Error loading token image {i}: {e}")
+                fallback = pygame.Surface((40, 40), pygame.SRCALPHA)
+                pygame.draw.circle(fallback, (50*i, 100, 150), (20, 20), 20)
+                self.token_images.append(fallback)
+        
+        self.player_token_indices = [0]  
+        self.ai_token_indices = [1]    
 
         button_width = 300
         button_height = 60
-        input_y_start = get_window_size()[1] // 2 + 50
+        input_y_start = get_window_size()[1] // 2 - 50
         input_width = 300
         input_height = 50
         count_x_offset = 250
 
+        player_controls_y = input_y_start - 180
+
         self.human_minus_button = ModernButton(
             pygame.Rect(
                 get_window_size()[0]//2 - count_x_offset - 100,
-                input_y_start - 140,
+                player_controls_y,
                 50,
                 50
             ),
@@ -576,7 +592,7 @@ class StartPage(BasePage):
         self.human_plus_button = ModernButton(
             pygame.Rect(
                 get_window_size()[0]//2 - count_x_offset + 50,
-                input_y_start - 140,
+                player_controls_y,
                 50,
                 50
             ),
@@ -588,7 +604,7 @@ class StartPage(BasePage):
         self.ai_minus_button = ModernButton(
             pygame.Rect(
                 get_window_size()[0]//2 + count_x_offset - 100,
-                input_y_start - 140,
+                player_controls_y,
                 50,
                 50
             ),
@@ -600,7 +616,7 @@ class StartPage(BasePage):
         self.ai_plus_button = ModernButton(
             pygame.Rect(
                 get_window_size()[0]//2 + count_x_offset + 50,
-                input_y_start - 140,
+                player_controls_y,
                 50,
                 50
             ),
@@ -610,11 +626,12 @@ class StartPage(BasePage):
         )
 
         self.name_inputs = []
+        input_spacing = 50
         for i in range(5):
             self.name_inputs.append(ModernInput(
                 pygame.Rect(
                     (get_window_size()[0] - input_width) // 2,
-                    input_y_start + i * 60,
+                    input_y_start + i * input_spacing,
                     input_width,
                     input_height
                 ),
@@ -643,6 +660,11 @@ class StartPage(BasePage):
             "Back",
             self.button_font
         )
+        
+        self.token_button_rects = []
+        self.token_selection_active = False
+        self.token_selection_for_player = -1
+        self.token_selection_is_ai = False
 
     def generate_unique_ai_name(self):
         self.ai_name_counter += 1
@@ -653,23 +675,53 @@ class StartPage(BasePage):
             self.ai_names.append(self.generate_unique_ai_name())
         while len(self.ai_names) > self.ai_count:
             self.ai_names.pop()
+            
+        while len(self.player_token_indices) < self.human_count:
+            used_indices = self.player_token_indices + self.ai_token_indices
+            for i in range(6): 
+                if i not in used_indices:
+                    self.player_token_indices.append(i)
+                    break
+            else:
+                self.player_token_indices.append(0)
+                
+        while len(self.player_token_indices) > self.human_count:
+            self.player_token_indices.pop()
+            
+        while len(self.ai_token_indices) < self.ai_count:
+            used_indices = self.player_token_indices + self.ai_token_indices
+            for i in range(6): 
+                if i not in used_indices:
+                    self.ai_token_indices.append(i)
+                    break
+            else:
+                self.ai_token_indices.append(0)
+                
+        while len(self.ai_token_indices) > self.ai_count:
+            self.ai_token_indices.pop()
 
     def draw(self):
         self.draw_background()
         self.draw_title()
 
-        input_y_start = get_window_size()[1] // 2 + 50
+        player_setup_title = self.button_font.render("Player Setup", True, WHITE)
+        title_rect = player_setup_title.get_rect(centerx=get_window_size()[0]//2, y=100)
+        self.screen.blit(player_setup_title, title_rect)
+
+        input_y_start = get_window_size()[1] // 2 - 50
+        
+        player_controls_y = input_y_start - 180
         
         human_text = self.button_font.render(f"Human Players: {self.human_count}", True, HUMAN_COLOR)
-        human_rect = human_text.get_rect(centerx=get_window_size()[0]//2 - 150, y=input_y_start - 200)
+        human_rect = human_text.get_rect(centerx=get_window_size()[0]//2 - 150, y=player_controls_y - 60)
         self.screen.blit(human_text, human_rect)
 
         ai_text = self.button_font.render(f"AI Players: {self.ai_count}", True, AI_COLOR)
-        ai_rect = ai_text.get_rect(centerx=get_window_size()[0]//2 + 150, y=input_y_start - 200)
+        ai_rect = ai_text.get_rect(centerx=get_window_size()[0]//2 + 150, y=player_controls_y - 60)
         self.screen.blit(ai_text, ai_rect)
 
         total_text = self.small_font.render(f"Total Players: {self.total_players}/5", True, LIGHT_GRAY)
-        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=input_y_start - 170)
+        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y - 30)
         self.screen.blit(total_text, total_rect)
 
         self.human_minus_button.active = self.human_count > 1
@@ -682,32 +734,78 @@ class StartPage(BasePage):
         self.ai_minus_button.draw(self.screen)
         self.ai_plus_button.draw(self.screen)
 
-        for i in range(self.human_count):
-            self.name_inputs[i].active = (i == self.active_input)
-            self.name_inputs[i].text = self.player_names[i] if i < len(self.player_names) else ""
-            self.name_inputs[i].draw(self.screen)
-            
-            human_label = self.small_font.render("Human", True, HUMAN_COLOR)
-            label_rect = human_label.get_rect(
-                right=self.name_inputs[i].rect.left - 10,
-                centery=self.name_inputs[i].rect.centery
-            )
-            self.screen.blit(human_label, label_rect)
+        input_spacing = 50
+        
+        if self.token_selection_active:
+            self.draw_token_selection()
+        else:
+            for i in range(self.human_count):
+                self.name_inputs[i].active = (i == self.active_input)
+                self.name_inputs[i].text = self.player_names[i] if i < len(self.player_names) else ""
+                self.name_inputs[i].draw(self.screen)
+                
+                human_label = self.small_font.render("Human", True, HUMAN_COLOR)
+                label_rect = human_label.get_rect(
+                    right=self.name_inputs[i].rect.left - 10,
+                    centery=self.name_inputs[i].rect.centery
+                )
+                self.screen.blit(human_label, label_rect)
+                
+                token_rect = pygame.Rect(
+                    self.name_inputs[i].rect.right + 10,
+                    self.name_inputs[i].rect.centery - 20,
+                    40, 40
+                )
+                
+                token_index = self.player_token_indices[i] if i < len(self.player_token_indices) else 0
+                token_image = self.token_images[token_index]
+                self.screen.blit(token_image, token_rect)
+                
+                pygame.draw.rect(self.screen, HUMAN_COLOR, token_rect, 2, border_radius=5)
+                
+                if i >= len(self.token_button_rects):
+                    self.token_button_rects.append((token_rect, i, False))  
+                else:
+                    self.token_button_rects[i] = (token_rect, i, False)
 
-        for i in range(self.ai_count):
-            ai_input_rect = self.name_inputs[self.human_count + i].rect
-            ai_text = self.input_font.render(self.ai_names[i], True, LIGHT_GRAY)
-            ai_rect = ai_text.get_rect(center=ai_input_rect.center)
-            
-            pygame.draw.rect(self.screen, (*AI_COLOR[:3], 50), ai_input_rect, border_radius=5)
-            self.screen.blit(ai_text, ai_rect)
-            
-            ai_label = self.small_font.render("AI", True, AI_COLOR)
-            label_rect = ai_label.get_rect(
-                right=ai_input_rect.left - 10,
-                centery=ai_input_rect.centery
-            )
-            self.screen.blit(ai_label, label_rect)
+            for i in range(self.ai_count):
+                ai_input_rect = pygame.Rect(
+                    (get_window_size()[0] - 300) // 2,
+                    input_y_start + (self.human_count + i) * input_spacing,
+                    300,
+                    50
+                )
+                
+                ai_text = self.input_font.render(self.ai_names[i], True, LIGHT_GRAY)
+                ai_rect = ai_text.get_rect(center=ai_input_rect.center)
+                
+                pygame.draw.rect(self.screen, (*AI_COLOR[:3], 50), ai_input_rect, border_radius=5)
+                self.screen.blit(ai_text, ai_rect)
+                
+                ai_label = self.small_font.render("AI", True, AI_COLOR)
+                label_rect = ai_label.get_rect(
+                    right=ai_input_rect.left - 10,
+                    centery=ai_input_rect.centery
+                )
+                self.screen.blit(ai_label, label_rect)
+                
+                token_rect = pygame.Rect(
+                    ai_input_rect.right + 10,
+                    ai_input_rect.centery - 20,
+                    40, 40
+                )
+                
+                token_index = self.ai_token_indices[i] if i < len(self.ai_token_indices) else 0
+                token_image = self.token_images[token_index]
+                self.screen.blit(token_image, token_rect)
+                
+                pygame.draw.rect(self.screen, AI_COLOR, token_rect, 2, border_radius=5)
+                
+                button_index = self.human_count + i
+                if button_index >= len(self.token_button_rects):
+                    self.token_button_rects.append((token_rect, i, True))  
+                else:
+                    self.token_button_rects[button_index] = (token_rect, i, True)
 
         can_start = (all(name.strip() for name in self.player_names[:self.human_count]) and 
                     self.total_players >= 2 and self.total_players <= 5)
@@ -733,18 +831,129 @@ class StartPage(BasePage):
             y_offset += 20
 
         pygame.display.flip()
+        
+    def draw_token_selection(self):
+        overlay = pygame.Surface(get_window_size(), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        self.screen.blit(overlay, (0, 0))
+        
+        panel_width = 400
+        panel_height = 300
+        panel_x = (get_window_size()[0] - panel_width) // 2
+        panel_y = (get_window_size()[1] - panel_height) // 2
+        
+        pygame.draw.rect(self.screen, MODERN_BG, 
+                       pygame.Rect(panel_x, panel_y, panel_width, panel_height),
+                       border_radius=15)
+        pygame.draw.rect(self.screen, ACCENT_COLOR, 
+                       pygame.Rect(panel_x, panel_y, panel_width, panel_height), 2,
+                       border_radius=15)
+        
+        player_type = "AI" if self.token_selection_is_ai else "Human"
+        player_index = self.token_selection_for_player + 1
+        title_text = self.button_font.render(f"Select Token for {player_type} {player_index}", True, WHITE)
+        title_rect = title_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 20)
+        self.screen.blit(title_text, title_rect)
+        
+        hint_text = self.small_font.render("Click any token to select (tokens will swap if needed)", True, LIGHT_GRAY)
+        hint_rect = hint_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 60)
+        self.screen.blit(hint_text, hint_rect)
+        
+        token_size = 60
+        token_spacing = 20
+        tokens_per_row = 3
+        total_width = (token_size * tokens_per_row) + (token_spacing * (tokens_per_row - 1))
+        start_x = panel_x + (panel_width - total_width) // 2
+        start_y = panel_y + 100
+        
+        self.token_selection_rects = []
+        
+        for i, token_image in enumerate(self.token_images):
+            row = i // tokens_per_row
+            col = i % tokens_per_row
+            
+            x = start_x + col * (token_size + token_spacing)
+            y = start_y + row * (token_size + token_spacing)
+            
+            scaled_token = pygame.transform.scale(token_image, (token_size, token_size))
+            token_rect = pygame.Rect(x, y, token_size, token_size)
+            
+            token_in_use = False
+            token_user = None
+            token_is_ai = False
+            
+            for j, token_idx in enumerate(self.player_token_indices):
+                if token_idx == i:
+                    token_in_use = True
+                    token_user = j + 1 
+                    token_is_ai = False
+                    break
+                    
+            if not token_in_use:
+                for j, token_idx in enumerate(self.ai_token_indices):
+                    if token_idx == i:
+                        token_in_use = True
+                        token_user = j + 1 
+                        token_is_ai = True
+                        break
+            
+            self.screen.blit(scaled_token, token_rect)
+            
+            if self.token_selection_is_ai:
+                is_selected = (i == self.ai_token_indices[self.token_selection_for_player])
+                border_color = AI_COLOR if is_selected else WHITE
+            else:
+                is_selected = (i == self.player_token_indices[self.token_selection_for_player])
+                border_color = HUMAN_COLOR if is_selected else WHITE
+            
+            pygame.draw.rect(self.screen, border_color, token_rect, 2, border_radius=5)
+            
+            if token_in_use and not (self.token_selection_is_ai and token_is_ai and token_user == self.token_selection_for_player + 1) and not (not self.token_selection_is_ai and not token_is_ai and token_user == self.token_selection_for_player + 1):
+                user_text = self.small_font.render(f"{'AI' if token_is_ai else 'P'}{token_user}", True, AI_COLOR if token_is_ai else HUMAN_COLOR)
+                user_rect = user_text.get_rect(center=(x + token_size//2, y + token_size + 10))
+                self.screen.blit(user_text, user_rect)
+            
+            self.token_selection_rects.append((token_rect, i, True))  
+        
+        close_button_width = 100
+        close_button_height = 40
+        close_button_rect = pygame.Rect(
+            panel_x + (panel_width - close_button_width) // 2,
+            panel_y + panel_height - 60,
+            close_button_width,
+            close_button_height
+        )
+        
+        pygame.draw.rect(self.screen, ACCENT_COLOR, close_button_rect, border_radius=5)
+        close_text = self.small_font.render("Close", True, WHITE)
+        close_rect = close_text.get_rect(center=close_button_rect.center)
+        self.screen.blit(close_text, close_rect)
+        
+        self.close_button_rect = close_button_rect
 
     def handle_click(self, pos):
+        if self.token_selection_active:
+            return self.handle_token_selection_click(pos)
+            
+        for rect, player_idx, is_ai in self.token_button_rects:
+            if rect.collidepoint(pos):
+                self.token_selection_active = True
+                self.token_selection_for_player = player_idx
+                self.token_selection_is_ai = is_ai
+                return False
+        
         if self.human_minus_button.check_hover(pos) and self.human_count > 1:
             self.human_count -= 1
             self.total_players = self.human_count + self.ai_count
+            self.update_player_lists()
             return False
             
         if self.human_plus_button.check_hover(pos) and self.human_count < 5 and self.total_players < 5:
             self.human_count += 1
             self.total_players = self.human_count + self.ai_count
             if len(self.player_names) < self.human_count:
-                self.player_names.append(f"Human {self.human_count}")
+                self.player_names.append(f"Human Player {self.human_count}")
+            self.update_player_lists()
             return False
 
         if self.ai_minus_button.check_hover(pos) and self.ai_count > 0:
@@ -772,6 +981,51 @@ class StartPage(BasePage):
 
         self.active_input = -1
         return False
+        
+    def handle_token_selection_click(self, pos):
+        if hasattr(self, 'close_button_rect') and self.close_button_rect.collidepoint(pos):
+            self.token_selection_active = False
+            return False
+            
+        for rect, token_idx, available in self.token_selection_rects:
+            if rect.collidepoint(pos):        
+                if self.token_selection_is_ai:
+                    for i, human_token in enumerate(self.player_token_indices):
+                        if human_token == token_idx:
+                            self.player_token_indices[i] = self.ai_token_indices[self.token_selection_for_player]
+                            self.ai_token_indices[self.token_selection_for_player] = token_idx
+                            self.token_selection_active = False
+                            return False
+                    
+                    for i, ai_token in enumerate(self.ai_token_indices):
+                        if ai_token == token_idx and i != self.token_selection_for_player:
+                            self.ai_token_indices[i] = self.ai_token_indices[self.token_selection_for_player]
+                            self.ai_token_indices[self.token_selection_for_player] = token_idx
+                            self.token_selection_active = False
+                            return False
+                    
+                    self.ai_token_indices[self.token_selection_for_player] = token_idx
+                else:
+                    for i, ai_token in enumerate(self.ai_token_indices):
+                        if ai_token == token_idx:
+                            self.ai_token_indices[i] = self.player_token_indices[self.token_selection_for_player]
+                            self.player_token_indices[self.token_selection_for_player] = token_idx
+                            self.token_selection_active = False
+                            return False
+                    
+                    for i, human_token in enumerate(self.player_token_indices):
+                        if human_token == token_idx and i != self.token_selection_for_player:
+                            self.player_token_indices[i] = self.player_token_indices[self.token_selection_for_player]
+                            self.player_token_indices[self.token_selection_for_player] = token_idx
+                            self.token_selection_active = False
+                            return False
+                    
+                    self.player_token_indices[self.token_selection_for_player] = token_idx
+                
+                self.token_selection_active = False
+                return False
+                
+        return False
 
     def handle_motion(self, pos):
         self.human_minus_button.check_hover(pos)
@@ -782,6 +1036,11 @@ class StartPage(BasePage):
         self.back_button.check_hover(pos)
 
     def handle_key(self, event):
+        if self.token_selection_active:
+            if event.key == pygame.K_ESCAPE:
+                self.token_selection_active = False
+            return False
+            
         if self.active_input >= 0:
             if event.key == pygame.K_RETURN:
                 self.active_input = -1
@@ -800,9 +1059,11 @@ class StartPage(BasePage):
                 if event.mod & pygame.KMOD_SHIFT and self.human_count < 5 and self.total_players < 5:
                     self.human_count += 1
                     if len(self.player_names) < self.human_count:
-                        self.player_names.append(f"Human {self.human_count}")
+                        self.player_names.append(f"Human Player {self.human_count}")
+                    self.update_player_lists()
                 elif self.human_count > 1:
                     self.human_count -= 1
+                    self.update_player_lists()
                 self.total_players = self.human_count + self.ai_count
             
             elif event.key == pygame.K_a:
@@ -827,7 +1088,7 @@ class StartPage(BasePage):
 
     def get_player_info(self):
         all_names = self.player_names[:self.human_count] + self.ai_names[:self.ai_count]
-        return self.total_players, all_names, self.ai_count
+        return self.total_players, all_names, self.ai_count, self.player_token_indices + self.ai_token_indices
 
 class PlayerSelectPage(BasePage):
     def __init__(self):
@@ -1101,7 +1362,7 @@ class GameModePage(BasePage):
         self.custom_time_input = ModernInput(
             pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
-                get_window_size()[1] // 2 + 80,
+                get_window_size()[1] // 2 + 50,
                 300,
                 60
             ),
@@ -1119,7 +1380,7 @@ class GameModePage(BasePage):
         self.mode_button = ModernButton(
             pygame.Rect(
                 (get_window_size()[0] - mode_button_width) // 2,
-                get_window_size()[1] // 2 - 20,
+                get_window_size()[1] // 2 - 120,
                 mode_button_width,
                 button_height
             ),
@@ -1161,7 +1422,11 @@ class GameModePage(BasePage):
         self.draw_background()
         self.draw_title()
         
-        self.mode_button.rect.y = get_window_size()[1] // 2 - 20
+        mode_title = self.button_font.render("Select Game Mode", True, WHITE)
+        mode_title_rect = mode_title.get_rect(centerx=get_window_size()[0]//2, y=100)
+        self.screen.blit(mode_title, mode_title_rect)
+        
+        self.mode_button.rect.y = get_window_size()[1] // 2 - 120
         self.mode_button.text = f"Game Mode: {'Abridged' if self.game_mode == 'abridged' else 'Full Game'}"
         self.mode_button.draw(self.screen)
         
@@ -1172,7 +1437,7 @@ class GameModePage(BasePage):
         
         if self.game_mode == "abridged":
             label_text = self.small_font.render(self.time_label, True, LIGHT_GRAY)
-            label_rect = label_text.get_rect(centerx=get_window_size()[0]//2, bottom=self.custom_time_input.rect.top - 10)
+            label_rect = label_text.get_rect(centerx=get_window_size()[0]//2, bottom=self.custom_time_input.rect.top - 15)
             self.screen.blit(label_text, label_rect)
             
             self.custom_time_input.draw(self.screen)
@@ -1651,7 +1916,7 @@ class AIDifficultyPage(BasePage):
         self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
         button_width = 300
         button_height = 60
-        center_y = get_window_size()[1] // 2 + 50 
+        center_y = get_window_size()[1] // 2
 
         self.easy_button = ModernButton(
             pygame.Rect(
@@ -1693,7 +1958,7 @@ class AIDifficultyPage(BasePage):
         self.draw_title()
 
         difficulty_text = self.button_font.render("Select AI Difficulty", True, WHITE)
-        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=250) 
+        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=100) 
         self.screen.blit(difficulty_text, text_rect)
 
         easy_desc = self.small_font.render("AI will make basic decisions", True, LIGHT_GRAY)
@@ -1823,8 +2088,8 @@ class AIEmotionUI:
         panel_height = 160
         
         self.panel_rect = pygame.Rect(
-            self.window_size[0] - panel_width - 20,  
-            200,  
+            10, 
+            340,  
             panel_width,
             panel_height
         )
