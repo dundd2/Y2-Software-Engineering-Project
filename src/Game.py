@@ -528,15 +528,21 @@ class Game:
                 name_text = f"{player_data['name']} [JAIL]"
                 name_color = ERROR_COLOR if is_current else GRAY
             elif player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
-                name_text = f"{player_data['name']} [EXITED]"
-                name_color = (200, 0, 0)  
+                name_text = player_data['name']
+                name_color = (200, 0, 0) 
             else:
                 name_text = player_data['name']
             
             name_surface = self.font.render(name_text, True, name_color)
             self.screen.blit(name_surface, (info_x, info_y))
             
+            if player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
+                exit_text = self.small_font.render("[EXITED]", True, (200, 0, 0))
+                self.screen.blit(exit_text, (info_x, info_y + name_surface.get_height()))
+            
             money_y = info_y + 30
+            if player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
+                money_y += 15
             
             money_text = f"£ {player_data['money']:,}"
             money_color = SUCCESS_COLOR if player_data['money'] > 500 else ERROR_COLOR if player_data['money'] < 200 else WHITE

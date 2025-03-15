@@ -14,7 +14,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from src.Board import Board
 from src.Game import Game
 from src.Player import Player
-from src.ui import MainMenuPage, StartPage, GameModePage, EndGamePage, SettingsPage, HowToPlayPage, AIDifficultyPage
+from src.ui import MainMenuPage, StartPage, GameModePage, EndGamePage, SettingsPage, HowToPlayPage, AIDifficultyPage, CreditsPage
 from src.text_scaler import text_scaler
 
 WINDOW_SIZE = (1280, 720)  
@@ -371,15 +371,16 @@ async def handle_end_game(game_over_data):
     print("EndGamePage created successfully")
     
     debug_drawn = False
+    current_page = end_page
     
     while True:
         await asyncio.sleep(0)
-        end_page.draw()
+        current_page.draw()
         pygame.display.flip()
         
         clock.tick(FPS)
         
-        if not debug_drawn:
+        if not debug_drawn and isinstance(current_page, EndGamePage):
             print("EndGamePage drawn")
             debug_drawn = True
         
@@ -388,21 +389,33 @@ async def handle_end_game(game_over_data):
                 pygame.quit()
                 sys.exit()
             elif end_event.type == pygame.MOUSEBUTTONDOWN:
-                result = end_page.handle_click(end_event.pos)
-                if result == "play_again":
-                    return True
-                elif result == "quit":
-                    pygame.quit()
-                    sys.exit()
+                result = current_page.handle_click(end_event.pos)
+                
+                if isinstance(current_page, EndGamePage):
+                    if result == "play_again":
+                        return True
+                    elif result == "quit":
+                        pygame.quit()
+                        sys.exit()
+                    elif result == "credits":
+                        current_page = CreditsPage()
+                elif isinstance(current_page, CreditsPage) and result:
+                    current_page = end_page
             elif end_event.type == pygame.KEYDOWN:
-                result = end_page.handle_key(end_event)
-                if result == "play_again":
-                    return True
-                elif result == "quit":
-                    pygame.quit()
-                    sys.exit()
+                result = current_page.handle_key(end_event)
+                
+                if isinstance(current_page, EndGamePage):
+                    if result == "play_again":
+                        return True
+                    elif result == "quit":
+                        pygame.quit()
+                        sys.exit()
+                    elif result == "credits":
+                        current_page = CreditsPage()
+                elif isinstance(current_page, CreditsPage) and result:
+                    current_page = end_page
             elif end_event.type == pygame.MOUSEMOTION:
-                end_page.handle_motion(end_event.pos)
+                current_page.handle_motion(end_event.pos)
 
 async def show_logo_screen(screen, logo_path, scale_factor=0.5):
     try:

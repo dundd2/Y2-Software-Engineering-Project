@@ -763,7 +763,7 @@ class StartPage(BasePage):
         self.screen.blit(ai_text, ai_rect)
 
         total_text = self.small_font.render(f"Total Players: {self.total_players}/5", True, LIGHT_GRAY)
-        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y + 20)  # Moved down by 30 pixels
+        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y + 20) 
         self.screen.blit(total_text, total_rect)
 
         button_y = player_controls_y + 60  
@@ -1733,6 +1733,18 @@ class EndGamePage(BasePage):
             color=ERROR_COLOR
         )
         
+        self.credits_button = ModernButton(
+            pygame.Rect(
+                20,
+                get_window_size()[1] - 100,
+                200,
+                button_height
+            ),
+            "Credits",
+            self.button_font,
+            color=MODE_COLOR
+        )
+        
         self.confetti = []
         for _ in range(100):
             self.confetti.append({
@@ -1941,23 +1953,139 @@ class EndGamePage(BasePage):
 
         self.play_again_button.draw(self.screen)
         self.quit_button.draw(self.screen)
+        self.credits_button.draw(self.screen)  
 
     def handle_click(self, pos):
         if self.play_again_button.check_hover(pos):
             return "play_again"
         elif self.quit_button.check_hover(pos):
             return "quit"
+        elif self.credits_button.check_hover(pos):
+            return "credits" 
         return None
 
     def handle_motion(self, pos):
         self.play_again_button.check_hover(pos)
         self.quit_button.check_hover(pos)
+        self.credits_button.check_hover(pos)  
 
     def handle_key(self, event):
         if event.key == pygame.K_SPACE:
             return "play_again"
         elif event.key == pygame.K_ESCAPE:
             return "quit"
+        elif event.key == pygame.K_c:  
+            return "credits"
+        return None
+
+class CreditsPage(BasePage):
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        
+        button_width = 300
+        button_height = 60
+        self.back_button = ModernButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                get_window_size()[1] - 120,
+                button_width,
+                button_height
+            ),
+            "Back",
+            self.button_font
+        )
+        
+        self.developers = [
+            "Eric Shi",
+            "Stuart Baker",
+            "Lin Moe Hein", 
+            "Duncan Law",
+            "Owen Chen"
+        ]
+        
+    def draw(self):
+        self.draw_background()
+        
+        title_text = self.title_font.render("Property Tycoon", True, WHITE)
+        title_rect = title_text.get_rect(centerx=get_window_size()[0]//2, y=80)
+        self.screen.blit(title_text, title_rect)
+        
+        panel_width = 700
+        panel_height = get_window_size()[1] - 250  
+        panel_x = (get_window_size()[0] - panel_width) // 2
+        panel_y = 160
+        
+        shadow_offset = 5
+        shadow = pygame.Surface((panel_width + shadow_offset*2, panel_height + shadow_offset*2), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        self.screen.blit(shadow, (panel_x - shadow_offset, panel_y - shadow_offset))
+        
+        pygame.draw.rect(
+            self.screen, 
+            WHITE, 
+            pygame.Rect(panel_x, panel_y, panel_width, panel_height),
+            border_radius=15
+        )
+        
+        credits_text = self.button_font.render("Developers", True, ACCENT_COLOR)
+        credits_rect = credits_text.get_rect(centerx=get_window_size()[0]//2, y=panel_y + 30)
+        self.screen.blit(credits_text, credits_rect)
+        
+        pygame.draw.line(
+            self.screen, 
+            LIGHT_GRAY, 
+            (panel_x + 80, credits_rect.bottom + 10), 
+            (panel_x + panel_width - 80, credits_rect.bottom + 10), 
+            2
+        )
+        
+        y_offset = credits_rect.bottom + 40
+        for dev in self.developers:
+            dev_text = self.button_font.render(dev, True, BLACK)
+            dev_rect = dev_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
+            self.screen.blit(dev_text, dev_rect)
+            y_offset += 50
+        
+        thanks_text = self.button_font.render("Special Thanks", True, ACCENT_COLOR)
+        thanks_rect = thanks_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset + 20)
+        self.screen.blit(thanks_text, thanks_rect)
+        
+        pygame.draw.line(
+            self.screen, 
+            LIGHT_GRAY, 
+            (panel_x + 80, thanks_rect.bottom + 10), 
+            (panel_x + panel_width - 80, thanks_rect.bottom + 10), 
+            2
+        )
+        
+        thanks_msg_text = self.small_font.render("Thank you for playing our game!", True, BLACK)
+        thanks_msg_rect = thanks_msg_text.get_rect(centerx=get_window_size()[0]//2, y=thanks_rect.bottom + 30)
+        self.screen.blit(thanks_msg_text, thanks_msg_rect)
+        
+        watson_text = self.small_font.render("Watson Games © 2025", True, BLACK)
+        watson_rect = watson_text.get_rect(centerx=get_window_size()[0]//2, y=thanks_msg_rect.bottom + 20)
+        self.screen.blit(watson_text, watson_rect)
+        
+        self.back_button.draw(self.screen)
+        
+        hint_text = self.small_font.render("Press ESC or BACKSPACE to return", True, LIGHT_GRAY)
+        hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20) 
+        self.screen.blit(hint_text, hint_rect)
+        
+        pygame.display.flip()
+
+    def handle_click(self, pos):
+        if self.back_button.check_hover(pos):
+            return True
+        return None
+
+    def handle_motion(self, pos):
+        self.back_button.check_hover(pos)
+
+    def handle_key(self, event):
+        if event.key in [pygame.K_ESCAPE, pygame.K_BACKSPACE]:
+            return True
         return None
 
 class AIDifficultyPage(BasePage):
