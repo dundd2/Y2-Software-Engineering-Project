@@ -670,10 +670,10 @@ class Game:
                     winner = self.logic.current_auction["highest_bidder"]
                     property_name = self.logic.current_auction.get("property", {}).get("name", "Unknown property")
                     bid_amount = self.logic.current_auction.get("current_bid", 0)
-                    self.show_notification(f"{winner['name']} won {property_name} for £{bid_amount}", 3000)
+                    self.board.add_message(f"{winner['name']} won {property_name} for £{bid_amount}")
                 else:
                     property_name = self.logic.current_auction.get("property", {}).get("name", "Unknown property")
-                    self.show_notification(f"No one bid on {property_name}", 3000)
+                    self.board.add_message(f"No one bid on {property_name}")
                 
                 self.auction_end_time = pygame.time.get_ticks()
                 self.auction_end_delay = 3000
@@ -1047,7 +1047,6 @@ class Game:
                         message = f"{current_player['name']} must pass GO before buying property"
                         self.board.add_message(message)
                         print("Player has not completed a circuit - cannot buy property")
-                        self.show_notification(message, 2000)
                         self.state = "ROLL"
                         return False
                     
@@ -1095,7 +1094,7 @@ class Game:
             print(f"Processing message: {message}")
             self.board.add_message(message)
             if "Get Out of Jail Free card" in message or "collected" in message:
-                self.show_notification(message, 3000)
+                self.board.add_message(message)
         
         print(f"\nFinal state: {self.state}")
         print("=== End Dice Roll Debug ===\n")
@@ -1139,7 +1138,6 @@ class Game:
         if player_obj.in_jail and player_obj.stay_in_jail:
             print(f"Player {current_player['name']} chose to stay in jail - skipping turn")
             self.board.add_message(f"{current_player['name']} is staying in jail - skipping turn")
-            self.show_notification(f"{current_player['name']} is staying in jail - skipping turn", 2000)
             self.handle_turn_end()
             return True
         
@@ -1334,7 +1332,6 @@ class Game:
             print("No players have completed a circuit - skipping auction")
             message = "No players have completed a circuit - property remains unsold"
             self.board.add_message(message)
-            self.show_notification(message, 2000)
             self.state = "ROLL"
             return
             
@@ -1440,19 +1437,17 @@ class Game:
                     pause_duration = current_time - self.pause_start_time
                     self.total_pause_time += pause_duration
                     self.game_paused = False
-                    self.add_message("Game resumed")
-                    self.show_notification("Game resumed", 2000)
+                    self.board.add_message("Game resumed")
                 else:
                     self.game_paused = True
                     self.pause_start_time = current_time
-                    self.add_message("Game paused")
-                    self.show_notification("Game paused - Click Continue to resume", 2000)
+                    self.board.add_message("Game paused")
                 
                 return False
                 
             if not self.current_player_is_ai and self.roll_button.collidepoint(pos):
                 if self.game_mode == "abridged" and self.time_limit and self.game_paused:
-                    self.show_notification("Game is paused. Click Continue to resume.", 2000)
+                    self.board.add_message("Game is paused. Click Continue to resume.")
                     return False
                 else:
                     return self.play_turn()
@@ -1476,7 +1471,6 @@ class Game:
                         return result
                     elif result:
                         self.board.add_message(f"{current_player['name']} has voluntarily exited the game")
-                        self.show_notification(f"{current_player['name']} has voluntarily exited the game", 3000)
                         
                         game_over_result = self.check_game_over()
                         if game_over_result:
@@ -1598,7 +1592,6 @@ class Game:
                     result = self.handle_voluntary_exit(current_player['name'], final_assets)
                     if result:
                         self.board.add_message(f"{current_player['name']} has voluntarily exited the game")
-                        self.show_notification(f"{current_player['name']} has voluntarily exited the game", 3000)
                         if len(self.logic.players) > 0:
                             self.state = "ROLL"
                         else:
@@ -1781,7 +1774,7 @@ class Game:
             return
             
         if auction_data["current_bidder_index"] >= len(auction_data["active_players"]):
-            print(f"Invalid current_bidder_index: {auction_data['current_bidder_index']} (active players: {len(auction_data['active_players'])})")
+            print(f"Invalid current_bidder_index: {auction_data['current_bidder_index']} (active players: {len(auction_data["active_players"])})")
             return
             
         current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
@@ -1791,7 +1784,6 @@ class Game:
         
         if current_bidder.get('in_jail', False):
             self.board.add_message(f"{current_bidder['name']} cannot bid while in jail!")
-            self.show_notification(f"{current_bidder['name']} cannot bid while in jail!", 2000)
             auction_data["passed_players"].add(current_bidder['name'])
             self.logic.move_to_next_bidder()
             return
@@ -1817,7 +1809,6 @@ class Game:
                     success, message = self.logic.process_auction_pass(current_bidder)
                     if message:
                         self.board.add_message(message)
-                        self.show_notification(message, 2000)
                     if success:
                         print(f"{current_bidder['name']} passed successfully")
                     else:
@@ -1829,7 +1820,6 @@ class Game:
             success, message = self.logic.process_auction_bid(current_bidder, bid_amount)
             if message:
                 self.board.add_message(message)
-                self.show_notification(message, 2000)
             if success:
                 self.auction_bid_amount = ""
                 print(f"Bid successful: £{bid_amount}")
@@ -1837,7 +1827,6 @@ class Game:
                 print(f"Bid failed: {message}")
         except ValueError:
             self.board.add_message("Please enter a valid number!")
-            self.show_notification("Please enter a valid number!", 2000)
             print("Invalid bid amount")
 
     def handle_auction_click(self, pos):
@@ -1924,10 +1913,10 @@ class Game:
                     winner = auction_data["highest_bidder"]
                     property_name = auction_data["property"]["name"]
                     bid_amount = auction_data["current_bid"]
-                    self.show_notification(f"{winner['name']} won {property_name} for £{bid_amount}", 3000)
+                    self.board.add_message(f"{winner['name']} won {property_name} for £{bid_amount}")
                 else:
                     property_name = auction_data["property"]["name"]
-                    self.show_notification(f"No one bid on {property_name}", 3000)
+                    self.board.add_message(f"No one bid on {property_name}")
             
             self.auction_end_time = pygame.time.get_ticks()
             self.auction_end_delay = 3000
@@ -2016,12 +2005,12 @@ class Game:
             return "roll"
             
         if player['money'] < 50 and not self.logic.jail_free_cards.get(player['name'], 0):
-            self.show_notification("No options available - must try rolling doubles")
+            self.board.add_message("No options available - must try rolling doubles")
             return "roll"
 
         waiting = True
         choice = None
-        self.show_notification("Choose how to get out of jail", 5000)
+        self.board.add_message("Choose how to get out of jail")
         
         window_size = self.screen.get_size()
         card_width = int(window_size[0] * 0.3)
@@ -2136,7 +2125,6 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
-                self.show_notification(f"{player['name']} used Get Out of Jail Free card!", 2000)
                 return True
             elif player['money'] >= 50 and random.random() < 0.5:
                 player['money'] -= 50
@@ -2148,7 +2136,6 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
-                self.show_notification(f"{player['name']} paid £50 to get out of jail!", 2000)
                 return True
         else:
             self.draw()
@@ -2168,7 +2155,6 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} used Get Out of Jail Free card!")
-                self.show_notification(f"{player['name']} used Get Out of Jail Free card!", 2000)
                 return True
             elif choice == "pay" and player['money'] >= 50:
                 player['money'] -= 50
@@ -2180,13 +2166,11 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
-                self.show_notification(f"{player['name']} paid £50 to get out of jail!", 2000)
                 return True
             elif choice == "stay":
                 player_obj.stay_in_jail = True
                 player['jail_turns'] = player.get('jail_turns', 0) + 1
                 self.board.add_message(f"{player['name']} chose to stay in jail!")
-                self.show_notification(f"{player['name']} chose to stay in jail!", 2000)
                 return False
 
         player['jail_turns'] = player.get('jail_turns', 0) + 1
@@ -2201,7 +2185,6 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False  
                 self.board.add_message(f"{player['name']} paid £50 after 3 turns in jail!")
-                self.show_notification(f"{player['name']} paid £50 after 3 turns in jail!", 2000)
                 return True
             else:
                 player['in_jail'] = False
@@ -2210,17 +2193,10 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False 
                 self.board.add_message(f"{player['name']} couldn't pay jail fine!")
-                self.show_notification(f"{player['name']} couldn't pay jail fine!", 2000)
                 self.handle_bankruptcy(player)
                 return True
             
         return False
-
-    def show_notification(self, text, duration=None):
-        self.notification = text
-        self.notification_time = pygame.time.get_ticks()
-        if duration:
-            self.NOTIFICATION_DURATION = duration
 
     def draw_notification(self):
         if not self.notification:
@@ -2358,13 +2334,13 @@ class Game:
         result = card.action(player, self)
         
         if "jail free" in card.text.lower():
-            self.show_notification(f"{player['name']} received a Get Out of Jail Free card!", 3000)
+            self.board.add_message(f"{player['name']} received a Get Out of Jail Free card!")
         elif "collect" in card.text.lower():
-            self.show_notification(f"{player['name']} collected money!", 2000)
+            self.board.add_message(f"{player['name']} collected money!")
         elif "pay" in card.text.lower():
-            self.show_notification(f"{player['name']} paid money!", 2000)
+            self.board.add_message(f"{player['name']} paid money!")
         elif "advance" in card.text.lower() or "go to" in card.text.lower():
-            self.show_notification(f"{player['name']} is moving!", 2000)
+            self.board.add_message(f"{player['name']} is moving!")
             
         return result
 
@@ -2483,7 +2459,7 @@ class Game:
                 print(f"\n\n!!!TIME LIMIT REACHED!!!: {minutes} minutes have elapsed!")
                 print("Game will end after all players complete their current lap...")
                 
-                self.show_notification(f"TIME'S UP! Game will end after this lap.", 5000)
+                self.board.add_message(f"TIME'S UP! Game will end after this lap.")
                 
                 if self.state == "AUCTION" and hasattr(self.logic, 'current_auction') and self.logic.current_auction:
                     print("Time limit reached during auction - canceling auction")
@@ -2754,8 +2730,6 @@ class Game:
                     game_over_data = self.end_full_game()
                     return game_over_data
                 
-            self.show_notification(f"{player_name} has left the game. Their properties return to the bank.", 3000)
-            
             self.state = "ROLL"
             print("Checking if next player is an AI...")
             self.check_and_trigger_ai_turn()
@@ -3520,7 +3494,6 @@ class Game:
         if player_obj.in_jail and player_obj.stay_in_jail:
             print(f"Player {current_player['name']} chose to stay in jail - skipping turn")
             self.board.add_message(f"{current_player['name']} is staying in jail - skipping turn")
-            self.show_notification(f"{current_player['name']} is staying in jail - skipping turn", 2000)
             self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
             return self.check_and_trigger_ai_turn(recursion_depth + 1)
             
@@ -3564,7 +3537,6 @@ class Game:
         if any_updated:
             mood_text = "happier" if is_happy else "angrier"
             self.board.add_message(f"All AI players are getting {mood_text}!")
-            self.show_notification(f"All AI players are getting {mood_text}!", 1500)
             return True
             
         return False
