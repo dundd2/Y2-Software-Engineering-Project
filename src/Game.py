@@ -11,9 +11,8 @@ import os
 import random
 import string
 from src.ui import DevelopmentNotification
-from src.text_scaler import text_scaler
 from src.ui import AIEmotionUI
-from src.FontManager import FontManager 
+from src.FontManager import font_manager
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -70,8 +69,10 @@ class Game:
         pygame.display.set_caption("Property Tycoon")
 
         # Replace direct font initialization with FontManager
-        self.font = FontManager.get_font(text_scaler.get_scaled_size(32))
-        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
+        self.font = font_manager.get_font(32)
+        self.small_font = font_manager.get_font(24)
+        self.button_font = font_manager.get_font(32)
+        self.message_font = font_manager.get_font(24)
         
         window_size = self.screen.get_size()
         try:

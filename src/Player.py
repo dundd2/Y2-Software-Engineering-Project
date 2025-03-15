@@ -1,8 +1,7 @@
 import pygame
 import math
 import os
-from src.text_scaler import text_scaler
-from src.FontManager import FontManager
+from src.FontManager import font_manager
 
 WHITE = (255, 255, 255)
 HUMAN_COLOR = (75, 139, 190)
@@ -92,7 +91,7 @@ class Player:
             alpha = int(100 * (1 - i/10))
             pygame.draw.circle(self.player_image, (*highlight_color, alpha), (15, 15), 20-i)
             
-        number_font = FontManager.get_font(text_scaler.get_scaled_size(28))
+        number_font = font_manager.get_font(28)
         number_text = number_font.render(str(self.player_number), True, WHITE)
         number_rect = number_text.get_rect(center=(20, 20))
         
@@ -176,7 +175,7 @@ class Player:
         self.rect.y = y - self.animation_offset
         
         if self.voluntary_exit:
-            exit_font = FontManager.get_font(text_scaler.get_scaled_size(12))
+            exit_font = font_manager.get_font(12)
             exit_text = exit_font.render("EXITED", True, (200, 0, 0))
             exit_rect = exit_text.get_rect(center=(self.rect.centerx, self.rect.y - 15))
             screen.blit(exit_text, exit_rect)
