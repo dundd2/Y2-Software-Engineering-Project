@@ -1,0 +1,87 @@
+.. Software-Engineering-Project-Property Tycoon-2025 documentation master file, created by
+   sphinx-quickstart on Mon Mar  3 07:23:54 2025.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Property Tycoon Game Documentation
+================================
+
+Welcome to the Property Tycoon game documentation! This is a digital implementation of a classic property trading board game developed by Group 5.
+
+Quick Start
+----------
+
+To get started with Property Tycoon:
+
+1. Install the required dependencies:
+
+   .. code-block:: bash
+
+      pip install -r requirements.txt
+
+2. Run the game:
+
+   .. code-block:: bash
+
+      python main.py
+
+Game Overview
+------------
+
+Property Tycoon is an exciting property trading game where players compete to become the wealthiest property tycoon. Players can:
+
+* Buy and sell properties
+* Collect rent from other players
+* Build houses and hotels
+* Draw chance and community chest cards
+* Trade properties with other players
+* Interact with AI players
+
+Project Structure
+---------------
+
+The project is organized into several key modules:
+
+* **Game**: Core game engine and state management
+* **Player**: Player management and actions
+* **Board**: Game board and space management
+* **Property**: Property management and transactions
+* **UI**: User interface and display
+* **AI Player**: Artificial intelligence for computer players
+* **Cards**: Chance and community chest cards
+* **Game Logic**: Core game rules and mechanics
+
+Module Documentation
+------------------
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   diagrams
+   modules/game
+   modules/player
+   modules/board
+   modules/property
+   modules/game_logic
+   modules/ui
+   modules/ai_player_logic
+   modules/cards
+   modules/loadexcel
+
+Team
+----
+
+* Eric Shi
+* Stuart Baker
+* Lin Moe Hein (kit)
+* Duncan Law
+* Owen Chen
+
+Indices and References
+--------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

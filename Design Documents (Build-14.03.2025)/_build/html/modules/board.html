@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Board Module &mdash; Property Tycoon Build-14.03.2025 Documentation Build-14.03.2025 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=67e2f4ab"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Property Module" href="property.html" />
+    <link rel="prev" title="Player Module" href="player.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon Build-14.03.2025 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Board Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#board-structure">Board Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#camera-controls">Camera Controls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#player-animation-system">Player Animation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#message-display-system">Message Display System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Board.Board"><code class="docutils literal notranslate"><span class="pre">Board</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.add_message"><code class="docutils literal notranslate"><span class="pre">Board.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.board_to_screen"><code class="docutils literal notranslate"><span class="pre">Board.board_to_screen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.draw"><code class="docutils literal notranslate"><span class="pre">Board.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.draw_player"><code class="docutils literal notranslate"><span class="pre">Board.draw_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.get_property_group"><code class="docutils literal notranslate"><span class="pre">Board.get_property_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.get_property_position"><code class="docutils literal notranslate"><span class="pre">Board.get_property_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.get_space"><code class="docutils literal notranslate"><span class="pre">Board.get_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.property_clicked"><code class="docutils literal notranslate"><span class="pre">Board.property_clicked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.update_board_positions"><code class="docutils literal notranslate"><span class="pre">Board.update_board_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.update_offset"><code class="docutils literal notranslate"><span class="pre">Board.update_offset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.Board.update_ownership"><code class="docutils literal notranslate"><span class="pre">Board.update_ownership()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Board.CameraControls"><code class="docutils literal notranslate"><span class="pre">CameraControls</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Board.CameraControls.handle_camera_controls"><code class="docutils literal notranslate"><span class="pre">CameraControls.handle_camera_controls()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cameracontrols-class">CameraControls Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#board-visualization">Board Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#space-interaction">Space Interaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#technical-implementation">Technical Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon Build-14.03.2025 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Board Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/board.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="board-module">
+<h1>Board Module<a class="headerlink" href="#board-module" title="Link to this heading"></a></h1>
+<p>This module contains the Board class that represents the game board and manages the visual representation and interaction with the game board.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Board initialization and setup</strong>: Creates and configures the visual game board</p></li>
+<li><p><strong>Visual rendering</strong>: Renders the game board and all its elements</p></li>
+<li><p><strong>Camera controls</strong>: Advanced zooming and panning system</p></li>
+<li><p><strong>Player token positioning</strong>: Manages player token placement and animation</p></li>
+<li><p><strong>Property visualization</strong>: Shows property ownership and development</p></li>
+<li><p><strong>Message display system</strong>: Shows game events and notifications</p></li>
+<li><p><strong>Space management</strong>: Handles properties, special spaces, and their interactions</p></li>
+<li><p><strong>Animation system</strong>: Provides smooth animations for player movement</p></li>
+<li><p><strong>Interactive elements</strong>: Allows clicking on properties and spaces</p></li>
+<li><p><strong>Visual scaling</strong>: Adapts to different screen sizes and resolutions</p></li>
+<li><p><strong>Dynamic board generation</strong>: Creates board layouts based on window size</p></li>
+</ul>
+</section>
+<section id="board-structure">
+<h2>Board Structure<a class="headerlink" href="#board-structure" title="Link to this heading"></a></h2>
+<p>The game board consists of 40 spaces arranged in a square layout:</p>
+<ul class="simple">
+<li><p><strong>Corner spaces</strong>: GO, Jail, Free Parking, Go to Jail</p></li>
+<li><p><strong>Property spaces</strong>: Color-coded by property groups</p></li>
+<li><p><strong>Utility spaces</strong>: Electric Company, Water Works</p></li>
+<li><p><strong>Station spaces</strong>: Train stations</p></li>
+<li><p><strong>Special spaces</strong>: Pot Luck, Opportunity Knocks, Tax spaces</p></li>
+</ul>
+</section>
+<section id="camera-controls">
+<h2>Camera Controls<a class="headerlink" href="#camera-controls" title="Link to this heading"></a></h2>
+<p>The board implements a comprehensive camera system through the CameraControls class:</p>
+<ul class="simple">
+<li><p><strong>Zoom in/out</strong>: Using +/- keys to adjust zoom level</p></li>
+<li><p><strong>Pan the board</strong>: Using WASD or arrow keys to move the view</p></li>
+<li><p><strong>Zoom limits</strong>: Enforces minimum and maximum zoom levels</p></li>
+<li><p><strong>Speed adjustment</strong>: Camera move speed adjusts based on zoom level</p></li>
+<li><p><strong>Bound checking</strong>: Prevents panning too far from the board</p></li>
+<li><p><strong>Automatic positioning</strong>: Centers view on important game events</p></li>
+</ul>
+</section>
+<section id="player-animation-system">
+<h2>Player Animation System<a class="headerlink" href="#player-animation-system" title="Link to this heading"></a></h2>
+<p>The Board module features an advanced player animation system:</p>
+<ul class="simple">
+<li><p><strong>Movement animation</strong>: Smooth transitions between spaces</p></li>
+<li><p><strong>Path generation</strong>: Creates movement paths for dice roll results</p></li>
+<li><p><strong>Progress tracking</strong>: Tracks animation progress for each player</p></li>
+<li><p><strong>Multiple player positioning</strong>: Intelligently positions multiple players on the same space</p></li>
+<li><p><strong>Visual effects</strong>: Bounce effects, glowing, and highlighting</p></li>
+<li><p><strong>Corner handling</strong>: Special positioning logic for corner spaces</p></li>
+</ul>
+</section>
+<section id="message-display-system">
+<h2>Message Display System<a class="headerlink" href="#message-display-system" title="Link to this heading"></a></h2>
+<p>The board includes a game message display system:</p>
+<ul class="simple">
+<li><p><strong>Message queue</strong>: Maintains recent game messages</p></li>
+<li><p><strong>Scrolling display</strong>: Shows multiple messages in chronological order</p></li>
+<li><p><strong>Timed messages</strong>: Messages have display durations</p></li>
+<li><p><strong>Visual styling</strong>: Messages appear in a semi-transparent overlay panel</p></li>
+<li><p><strong>Automatic updates</strong>: New messages are added to the display in real-time</p></li>
+<li><p><strong>History tracking</strong>: Maintains a limited history of recent messages</p></li>
+</ul>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-src.Board">
+<dt class="sig sig-object py" id="src.Board.Board">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Board.</span></span><span class="sig-name descname"><span class="pre">Board</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">players</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.add_message">
+<span class="sig-name descname"><span class="pre">add_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.add_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.add_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.board_to_screen">
+<span class="sig-name descname"><span class="pre">board_to_screen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.board_to_screen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.board_to_screen" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.draw_player">
+<span class="sig-name descname"><span class="pre">draw_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.draw_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.draw_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.get_property_group">
+<span class="sig-name descname"><span class="pre">get_property_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.get_property_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.get_property_group" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.get_property_position">
+<span class="sig-name descname"><span class="pre">get_property_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.get_property_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.get_property_position" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.get_space">
+<span class="sig-name descname"><span class="pre">get_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.get_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.get_space" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.property_clicked">
+<span class="sig-name descname"><span class="pre">property_clicked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.property_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.property_clicked" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.update_board_positions">
+<span class="sig-name descname"><span class="pre">update_board_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.update_board_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.update_board_positions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.update_offset">
+<span class="sig-name descname"><span class="pre">update_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.update_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.update_offset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.Board.update_ownership">
+<span class="sig-name descname"><span class="pre">update_ownership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#Board.update_ownership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.Board.update_ownership" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Board.CameraControls">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Board.</span></span><span class="sig-name descname"><span class="pre">CameraControls</span></span><a class="reference internal" href="../_modules/src/Board.html#CameraControls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.CameraControls" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Board.CameraControls.handle_camera_controls">
+<span class="sig-name descname"><span class="pre">handle_camera_controls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Board.html#CameraControls.handle_camera_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Board.CameraControls.handle_camera_controls" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cameracontrols-class">
+<h2>CameraControls Class<a class="headerlink" href="#cameracontrols-class" title="Link to this heading"></a></h2>
+<p>The Board module includes a CameraControls class that manages the zooming and panning functionality:</p>
+<ul class="simple">
+<li><p><strong>Zoom level</strong>: Manages current zoom level (default: 1.0)</p></li>
+<li><p><strong>Offsets</strong>: Tracks current camera offset (x, y)</p></li>
+<li><p><strong>Move speed</strong>: Configurable movement speed</p></li>
+<li><p><strong>Zoom speed</strong>: Configurable zoom speed</p></li>
+<li><p><strong>Input handling</strong>: Processes keyboard input for camera movement</p></li>
+<li><p><strong>Limits enforcement</strong>: Maintains zoom and pan within acceptable ranges</p></li>
+</ul>
+</section>
+<section id="board-visualization">
+<h2>Board Visualization<a class="headerlink" href="#board-visualization" title="Link to this heading"></a></h2>
+<p>The board visualization includes several key components:</p>
+<ul class="simple">
+<li><p><strong>Base board image</strong>: Renders the main game board image</p></li>
+<li><p><strong>Property ownership indicators</strong>: Visual indicators of property ownership</p></li>
+<li><p><strong>Player token positioning</strong>: Shows player positions on the board</p></li>
+<li><p><strong>Houses and hotels display</strong>: Visualizes property development</p></li>
+<li><p><strong>Message notifications</strong>: Displays game events and important messages</p></li>
+<li><p><strong>Highlighting of active spaces</strong>: Visually identifies active or relevant spaces</p></li>
+<li><p><strong>Visual effects</strong>: Special effects for game events</p></li>
+<li><p><strong>Background elements</strong>: Renders a themed background behind the board</p></li>
+</ul>
+</section>
+<section id="space-interaction">
+<h2>Space Interaction<a class="headerlink" href="#space-interaction" title="Link to this heading"></a></h2>
+<p>The Board class enables interaction with board spaces:</p>
+<ul class="simple">
+<li><p><strong>Property clicking</strong>: Detects clicks on properties for development or info</p></li>
+<li><p><strong>Space identification</strong>: Maps screen coordinates to board positions</p></li>
+<li><p><strong>Space information</strong>: Provides details about spaces at specific positions</p></li>
+<li><p><strong>Position conversion</strong>: Converts between board and screen coordinates</p></li>
+<li><p><strong>Property grouping</strong>: Identifies properties belonging to the same group</p></li>
+<li><p><strong>Visual feedback</strong>: Provides visual feedback on interactive elements</p></li>
+</ul>
+</section>
+<section id="common-operations">
+<h2>Common Operations<a class="headerlink" href="#common-operations" title="Link to this heading"></a></h2>
+<p>The Board class provides several key operations:</p>
+<ul class="simple">
+<li><p><strong>draw(screen)</strong>: Render the board and all its elements on the screen</p></li>
+<li><p><strong>update_board_positions()</strong>: Update the positions of all elements on the board</p></li>
+<li><p><strong>draw_player(screen, player, rect, index)</strong>: Render a player token at a specific position</p></li>
+<li><p><strong>get_space(position)</strong>: Get the space data at a specific position</p></li>
+<li><p><strong>update_ownership(properties_data)</strong>: Update property ownership visualization</p></li>
+<li><p><strong>property_clicked(pos)</strong>: Handle mouse clicks on properties</p></li>
+<li><p><strong>add_message(text)</strong>: Add a message to the board’s message display</p></li>
+<li><p><strong>board_to_screen(x, y)</strong>: Convert board coordinates to screen coordinates</p></li>
+<li><p><strong>update_offset(dx, dy)</strong>: Update the camera offset</p></li>
+</ul>
+</section>
+<section id="technical-implementation">
+<h2>Technical Implementation<a class="headerlink" href="#technical-implementation" title="Link to this heading"></a></h2>
+<p>The Board class uses several techniques for efficient rendering:</p>
+<ul class="simple">
+<li><p><strong>Surface composition</strong>: Uses multiple surfaces for layered rendering</p></li>
+<li><p><strong>Alpha blending</strong>: Implements transparency for visual effects</p></li>
+<li><p><strong>Rect management</strong>: Efficiently handles rectangles for space positioning</p></li>
+<li><p><strong>Dynamic scaling</strong>: Adjusts elements based on screen size and zoom level</p></li>
+<li><p><strong>Surface caching</strong>: Optimizes rendering performance</p></li>
+<li><p><strong>Error handling</strong>: Gracefully handles missing assets or rendering errors</p></li>
+<li><p><strong>Coordinate transformation</strong>: Converts between different coordinate systems</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="player.html" class="btn btn-neutral float-left" title="Player Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="property.html" class="btn btn-neutral float-right" title="Property Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
