@@ -4,6 +4,7 @@ import time
 import math
 import random
 from src.text_scaler import text_scaler
+from src.FontManager import FontManager 
 import os
 import webbrowser 
 
@@ -174,11 +175,11 @@ class BasePage:
         except (pygame.error, FileNotFoundError):
             print("Could not load background image")
             self.background_image = None
-            
-        self.title_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(82))
-        self.button_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(42))
-        self.version_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(28))
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+
+        self.title_font = FontManager.get_font(text_scaler.get_scaled_size(82))
+        self.button_font = FontManager.get_font(text_scaler.get_scaled_size(42))
+        self.version_font = FontManager.get_font(text_scaler.get_scaled_size(28))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         self.instructions = instructions
 
     def draw_background(self):
@@ -232,7 +233,7 @@ class BasePage:
         if self.instructions:
             window_size = get_window_size()
             font_size = text_scaler.get_scaled_size(20)
-            font = pygame.font.Font(FONT_PATH, font_size)
+            font = FontManager.get_font(font_size)
             padding = 10
             line_height = font_size + 2
             
@@ -252,7 +253,7 @@ class BasePage:
 class MainMenuPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         button_width = 300
         button_height = 60
         
@@ -337,7 +338,7 @@ class MainMenuPage(BasePage):
                 self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
             self.screen.blit(self.github_logo, self.github_rect)
         
-        version_text = self.version_font.render("Build Version: 14.03.2025", True, ERROR_COLOR)
+        version_text = self.version_font.render("Build Version: 16.03.2025", True, ERROR_COLOR)
         version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
@@ -397,7 +398,7 @@ class SettingsPage(BasePage):
 
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         self.resolution_options = [
             (1280, 720),
             (854, 480),
@@ -528,6 +529,7 @@ class SettingsPage(BasePage):
             new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
             if current_resolution != new_resolution or FONT_PATH != new_font_path:
                 FONT_PATH = new_font_path
+                FontManager.update_font_path(new_font_path)  # Add this line to update FontManager
                 return True
         elif self.back_button.check_hover(pos):
             return "back"
@@ -557,6 +559,7 @@ class SettingsPage(BasePage):
             new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
             if current_resolution != new_resolution or FONT_PATH != new_font_path:
                 FONT_PATH = new_font_path
+                FontManager.update_font_path(new_font_path)  # Add this line to update FontManager
                 return True
         elif event.key == pygame.K_ESCAPE:
             return "back"
@@ -573,11 +576,11 @@ class StartPage(BasePage):
         super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
         pygame.display.set_caption("Property Tycoon")
-        self.title_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(82))
-        self.button_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(42))
-        self.version_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(28))
-        self.input_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(36))
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.title_font = FontManager.get_font(text_scaler.get_scaled_size(82))
+        self.button_font = FontManager.get_font(text_scaler.get_scaled_size(42))
+        self.version_font = FontManager.get_font(text_scaler.get_scaled_size(28))
+        self.input_font = FontManager.get_font(text_scaler.get_scaled_size(36))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         self.selected_element = 0
         self.active_input = -1
 
@@ -1143,8 +1146,8 @@ class StartPage(BasePage):
 class PlayerSelectPage(BasePage):
     def __init__(self):
         super().__init__()
-        self.input_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(36))
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.input_font = FontManager.get_font(text_scaler.get_scaled_size(36))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         self.selected_element = 0
         self.active_input = -1
         
@@ -1339,7 +1342,7 @@ class PlayerSelectPage(BasePage):
 class HowToPlayPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         
         button_width = 300
         button_height = 60
@@ -1404,7 +1407,7 @@ class HowToPlayPage(BasePage):
 class GameModePage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         
         self.game_mode = "full"
         self.time_limit = None
@@ -1683,7 +1686,7 @@ class GameModePage(BasePage):
 class EndGamePage(BasePage):
     def __init__(self, winner_name, final_assets=None, bankrupted_players=None, voluntary_exits=None, tied_winners=None, lap_count=None):
         super().__init__()
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         self.winner_name = winner_name
         self.final_assets = final_assets or {}
         self.bankrupted_players = bankrupted_players or []
@@ -1981,7 +1984,7 @@ class EndGamePage(BasePage):
 class CreditsPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         
         button_width = 300
         button_height = 60
@@ -2091,7 +2094,7 @@ class CreditsPage(BasePage):
 class AIDifficultyPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         button_width = 300
         button_height = 60
         center_y = get_window_size()[1] // 2
@@ -2198,9 +2201,9 @@ class DevelopmentNotification:
         if font:
             self.font = font
         else:
-            self.font = pygame.font.Font(FONT_PATH, 24)
+            self.font = FontManager.get_font(24)
             
-        self.dev_font = pygame.font.Font(FONT_PATH, 26)
+        self.dev_font = FontManager.get_font(26)
         
         self.text = f"{self.player_name}, you may modify properties now"
         
@@ -2306,7 +2309,7 @@ class AIEmotionUI:
             self.angry_image = pygame.Surface(button_size)
             self.angry_image.fill((200, 50, 50))
         
-        self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(14))
+        self.font = FontManager.get_font(text_scaler.get_scaled_size(14))
         
         self.happy_clicks_after_limit = 0
         self.angry_clicks_after_limit = 0

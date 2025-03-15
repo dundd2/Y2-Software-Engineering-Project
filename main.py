@@ -16,6 +16,7 @@ from src.Game import Game
 from src.Player import Player
 from src.ui import MainMenuPage, StartPage, GameModePage, EndGamePage, SettingsPage, HowToPlayPage, AIDifficultyPage, CreditsPage
 from src.text_scaler import text_scaler
+from src.FontManager import FontManager 
 
 WINDOW_SIZE = (1280, 720)  
 WHITE = (255, 255, 255)
@@ -62,6 +63,7 @@ async def apply_screen_settings(resolution):
         print(f"Could not load game icon: {e}")
     
     text_scaler.update_scale_factor(resolution[0], resolution[1])
+    FontManager.update_scale_factor(resolution[0], resolution[1])  
     
     if pygame.display.get_surface():
         current_w, current_h = pygame.display.get_surface().get_size()

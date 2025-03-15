@@ -1,5 +1,4 @@
 import pygame
-import pygame
 import sys
 from src.Board import Board
 from src.Property import Property
@@ -14,6 +13,7 @@ import string
 from src.ui import DevelopmentNotification
 from src.text_scaler import text_scaler
 from src.ui import AIEmotionUI
+from src.FontManager import FontManager 
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -69,8 +69,9 @@ class Game:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
         pygame.display.set_caption("Property Tycoon")
 
-        self.font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(32))
-        self.small_font = pygame.font.Font(FONT_PATH, text_scaler.get_scaled_size(24))
+        # Replace direct font initialization with FontManager
+        self.font = FontManager.get_font(text_scaler.get_scaled_size(32))
+        self.small_font = FontManager.get_font(text_scaler.get_scaled_size(24))
         
         window_size = self.screen.get_size()
         try:
@@ -1780,7 +1781,7 @@ class Game:
             return
             
         if auction_data["current_bidder_index"] >= len(auction_data["active_players"]):
-            print(f"Invalid current_bidder_index: {auction_data['current_bidder_index']} (active players: {len(auction_data["active_players"])})")
+            print(f"Invalid current_bidder_index: {auction_data['current_bidder_index']} (active players: {len(auction_data['active_players'])})")
             return
             
         current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]

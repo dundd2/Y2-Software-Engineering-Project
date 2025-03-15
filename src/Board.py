@@ -9,6 +9,7 @@ from src.Property import Property
 from typing import Optional, List
 from src.loadexcel import load_property_data
 from src.text_scaler import text_scaler
+from src.FontManager import FontManager 
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -79,7 +80,7 @@ class Board:
         self.board_rects = self._create_board_rects()
         self.messages = []
         self.message_times = []
-        self.message_font = pygame.font.Font('assets/font/Ticketing.ttf', text_scaler.get_scaled_size(20))
+        self.message_font = FontManager.get_font(text_scaler.get_scaled_size(20))
 
     def add_message(self, text):
         self.messages.append(text)
