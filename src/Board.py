@@ -65,7 +65,6 @@ class Board:
         
         try:
             self.board_image = pygame.image.load(os.path.join(self.project_root, "assets/image/board.png"))
-            self.board_image = self.board_image.convert_alpha() if self.board_image.get_alpha() else self.board_image.convert()
         except (pygame.error, FileNotFoundError) as e:
             print(f"Could not load board image: {e}")
             self.board_image = None
@@ -253,7 +252,7 @@ class Board:
         board_surface = pygame.Surface((board_size, board_size))
         board_surface.fill(WHITE)
         if self.board_image:
-            scaled_board = pygame.transform.scale(self.board_image, (board_size, board_size))
+            scaled_board = pygame.transform.smoothscale(self.board_image, (board_size, board_size))
             board_surface.blit(scaled_board, (0, 0))
         game_surface.blit(board_surface, (board_x, board_y))
 
