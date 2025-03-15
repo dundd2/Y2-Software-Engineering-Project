@@ -869,7 +869,8 @@ class StartPage(BasePage):
             "A/a - Adjust AI players",
             "Enter - Edit name",
             "Space - Start game",
-            "ESC/Back - Return to menu"
+            "ESC/Back - Return to menu",
+            "Click token icon - Change player token"
         ]
         
         y_offset = get_window_size()[1] - 210
