@@ -1987,11 +1987,11 @@ class Game:
         button_height = 40
         button_margin = 10
         y_offset = card_y + 80
-        
+        mouse_pos = pygame.mouse.get_pos()
         
         for i, (option_text, key) in enumerate(options):
             button_rect = pygame.Rect(card_x + 20, y_offset, card_width - 40, button_height)
-            is_hovered = False
+            is_hovered = button_rect.collidepoint(mouse_pos)
             
             self.draw_button(button_rect, option_text, hover=is_hovered, active=True)
             
@@ -2099,6 +2099,8 @@ class Game:
                             elif option_value == "stay":
                                 choice = "stay"
                                 waiting = False
+                elif event.type == pygame.MOUSEMOTION:
+                    need_redraw = True
                 elif event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -2213,6 +2215,42 @@ class Game:
                 return True
             
         return False
+
+    def show_notification(self, text, duration=None):
+        self.notification = text
+        self.notification_time = pygame.time.get_ticks()
+        if duration:
+            self.NOTIFICATION_DURATION = duration
+
+    def draw_notification(self):
+        if not self.notification:
+            return
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.notification_time > self.NOTIFICATION_DURATION:
+            self.notification = None
+            return
+
+        window_size = self.screen.get_size()
+        padding = 20
+        
+        notification_text = self.font.render(self.notification, True, WHITE)
+        bg_width = notification_text.get_width() + padding * 2
+        bg_height = notification_text.get_height() + padding * 2
+        bg_surface = pygame.Surface((bg_width, bg_height), pygame.SRCALPHA)
+        pygame.draw.rect(bg_surface, (*ACCENT_COLOR[:3], 230), bg_surface.get_rect(), border_radius=10)
+        
+        for i in range(3):
+            alpha = 100 - i * 30
+            pygame.draw.rect(bg_surface, (*ACCENT_COLOR[:3], alpha), 
+                           (-i, -i, bg_width + i*2, bg_height + i*2), 
+                           border_radius=10)
+
+        x = (window_size[0] - bg_width) // 2
+        y = 20  
+        
+        self.screen.blit(bg_surface, (x, y))
+        self.screen.blit(notification_text, (x + padding, y + padding))
 
     def draw_card_alert(self, card, player):
         window_size = self.screen.get_size()
