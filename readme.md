@@ -1,6 +1,4 @@
-# Software-Engineering-Project
-
-## Overview
+# Software-Engineering-Project-Property Tycoon
 
 This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025. The game is built on the Pygame library, which is a set of Python modules designed for writing video games.
 
@@ -12,15 +10,7 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 * [Duncan Law](https://github.com/dundd2)
 * [Owen Chen](https://github.com/Owen880)
 
-## Resources URL
-
-* [How to play Monopoly Go (YouTube)](https://www.youtube.com/watch?v=wR6-iZzgyU0)
-* [Monopoly Go Online (Lagged)](https://lagged.com/en/g/monopoly-go-online#goog_game_inter) - Play Monopoly Go online for free.
-* [Monopoly in JavaScript (intrepidcoder)](https://www.intrepidcoder.com/projects/monopoly/) - A fully functional Monopoly game in JavaScript, open source on [GitHub](https://github.com/intrepidcoder/monopoly).
-* [Monopoly game in Python (AniketSanghi)](https://github.com/AniketSanghi/Monopoly-game) - A Monopoly game made with Python using Pygame and Tkinter.
-* [Pygame Monopoly-AW (YouTube)](https://www.youtube.com/watch?v=UPrLMUTjJNA) - A video example of Monopoly using Pygame.
-
-## Installation Guide for Pygame
+## Installation Guide for Property Tycoon
 
 To start coding with Pygame and run the game, follow these steps to install all required packages on your PC or Mac:
 
