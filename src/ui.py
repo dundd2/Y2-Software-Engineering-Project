@@ -409,6 +409,7 @@ class SettingsPage(BasePage):
             ("Ticketing", "Ticketing.ttf"),
             ("Play Regular", "Play-Regular.ttf"),
             ("British Railway=", "britrdn_.ttf"),
+            ("Uni of Sussex", "LibreBaskerville-Bold.ttf"),
         ]
         self.current_resolution = 0
         self.current_font = 0
