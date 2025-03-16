@@ -1652,6 +1652,20 @@ class Game:
         if self.logic.remove_player(player['name']):
             self.board.add_message(f"{player['name']} bankrupt!")
             self.board.update_ownership(self.logic.properties)
+            
+            for ui_player in self.players:
+                if ui_player.name == player['name']:
+                    ui_player.bankrupt = True
+                    print(f"Marking player {ui_player.name} as bankrupt in UI")
+                    break
+            
+            if self.check_one_player_remains():
+                print("Only one player remains after bankruptcy - ending game")
+                if self.game_settings.get("mode") == "full":
+                    self.end_full_game()
+                else:
+                    self.end_abridged_game()
+            
             return True
         return False
 
@@ -2434,18 +2448,42 @@ class Game:
         return result
 
     def check_one_player_remains(self):
+        if not hasattr(self, '_previous_active_counts'):
+            self._previous_active_counts = {'ui': 0, 'logic': 0}
+        
+        for ui_player in self.players:
+            player_in_logic = any(p['name'] == ui_player.name for p in self.logic.players)
+            if not player_in_logic and not ui_player.bankrupt and not ui_player.voluntary_exit:
+                print(f"Player {ui_player.name} not found in game logic but exists in UI - marking as bankrupt")
+                ui_player.bankrupt = True
+
         active_player_objects = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
         active_player_data = [p for p in self.logic.players if p["money"] > 0 and not p.get('exited', False)]
         
-        if len(active_player_objects) == 1 and len(active_player_data) == 1:
-            if active_player_objects[0].is_ai:
-                self.game_over = True
+        if (len(active_player_objects) != self._previous_active_counts['ui'] or 
+            len(active_player_data) != self._previous_active_counts['logic']):
+            print(f"\nActive player count changed:")
+            print(f"UI players: {len(active_player_objects)} - {[p.name for p in active_player_objects]}")
+            print(f"Logic players: {len(active_player_data)} - {[p['name'] for p in active_player_data]}")
+            
+            self._previous_active_counts['ui'] = len(active_player_objects)
+            self._previous_active_counts['logic'] = len(active_player_data)
+        
+        if len(active_player_objects) <= 1 and len(active_player_data) <= 1:
+            print("\nOne or fewer players remain active")
+            
+            if len(active_player_objects) == 1 and len(active_player_data) == 1:
                 winner = active_player_objects[0]
+                print(f"Last player standing: {winner.name}")
+                self.game_over = True
                 self.handle_game_over(winner.name)
-                return True
+            elif len(active_player_objects) == 0 and len(active_player_data) == 0:
+                print("No active players remain - ending with no winner")
+                self.game_over = True
+            
             return True
         
-        return len(active_player_objects) <= 1 and len(active_player_data) <= 1
+        return False
         
     def check_time_limit(self):
         if not self.time_limit or not self.start_time:

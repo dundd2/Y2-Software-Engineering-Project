@@ -972,8 +972,13 @@ class GameLogic:
         for prop in self.properties.values():
             if prop.get('owner') == player['name']:
                 value = prop['price']
-                if 'houses' in prop:
-                    value += sum(prop.get('house_costs', []))[:prop['houses']]
+                if 'houses' in prop and prop['houses'] > 0:
+                    house_costs = prop.get('house_costs', [])
+                    if house_costs and isinstance(house_costs, list):
+                        house_value = sum(house_costs[:prop['houses']])
+                    else:
+                        house_value = 0
+                    value += house_value
                 property_list.append((prop['name'], value))
                 total_liquidated += value
 
