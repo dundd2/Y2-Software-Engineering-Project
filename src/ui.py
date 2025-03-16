@@ -10,7 +10,7 @@ import webbrowser
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
-LIGHT_GRAY = (200, 200, 200)
+LIGHT_GRAY = (59,59,59)
 MODERN_BG = (18, 18, 18)
 
 DARK_RED = (139, 0, 0)

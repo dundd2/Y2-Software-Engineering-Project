@@ -647,9 +647,9 @@ class Game:
                                        (0, i), (self.quit_button.width, i))
                     self.screen.blit(gradient, self.quit_button)
     
-                    quit_text = self.font.render("Leave Game", True, WHITE)
+                    quit_text = self.font.render("Leave", True, WHITE)
                     text_rect = quit_text.get_rect(center=self.quit_button.center)
-                    text_shadow = self.font.render("Leave Game", True, BLACK)
+                    text_shadow = self.font.render("Leave", True, BLACK)
                     text_shadow_rect = text_shadow.get_rect(center=self.quit_button.center)
                     text_shadow_rect.x += 1
                     text_shadow_rect.y += 1
@@ -3371,10 +3371,10 @@ class Game:
         title_text = self.font.render("Leave Game?", True, ERROR_COLOR)
         title_rect = title_text.get_rect(centerx=dialog_x + dialog_width//2, top=dialog_y + 20)
         
-        warning_text = self.small_font.render("Warning: You will lose the game if you leave!", True, BLACK)
+        warning_text = self.small_font.render("You will lose the game if you leave!", True, BLACK)
         warning_rect = warning_text.get_rect(centerx=dialog_x + dialog_width//2, top=title_rect.bottom + 20)
         
-        message_text = self.small_font.render("All your properties will be returned to the bank.", True, BLACK)
+        message_text = self.small_font.render("Your properties will return to bank.", True, BLACK)
         message_rect = message_text.get_rect(centerx=dialog_x + dialog_width//2, top=warning_rect.bottom + 10)
         
         yes_text = self.font.render("Yes", True, WHITE)
