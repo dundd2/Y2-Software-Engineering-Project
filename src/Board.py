@@ -18,6 +18,19 @@ ACCENT_COLOR = (75, 139, 190)
 SUCCESS_COLOR = (40, 167, 69)
 ERROR_COLOR = (220, 53, 69)
 
+GROUP_COLORS = {
+    "Brown": (102, 51, 0),
+    "Blue": (0, 112, 255),
+    "Purple": (128, 0, 128),
+    "Orange": (255, 128, 0),
+    "Red": (255, 0, 0),
+    "Yellow": (255, 255, 0),
+    "Green": (0, 153, 0),
+    "Deep Blue": (0, 0, 153),
+    "Stations": (128, 128, 128),
+    "Utilities": (192, 192, 192)
+}
+
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class CameraControls:
@@ -81,6 +94,7 @@ class Board:
         self.message_times = []
         self.message_font = font_manager.get_font(24)
         self.price_font = font_manager.get_font(20)
+        self.small_font = font_manager.get_font(14)
 
     def add_message(self, text):
         self.messages.append(text)
@@ -144,6 +158,106 @@ class Board:
                 
             player_rect = self.board_rects[player.position - 1]
             player.rect = player_rect
+
+    def draw_ownership_indicators(self, surface):
+        for position_str, prop_data in self.properties_data.items():
+            try:
+                position = int(position_str)
+                owner = prop_data.get("owner")
+                group = prop_data.get("group")
+                
+                if not group or not owner or position < 1 or position > 40:
+                    continue
+                
+                pos_index = position - 1
+                if pos_index >= len(self.board_rects):
+                    continue
+                    
+                rect = self.board_rects[pos_index]
+                
+                owner_player = None
+                for player in self.players:
+                    if player.name == owner:
+                        owner_player = player
+                        break
+                        
+                if not owner_player:
+                    continue
+                
+                owner_color = owner_player.color
+                
+                if pos_index <= 9:  
+                    band_height = rect.height * 0.45
+                    band_rect = pygame.Rect(rect.x, rect.y, rect.width, band_height)
+                elif pos_index <= 19: 
+                    band_width = rect.width * 0.45
+                    band_rect = pygame.Rect(rect.x + rect.width - band_width, rect.y, band_width, rect.height)
+                elif pos_index <= 29:  
+                    band_height = rect.height * 0.45
+                    band_rect = pygame.Rect(rect.x, rect.y + rect.height - band_height, rect.width, band_height)
+                else:  
+                    band_width = rect.width * 0.45
+                    band_rect = pygame.Rect(rect.x, rect.y, band_width, rect.height)
+                
+                overlay = pygame.Surface((band_rect.width, band_rect.height), pygame.SRCALPHA)
+                overlay_color = list(owner_color)
+                if len(overlay_color) == 3:
+                    overlay_color.append(180)  
+                else:
+                    overlay_color[3] = 180 
+                
+                pygame.draw.rect(overlay, tuple(overlay_color), overlay.get_rect())
+                surface.blit(overlay, band_rect)
+                
+                houses = prop_data.get("houses", 0)
+                if houses > 0:
+                    if pos_index <= 9:  
+                        icon_x = rect.x + rect.width // 2
+                        icon_y = rect.y + int(band_height * 1.2)
+                    elif pos_index <= 19: 
+                        icon_x = rect.x + rect.width // 2 - int(band_width * 0.3)
+                        icon_y = rect.y + rect.height // 2
+                    elif pos_index <= 29:  
+                        icon_x = rect.x + rect.width // 2
+                        icon_y = rect.y + rect.height // 2 - int(band_height * 0.3)
+                    else: 
+                        icon_x = rect.x + rect.width - int(band_width * 0.3)
+                        icon_y = rect.y + rect.height // 2
+                    
+                    if houses < 5:
+                        houses_text = "H" * houses 
+                        houses_surf = self.small_font.render(houses_text, True, (0, 200, 0))
+                        houses_rect = houses_surf.get_rect(center=(icon_x, icon_y))
+                        surface.blit(houses_surf, houses_rect)
+                    else:
+                        hotel_text = "W" 
+                        hotel_surf = self.small_font.render(hotel_text, True, (200, 0, 0))
+                        hotel_rect = hotel_surf.get_rect(center=(icon_x, icon_y))
+                        surface.blit(hotel_surf, hotel_rect)
+                
+                if prop_data.get("is_mortgaged", False):
+                    if pos_index <= 9:
+                        mort_x = rect.x + rect.width // 2
+                        mort_y = rect.y + int(band_height * 0.6)
+                    elif pos_index <= 19:  
+                        mort_x = rect.x + rect.width - int(band_width * 0.6)
+                        mort_y = rect.y + rect.height // 2
+                    elif pos_index <= 29:  
+                        mort_x = rect.x + rect.width // 2
+                        mort_y = rect.y + rect.height - int(band_height * 0.6)
+                    else:  
+                        mort_x = rect.x + int(band_width * 0.6)
+                        mort_y = rect.y + rect.height // 2
+                    
+                    mortgage_text = "M"
+                    mortgage_surf = self.small_font.render(mortgage_text, True, (255, 50, 50))
+                    mortgage_rect = mortgage_surf.get_rect(center=(mort_x, mort_y))
+                    bg_rect = mortgage_rect.inflate(6, 6)
+                    pygame.draw.rect(surface, (0, 0, 0, 150), bg_rect)
+                    surface.blit(mortgage_surf, mortgage_rect)
+                    
+            except (ValueError, TypeError) as e:
+                print(f"Error drawing ownership indicator for position {position_str}: {e}")
 
     def draw_player(self, screen, player, rect, index):
         is_corner = rect.width > rect.height + 10 or rect.height > rect.width + 10
@@ -259,6 +373,8 @@ class Board:
 
         transparent_surface = pygame.Surface((window_width, window_height), pygame.SRCALPHA)
         
+        self.draw_ownership_indicators(transparent_surface)
+        
         for player in self.players:
             if not isinstance(player.position, int) or not (1 <= player.position <= 40):
                 print(f"Warning: Invalid position {player.position} detected for {player.name} in draw, resetting to position 1")
@@ -340,6 +456,8 @@ class Board:
                     self.spaces[array_pos].owner = prop_data.get("owner")
             except (ValueError, TypeError) as e:
                 print(f"Error updating ownership for position {position_str}: {e}")
+        
+        self.properties_data.update(properties_data)
 
     def get_property_group(self, position):
         if str(position) in self.properties_data:

@@ -25,7 +25,7 @@ class FontManager:
                 cls._fonts[cache_key] = pygame.font.Font(cls._current_font_path, scaled_size)
             except (pygame.error, FileNotFoundError) as e:
                 print(f"Error loading font {cls._current_font_path}: {e}")
-                cls._fonts[cache_key] = pygame.font.Font(None, scaled_size)  # Fallback to default font
+                cls._fonts[cache_key] = pygame.font.Font(None, scaled_size) 
         
         return cls._fonts[cache_key]
     
@@ -54,5 +54,5 @@ class FontManager:
     def clear_cache(cls):
         """Clear the font cache"""
         cls._fonts.clear()
-        
+
 font_manager = FontManager()

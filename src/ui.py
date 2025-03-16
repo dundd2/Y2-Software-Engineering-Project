@@ -528,7 +528,7 @@ class SettingsPage(BasePage):
             new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
             if current_resolution != new_resolution or FONT_PATH != new_font_path:
                 FONT_PATH = new_font_path
-                font_manager.update_font_path(new_font_path)  # Add this line to update FontManager
+                font_manager.update_font_path(new_font_path) 
                 return True
         elif self.back_button.check_hover(pos):
             return "back"

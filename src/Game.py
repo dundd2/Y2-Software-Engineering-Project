@@ -68,7 +68,6 @@ class Game:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
         pygame.display.set_caption("Property Tycoon")
 
-        # Replace direct font initialization with FontManager
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
         self.button_font = font_manager.get_font(32)
