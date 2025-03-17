@@ -1,6 +1,7 @@
 # Base on PropertyTycoonCardData.xlsx from canvas 
 # script based on Eric's provided flowchart photo (flowchart.drawio.png)
 # will add more comment later to reference for which part of code is based on which part of the flowchart
+# This file contains the Board class, which is used to manage the board in the Property Tycoon game.
 
 import pygame
 import math

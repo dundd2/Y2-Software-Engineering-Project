@@ -1,3 +1,8 @@
+# Property Tycoon ui.py 
+# This file contains the UI for the Property Tycoon game.
+# It contains the classes for the buttons, input fields, and other UI elements.
+# It also contains the classes for the main menu, how to play, and settings pages.
+# It also contains the classes for the game pages, such as the game page, the game over page, and the game win page.
 import pygame
 import sys
 import time

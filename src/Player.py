@@ -1,3 +1,7 @@
+# Property Tycoon Player.py
+# This file contains the classes for the players in the Property Tycoon game.
+# It contains the classes for the players, such as the money, the properties, and the position. 
+
 import pygame
 import math
 import os

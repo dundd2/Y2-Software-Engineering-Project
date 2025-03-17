@@ -1,3 +1,7 @@
+# Property Tycoon Property.py
+# This file contains the classes for the properties in the Property Tycoon game.
+# It contains the classes for the properties, such as the rent, the house costs, and the hotel costs.
+
 class Property:
     def __init__(self, data):
         self.name = data["name"]

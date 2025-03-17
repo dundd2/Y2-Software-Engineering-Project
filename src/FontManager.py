@@ -1,3 +1,7 @@
+# Property Tycoon FontManager.py
+# This file contains the FontManager class, which is used to manage the fonts in the Property Tycoon game.
+# It contains the classes for the fonts, such as the font path, the font size, and the font cache.
+
 import pygame
 import os
 
