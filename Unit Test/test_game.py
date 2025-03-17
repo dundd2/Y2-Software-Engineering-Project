@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.Board import Board
 from src.Game import Game
@@ -17,7 +17,6 @@ class TestGame(unittest.TestCase):
         self.game = Game(self.players, game_mode="full")
 
     def test_game_initialization(self):
-        """测试游戏初始化"""
         self.assertEqual(len(self.game.players), 2)
         self.assertEqual(self.game.game_mode, "full")
 
