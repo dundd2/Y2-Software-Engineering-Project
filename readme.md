@@ -22,7 +22,7 @@ To start coding with Pygame and run the game, follow these steps to install all 
 2. Install required packages: In the Command Prompt, type:
 
 ```bash
-pip install setuptools pygame pandas openpyxl pygbag pytest pytest-asyncio
+pip install setuptools pygame pandas openpyxl
 ```
 
 Wait for the installation to complete.
@@ -33,7 +33,7 @@ Wait for the installation to complete.
 2. Install required packages: In the Terminal, type:
 
 ```bash
-pip3 install setuptools pygame pandas openpyxl pygbag pytest pytest-asyncio
+pip3 install setuptools pygame pandas openpyxl
 ```
 
 You might be prompted for your password. Wait for the installation to complete.
