@@ -1671,110 +1671,144 @@ class Game:
 
     def draw_auction(self, auction_data):
         if self.show_card:
-            window_size = self.screen.get_size()
-            card_width = int(window_size[0] * 0.35)
-            card_height = int(window_size[1] * 0.5)
-            card_x = (window_size[0] - card_width) // 2
-            card_y = (window_size[1] - card_height) // 2
+            print("Card is showing - not drawing auction UI")
+            return
             
-            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 120))
-            self.screen.blit(overlay, (0, 0))
+        if auction_data is None:
+            print("Warning: Auction data is None in draw_auction")
+            self.state = "ROLL"  
+            return
             
-            shadow_rect = pygame.Rect(card_x + 6, card_y + 6, card_width, card_height)
-            shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
-            pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
-            self.screen.blit(shadow, shadow_rect)
+        required_keys = ["property", "current_bid", "minimum_bid", "highest_bidder", 
+                         "current_bidder_index", "active_players"]
+        
+        for key in required_keys:
+            if key not in auction_data:
+                print(f"Warning: Auction data missing key '{key}' - resetting to ROLL state")
+                self.state = "ROLL"
+                return
+        
+        if not isinstance(auction_data["property"], dict) or "name" not in auction_data["property"]:
+            print("Warning: Auction property data is invalid - resetting to ROLL state")
+            self.state = "ROLL"
+            return
+        
+        current_bidder_index = auction_data.get("current_bidder_index", 0)
+        if (current_bidder_index < len(auction_data["active_players"])):
+            current_bidder = auction_data["active_players"][current_bidder_index]
+            if current_bidder.get('is_ai', False):
+                ai_player = current_bidder
+                print(f"Auto-handling AI auction turn for {ai_player['name']}")
+                self.handle_ai_turn(ai_player)
+                pygame.time.delay(500)
+        
+        print(f"\n=== Drawing Auction UI ===")
+        print(f"Property: {auction_data['property']['name']}")
+        print(f"Current bid: £{auction_data['current_bid']}")
+        print(f"Minimum bid: £{auction_data['minimum_bid']}")
+        
+        if auction_data["highest_bidder"]:
+            print(f"Highest bidder: {auction_data['highest_bidder']['name']}")
+        else:
+            print("No bids yet")
             
-            pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
-            
-            current_bidder_index = auction_data.get("current_bidder_index", 0)
-            if (current_bidder_index < len(auction_data["active_players"])):
-                current_bidder = auction_data["active_players"][current_bidder_index]
-                if current_bidder.get('is_ai', False):
-                    ai_player = current_bidder
-                    print(f"Auto-handling AI auction turn for {ai_player['name']}")
-                    self.handle_ai_turn(ai_player)
-                    pygame.time.delay(500)
-            
-            print(f"\n=== Drawing Auction UI ===")
-            print(f"Property: {auction_data['property']['name']}")
-            print(f"Current bid: £{auction_data['current_bid']}")
-            print(f"Minimum bid: £{auction_data['minimum_bid']}")
-            
-            if auction_data["highest_bidder"]:
-                print(f"Highest bidder: {auction_data['highest_bidder']['name']}")
-            else:
-                print("No bids yet")
-                
-            print(f"Current bidder index: {auction_data['current_bidder_index']}")
-            if auction_data["active_players"]:
-                current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
-                print(f"Current bidder: {current_bidder['name']}")
-                
-            print(f"Passed players: {auction_data.get('passed_players', set())}")
-            print(f"Active players: {[p['name'] for p in auction_data.get('active_players', [])]}")
-            print(f"Completed: {auction_data.get('completed', False)}")
-            
+        print(f"Current bidder index: {auction_data['current_bidder_index']}")
+        if auction_data["active_players"]:
             current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
-            current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
+            print(f"Current bidder: {current_bidder['name']}")
             
-            header_color = ERROR_COLOR if auction_data["duration"] <= 10 else ACCENT_COLOR
-            header_text = self.font.render(f"{current_bidder['name']}'s Turn", True, header_color)
-            timer_text = self.font.render(f"Time: {auction_data['duration']}s", True, header_color)
+        print(f"Passed players: {auction_data.get('passed_players', set())}")
+        print(f"Active players: {[p['name'] for p in auction_data.get('active_players', [])]}")
+        print(f"Completed: {auction_data.get('completed', False)}")
             
-            header_y = card_y + 20
-            self.screen.blit(header_text, (card_x + 20, header_y))
-            self.screen.blit(timer_text, (card_x + card_width - timer_text.get_width() - 20, header_y))
+        window_size = self.screen.get_size()
+        card_width = int(window_size[0] * 0.35)
+        card_height = int(window_size[1] * 0.5)
+        card_x = (window_size[0] - card_width) // 2
+        card_y = (window_size[1] - card_height) // 2
+        
+        overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150)) 
+        self.screen.blit(overlay, (0, 0))
+        
+        for i in range(5):
+            shadow_offset = 6 - i
+            shadow_rect = pygame.Rect(card_x + shadow_offset, card_y + shadow_offset, 
+                                    card_width, card_height)
+            shadow = pygame.Surface((card_width, card_height), pygame.SRCALPHA)
+            shadow_alpha = 100 - (i * 20)
+            pygame.draw.rect(shadow, (*BLACK, shadow_alpha), shadow.get_rect(), border_radius=15)
+            self.screen.blit(shadow, shadow_rect)
+        
+        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_width, card_height), border_radius=15)
+        
+        current_time = pygame.time.get_ticks()
+        time_remaining = max(0, (auction_data["start_time"] + auction_data["duration"] - current_time) // 1000)
+        
+        current_bidder = auction_data["active_players"][auction_data["current_bidder_index"]]
+        current_bidder_obj = next((p for p in self.players if p.name == current_bidder['name']), None)
+        
+        header_color = ERROR_COLOR if time_remaining <= 10 else ACCENT_COLOR
+        header_text = self.font.render(f"{current_bidder['name']}'s Turn", True, header_color)
+        timer_text = self.font.render(f"Time: {time_remaining}s", True, header_color)
+        
+        header_y = card_y + 20
+        self.screen.blit(header_text, (card_x + 20, header_y))
+        self.screen.blit(timer_text, (card_x + card_width - timer_text.get_width() - 20, header_y))
+        
+        title_y = header_y + 50
+        title = self.font.render("AUCTION", True, BLACK)
+        property_name = self.font.render(auction_data["property"]["name"], True, BLACK)
+        self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, title_y))
+        self.screen.blit(property_name, (card_x + 20, title_y + 40))
+        
+        info_y = title_y + 90
+        current_bid = self.font.render(f"Current Bid: £{auction_data['current_bid']}", True, BLACK)
+        min_bid = self.font.render(f"Minimum Bid: £{auction_data['minimum_bid']}", True, BLACK)
+        self.screen.blit(current_bid, (card_x + 20, info_y))
+        self.screen.blit(min_bid, (card_x + 20, info_y + 40))
+        
+        if auction_data["highest_bidder"]:
+            highest_y = info_y + 80
+            highest_text = self.font.render(f"Highest Bidder: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
+            self.screen.blit(highest_text, (card_x + 20, highest_y))
+        
+        can_bid = current_bidder['name'] not in auction_data.get("passed_players", set())
+        is_human = current_bidder_obj and not current_bidder_obj.is_ai
+        
+        if is_human and can_bid:
+            self.auction_input = pygame.Rect(card_x + 20, card_y + card_height - 120, 200, 40)
+            pygame.draw.rect(self.screen, WHITE, self.auction_input)
+            pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
             
-            title_y = header_y + 50
-            title = self.font.render("AUCTION", True, BLACK)
-            property_name = self.font.render(auction_data["property"]["name"], True, BLACK)
-            self.screen.blit(title, (card_x + (card_width - title.get_width()) // 2, title_y))
-            self.screen.blit(property_name, (card_x + 20, title_y + 40))
+            if self.auction_bid_amount:
+                bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
+            else:
+                bid_text = self.small_font.render("Enter bid amount...", True, GRAY)
+            self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + (self.auction_input.height - bid_text.get_height()) // 2))
             
-            info_y = title_y + 90
-            current_bid = self.font.render(f"Current Bid: £{auction_data['current_bid']}", True, BLACK)
-            min_bid = self.font.render(f"Minimum Bid: £{auction_data['minimum_bid']}", True, BLACK)
-            self.screen.blit(current_bid, (card_x + 20, info_y))
-            self.screen.blit(min_bid, (card_x + 20, info_y + 40))
+            button_width = 100
+            button_height = 40
+            button_margin = 20
             
-            if auction_data["highest_bidder"]:
-                highest_y = info_y + 80
-                highest_text = self.font.render(f"Highest Bidder: {auction_data['highest_bidder']['name']}", True, SUCCESS_COLOR)
-                self.screen.blit(highest_text, (card_x + 20, highest_y))
+            self.auction_buttons = {
+                'bid': pygame.Rect(card_x + 20, card_y + card_height - 60, button_width, button_height),
+                'pass': pygame.Rect(card_x + 20 + button_width + button_margin, card_y + card_height - 60, button_width, button_height)
+            }
             
-            can_bid = current_bidder['name'] not in auction_data.get("passed_players", set())
-            is_human = current_bidder_obj and not current_bidder_obj.is_ai
-            
-            if is_human and can_bid:
-                self.auction_input = pygame.Rect(card_x + 20, card_y + card_height - 120, 200, 40)
-                pygame.draw.rect(self.screen, WHITE, self.auction_input)
-                pygame.draw.rect(self.screen, ACCENT_COLOR, self.auction_input, 2)
+            mouse_pos = pygame.mouse.get_pos()
+            for btn_name, btn_rect in self.auction_buttons.items():
+                mouse_over = btn_rect.collidepoint(mouse_pos)
+                color = BUTTON_HOVER if mouse_over else ACCENT_COLOR
+                pygame.draw.rect(self.screen, color, btn_rect, border_radius=5)
                 
-                if self.auction_bid_amount:
-                    bid_text = self.font.render(self.auction_bid_amount, True, BLACK)
-                else:
-                    bid_text = self.small_font.render("Enter bid amount...", True, GRAY)
-                self.screen.blit(bid_text, (self.auction_input.x + 10, self.auction_input.y + (self.auction_input.height - bid_text.get_height()) // 2))
-                
-                button_width = 100
-                button_height = 40
-                button_margin = 20
-                
-                self.auction_buttons = {
-                    'bid': pygame.Rect(card_x + 20, card_y + card_height - 60, button_width, button_height),
-                    'pass': pygame.Rect(card_x + 20 + button_width + button_margin, card_y + card_height - 60, button_width, button_height)
-                }
-                
-                mouse_pos = pygame.mouse.get_pos()
-                for btn_name, btn_rect in self.auction_buttons.items():
-                    mouse_over = btn_rect.collidepoint(mouse_pos)
-                    self.draw_button(btn_rect, btn_name.title(), hover=mouse_over, active=True)
-            
-            if auction_data.get("passed_players"):
-                passed_text = self.small_font.render("Passed: " + ", ".join(auction_data["passed_players"]), True, GRAY)
-                self.screen.blit(passed_text, (card_x + 20, card_y + card_height - 30))
+                btn_text = self.font.render(btn_name.title(), True, WHITE)
+                self.screen.blit(btn_text, (btn_rect.centerx - btn_text.get_width()//2, 
+                                        btn_rect.centery - btn_text.get_height()//2))
+        
+        if auction_data.get("passed_players"):
+            passed_text = self.small_font.render("Passed: " + ", ".join(auction_data["passed_players"]), True, GRAY)
+            self.screen.blit(passed_text, (card_x + 20, card_y + card_height - 30))
 
     def handle_auction_input(self, event):
         if not hasattr(self.logic, 'current_auction') or self.logic.current_auction is None:
