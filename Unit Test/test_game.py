@@ -594,170 +594,153 @@ class TestGame(unittest.TestCase):
             self.assertTrue(test_property.get('is_mortgaged', False))
             self.assertEqual(player.money, initial_money + test_property['price'] // 2)
 
+    def test_negative_money_handling(self):
+        """Test how the game handles a player having negative money"""
+        player = self.game.players[0]
+        player_dict = self.get_player_dict(player)
+
+        player.money = 50
+        player_dict['money'] = 50
+        
+        expensive_property = None
+        expensive_rent = 100 
+        
+        for pos, space_data in self.game_logic.properties.items():
+            if space_data.get('type') == 'property' and space_data.get('rent', 0) > 50:
+                space_data['owner'] = self.game.players[1].name
+                expensive_property = space_data
+                expensive_rent = space_data.get('rent', 100)
+                break
+                
+        if expensive_property:
+            player_count_before = len(self.game_logic.players)
+            
+            success = self.game_logic.handle_rent_payment(player_dict, expensive_property)
+            
+            self.sync_player_objects()
+            
+            self.assertFalse(success)
+            self.assertLess(len(self.game_logic.players), player_count_before)
+            self.assertIn(player.name, self.game_logic.bankrupted_players)
+        else:
+            self.skipTest("No suitable expensive property found for negative money test")
+                        
+    def test_card_exhaustion(self):
+        """Test handling when card piles are exhausted and need reshuffling"""
+        player = self.game.players[0]
+        player_dict = self.get_player_dict(player)
+        
+        original_pot_luck = self.game_logic.pot_luck_cards.copy()
+        original_opportunity_knocks = self.game_logic.opportunity_knocks_cards.copy()
+        
+        original_handle_card_draw = self.game_logic.handle_card_draw
+        
+        try:
+            drawn_cards = []
+            
+            def mock_handle_card_draw(player_dict, card_type):
+                nonlocal drawn_cards
+                result, message = original_handle_card_draw(player_dict, card_type)
+                drawn_cards.append({"text": message, "result": result})
+                return result, message
+                
+            self.game_logic.handle_card_draw = mock_handle_card_draw
+            
+            total_cards = len(self.game_logic.pot_luck_cards) + 1
+            for _ in range(total_cards):
+                self.game_logic.handle_card_draw(player_dict, "Pot Luck")
+                
+            card_texts = [card['text'] for card in drawn_cards]
+            unique_cards = set(card_texts)
+            self.assertLess(len(unique_cards), len(card_texts), 
+                          "Expected at least one card to be drawn twice after reshuffling")
+        finally:
+            self.game_logic.handle_card_draw = original_handle_card_draw
+            self.game_logic.pot_luck_cards = original_pot_luck
+            self.game_logic.opportunity_knocks_cards = original_opportunity_knocks
+            
+    def test_card_distribution_equality(self):
+        """Test if the card distribution is fair when reshuffling"""
+        original_handle_card_draw = self.game_logic.handle_card_draw
+        player = self.game.players[0]
+        player_dict = self.get_player_dict(player)
+        
+        try:
+            card_counts = {}
+
+            def counting_handle_card_draw(player_dict, card_type):
+                result, message = original_handle_card_draw(player_dict, card_type)
+                if message not in card_counts:
+                    card_counts[message] = 0
+                card_counts[message] += 1
+                return result, message
+                
+            self.game_logic.handle_card_draw = counting_handle_card_draw
+            
+            for _ in range(100): 
+                self.game_logic.handle_card_draw(player_dict, "Pot Luck")
+                
+            avg_frequency = sum(card_counts.values()) / len(card_counts)
+            
+            for card_text, count in card_counts.items():
+                self.assertLess(abs(count - avg_frequency), avg_frequency * 0.5, 
+                              f"Card '{card_text}' appears with unusual frequency: {count}")
+                
+        finally:
+            self.game_logic.handle_card_draw = original_handle_card_draw
+                
+    def test_bankruptcy_from_bank_payment(self):
+        """Test bankruptcy when player needs to pay the bank but can't afford it"""
+        player = self.game.players[0]
+        player_dict = self.get_player_dict(player)
+        
+        player.money = 30
+        player_dict['money'] = 30
+        
+        initial_bank_money = self.game_logic.bank_money
+        initial_player_count = len(self.game_logic.players)
+        
+        payment_amount = 100
+        player_money, bank_money, _ = self.game_logic.handle_payment_to_bank(
+            player_dict, payment_amount, False)
+        
+        self.sync_player_objects()
+        
+        self.assertEqual(len(self.game_logic.players), initial_player_count - 1)
+        self.assertIn(player.name, self.game_logic.bankrupted_players)
+        
+        self.assertEqual(bank_money, initial_bank_money + 30)
+        
+    def test_player_asset_calculation_with_mortgaged_properties(self):
+        """Test asset calculation with mortgaged properties"""
+        player = self.game.players[0]
+        player_dict = self.get_player_dict(player)
+        
+        player.money = 1000
+        player_dict['money'] = 1000
+        
+        test_property = None
+        for pos, prop in self.game_logic.properties.items():
+            if prop.get('type') == 'property' and prop.get('price', 0) > 0:
+                test_property = prop
+                test_property['owner'] = player.name
+                break
+                
+        if test_property:
+            initial_price = test_property.get('price', 0)
+            
+            assets_before = self.game.calculate_player_assets(player_dict)
+            
+            self.game_logic.mortgage_property(test_property, player_dict)
+            
+            assets_after = self.game.calculate_player_assets(player_dict)
+            
+            expected_difference = initial_price / 2
+            actual_difference = assets_after - assets_before
+            
+            self.assertAlmostEqual(actual_difference, expected_difference, delta=10)
+        else:
+            self.skipTest("No suitable property found for mortgage asset calculation test")
+
 if __name__ == "__main__":
     unittest.main()
-
-def test_property_trading(self):
-    """Test property trading between players"""
-    player1 = self.game.players[0]
-    player2 = self.game.players[1]
-    player1_dict = self.get_player_dict(player1)
-    player2_dict = self.get_player_dict(player2)
-    
-    property1 = None
-    property2 = None
-    for pos, prop in self.game_logic.properties.items():
-        if prop.get('type') == 'property' and prop.get('can_be_bought', False):
-            if property1 is None:
-                property1 = prop
-                property1['owner'] = player1.name
-            elif property2 is None:
-                property2 = prop
-                property2['owner'] = player2.name
-                break
-    
-    if property1 and property2:
-        initial_property1_owner = property1['owner']
-        initial_property2_owner = property2['owner']
-        
-        trade_offer = {
-            'from_player': player1.name,
-            'to_player': player2.name,
-            'properties_offered': [property1],
-            'properties_requested': [property2],
-            'money_offered': 0,
-            'money_requested': 0
-        }
-        
-        result = self.game_logic.execute_trade(trade_offer)
-        
-        self.assertTrue(result)
-        self.assertEqual(property1['owner'], player2.name)
-        self.assertEqual(property2['owner'], player1.name)
-        
-        property1['owner'] = initial_property1_owner
-        property2['owner'] = initial_property2_owner
-        
-        initial_player1_money = player1.money
-        initial_player2_money = player2.money
-        player1_dict['money'] = initial_player1_money
-        player2_dict['money'] = initial_player2_money
-        
-        money_amount = 100
-        trade_offer_with_money = {
-            'from_player': player1.name,
-            'to_player': player2.name,
-            'properties_offered': [property1],
-            'properties_requested': [],
-            'money_offered': 0,
-            'money_requested': money_amount
-        }
-        
-        result = self.game_logic.execute_trade(trade_offer_with_money)
-        
-        self.sync_player_objects()
-        
-        self.assertTrue(result)
-        self.assertEqual(property1['owner'], player2.name)
-        self.assertEqual(player1.money, initial_player1_money - money_amount)
-        self.assertEqual(player2.money, initial_player2_money + money_amount)
-
-def test_property_auction(self):
-    """Test property auction when no player buys a property"""
-    player1 = self.game.players[0]
-    player2 = self.game.players[1]
-    player1_dict = self.get_player_dict(player1)
-    player2_dict = self.get_player_dict(player2)
-    
-    auction_property = None
-    for pos, prop in self.game_logic.properties.items():
-        if prop.get('type') == 'property' and prop.get('can_be_bought', False) and prop.get('owner') is None:
-            auction_property = prop
-            auction_property_pos = pos
-            break
-    
-    if auction_property:
-        player1.position = int(auction_property_pos)
-        player1_dict['position'] = int(auction_property_pos)
-        
-        initial_player1_money = player1.money
-        initial_player2_money = player2.money
-        player1_dict['money'] = initial_player1_money
-        player2_dict['money'] = initial_player2_money
-        
-        auction_bids = {
-            player1.name: 200,  
-            player2.name: 250   
-        }
-        
-        result = self.game_logic.conduct_auction(auction_property, auction_bids)
-        
-        self.sync_player_objects()
-        
-        self.assertEqual(result, player2.name)  
-        self.assertEqual(auction_property['owner'], player2.name)
-        self.assertEqual(player2.money, initial_player2_money - 250)  
-        self.assertEqual(player1.money, initial_player1_money)  
-
-def test_card_action_variety(self):
-    """Test various card actions beyond just 'Advance to GO'"""
-    player = self.game.players[0]
-    player_dict = self.get_player_dict(player)
-    
-    payment_card = None
-    for card in pot_luck_cards + opportunity_knocks_cards:
-        if "pay" in card['text'].lower() or "fine" in card['text'].lower():
-            payment_card = card
-            break
-    
-    if payment_card:
-        initial_money = player.money
-        player_dict['money'] = initial_money
-        initial_bank_money = self.game_logic.bank_money
-        
-        new_position, money_change, free_parking_change = payment_card['action'](
-            player_dict, self.game_logic.bank_money, self.game_logic.free_parking_fund
-        )
-        
-        self.sync_player_objects()
-        
-        self.assertLess(player.money, initial_money, "Card should have deducted money")
-    
-    movement_card = None
-    for card in pot_luck_cards + opportunity_knocks_cards:
-        if "go to" in card['text'].lower() and "go" not in card['text'].lower():
-            movement_card = card
-            break
-    
-    if movement_card:
-        initial_position = player.position
-        player_dict['position'] = initial_position
-        
-        new_position, _, _ = movement_card['action'](
-            player_dict, self.game_logic.bank_money, self.game_logic.free_parking_fund
-        )
-        
-        player_dict['position'] = new_position
-        self.sync_player_objects()
-        
-        self.assertNotEqual(player.position, initial_position, 
-                        f"Card should have moved player from position {initial_position}")
-        
-    jail_card = None
-    for card in pot_luck_cards + opportunity_knocks_cards:
-        if "jail" in card['text'].lower() and "free" in card['text'].lower():
-            jail_card = card
-            break
-    
-    if jail_card:
-        initial_jail_cards = player.jail_cards
-        player_dict['jail_cards'] = initial_jail_cards
-        
-        _, _, _ = jail_card['action'](
-            player_dict, self.game_logic.bank_money, self.game_logic.free_parking_fund
-        )
-        
-        self.sync_player_objects()
-        
-        self.assertGreater(player.jail_cards, initial_jail_cards, 
-                        "Player should have received a Get Out of Jail Free card")
