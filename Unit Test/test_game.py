@@ -40,8 +40,8 @@ class TestGame(unittest.TestCase):
         pygame.time.wait = lambda x: None
         
         self.players = [
-            Player("Alice", player_number=1),
-            Player("Bob", player_number=2, is_ai=True)
+            Player("Duncan", player_number=1),
+            Player("Owen", player_number=2, is_ai=True)
         ]
         for player in self.players:
             player.money = 1500
@@ -109,8 +109,8 @@ class TestGame(unittest.TestCase):
         
     def test_player_attributes(self):
         """Test if players have correct attributes after game initialization"""
-        self.assertEqual(self.game.players[0].name, "Alice")
-        self.assertEqual(self.game.players[1].name, "Bob")
+        self.assertEqual(self.game.players[0].name, "Duncan")
+        self.assertEqual(self.game.players[1].name, "Owen")
         self.assertFalse(self.game.players[0].is_ai)
         self.assertTrue(self.game.players[1].is_ai)
         self.assertEqual(self.game.players[0].money, 1500)

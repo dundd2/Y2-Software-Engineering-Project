@@ -10,8 +10,7 @@ import math
 import os
 import random
 import string
-from src.ui import DevelopmentNotification
-from src.ui import AIEmotionUI
+from src.ui import DevelopmentNotification, AIEmotionUI
 from src.FontManager import font_manager
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
