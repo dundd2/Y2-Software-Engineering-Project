@@ -987,7 +987,6 @@ class Game:
             else:
                 print("Failed to roll doubles - staying in jail")
                 self.handle_jail_turn(current_player)
-                self.state = "ROLL"
                 return
 
         position = current_player['position']
@@ -998,10 +997,13 @@ class Game:
 
         current_player_obj = next((p for p in self.players if p.name == current_player['name']), None)
 
+        space_processed = False
         card_type = None
+        
         if position == 3 or position == 18 or position == 34:
             print(f"Player landed on Pot Luck space {position}")
             card_type = "POT_LUCK"
+            space_processed = True
             self.board.add_message(f"{current_player['name']} landed on Pot Luck")
             result = self.handle_card_draw(current_player, card_type)
             if result == "moved":
@@ -1011,6 +1013,7 @@ class Game:
         elif position == 8 or position == 23 or position == 37:
             print(f"Player landed on Opportunity Knocks space {position}")
             card_type = "OPPORTUNITY_KNOCKS"
+            space_processed = True
             self.board.add_message(f"{current_player['name']} landed on Opportunity Knocks")
             result = self.handle_card_draw(current_player, card_type)
             if result == "moved":
@@ -1035,14 +1038,11 @@ class Game:
                     current_player_obj.just_went_to_jail = True
                 
                 self.logic.is_going_to_jail = True
-                
-                self.state = "ROLL"
-                self.board.update_board_positions()
+                space_processed = True
             elif "price" in space and space.get("owner") is None and not current_player.get('in_jail', False):
                 if current_player.get('in_jail', False):
                     print("Player in jail - cannot buy property")
                     self.board.add_message(f"{current_player['name']} cannot buy property while in jail!")
-                    self.state = "ROLL"
                 else:
                     print("\nUnowned property - initiating buy sequence")
                     print(f"Property price: £{space['price']}")
@@ -1054,28 +1054,50 @@ class Game:
                         message = f"{current_player['name']} must pass GO before buying property"
                         self.board.add_message(message)
                         print("Player has not completed a circuit - cannot buy property")
-                        self.state = "ROLL"
-                        return False
-                    
-                    self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
-                    
-                    self.draw()
-                    pygame.display.flip()
-                    
-                    pygame.time.delay(500)
-                    self.state = "BUY"
-                    self.current_property = space
-                    print("Buy state activated")
-                    
-                    if current_player_obj and current_player_obj.is_ai:
-                        print("\nAI player making purchase decision")
-                        pygame.time.delay(1000)
-                        will_buy = random.random() < 0.7 and current_player['money'] >= space['price']
-                        print(f"AI decision: {'Buy' if will_buy else 'Pass'}")
-                        self.handle_buy_decision(will_buy)
+                        space_processed = True
+                    else:
+                        self.board.add_message(f"Buy {space['name']} for £{space['price']}?")
+                        
+                        self.draw()
+                        pygame.display.flip()
+                        
+                        pygame.time.delay(500)
+                        self.state = "BUY"
+                        self.current_property = space
+                        print("Buy state activated")
+                        space_processed = True
+                        
+                        if current_player_obj and current_player_obj.is_ai:
+                            print("\nAI player making purchase decision")
+                            pygame.time.delay(1000)
+                            will_buy = random.random() < 0.7 and current_player['money'] >= space['price']
+                            print(f"AI decision: {'Buy' if will_buy else 'Pass'}")
+                            self.handle_buy_decision(will_buy)
             else:
                 print("Property already owned or not purchasable")
-                self.state = "ROLL"
+                if space.get("owner") and space["owner"] != current_player["name"]:
+                    owner = next((p for p in self.logic.players if p["name"] == space["owner"]), None)
+                    if owner and not owner.get('in_jail', False):
+                        rent = self.logic.calculate_space_rent(space, current_player)
+                        if rent > 0:
+                            if current_player['money'] >= rent:
+                                current_player['money'] -= rent
+                                owner['money'] += rent
+                                message = f"{current_player['name']} paid £{rent} rent to {owner['name']}"
+                                self.board.add_message(message)
+                                print(message)
+                            else:
+                                message = f"{current_player['name']} can't afford rent of £{rent} and goes bankrupt!"
+                                self.board.add_message(message)
+                                print(message)
+                                self.logic.handle_bankruptcy(current_player)
+                    else:
+                        if owner and owner.get('in_jail', False):
+                            message = f"{owner['name']} is in jail and cannot collect rent"
+                            self.board.add_message(message)
+                            print(message)
+            
+                space_processed = True
                 
                 if current_player_obj and current_player_obj.is_ai:
                     property_to_develop = self.logic.ai_player.handle_property_development(
@@ -1089,11 +1111,10 @@ class Game:
                                 f"{current_player['name']} built a house on {property_to_develop['name']}")
                             self.board.update_ownership(self.logic.properties)
         else:
-            print("Not a property space or already processed by card handling")
-            self.state = "ROLL"
+            if not card_type:
+                print("Not a property space or already processed by card handling")
+            space_processed = True
 
-        self.update_current_player()
-        
         self.wait_for_animations()
 
         while self.logic.message_queue:
@@ -1102,6 +1123,9 @@ class Game:
             self.board.add_message(message)
             if "Get Out of Jail Free card" in message or "collected" in message:
                 self.board.add_message(message)
+        
+        if space_processed and self.state != "BUY" and self.state != "AUCTION":
+            self.state = "ROLL"
         
         print(f"\nFinal state: {self.state}")
         print("=== End Dice Roll Debug ===\n")
@@ -1118,7 +1142,8 @@ class Game:
 
         self.logic.is_going_to_jail = False
         
-        self.handle_space(current_player)
+        if not space_processed:
+            self.handle_space(current_player)
 
     def play_turn(self):
         if self.game_over:
@@ -3640,6 +3665,10 @@ class Game:
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")
 
     def handle_turn_end(self):
+        if self.state == "BUY" or self.state == "AUCTION" or self.state == "DEVELOPMENT":
+            print(f"Not ending turn while in {self.state} state")
+            return
+        
         self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
         
         self.update_current_player()
