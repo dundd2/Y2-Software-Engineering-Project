@@ -310,7 +310,7 @@ class MainMenuPage(BasePage):
             self.youtube_hover = False
             
             self.github_url = "https://github.com/Minosaji/Software-Engineering-Project"
-            self.youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs"
+            self.youtube_url = "https://www.youtube.com/@UOS-G6046-Group5"
         except (pygame.error, FileNotFoundError) as e:
             print(f"Could not load social media logos: {e}")
             self.github_logo = None
@@ -342,7 +342,7 @@ class MainMenuPage(BasePage):
                 self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
             self.screen.blit(self.github_logo, self.github_rect)
         
-        version_text = self.version_font.render("Build Version: 16.03.2025", True, ERROR_COLOR)
+        version_text = self.version_font.render("Build Version: 21.03.2025", True, ERROR_COLOR)
         version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
         
