@@ -2482,6 +2482,19 @@ class Game:
         
         print(f"Showing card popup: {card_type} - {message}")
 
+    def show_rent_popup(self, player, owner, property_name, rent_amount):
+        self.show_card = True
+        self.current_card = {
+            'type': 'Rent Payment',
+            'message': f"You landed on {property_name} owned by {owner['name']}. Pay £{rent_amount} rent."
+        }
+        self.current_card_player = player
+        self.card_display_time = pygame.time.get_ticks()
+        
+        self.board.add_message(f"{player['name']} paid £{rent_amount} rent to {owner['name']} for {property_name}")
+        
+        print(f"Showing rent popup: {player['name']} paid £{rent_amount} to {owner['name']}")
+
     def handle_card_draw(self, player, card_type):
         self.show_card_popup(card_type, f"{player['name']} drew a {card_type} card")
         

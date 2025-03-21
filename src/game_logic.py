@@ -231,6 +231,9 @@ class GameLogic:
                 owner["money"] += rent
                 message = f"{player['name']} paid £{rent} rent to {owner['name']}"
                 self.add_message(message)
+                
+                if hasattr(self, 'game') and self.game:
+                    self.game.show_rent_popup(player, owner, space["name"], rent)
             else:
                 message = f"{player['name']} went bankrupt!"
                 self.add_message(message)
@@ -1172,6 +1175,10 @@ class GameLogic:
             landing_player['money'] -= rent
             owner['money'] += rent
             self.add_message(f"{landing_player['name']} paid £{rent} rent to {owner['name']}")
+            
+            if hasattr(self, 'game') and self.game:
+                self.game.show_rent_popup(landing_player, owner, property_data["name"], rent)
+                
             return True
         else:
             self.handle_bankruptcy(landing_player)
