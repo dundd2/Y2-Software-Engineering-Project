@@ -620,8 +620,9 @@ class Game:
                 for emotion_ui in self.emotion_uis.values():
                     emotion_ui.draw()
                     
-                self.draw_button(self.roll_button, "Roll", 
-                               hover=self.roll_button.collidepoint(mouse_pos))
+                if not self.development_mode:
+                    self.draw_button(self.roll_button, "Roll", 
+                                   hover=self.roll_button.collidepoint(mouse_pos))
                 
                 if self.game_mode == "abridged" and self.time_limit:
                     pause_hover = self.pause_button.collidepoint(mouse_pos)
@@ -701,6 +702,10 @@ class Game:
                     self.draw_development_ui(self.selected_property)
             
         if self.development_mode and not any_player_moving and not self.dice_animation:
+            if self.state in ["BUY", "AUCTION"]:
+                print("Buy/Auction in progress - not showing development notification")
+                return
+            
             if hasattr(self.logic, 'current_auction') and self.logic.current_auction:
                 print("Auction in progress - not showing development notification")
             else:
@@ -1270,9 +1275,10 @@ class Game:
         return None
 
     def handle_buy_decision(self, wants_to_buy):
-        if self.current_property is None:
-            return
-            
+        self.development_mode = False
+        self.selected_property = None
+        self.dev_notification = None
+        
         current_player = self.logic.players[self.logic.current_player_index]
         property_data = self.current_property
         
@@ -1454,6 +1460,9 @@ class Game:
             if not self.current_player_is_ai and self.roll_button.collidepoint(pos):
                 if self.game_mode == "abridged" and self.time_limit and self.game_paused:
                     self.board.add_message("Game is paused. Click Continue to resume.")
+                    return False
+                elif self.development_mode:
+                    self.board.add_message("Current player must complete development before the next player can roll")
                     return False
                 else:
                     return self.play_turn()
@@ -2479,10 +2488,8 @@ class Game:
         result, message = self.logic.handle_card_draw(player, card_type)
         
         if result == "moved":
-            # Find the corresponding Player object
             player_obj = next((p for p in self.players if p.name == player['name']), None)
             if player_obj:
-                # Start movement animation to the new position
                 player_obj.start_move([player['position']])
                 self.wait_for_animations()
                 self.board.update_board_positions()
@@ -3407,7 +3414,6 @@ class Game:
             self.free_parking_pot = 0
             self.board.add_message(f"{player['name']} collected £{amount} from Free Parking!")
             
-            # Show card popup for Free Parking collection
             self.show_card = True
             self.current_card = {
                 'type': 'Free Parking',
@@ -3416,7 +3422,6 @@ class Game:
             self.current_card_player = player
             self.card_display_time = pygame.time.get_ticks()
             
-            # Wait for player acknowledgment
             pygame.event.clear()
             waiting = True
             while waiting:
