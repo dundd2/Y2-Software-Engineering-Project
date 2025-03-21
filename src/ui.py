@@ -2211,11 +2211,15 @@ class DevelopmentNotification:
         self.dev_font = font_manager.get_font(26)
         
         self.text = f"{self.player_name}, you may modify properties now"
+        self.sub_text = "Click Continue to end your turn"
         
         self.padding = 20
         self.notification_text = self.dev_font.render(self.text, True, WHITE)
-        self.bg_width = self.notification_text.get_width() + self.padding * 2
-        self.bg_height = self.notification_text.get_height() + self.padding * 2
+        self.sub_notification_text = self.font.render(self.sub_text, True, WHITE)
+        
+        text_width = max(self.notification_text.get_width(), self.sub_notification_text.get_width())
+        self.bg_width = text_width + self.padding * 2
+        self.bg_height = self.notification_text.get_height() + self.sub_notification_text.get_height() + self.padding * 3
         
         self.x = (self.window_size[0] - self.bg_width) // 2
         self.y = 80
@@ -2243,7 +2247,14 @@ class DevelopmentNotification:
                            border_radius=15)
         
         self.screen.blit(bg_surface, (self.x, self.y))
+        
+        # Draw main text
         self.screen.blit(self.notification_text, (self.x + self.padding, self.y + self.padding))
+        
+        # Draw instruction text
+        self.screen.blit(self.sub_notification_text, 
+                       (self.x + self.padding, 
+                        self.y + self.padding + self.notification_text.get_height() + self.padding))
         
         hover = self.continue_button.collidepoint(mouse_pos)
         button_color = (50, 180, 100) if hover else (30, 150, 80)

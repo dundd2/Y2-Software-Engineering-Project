@@ -380,6 +380,7 @@ class GameLogic:
                     player["money"] += 200
                     self.bank_money -= 200
                     self.add_message("Collected £200 for passing GO")
+                result = "moved"
             else:
                 print(f"Updating player money from {player['money']} to {action_result}")
                 player["money"] = action_result

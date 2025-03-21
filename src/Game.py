@@ -2476,7 +2476,16 @@ class Game:
     def handle_card_draw(self, player, card_type):
         self.show_card_popup(card_type, f"{player['name']} drew a {card_type} card")
         
-        result = self.logic.handle_card_draw(player, card_type)
+        result, message = self.logic.handle_card_draw(player, card_type)
+        
+        if result == "moved":
+            # Find the corresponding Player object
+            player_obj = next((p for p in self.players if p.name == player['name']), None)
+            if player_obj:
+                # Start movement animation to the new position
+                player_obj.start_move([player['position']])
+                self.wait_for_animations()
+                self.board.update_board_positions()
         
         return result
 
@@ -3397,6 +3406,35 @@ class Game:
             player['money'] += amount
             self.free_parking_pot = 0
             self.board.add_message(f"{player['name']} collected £{amount} from Free Parking!")
+            
+            # Show card popup for Free Parking collection
+            self.show_card = True
+            self.current_card = {
+                'type': 'Free Parking',
+                'message': f"You collected £{amount:,} from the Free Parking pot!"
+            }
+            self.current_card_player = player
+            self.card_display_time = pygame.time.get_ticks()
+            
+            # Wait for player acknowledgment
+            pygame.event.clear()
+            waiting = True
+            while waiting:
+                self.draw()
+                pygame.display.flip()
+                
+                for event in pygame.event.get():
+                    if event.type in [pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN]:
+                        waiting = False
+                        self.show_card = False
+                        self.current_card = None
+                        self.current_card_player = None
+                    elif event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                
+                pygame.time.wait(30)
+            
             return True
         return False
 
