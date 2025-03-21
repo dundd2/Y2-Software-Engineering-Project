@@ -706,8 +706,10 @@ class TestGame(unittest.TestCase):
         
         self.sync_player_objects()
         
-        self.assertEqual(len(self.game_logic.players), initial_player_count - 1)
+        self.assertEqual(len(self.game_logic.players), initial_player_count)
         self.assertIn(player.name, self.game_logic.bankrupted_players)
+        
+        self.assertTrue(player_dict.get('bankrupt', False), "Player should be marked as bankrupt")
         
         self.assertEqual(bank_money, initial_bank_money + 30)
         

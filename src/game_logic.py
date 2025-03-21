@@ -703,7 +703,8 @@ class GameLogic:
             if voluntary:
                 player['exited'] = True
                 self.voluntary_exits.append(player_name)
-            else:           
+            else:
+                player['bankrupt'] = True
                 self.bankrupted_players.append(player_name)
             
             if len(self.players) > 0:

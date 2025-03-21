@@ -12,10 +12,6 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 
 ## YouTube Channel
 
-[Visit our YouTube Channel](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
-
-**Channel Details:**
-
 * **Channel Name:** UOS-Software Engineering Group5 2025
 * **Handle:** [@UOS-G6046-Group5](https://www.youtube.com/@UOS-G6046-Group5)
 * **Channel URL:** [https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
