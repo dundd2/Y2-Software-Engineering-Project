@@ -222,9 +222,9 @@ class BasePage:
             logo_rect = self.logo_image.get_rect(centerx=window_size[0]//2, y=80)
             self.screen.blit(self.logo_image, logo_rect)
         elif isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage):
-            title_shadow = self.title_font.render("Property Tycoon", True, BLACK)
-            title_glow = self.title_font.render("Property Tycoon", True, ACCENT_COLOR)
-            title_text = self.title_font.render("Property Tycoon", True, WHITE)
+            title_shadow = self.title_font.render("Property Tycoon Build 21.03.2025", True, BLACK)
+            title_glow = self.title_font.render("Property Tycoon Build 21.03.2025", True, ACCENT_COLOR)
+            title_text = self.title_font.render("Property Tycoon Build 21.03.2025", True, WHITE)
             title_rect = title_text.get_rect(centerx=window_size[0]//2, y=80)
             shadow_rect = title_rect.copy()
             shadow_rect.x += 2
@@ -580,7 +580,7 @@ class StartPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
-        pygame.display.set_caption("Property Tycoon")
+        pygame.display.set_caption("Property Tycoon Build 21.03.2025")
         self.title_font = font_manager.get_font(82)
         self.button_font = font_manager.get_font(42)
         self.version_font = font_manager.get_font(28)
