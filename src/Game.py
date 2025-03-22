@@ -704,6 +704,11 @@ class Game:
                     self.state = "ROLL"
                     self.selected_property = None
                     self.development_mode = False
+                elif current_player.get('in_jail', False):
+                    print(f"Player {current_player['name']} is in jail - not showing development UI")
+                    self.state = "ROLL"
+                    self.selected_property = None
+                    self.development_mode = False
                 else:
                     self.draw_development_ui(self.selected_property)
             
@@ -1120,12 +1125,18 @@ class Game:
         self.draw()
         pygame.display.flip()
         
-        self.development_mode = True
-        
         current_player = self.logic.players[self.logic.current_player_index]
-        owned_properties = [p for p in self.logic.properties.values() if p.get('owner') == current_player['name']]
-        if not owned_properties:
+        if not current_player.get('in_jail', False):
+            owned_properties = [p for p in self.logic.properties.values() if p.get('owner') == current_player['name']]
+            if owned_properties:
+                self.development_mode = True
+                print(f"Enabling development mode for {current_player['name']}")
+            else:
+                self.development_mode = False
+                print(f"No properties owned by {current_player['name']} - development mode disabled")
+        else:
             self.development_mode = False
+            print(f"Player {current_player['name']} is in jail - development mode disabled")
 
         self.logic.is_going_to_jail = False
         
@@ -2512,6 +2523,19 @@ class Game:
         
         print(f"Showing rent popup: {player['name']} paid £{rent_amount} to {owner['name']}")
 
+    def show_tax_popup(self, player, tax_name, tax_amount):
+        self.show_card = True
+        self.current_card = {
+            'type': 'Tax Payment',
+            'message': f"You landed on {tax_name}. Pay £{tax_amount} to the bank."
+        }
+        self.current_card_player = player
+        self.card_display_time = pygame.time.get_ticks()
+        
+        self.board.add_message(f"{player['name']} paid £{tax_amount} for {tax_name}")
+        
+        print(f"Showing tax popup: {player['name']} paid £{tax_amount} for {tax_name}")
+
     def handle_card_draw(self, player, card_type):
         self.show_card_popup(card_type, f"{player['name']} drew a {card_type} card")
         
@@ -3669,6 +3693,13 @@ class Game:
                     self.state = "ROLL"
                     self.selected_property = None
                     self.development_mode = False
+                elif current_player.get('in_jail', False):
+                    print(f"Player {current_player['name']} is in jail - not showing development UI")
+                    self.state = "ROLL"
+                    self.selected_property = None
+                    self.development_mode = False
+                else:
+                    self.draw_development_ui(self.selected_property)
                 
                 self.play_turn()
                 return True

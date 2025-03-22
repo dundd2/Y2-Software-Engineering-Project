@@ -207,6 +207,10 @@ class GameLogic:
             player["money"] -= space["amount"]
             self.bank_money += space["amount"]
             self.add_message(f"{player['name']} paid £{space['amount']} {space['name']}")
+            
+            if hasattr(self, 'game') and self.game:
+                self.game.show_tax_popup(player, space['name'], space['amount'])
+                
             return None, None
         
         if not space.get("owner"):
