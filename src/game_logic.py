@@ -245,7 +245,7 @@ class GameLogic:
                 return "bankrupt", message
                 
         return None, None
-
+    
     def handle_jail(self, player):
         player['position'] = 11
         player['in_jail'] = True

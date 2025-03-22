@@ -65,7 +65,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
-        pygame.display.set_caption("Property Tycoon")
+        pygame.display.set_caption("Property Tycoon Build 22.03.2025")
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
@@ -516,7 +516,7 @@ class Game:
             
             if player_obj and player_obj.player_image:
                 scaled_logo = pygame.transform.scale(player_obj.player_image, (logo_size, logo_size))
-                if player_data.get('exited', False) or player_data.get('bankrupt', False) or (player_obj and (player_obj.voluntary_exit or player_obj.bankrupt)):
+                if player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
                     scaled_logo.set_alpha(128)
                 self.screen.blit(scaled_logo, logo_rect)
             
@@ -997,7 +997,6 @@ class Game:
                 print("Failed to roll doubles - staying in jail")
                 self.handle_jail_turn(current_player)
                 self.state = "ROLL"
-                self.handle_turn_end() 
                 return
 
         position = current_player['position']
@@ -1119,18 +1118,12 @@ class Game:
         self.draw()
         pygame.display.flip()
         
+        self.development_mode = True
+        
         current_player = self.logic.players[self.logic.current_player_index]
-        if not current_player.get('in_jail', False):
-            owned_properties = [p for p in self.logic.properties.values() if p.get('owner') == current_player['name']]
-            if owned_properties:
-                self.development_mode = True
-                print(f"Enabling development mode for {current_player['name']}")
-            else:
-                self.development_mode = False
-                print(f"No properties owned by {current_player['name']} - development mode disabled")
-        else:
+        owned_properties = [p for p in self.logic.properties.values() if p.get('owner') == current_player['name']]
+        if not owned_properties:
             self.development_mode = False
-            print(f"Player {current_player['name']} is in jail - development mode disabled")
 
         self.logic.is_going_to_jail = False
         
@@ -2508,17 +2501,17 @@ class Game:
         print(f"Showing rent popup: {player['name']} paid £{rent_amount} to {owner['name']}")
 
     def show_tax_popup(self, player, tax_name, tax_amount):
-        self.show_card = True
-        self.current_card = {
-            'type': 'Tax Payment',
-            'message': f"You landed on {tax_name}. Pay £{tax_amount} to the bank."
-        }
-        self.current_card_player = player
-        self.card_display_time = pygame.time.get_ticks()
-        
-        self.board.add_message(f"{player['name']} paid £{tax_amount} for {tax_name}")
-        
-        print(f"Showing tax popup: {player['name']} paid £{tax_amount} for {tax_name}")
+         self.show_card = True
+         self.current_card = {
+             'type': 'Tax Payment',
+             'message': f"You landed on {tax_name}. Pay £{tax_amount} to the bank."
+         }
+         self.current_card_player = player
+         self.card_display_time = pygame.time.get_ticks()
+         
+         self.board.add_message(f"{player['name']} paid £{tax_amount} for {tax_name}")
+         
+         print(f"Showing tax popup: {player['name']} paid £{tax_amount} for {tax_name}")
 
     def handle_card_draw(self, player, card_type):
         self.show_card_popup(card_type, f"{player['name']} drew a {card_type} card")
@@ -3666,13 +3659,6 @@ class Game:
                     self.state = "ROLL"
                     self.selected_property = None
                     self.development_mode = False
-                elif current_player.get('in_jail', False):
-                    print(f"Player {current_player['name']} is in jail - not showing development UI")
-                    self.state = "ROLL"
-                    self.selected_property = None
-                    self.development_mode = False
-                else:
-                    self.draw_development_ui(self.selected_property)
                 
                 self.play_turn()
                 return True
