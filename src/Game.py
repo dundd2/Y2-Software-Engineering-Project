@@ -527,9 +527,6 @@ class Game:
             if player_data.get('in_jail', False):
                 name_text = f"{player_data['name']} [JAIL]"
                 name_color = ERROR_COLOR if is_current else GRAY
-            elif player_data.get('bankrupt', False) or (player_obj and player_obj.bankrupt):
-                name_text = player_data['name']
-                name_color = (200, 0, 0) 
             elif player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
                 name_text = player_data['name']
                 name_color = (200, 0, 0) 
@@ -539,15 +536,12 @@ class Game:
             name_surface = self.font.render(name_text, True, name_color)
             self.screen.blit(name_surface, (info_x, info_y))
             
-            if player_data.get('bankrupt', False) or (player_obj and player_obj.bankrupt):
-                status_text = self.small_font.render("[BANKRUPT]", True, (200, 0, 0))
-                self.screen.blit(status_text, (info_x, info_y + name_surface.get_height()))
-            elif player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
-                status_text = self.small_font.render("[EXITED]", True, (200, 0, 0))
-                self.screen.blit(status_text, (info_x, info_y + name_surface.get_height()))
+            if player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
+                exit_text = self.small_font.render("[EXITED]", True, (200, 0, 0))
+                self.screen.blit(exit_text, (info_x, info_y + name_surface.get_height()))
             
             money_y = info_y + 30
-            if player_data.get('exited', False) or player_data.get('bankrupt', False) or (player_obj and (player_obj.voluntary_exit or player_obj.bankrupt)):
+            if player_data.get('exited', False) or (player_obj and player_obj.voluntary_exit):
                 money_y += 15
             
             money_text = f"£ {player_data['money']:,}"
@@ -1156,11 +1150,6 @@ class Game:
         if not current_player:
             self.board.add_message("Error: No current player found")
             return False
-        
-        if current_player.get('bankrupt', False) or current_player.get('exited', False):
-            print(f"Player {current_player['name']} is bankrupt or has exited, skipping turn")
-            self.handle_turn_end()
-            return True
             
         self.update_current_player()
         
@@ -1168,11 +1157,6 @@ class Game:
         if not player_obj:
             print(f"Warning: Could not find player object for {current_player['name']}")
             return False
-            
-        if player_obj.bankrupt or player_obj.voluntary_exit:
-            print(f"Player {current_player['name']} is bankrupt or has exited (UI object), skipping turn")
-            self.handle_turn_end()
-            return True
             
         if player_obj.in_jail and player_obj.stay_in_jail:
             print(f"Player {current_player['name']} chose to stay in jail - skipping turn")
@@ -2561,7 +2545,7 @@ class Game:
                 ui_player.bankrupt = True
 
         active_player_objects = [p for p in self.players if not p.bankrupt and not p.voluntary_exit]
-        active_player_data = [p for p in self.logic.players if p["money"] > 0 and not p.get('exited', False) and not p.get('bankrupt', False)]
+        active_player_data = [p for p in self.logic.players if p["money"] > 0 and not p.get('exited', False)]
         
         if (len(active_player_objects) != self._previous_active_counts['ui'] or 
             len(active_player_data) != self._previous_active_counts['logic']):
@@ -2572,21 +2556,15 @@ class Game:
             self._previous_active_counts['ui'] = len(active_player_objects)
             self._previous_active_counts['logic'] = len(active_player_data)
         
-        if len(active_player_objects) <= 1 or len(active_player_data) <= 1:
+        if len(active_player_objects) <= 1 and len(active_player_data) <= 1:
             print("\nOne or fewer players remain active")
             
-            winner = None
-            if len(active_player_objects) == 1:
+            if len(active_player_objects) == 1 and len(active_player_data) == 1:
                 winner = active_player_objects[0]
-            elif len(active_player_data) == 1:
-                winner_name = active_player_data[0]['name']
-                winner = next((p for p in self.players if p.name == winner_name), None)
-            
-            if winner:
                 print(f"Last player standing: {winner.name}")
                 self.game_over = True
                 self.handle_game_over(winner.name)
-            else:
+            elif len(active_player_objects) == 0 and len(active_player_data) == 0:
                 print("No active players remain - ending with no winner")
                 self.game_over = True
             
@@ -2858,7 +2836,7 @@ class Game:
             
             self.board.update_ownership(self.logic.properties)
             
-            active_players = [p for p in self.logic.players if not p.get('exited', False) and not p.get('bankrupt', False)]
+            active_players = [p for p in self.logic.players if not p.get('exited', False)]
             print(f"Active players after exit: {[p['name'] for p in active_players]}")
             
             next_player_found = False
@@ -2871,7 +2849,7 @@ class Game:
                     break
                 
                 current_player = self.logic.players[self.logic.current_player_index]
-                if not current_player.get('exited', False) and not current_player.get('bankrupt', False):
+                if not current_player.get('exited', False):
                     next_player_found = True
                     print(f"Next active player: {current_player['name']} (index: {self.logic.current_player_index})")
             
@@ -3660,8 +3638,8 @@ class Game:
             
         current_player = self.logic.players[self.logic.current_player_index]
         
-        if current_player.get('exited', False) or current_player.get('bankrupt', False):
-            print(f"Current player {current_player['name']} has exited or is bankrupt, moving to next player")
+        if current_player.get('exited', False):
+            print(f"Current player {current_player['name']} has exited, moving to next player")
             self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
             return self.check_and_trigger_ai_turn(recursion_depth + 1)  
             
@@ -3669,11 +3647,6 @@ class Game:
         
         if not player_obj:
             print(f"Could not find Player object for {current_player['name']}")
-            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
-            return self.check_and_trigger_ai_turn(recursion_depth + 1)
-            
-        if player_obj.bankrupt:
-            print(f"Player {current_player['name']} is bankrupt, moving to next player")
             self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
             return self.check_and_trigger_ai_turn(recursion_depth + 1)
             
@@ -3735,23 +3708,7 @@ class Game:
         return False
 
     def update_current_player(self):
-        current_player_data = self.logic.players[self.logic.current_player_index]
-        if current_player_data.get('bankrupt', False) or current_player_data.get('exited', False):
-            print(f"Trying to update to a bankrupt/exited player {current_player_data['name']}, skipping")
-            self.handle_turn_end()
-            return
-    
-        current_player = next((p for p in self.players if p.name == current_player_data['name']), None)
-        if not current_player:
-            print(f"Could not find UI player object for {current_player_data['name']}, skipping")
-            self.handle_turn_end()
-            return
-            
-        if current_player.bankrupt or current_player.voluntary_exit:
-            print(f"UI player {current_player.name} is bankrupt or has exited, skipping")
-            self.handle_turn_end()
-            return
-            
+        current_player = next((p for p in self.players if p.name == self.logic.players[self.logic.current_player_index]['name']), None)
         self.current_player_is_ai = current_player and current_player.is_ai
         
         for name, emotion_ui in self.emotion_uis.items():
@@ -3771,12 +3728,6 @@ class Game:
 
     def handle_turn_end(self):
         self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
-        
-        current_player = self.logic.players[self.logic.current_player_index]
-        while current_player.get('bankrupt', False) or current_player.get('exited', False):
-            print(f"Skipping bankrupt/exited player {current_player['name']} in handle_turn_end")
-            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
-            current_player = self.logic.players[self.logic.current_player_index]
         
         self.update_current_player()
         

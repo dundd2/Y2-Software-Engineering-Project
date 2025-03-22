@@ -127,7 +127,7 @@ class GameLogic:
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
         current_player = self.players[self.current_player_index]
         
-        while current_player.get('exited', False) or current_player.get('bankrupt', False):
+        while current_player.get('exited', False):
             self.current_player_index = (self.current_player_index + 1) % len(self.players)
             current_player = self.players[self.current_player_index]
             
@@ -138,7 +138,7 @@ class GameLogic:
             return None, None
 
         current_player = self.players[self.current_player_index]
-        while current_player.get('exited', False) or current_player.get('bankrupt', False):
+        while current_player.get('exited', False):
             self.current_player_index = (self.current_player_index + 1) % len(self.players)
             current_player = self.players[self.current_player_index]
             
@@ -298,7 +298,7 @@ class GameLogic:
 
     def check_game_over(self):
         if self.game_mode == "full":
-            active_players = [p for p in self.players if p['money'] > 0 and not p.get('exited', False) and not p.get('bankrupt', False)]
+            active_players = [p for p in self.players if p['money'] > 0]
             if len(active_players) <= 1:
                 return True, active_players[0] if active_players else None
                 
@@ -307,8 +307,6 @@ class GameLogic:
             if min_rounds > 0 and all(rounds == min_rounds for rounds in self.rounds_completed.values()):
                 assets = {}
                 for player in self.players:
-                    if player.get('exited', False) or player.get('bankrupt', False):
-                        continue
                     total = player['money']
                     for prop in self.properties.values():
                         if prop.get('owner') == player['name']:
@@ -316,7 +314,7 @@ class GameLogic:
                             if not prop.get('is_mortgaged', False):
                                 total += prop.get('houses', 0) * prop.get('house_cost', 0)
                     assets[player['name']] = total
-                winner = max(assets.items(), key=lambda x: x[1])[0] if assets else None
+                winner = max(assets.items(), key=lambda x: x[1])[0]
                 return True, winner
                 
         return False, None
@@ -685,12 +683,12 @@ class GameLogic:
         print(f"Timer reset for next bidder")
 
     def is_game_over(self):
-        active_players = [p for p in self.players if p["money"] > 0 and not p.get('exited', False) and not p.get('bankrupt', False)]
+        active_players = [p for p in self.players if p["money"] > 0 and not p.get('exited', False)]
         return len(active_players) <= 1
 
     def get_winner(self):
         if self.is_game_over():
-            active_players = [p for p in self.players if p["money"] > 0 and not p.get('exited', False) and not p.get('bankrupt', False)]
+            active_players = [p for p in self.players if p["money"] > 0 and not p.get('exited', False)]
             if active_players:
                 return active_players[0]["name"]
         return None
@@ -707,7 +705,8 @@ class GameLogic:
             if voluntary:
                 player['exited'] = True
                 self.voluntary_exits.append(player_name)
-            else:           
+            else:
+                self.players.remove(player)
                 self.bankrupted_players.append(player_name)
             
             if len(self.players) > 0:
@@ -997,7 +996,19 @@ class GameLogic:
                 self.add_message(f"- {prop_name}: £{value}")
             self.add_message(f"Total liquidated: £{total_liquidated}")
 
-        return self.remove_player(player['name'], voluntary=False)
+        for prop in self.properties.values():
+            if prop.get('owner') == player['name']:
+                prop['owner'] = None
+                if 'houses' in prop:
+                    prop['houses'] = 0
+
+        self.players.remove(player)
+        self.bankrupted_players.append(player['name'])
+        
+        if len(self.players) > 0:
+            self.current_player_index = self.current_player_index % len(self.players)
+
+        return True
 
     def can_build_house(self, property_data, player):
         if property_data.get('is_mortgaged', False):
