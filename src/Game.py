@@ -571,19 +571,6 @@ class Game:
                     
                     pygame.draw.rect(self.screen, color, prop_rect, border_radius=3)
                     
-                    if prop.get('houses', 0) > 0 or prop.get('has_hotel', False):
-                        if prop.get('has_hotel', False):
-                            indicator_color = RED
-                            indicator_text = "H"
-                        else:
-                            indicator_color = GREEN
-                            indicator_text = str(prop.get('houses', 0))
-                        
-                        indicator_font = pygame.font.Font(None, 12)
-                        indicator_surface = indicator_font.render(indicator_text, True, WHITE)
-                        indicator_rect = indicator_surface.get_rect(center=prop_rect.center)
-                        self.screen.blit(indicator_surface, indicator_rect)
-                    
                     if prop_rect.collidepoint(mouse_pos):
                         hovered_property = prop
                         pygame.draw.rect(self.screen, WHITE, prop_rect, 1, border_radius=3)
@@ -890,8 +877,6 @@ class Game:
         tooltip_width = 250
         line_height = 25
         num_lines = 5
-        if property_data.get('houses', 0) > 0 or property_data.get('has_hotel', False):
-            num_lines += 1
         if property_data.get('group'):
             num_lines += 1
         tooltip_height = num_lines * line_height + padding * 2
@@ -1012,6 +997,7 @@ class Game:
             print(f"Player landed on Pot Luck space {position}")
             card_type = "POT_LUCK"
             self.board.add_message(f"{current_player['name']} landed on Pot Luck")
+            
             result = self.handle_card_draw(current_player, card_type)
             if result == "moved":
                 self.wait_for_animations()
@@ -1021,6 +1007,7 @@ class Game:
             print(f"Player landed on Opportunity Knocks space {position}")
             card_type = "OPPORTUNITY_KNOCKS"
             self.board.add_message(f"{current_player['name']} landed on Opportunity Knocks")
+            
             result = self.handle_card_draw(current_player, card_type)
             if result == "moved":
                 self.wait_for_animations()
@@ -1126,8 +1113,6 @@ class Game:
             self.development_mode = False
 
         self.logic.is_going_to_jail = False
-        
-        self.handle_space(current_player)
 
     def play_turn(self):
         if self.game_over:
