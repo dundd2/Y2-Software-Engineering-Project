@@ -10,6 +10,12 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 * [Duncan Law](https://github.com/dundd2)
 * [Owen Chen](https://github.com/Owen880)
 
+## YouTube Channel
+
+* **Channel Name:** UOS-Software Engineering Group5 2025
+* **Handle:** [@UOS-G6046-Group5](https://www.youtube.com/@UOS-G6046-Group5)
+* **Channel URL:** [https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
+
 ## Installation Guide for Property Tycoon
 
 To start coding with Pygame and run the game, follow these steps to install all required packages on your PC or Mac:
