@@ -1,17 +1,22 @@
+# Property Tycoon - Build-07.02.2025 Update Log
+
 ## Property Tycoon - Build-06.03.2025 Update Log
 
 ## Changes
+
 - Added initial game structure with Player, Game, Property, Board, and UI classes
 - Special thanks to Owen for his fantastic work!
 
 After receiving Owen's work, which included the basic CMD Python code file:
+
 1. Duncan Transformed it into a Pygame game with a basic user interface
 2. Fixed some minor bugs
 3. Separated the different classes into their own .py files
    - The main.py file can now access other Python files since they are all in the same folder
 
 ## Current Features
-We've already developed this pretty cool basic game. 
+
+We've already developed this pretty cool basic game.
 
 The current game flow is:
 
@@ -29,7 +34,8 @@ The current game flow is:
 
 **Note:** Currently, the dice are not visible in the interface.
 
-## Known Issues / Future Enhancements:
+## Known Issues / Future Enhancements
+
 - No Win Condition
 - Limited Jail Functionality
 - No Property Management

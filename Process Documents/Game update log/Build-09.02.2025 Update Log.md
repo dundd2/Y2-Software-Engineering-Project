@@ -1,4 +1,4 @@
-## Property Tycoon - Build-09.02.2025 Update Log
+# Property Tycoon - Build-09.02.2025 Update Log
 
 ## Changes
 
@@ -11,7 +11,7 @@
    * The board drawing and player representation have been significantly improved for visual appeal and clarity. Many UI elements that were previously in Game.py have been moved/integrated into Board.py and other sections for better organization. The window size is increased, and the overall visual style is modernized.
 
 3. **Enhanced Game Logic:**
-   
+
    Based on Eric's provided game flow flowchart image:
 
    * The game logic has been moved to a separate GameLogic class, and the turn-handling, property buying, and rent payment logic have been refined and expanded. The `Game` class now relies on `GameLogic`.

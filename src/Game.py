@@ -68,7 +68,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
-        pygame.display.set_caption("Property Tycoon Build 22.03.2025")
+        pygame.display.set_caption("Property Tycoon Alpha 23.03.2025")
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
@@ -1287,10 +1287,6 @@ class Game:
                     print(f"Property price: £{space['price']}")
                     print(f"Player money: £{current_player['money']}")
 
-                    self.board.add_message(
-                        f"{current_player['name']} landed on {space['name']}"
-                    )
-
                     if self.logic.completed_circuits.get(current_player["name"], 0) < 1:
                         message = f"{current_player['name']} must pass GO before buying property"
                         self.board.add_message(message)
@@ -1299,7 +1295,10 @@ class Game:
                         )
                         self.state = "ROLL"
                         return False
-
+                    
+                    self.board.add_message(
+                        f"{current_player['name']} landed on {space['name']}"
+                    )
                     self.board.add_message(
                         f"Buy {space['name']} for £{space['price']}?"
                     )
@@ -2898,8 +2897,6 @@ class Game:
         self.current_card_player = player
         self.card_display_time = pygame.time.get_ticks()
 
-        self.board.add_message(f"{player['name']} - {card.card_type.name}: {card.text}")
-
         pygame.event.clear()
         waiting = True
         while waiting:
@@ -2999,10 +2996,6 @@ class Game:
         self.current_card = {"type": card_type, "message": message}
         self.current_card_player = self.logic.players[self.logic.current_player_index]
         self.card_display_time = pygame.time.get_ticks()
-
-        self.board.add_message(
-            f"{self.current_card_player['name']} - {card_type}: {message}"
-        )
 
         print(f"Showing card popup: {card_type} - {message}")
 

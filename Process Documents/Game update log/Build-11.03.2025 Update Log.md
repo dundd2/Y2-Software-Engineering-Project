@@ -1,6 +1,7 @@
-## Property Tycoon - Build-11.03.2025 Update Log
+# Property Tycoon - Build-11.03.2025 Update Log
 
 ## Changes
+
 - Added a force update mechanism to ensure the game progresses even without user input.
 
 - Added regular display updates to keep the UI responsive.
@@ -14,4 +15,3 @@
 - Added a new hard option for AI player. I guess you will love it (I didn't spend a lot of time because it is based on the easy AI).
 
 - Made sure POT_LUCK and OPPORTUNITY_KNOCKS can work because I haven't made some of them work as they should yet, including the "pay 10 pounds for each player" card. I am not sure if all the cards are now working as they should.
-

@@ -1,11 +1,13 @@
-## Property Tycoon - Build-06.03.2025 Update Log  
+# Property Tycoon - Build-06.03.2025 Update Log  
 
-## Changes 
+## Changes
 
 **src/Game.py**  
+
 - Added voluntary exit functionality and improved player handling. The backend was already implemented in a previous version, but there was no UI for it.  
 
 **src/Player.py**  
+
 - Enhanced player exit visuals and logic.  
 
 ### **Bug Fixes:**  
