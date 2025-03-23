@@ -135,9 +135,7 @@ class Player:
                     next_position = self.move_path[self.current_path_index]
                     if 1 <= next_position <= 40:
                         self.position = next_position
-                        print(f"Animation step: {self.name} now at position {self.position}")
                     else:
-                        print(f"Warning: Invalid position {next_position} detected for {self.name}, resetting to position 1")
                         self.position = 1
                     self.current_path_index += 1
                     
@@ -145,17 +143,13 @@ class Player:
                         self.is_moving = False
                         if 1 <= self.move_target_position <= 40:
                             self.position = self.move_target_position
-                            print(f"Player {self.name} finished moving to position {self.position}")
                         else:
-                            print(f"Warning: Invalid target position {self.move_target_position} detected for {self.name}, resetting to position 1")
                             self.position = 1
             else:
                 self.is_moving = False
                 if 1 <= self.move_target_position <= 40:
                     self.position = self.move_target_position
-                    print(f"Player {self.name} finished moving to position {self.position}")
                 else:
-                    print(f"Warning: Invalid target position {self.move_target_position} detected for {self.name}, resetting to position 1")
                     self.position = 1
 
     def get_total_offset(self):

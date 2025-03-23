@@ -2944,17 +2944,11 @@ class Game:
                             print(f"Position mismatch for {player.name}: Player object: {player.position}, Game logic: {logic_player['position']}")
                             
                             if player.is_ai:
-                                old_pos = player.position
                                 player.position = logic_player['position']
-                                print(f"Correcting position mismatch for AI {player.name}: Player object: {old_pos} -> {logic_player['position']}")
                             else:
                                 if abs(player.position - logic_player['position']) <= 3:
-                                    old_pos = logic_player['position']
                                     logic_player['position'] = player.position
-                                    print(f"Correcting position mismatch for human {player.name}: Game logic: {old_pos} -> {player.position}")
-                                else:
-                                    print(f"Large position discrepancy detected for {player.name} - monitoring")
-                        
+                                
                         break
                         
                 if not found and not player.bankrupt and not player.voluntary_exit:
@@ -2980,32 +2974,24 @@ class Game:
             player_obj = next((player for player in self.players if player.name == ai_player['name']), None)
                 
             if not player_obj:
-                print(f"Error: Could not find player object for AI {ai_player['name']}")
                 return None
                 
             if not player_obj.is_ai:
-                print(f"Error: Player {ai_player['name']} is not an AI player")
                 return None
                 
             player_pos_valid = isinstance(player_obj.position, int) and 1 <= player_obj.position <= 40
             logic_pos_valid = isinstance(ai_player.get('position'), int) and 1 <= ai_player.get('position', 0) <= 40
                 
             if not player_pos_valid and logic_pos_valid:
-                print(f"Warning: Invalid position {player_obj.position} detected for AI {player_obj.name}, fixing from game logic")
                 player_obj.position = ai_player['position']
             elif player_pos_valid and not logic_pos_valid:
-                print(f"Warning: Invalid position {ai_player.get('position')} in game logic for AI {player_obj.name}, fixing from player object")
                 ai_player['position'] = player_obj.position
             elif not player_pos_valid and not logic_pos_valid:
-                print(f"Warning: Both positions invalid for {player_obj.name}, resetting to position 1")
                 player_obj.position = 1
                 ai_player['position'] = 1
             elif player_obj.position != ai_player['position']:
-
-                print(f"Synchronizing position for AI {player_obj.name}: Player object: {player_obj.position}, Game logic: {ai_player['position']}")
                 player_obj.position = ai_player['position']
         except Exception as e:
-            print(f"Error handling AI turn: {e}")
             return None
         
    
