@@ -1,14 +1,16 @@
 # Property Tycoon cards.py
-# This file contains the classes for the cards in the Property Tycoon game. 
+# This file contains the classes for the cards in the Property Tycoon game.
 # It contains the classes for the cards, such as the card type, the card text, and the card action.
 
 from enum import Enum
 import random
 from src.game_logic import pot_luck_cards, opportunity_knocks_cards
 
+
 class CardType(Enum):
     POT_LUCK = "pot luck"
     OPPORTUNITY_KNOCKS = "opportunity knocks"
+
 
 class Card:
     def __init__(self, text, action, card_type):
@@ -16,8 +18,11 @@ class Card:
         self.action = action
         self.card_type = card_type
         self.requires_input = "take opportunity knocks" in text.lower()
-        self.is_special = any(keyword in text.lower() for keyword in 
-                            ["jail free", "advance to", "go back", "collect", "pay"])
+        self.is_special = any(
+            keyword in text.lower()
+            for keyword in ["jail free", "advance to", "go back", "collect", "pay"]
+        )
+
 
 class CardDeck:
     def __init__(self, card_type):
@@ -38,7 +43,7 @@ class CardDeck:
             card = Card(
                 text=card_info["text"],
                 action=card_info["action"],
-                card_type=self.card_type
+                card_type=self.card_type,
             )
             self.cards.append(card)
         random.shuffle(self.cards)
@@ -63,15 +68,25 @@ class CardDeck:
 
     def return_jail_card(self, card_type):
         jail_card = next(
-            (card for card in self.cards + self.discard_pile 
-             if "jail free" in card.text.lower()),
-            None
+            (
+                card
+                for card in self.cards + self.discard_pile
+                if "jail free" in card.text.lower()
+            ),
+            None,
         )
         if not jail_card:
             jail_card = Card(
-                next(c["action"] for c in (pot_luck_cards if card_type == CardType.POT_LUCK else opportunity_knocks_cards)
-                     if "jail free" in c["text"].lower()),
-                card_type
+                next(
+                    c["action"]
+                    for c in (
+                        pot_luck_cards
+                        if card_type == CardType.POT_LUCK
+                        else opportunity_knocks_cards
+                    )
+                    if "jail free" in c["text"].lower()
+                ),
+                card_type,
             )
         self.return_card(jail_card, to_bottom=True)
 
