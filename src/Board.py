@@ -14,7 +14,7 @@ from src.FontManager import font_manager
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
-MODERN_BG = (18, 18, 18)
+UI_BG = (18, 18, 18)
 ACCENT_COLOR = (75, 139, 190)
 SUCCESS_COLOR = (40, 167, 69)
 ERROR_COLOR = (220, 53, 69)
@@ -84,23 +84,48 @@ class Board:
             self.board_image = None
             
         try:
-            self.background_image = pygame.image.load(os.path.join(self.project_root, "assets/image/background.jpg"))
-            self.background_image = self.background_image.convert()
+            self.original_background = pygame.image.load(os.path.join(self.project_root, "assets/image/background.jpg"))
+            self.original_background = self.original_background.convert()
+            self.background_image = self.original_background.copy() 
         except (pygame.error, FileNotFoundError) as e:
             print(f"Could not load background image: {e}")
+            self.original_background = None
             self.background_image = None
 
         self.board_rects = self._create_board_rects()
         self.messages = []
         self.message_times = []
-        self.message_font = font_manager.get_font(24)
+        self.message_font = font_manager.get_font(15)
         self.price_font = font_manager.get_font(20)
         self.small_font = font_manager.get_font(14)
 
     def add_message(self, text):
-        self.messages.append(text)
-        self.message_times.append(pygame.time.get_ticks())
-        if len(self.messages) > 10:
+        max_chars = 35
+        
+        if len(text) > max_chars:
+            words = text.split()
+            lines = []
+            current_line = []
+            
+            for word in words:
+                test_line = ' '.join(current_line + [word])
+                if len(test_line) <= max_chars:
+                    current_line.append(word)
+                else:
+                    lines.append(' '.join(current_line))
+                    current_line = [word]
+            
+            if current_line:
+                lines.append(' '.join(current_line))
+            
+            for line in lines:
+                self.messages.append(line)
+                self.message_times.append(pygame.time.get_ticks())
+        else:
+            self.messages.append(text)
+            self.message_times.append(pygame.time.get_ticks())
+        
+        while len(self.messages) > 9:
             self.messages.pop(0)
             self.message_times.pop(0)
 
@@ -249,10 +274,25 @@ class Board:
         game_surface = pygame.Surface((window_width, window_height))
         game_surface.fill(WHITE)
 
-        if self.background_image:
-            game_surface.blit(self.background_image, (0, 0))
+        if self.original_background:
+            bg_width, bg_height = self.original_background.get_size()
+            bg_aspect = bg_width / bg_height
+            window_aspect = window_width / window_height
+            
+            if window_aspect > bg_aspect:
+                scaled_width = window_width
+                scaled_height = int(scaled_width / bg_aspect)
+            else:
+                scaled_height = window_height
+                scaled_width = int(scaled_height * bg_aspect)
+                
+            pos_x = (window_width - scaled_width) // 2
+            pos_y = (window_height - scaled_height) // 2
+            
+            scaled_bg = pygame.transform.scale(self.original_background, (scaled_width, scaled_height))
+            game_surface.blit(scaled_bg, (pos_x, pos_y))
         else:
-            game_surface.fill(MODERN_BG)
+            game_surface.fill(UI_BG)
 
         keys = pygame.key.get_pressed()
         zoom, offset_x, offset_y = self.camera.handle_camera_controls(keys)
@@ -301,31 +341,47 @@ class Board:
                 player_rect = self.board_rects[pos_index]
                 self.draw_player(transparent_surface, player, player_rect, player.player_number)
 
-        info_panel_width = 300
-        info_panel_height = 100
+        info_panel_width = 290 
+        info_panel_height = 230  
         info_panel_x = 20
         info_panel_y = window_height - info_panel_height - 20
 
-        panel_shadow = pygame.Surface((info_panel_width + 8, info_panel_height + 8), pygame.SRCALPHA)
-        for i in range(4):
-            alpha = int(100 * (1 - i/4))
+        shadow_depth = 6
+        panel_shadow = pygame.Surface((info_panel_width + shadow_depth*2, info_panel_height + shadow_depth*2), pygame.SRCALPHA)
+        for i in range(shadow_depth):
+            alpha = int(120 * (1 - i/shadow_depth))
             pygame.draw.rect(panel_shadow, (*BLACK, alpha),
-                           pygame.Rect(i, i, info_panel_width + 8 - i*2, info_panel_height + 8 - i*2),
-                           border_radius=10)
-        transparent_surface.blit(panel_shadow, (info_panel_x - 4, info_panel_y - 4))
+                           pygame.Rect(i, i, info_panel_width + shadow_depth*2 - i*2, info_panel_height + shadow_depth*2 - i*2),
+                           border_radius=12)
+        transparent_surface.blit(panel_shadow, (info_panel_x - shadow_depth, info_panel_y - shadow_depth))
         
         info_panel = pygame.Surface((info_panel_width, info_panel_height), pygame.SRCALPHA)
-        pygame.draw.rect(info_panel, (*MODERN_BG, 200), info_panel.get_rect(), border_radius=10)
+        
+        pygame.draw.rect(info_panel, (*UI_BG, 230), info_panel.get_rect(), border_radius=10)
+        
+        header_height = 30
+        header_rect = pygame.Rect(0, 0, info_panel_width, header_height)
+        pygame.draw.rect(info_panel, ACCENT_COLOR, header_rect, border_radius=10)
+        pygame.draw.rect(info_panel, ACCENT_COLOR, pygame.Rect(0, header_height - 10, info_panel_width, 10))
+        
+        title_font = font_manager.get_font(20)
+        title_text = title_font.render("MESSAGE LOG", True, WHITE)
+        title_rect = title_text.get_rect(center=(info_panel_width // 2, header_height // 2))
+        info_panel.blit(title_text, title_rect)
+        
+        border_width = 2
+        pygame.draw.rect(info_panel, WHITE, info_panel.get_rect(), border_width, border_radius=10)
+        
         transparent_surface.blit(info_panel, (info_panel_x, info_panel_y))
         
         line_height = self.message_font.get_height() + 5
-        max_messages = (info_panel_height - 20) // line_height
+        max_messages = (info_panel_height - header_height - 20) // line_height
         visible_messages = self.messages[-max_messages:]
-        text_y = info_panel_y + 10
+        text_y = info_panel_y + header_height + 10
         
         for message in visible_messages:
             text = self.message_font.render(message, True, WHITE)
-            transparent_surface.blit(text, (info_panel_x + 10, text_y))
+            transparent_surface.blit(text, (info_panel_x + 15, text_y))
             text_y += line_height
             
         game_surface.blit(transparent_surface, (0, 0))

@@ -20,7 +20,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 LIGHT_GRAY = (200, 200, 200)
-MODERN_BG = (18, 18, 18)
+UI_BG = (18, 18, 18)
 
 DARK_RED = (139, 0, 0)
 DARK_GREEN = (0, 100, 0)
@@ -75,12 +75,12 @@ class Game:
         window_size = self.screen.get_size()
         try:
             bg_path = os.path.join(base_path, "assets/image/starterbackground.png")
-            background = pygame.image.load(bg_path)
-            background = pygame.transform.scale(background, window_size)
+            self.original_background = pygame.image.load(bg_path)
+            background = pygame.transform.scale(self.original_background, window_size)
             
             shuffling_path = os.path.join(base_path, "assets/image/Cards shuffling.png")
-            shuffling_image = pygame.image.load(shuffling_path)
-            shuffling_image = pygame.transform.scale(shuffling_image, window_size)
+            self.original_shuffling = pygame.image.load(shuffling_path)
+            shuffling_image = pygame.transform.scale(self.original_shuffling, window_size)
             
             self.screen.blit(background, (0, 0))
             self.screen.blit(shuffling_image, (0, 0))
@@ -88,10 +88,10 @@ class Game:
             pygame.time.wait(1000)  
             
             start_path = os.path.join(base_path, "assets/image/Gamestart.png")
-            start_image = pygame.image.load(start_path)
+            self.original_start_image = pygame.image.load(start_path)
             logo_width = int(window_size[0] * 0.5)
-            logo_height = int(logo_width * (start_image.get_height() / start_image.get_width()))
-            start_image = pygame.transform.scale(start_image, (logo_width, logo_height))
+            logo_height = int(logo_width * (self.original_start_image.get_height() / self.original_start_image.get_width()))
+            start_image = pygame.transform.scale(self.original_start_image, (logo_width, logo_height))
             
             self.screen.blit(background, (0, 0))
             overlay = pygame.Surface(window_size, pygame.SRCALPHA)
@@ -383,7 +383,7 @@ class Game:
             self.screen.blit(glow_surface, (panel_x - 5, panel_y - 5))
             
             panel = pygame.Surface((panel_width, panel_height))
-            panel.fill(MODERN_BG)
+            panel.fill(UI_BG)
             self.screen.blit(panel, (panel_x, panel_y))
             
             panel_title = self.small_font.render("GAME STATUS", True, LIGHT_GRAY)
@@ -437,7 +437,7 @@ class Game:
             return
             
         window_size = self.screen.get_size()
-        self.screen.fill(MODERN_BG)
+        self.screen.fill(UI_BG)
         gradient = pygame.Surface(window_size, pygame.SRCALPHA)
         for i in range(window_size[1]):
             alpha = int(255 * (1 - i/window_size[1]))
@@ -1368,7 +1368,6 @@ class Game:
             self.state = "BUY"
             
             if self.logic.completed_circuits.get(current_player['name'], 0) < 1:
-                self.board.add_message(f"{current_player['name']} must pass GO before buying property")
                 self.start_auction(space)
                 return None, None
             
@@ -2386,15 +2385,6 @@ class Game:
 
         result = card.action(player, self)
         
-        if "jail free" in card.text.lower():
-            self.board.add_message(f"{player['name']} received a Get Out of Jail Free card!")
-        elif "collect" in card.text.lower():
-            self.board.add_message(f"{player['name']} collected money!")
-        elif "pay" in card.text.lower():
-            self.board.add_message(f"{player['name']} paid money!")
-        elif "advance" in card.text.lower() or "go to" in card.text.lower():
-            self.board.add_message(f"{player['name']} is moving!")
-            
         return result
 
     def draw_popup_message(self):
@@ -2498,8 +2488,7 @@ class Game:
          
          print(f"Showing tax popup: {player['name']} paid £{tax_amount} for {tax_name}")
 
-    def handle_card_draw(self, player, card_type):
-        self.show_card_popup(card_type, f"{player['name']} drew a {card_type} card")
+    def handle_card_draw(self, player, card_type):     
         
         result, message = self.logic.handle_card_draw(player, card_type)
         
@@ -3406,7 +3395,7 @@ class Game:
         self.screen.blit(glow_surface, (panel_x - 5, panel_y - 5))
         
         panel = pygame.Surface((panel_width, panel_height))
-        panel.fill(MODERN_BG)
+        panel.fill(UI_BG)
         self.screen.blit(panel, (panel_x, panel_y))
         
         title_text = self.small_font.render("Free Parking Pot", True, LIGHT_GRAY)

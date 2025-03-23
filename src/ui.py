@@ -10,13 +10,13 @@ import math
 import random
 from src.FontManager import font_manager
 import os
-import webbrowser 
+import webbrowser
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (128, 128, 128)
 LIGHT_GRAY = (59,59,59)
-MODERN_BG = (18, 18, 18)
+UI_BG = (18, 18, 18)
 
 DARK_RED = (139, 0, 0)
 DARK_GREEN = (0, 100, 0)
@@ -45,7 +45,7 @@ def get_window_size():
         return surface.get_size()
     return DEFAULT_RES
 
-class ModernButton:
+class UIButton:
     def __init__(self, rect, text, font, color=ACCENT_COLOR):
         self.rect = rect
         self.text = text
@@ -57,47 +57,47 @@ class ModernButton:
         self.image = None
         self.shadow_height = 4
         self.border_width = 2
-        
+
     def _draw_basic_button(self, screen, base_color):
         shadow_rect = self.rect.copy()
         shadow_rect.y += self.shadow_height
         shadow = pygame.Surface(self.rect.size, pygame.SRCALPHA)
         pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=8)
         screen.blit(shadow, shadow_rect)
-        
+
         button_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
-        
+
         gradient = pygame.Surface(self.rect.size, pygame.SRCALPHA)
         for i in range(self.rect.height):
             alpha = 255 - int(i * 0.5)
             pygame.draw.line(gradient, (*base_color, alpha), (0, i), (self.rect.width, i))
-        
+
         pygame.draw.rect(button_surface, base_color, button_surface.get_rect(), border_radius=8)
         button_surface.blit(gradient, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-        
+
         border_color = GOLD if self.hover else CREAM
-        pygame.draw.rect(button_surface, border_color, button_surface.get_rect(), 
+        pygame.draw.rect(button_surface, border_color, button_surface.get_rect(),
                         width=self.border_width, border_radius=8)
-        
+
         if self.hover:
             highlight = pygame.Surface(self.rect.size, pygame.SRCALPHA)
             for i in range(4):
                 alpha = 100 - i * 25
-                pygame.draw.rect(highlight, (255, 255, 255, alpha), 
-                               highlight.get_rect().inflate(-i*2, -i*2), 
+                pygame.draw.rect(highlight, (255, 255, 255, alpha),
+                               highlight.get_rect().inflate(-i*2, -i*2),
                                border_radius=8)
             button_surface.blit(highlight, (0, 0))
-        
+
         screen.blit(button_surface, self.rect)
-        
+
         text_shadow = self.font.render(self.text, True, BLACK)
         text_surface = self.font.render(self.text, True, CREAM)
-        
+
         text_rect = text_surface.get_rect(center=self.rect.center)
         shadow_rect = text_rect.copy()
         shadow_rect.x += 1
         shadow_rect.y += 1
-        
+
         screen.blit(text_shadow, shadow_rect)
         screen.blit(text_surface, text_rect)
 
@@ -122,7 +122,7 @@ class ModernButton:
         self.is_hovered = self.rect.collidepoint(pos)
         return self.is_hovered
 
-class ModernInput:
+class UIInput:
     def __init__(self, rect, text, font, active_color=ACCENT_COLOR, inactive_color=GRAY):
         self.rect = rect
         self.text = text
@@ -171,14 +171,15 @@ class BasePage:
         except (pygame.error, FileNotFoundError):
             print("Could not load game logo")
             self.logo_image = None
-            
+
         try:
             asset_path = os.path.join(base_path, "assets/image/starterbackground.png")
             self.background_image = pygame.image.load(asset_path)
-            self.background_image = pygame.transform.scale(self.background_image, window_size)
+            self.original_background = self.background_image.copy()
         except (pygame.error, FileNotFoundError):
             print("Could not load background image")
             self.background_image = None
+            self.original_background = None
 
         self.title_font = font_manager.get_font(82)
         self.button_font = font_manager.get_font(42)
@@ -188,27 +189,27 @@ class BasePage:
 
     def draw_background(self):
         window_size = get_window_size()
-        if self.background_image:
-            img_width, img_height = self.background_image.get_size()
+        if self.original_background:
+            img_width, img_height = self.original_background.get_size()
             window_width, window_height = window_size
-            
+
             img_aspect = img_width / img_height
             window_aspect = window_width / window_height
-            
-            if window_aspect > img_aspect:  
+
+            if window_aspect > img_aspect:
                 scaled_width = window_width
                 scaled_height = int(scaled_width / img_aspect)
-            else:  
+            else:
                 scaled_height = window_height
                 scaled_width = int(scaled_height * img_aspect)
-            
+
             pos_x = (window_width - scaled_width) // 2
             pos_y = (window_height - scaled_height) // 2
-            
-            scaled_bg = pygame.transform.scale(self.background_image, (scaled_width, scaled_height))
+
+            scaled_bg = pygame.transform.scale(self.original_background, (scaled_width, scaled_height))
             self.screen.blit(scaled_bg, (pos_x, pos_y))
         else:
-            self.screen.fill(MODERN_BG)
+            self.screen.fill(UI_BG)
             gradient = pygame.Surface(window_size, pygame.SRCALPHA)
             for i in range(window_size[1]):
                 alpha = int(255 * (1 - i/window_size[1]))
@@ -217,7 +218,7 @@ class BasePage:
 
     def draw_title(self):
         window_size = get_window_size()
-        
+
         if hasattr(self, 'logo_image') and self.logo_image is not None and (isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage)):
             logo_rect = self.logo_image.get_rect(centerx=window_size[0]//2, y=80)
             self.screen.blit(self.logo_image, logo_rect)
@@ -240,9 +241,9 @@ class BasePage:
             font = font_manager.get_font(font_size)
             padding = 10
             line_height = font_size + 2
-            
+
             total_height = len(self.instructions) * line_height
-            
+
             for i, instruction in enumerate(self.instructions):
                 text_surface = font.render(instruction, True, WHITE)
                 y_position = window_size[1] - (total_height - (i * line_height)) - padding
@@ -260,8 +261,8 @@ class MainMenuPage(BasePage):
         self.small_font = font_manager.get_font(24)
         button_width = 300
         button_height = 60
-        
-        self.start_button = ModernButton(
+
+        self.start_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] // 2,
@@ -271,8 +272,8 @@ class MainMenuPage(BasePage):
             "Start Game",
             self.button_font
         )
-        
-        self.how_to_play_button = ModernButton(
+
+        self.how_to_play_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] // 2 + 80,
@@ -283,8 +284,8 @@ class MainMenuPage(BasePage):
             self.button_font,
             color=MODE_COLOR
         )
-        
-        self.settings_button = ModernButton(
+
+        self.settings_button = UIButton(
             pygame.Rect(
                 20,
                 get_window_size()[1] - button_height - 20,
@@ -294,21 +295,21 @@ class MainMenuPage(BasePage):
             "Settings",
             self.button_font
         )
-        
+
         try:
             youtube_path = os.path.join(base_path, "assets/image/Youtube Logo.png")
             self.youtube_logo = pygame.image.load(youtube_path)
             self.youtube_logo = pygame.transform.scale(self.youtube_logo, (40, 40))
             self.youtube_rect = self.youtube_logo.get_rect(topleft=(20, 20))
-            
+
             github_path = os.path.join(base_path, "assets/image/GitHub-Symbol.png")
             self.github_logo = pygame.image.load(github_path)
             self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
             self.github_rect = self.github_logo.get_rect(topleft=(80, 20))
-            
+
             self.github_hover = False
             self.youtube_hover = False
-            
+
             self.github_url = "https://github.com/Minosaji/Software-Engineering-Project"
             self.youtube_url = "https://www.youtube.com/@UOS-G6046-Group5"
         except (pygame.error, FileNotFoundError) as e:
@@ -319,39 +320,39 @@ class MainMenuPage(BasePage):
     def draw(self):
         self.draw_background()
         self.draw_title()
-        
+
         self.start_button.draw(self.screen)
         self.how_to_play_button.draw(self.screen)
         self.settings_button.draw(self.screen)
-        
+
         if hasattr(self, 'youtube_logo') and self.youtube_logo:
             if self.youtube_hover:
                 glow_surface = pygame.Surface((self.youtube_rect.width + 10, self.youtube_rect.height + 10), pygame.SRCALPHA)
-                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150), 
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150),
                                pygame.Rect(0, 0, glow_surface.get_width(), glow_surface.get_height()),
                                border_radius=5)
                 self.screen.blit(glow_surface, (self.youtube_rect.x - 5, self.youtube_rect.y - 5))
             self.screen.blit(self.youtube_logo, self.youtube_rect)
-        
+
         if hasattr(self, 'github_logo') and self.github_logo:
             if self.github_hover:
                 glow_surface = pygame.Surface((self.github_rect.width + 10, self.github_rect.height + 10), pygame.SRCALPHA)
-                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150), 
+                pygame.draw.rect(glow_surface, (*ACCENT_COLOR, 150),
                                pygame.Rect(0, 0, glow_surface.get_width(), glow_surface.get_height()),
                                border_radius=5)
                 self.screen.blit(glow_surface, (self.github_rect.x - 5, self.github_rect.y - 5))
             self.screen.blit(self.github_logo, self.github_rect)
-        
+
         version_text = self.version_font.render("Build Version: 21.03.2025", True, ERROR_COLOR)
         version_rect = version_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20)
         self.screen.blit(version_text, version_rect)
-        
+
         controls_text1 = self.small_font.render("Press ENTER to start", True, LIGHT_GRAY)
         controls_text2 = self.small_font.render("H for how to play, S for settings", True, LIGHT_GRAY)
 
         controls_rect1 = controls_text1.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-70)
         controls_rect2 = controls_text2.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-45)
-        
+
         self.screen.blit(controls_text1, controls_rect1)
         self.screen.blit(controls_text2, controls_rect2)
 
@@ -382,12 +383,12 @@ class MainMenuPage(BasePage):
         self.start_button.check_hover(pos)
         self.how_to_play_button.check_hover(pos)
         self.settings_button.check_hover(pos)
-        
+
         if hasattr(self, 'github_rect'):
             self.github_hover = self.github_rect.collidepoint(pos)
         if hasattr(self, 'youtube_rect'):
             self.youtube_hover = self.youtube_rect.collidepoint(pos)
-            
+
     def handle_key(self, event):
         if event.key == pygame.K_RETURN:
             return "start"
@@ -420,10 +421,10 @@ class SettingsPage(BasePage):
         self.current_font = 0
         self.show_confirmation = False
         self.confirmation_time = 0
-        
-        button_width = 500  
+
+        button_width = 500
         button_height = 60
-        self.resolution_button = ModernButton(
+        self.resolution_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] // 2 - 150,
@@ -434,7 +435,7 @@ class SettingsPage(BasePage):
             self.button_font
         )
 
-        self.font_button = ModernButton(
+        self.font_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] // 2 - 50,
@@ -445,9 +446,9 @@ class SettingsPage(BasePage):
             self.button_font,
             color=MODE_COLOR
         )
-        
-        confirm_button_width = 350  
-        self.confirm_button = ModernButton(
+
+        confirm_button_width = 350
+        self.confirm_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - confirm_button_width) // 2,
                 get_window_size()[1] // 2 + 50,
@@ -457,13 +458,12 @@ class SettingsPage(BasePage):
             "Confirm",
             self.button_font
         )
-        
-        back_button_width = 350  
-        self.back_button = ModernButton(
+
+        self.back_button = UIButton(
             pygame.Rect(
-                (get_window_size()[0] - back_button_width) // 2,
-                get_window_size()[1] - 120,
-                back_button_width,
+                20,
+                get_window_size()[1] - 80,
+                200,
                 button_height
             ),
             "Back",
@@ -473,14 +473,14 @@ class SettingsPage(BasePage):
     def draw(self):
         self.draw_background()
         self.draw_title()
-        
+
         settings_text = self.button_font.render("Game Settings", True, WHITE)
         settings_rect = settings_text.get_rect(centerx=get_window_size()[0]//2, y=100)
         self.screen.blit(settings_text, settings_rect)
-        
+
         self.resolution_button.text = f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}"
         self.resolution_button.draw(self.screen)
-        
+
         info_text = self.small_font.render("All resolutions maintain 16:9 aspect ratio", True, LIGHT_GRAY)
         info_rect = info_text.get_rect(centerx=get_window_size()[0]//2, top=self.resolution_button.rect.bottom + 10)
         self.screen.blit(info_text, info_rect)
@@ -496,24 +496,24 @@ class SettingsPage(BasePage):
                 self.screen.blit(confirm_text, confirm_rect)
             else:
                 self.show_confirmation = False
-        
+
         controls = [
             "Controls:",
             "R - Change screen resolution",
             "F - Change font",
             "Enter/Space - Apply and return"
         ]
-        
+
         y_offset = get_window_size()[1] - 180
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
             hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
-        
+
         self.confirm_button.draw(self.screen)
         self.back_button.draw(self.screen)
-        
+
         pygame.display.flip()
 
     def handle_click(self, pos):
@@ -534,7 +534,7 @@ class SettingsPage(BasePage):
             new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
             if current_resolution != new_resolution or FONT_PATH != new_font_path:
                 FONT_PATH = new_font_path
-                font_manager.update_font_path(new_font_path) 
+                font_manager.update_font_path(new_font_path)
                 return True
         elif self.back_button.check_hover(pos):
             return "back"
@@ -545,7 +545,7 @@ class SettingsPage(BasePage):
         self.font_button.check_hover(pos)
         self.confirm_button.check_hover(pos)
         self.back_button.check_hover(pos)
-        
+
     def handle_key(self, event):
         if event.key == pygame.K_r:
             self.current_resolution = (self.current_resolution + 1) % len(self.resolution_options)
@@ -564,12 +564,12 @@ class SettingsPage(BasePage):
             new_font_path = os.path.join(base_path, "assets", "font", self.font_options[self.current_font][1])
             if current_resolution != new_resolution or FONT_PATH != new_font_path:
                 FONT_PATH = new_font_path
-                font_manager.update_font_path(new_font_path)  # Add this line to update FontManager
+                font_manager.update_font_path(new_font_path)
                 return True
         elif event.key == pygame.K_ESCAPE:
             return "back"
         return False
-    
+
     def get_settings(self):
         return {
             "resolution": self.resolution_options[self.current_resolution],
@@ -595,9 +595,9 @@ class StartPage(BasePage):
         self.player_names = ["Human Player 1"]
         self.ai_names = ["AI-1"]
         self.ai_name_counter = 1
-        
+
         self.token_images = []
-        for i in range(1, 7): 
+        for i in range(1, 7):
             try:
                 image_path = os.path.join(base_path, "assets", "image", f"Playertoken ({i}).png")
                 if os.path.exists(image_path):
@@ -614,9 +614,9 @@ class StartPage(BasePage):
                 fallback = pygame.Surface((40, 40), pygame.SRCALPHA)
                 pygame.draw.circle(fallback, (50*i, 100, 150), (20, 20), 20)
                 self.token_images.append(fallback)
-        
-        self.player_token_indices = [0]  
-        self.ai_token_indices = [1]    
+
+        self.player_token_indices = [0]
+        self.ai_token_indices = [1]
 
         button_width = 300
         button_height = 60
@@ -627,7 +627,7 @@ class StartPage(BasePage):
 
         player_controls_y = input_y_start - 180
 
-        self.human_minus_button = ModernButton(
+        self.human_minus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0]//2 - count_x_offset - 100,
                 player_controls_y,
@@ -638,8 +638,8 @@ class StartPage(BasePage):
             self.button_font,
             color=HUMAN_COLOR
         )
-        
-        self.human_plus_button = ModernButton(
+
+        self.human_plus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0]//2 - count_x_offset + 50,
                 player_controls_y,
@@ -651,7 +651,7 @@ class StartPage(BasePage):
             color=HUMAN_COLOR
         )
 
-        self.ai_minus_button = ModernButton(
+        self.ai_minus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0]//2 + count_x_offset - 100,
                 player_controls_y,
@@ -662,8 +662,8 @@ class StartPage(BasePage):
             self.button_font,
             color=AI_COLOR
         )
-        
-        self.ai_plus_button = ModernButton(
+
+        self.ai_plus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0]//2 + count_x_offset + 50,
                 player_controls_y,
@@ -678,7 +678,7 @@ class StartPage(BasePage):
         self.name_inputs = []
         input_spacing = 50
         for i in range(5):
-            self.name_inputs.append(ModernInput(
+            self.name_inputs.append(UIInput(
                 pygame.Rect(
                     (get_window_size()[0] - input_width) // 2,
                     input_y_start + i * input_spacing,
@@ -689,7 +689,7 @@ class StartPage(BasePage):
                 self.input_font
             ))
 
-        self.start_button = ModernButton(
+        self.start_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] - 100,
@@ -700,17 +700,17 @@ class StartPage(BasePage):
             self.button_font
         )
 
-        self.back_button = ModernButton(
+        self.back_button = UIButton(
             pygame.Rect(
                 20,
-                get_window_size()[1] - 100,
+                get_window_size()[1] - 80,
                 200,
                 button_height
             ),
             "Back",
             self.button_font
         )
-        
+
         self.token_button_rects = []
         self.token_selection_active = False
         self.token_selection_for_player = -1
@@ -725,28 +725,28 @@ class StartPage(BasePage):
             self.ai_names.append(self.generate_unique_ai_name())
         while len(self.ai_names) > self.ai_count:
             self.ai_names.pop()
-            
+
         while len(self.player_token_indices) < self.human_count:
             used_indices = self.player_token_indices + self.ai_token_indices
-            for i in range(6): 
+            for i in range(6):
                 if i not in used_indices:
                     self.player_token_indices.append(i)
                     break
             else:
                 self.player_token_indices.append(0)
-                
+
         while len(self.player_token_indices) > self.human_count:
             self.player_token_indices.pop()
-            
+
         while len(self.ai_token_indices) < self.ai_count:
             used_indices = self.player_token_indices + self.ai_token_indices
-            for i in range(6): 
+            for i in range(6):
                 if i not in used_indices:
                     self.ai_token_indices.append(i)
                     break
             else:
                 self.ai_token_indices.append(0)
-                
+
         while len(self.ai_token_indices) > self.ai_count:
             self.ai_token_indices.pop()
 
@@ -759,9 +759,9 @@ class StartPage(BasePage):
         self.screen.blit(player_setup_title, title_rect)
 
         input_y_start = get_window_size()[1] // 2 - 50
-        
+
         player_controls_y = input_y_start - 120
-        
+
         human_text = self.button_font.render(f"Human Players: {self.human_count}", True, HUMAN_COLOR)
         human_rect = human_text.get_rect(centerx=get_window_size()[0]//2 - 150, y=player_controls_y - 40)
         self.screen.blit(human_text, human_rect)
@@ -771,11 +771,11 @@ class StartPage(BasePage):
         self.screen.blit(ai_text, ai_rect)
 
         total_text = self.small_font.render(f"Total Players: {self.total_players}/5", True, LIGHT_GRAY)
-        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y + 20) 
+        total_rect = total_text.get_rect(centerx=get_window_size()[0]//2, y=player_controls_y + 20)
         self.screen.blit(total_text, total_rect)
 
-        button_y = player_controls_y + 60  
-        
+        button_y = player_controls_y + 60
+
         self.human_minus_button.rect.y = button_y
         self.human_plus_button.rect.y = button_y
         self.ai_minus_button.rect.y = button_y
@@ -792,7 +792,7 @@ class StartPage(BasePage):
         self.ai_plus_button.draw(self.screen)
 
         input_spacing = 50
-        
+
         if self.token_selection_active:
             self.draw_token_selection()
         else:
@@ -800,28 +800,28 @@ class StartPage(BasePage):
                 self.name_inputs[i].active = (i == self.active_input)
                 self.name_inputs[i].text = self.player_names[i] if i < len(self.player_names) else ""
                 self.name_inputs[i].draw(self.screen)
-                
+
                 human_label = self.small_font.render("Human", True, HUMAN_COLOR)
                 label_rect = human_label.get_rect(
                     right=self.name_inputs[i].rect.left - 10,
                     centery=self.name_inputs[i].rect.centery
                 )
                 self.screen.blit(human_label, label_rect)
-                
+
                 token_rect = pygame.Rect(
                     self.name_inputs[i].rect.right + 10,
                     self.name_inputs[i].rect.centery - 20,
                     40, 40
                 )
-                
+
                 token_index = self.player_token_indices[i] if i < len(self.player_token_indices) else 0
                 token_image = self.token_images[token_index]
                 self.screen.blit(token_image, token_rect)
-                
+
                 pygame.draw.rect(self.screen, HUMAN_COLOR, token_rect, 2, border_radius=5)
-                
+
                 if i >= len(self.token_button_rects):
-                    self.token_button_rects.append((token_rect, i, False))  
+                    self.token_button_rects.append((token_rect, i, False))
                 else:
                     self.token_button_rects[i] = (token_rect, i, False)
 
@@ -832,39 +832,39 @@ class StartPage(BasePage):
                     300,
                     50
                 )
-                
+
                 ai_text = self.input_font.render(self.ai_names[i], True, LIGHT_GRAY)
                 ai_rect = ai_text.get_rect(center=ai_input_rect.center)
-                
+
                 pygame.draw.rect(self.screen, (*AI_COLOR[:3], 50), ai_input_rect, border_radius=5)
                 self.screen.blit(ai_text, ai_rect)
-                
+
                 ai_label = self.small_font.render("AI", True, AI_COLOR)
                 label_rect = ai_label.get_rect(
                     right=ai_input_rect.left - 10,
                     centery=ai_input_rect.centery
                 )
                 self.screen.blit(ai_label, label_rect)
-                
+
                 token_rect = pygame.Rect(
                     ai_input_rect.right + 10,
                     ai_input_rect.centery - 20,
                     40, 40
                 )
-                
+
                 token_index = self.ai_token_indices[i] if i < len(self.ai_token_indices) else 0
                 token_image = self.token_images[token_index]
                 self.screen.blit(token_image, token_rect)
-                
+
                 pygame.draw.rect(self.screen, AI_COLOR, token_rect, 2, border_radius=5)
-                
+
                 button_index = self.human_count + i
                 if button_index >= len(self.token_button_rects):
-                    self.token_button_rects.append((token_rect, i, True))  
+                    self.token_button_rects.append((token_rect, i, True))
                 else:
                     self.token_button_rects[button_index] = (token_rect, i, True)
 
-        can_start = (all(name.strip() for name in self.player_names[:self.human_count]) and 
+        can_start = (all(name.strip() for name in self.player_names[:self.human_count]) and
                     self.total_players >= 2 and self.total_players <= 5)
         self.start_button.active = can_start
         self.start_button.draw(self.screen)
@@ -880,99 +880,99 @@ class StartPage(BasePage):
             "ESC/Back - Return to menu",
             "Click token icon - Change player token"
         ]
-        
+
         y_offset = get_window_size()[1] - 210
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)  
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 20
 
         pygame.display.flip()
-        
+
     def draw_token_selection(self):
         overlay = pygame.Surface(get_window_size(), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 180))
         self.screen.blit(overlay, (0, 0))
-        
-        panel_width = 500  
-        panel_height = 400  
+
+        panel_width = 500
+        panel_height = 400
         panel_x = (get_window_size()[0] - panel_width) // 2
         panel_y = (get_window_size()[1] - panel_height) // 2
-        
-        pygame.draw.rect(self.screen, MODERN_BG, 
+
+        pygame.draw.rect(self.screen, UI_BG,
                        pygame.Rect(panel_x, panel_y, panel_width, panel_height),
                        border_radius=15)
-        pygame.draw.rect(self.screen, ACCENT_COLOR, 
+        pygame.draw.rect(self.screen, ACCENT_COLOR,
                        pygame.Rect(panel_x, panel_y, panel_width, panel_height), 2,
                        border_radius=15)
-        
+
         player_type = "AI" if self.token_selection_is_ai else "Human"
         player_index = self.token_selection_for_player + 1
         title_text = self.button_font.render(f"Select Token for {player_type} {player_index}", True, WHITE)
         title_rect = title_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 20)
         self.screen.blit(title_text, title_rect)
-        
+
         hint_text = self.small_font.render("Click any token to select", True, LIGHT_GRAY)
         hint_rect = hint_text.get_rect(centerx=panel_x + panel_width//2, top=panel_y + 60)
         self.screen.blit(hint_text, hint_rect)
-        
+
         token_size = 60
         token_spacing = 20
         tokens_per_row = 3
         total_width = (token_size * tokens_per_row) + (token_spacing * (tokens_per_row - 1))
         start_x = panel_x + (panel_width - total_width) // 2
         start_y = panel_y + 100
-        
+
         self.token_selection_rects = []
-        
+
         for i, token_image in enumerate(self.token_images):
             row = i // tokens_per_row
             col = i % tokens_per_row
-            
+
             x = start_x + col * (token_size + token_spacing)
             y = start_y + row * (token_size + token_spacing)
-            
+
             scaled_token = pygame.transform.scale(token_image, (token_size, token_size))
             token_rect = pygame.Rect(x, y, token_size, token_size)
-            
+
             token_in_use = False
             token_user = None
             token_is_ai = False
-            
+
             for j, token_idx in enumerate(self.player_token_indices):
                 if (token_idx == i):
                     token_in_use = True
-                    token_user = j + 1 
+                    token_user = j + 1
                     token_is_ai = False
                     break
-                    
+
             if not token_in_use:
                 for j, token_idx in enumerate(self.ai_token_indices):
                     if (token_idx == i):
                         token_in_use = True
-                        token_user = j + 1 
+                        token_user = j + 1
                         token_is_ai = True
                         break
-            
+
             self.screen.blit(scaled_token, token_rect)
-            
+
             if self.token_selection_is_ai:
                 is_selected = (i == self.ai_token_indices[self.token_selection_for_player])
                 border_color = AI_COLOR if is_selected else WHITE
             else:
                 is_selected = (i == self.player_token_indices[self.token_selection_for_player])
                 border_color = HUMAN_COLOR if is_selected else WHITE
-            
+
             pygame.draw.rect(self.screen, border_color, token_rect, 2, border_radius=5)
-            
+
             if token_in_use and not (self.token_selection_is_ai and token_is_ai and token_user == self.token_selection_for_player + 1) and not (not self.token_selection_is_ai and not token_is_ai and token_user == self.token_selection_for_player + 1):
                 user_text = self.small_font.render(f"{'AI' if token_is_ai else 'P'}{token_user}", True, AI_COLOR if token_is_ai else HUMAN_COLOR)
                 user_rect = user_text.get_rect(center=(x + token_size//2, y + token_size + 10))
                 self.screen.blit(user_text, user_rect)
-            
-            self.token_selection_rects.append((token_rect, i, True))  
-        
+
+            self.token_selection_rects.append((token_rect, i, True))
+
         close_button_width = 100
         close_button_height = 40
         close_button_rect = pygame.Rect(
@@ -981,31 +981,31 @@ class StartPage(BasePage):
             close_button_width,
             close_button_height
         )
-        
+
         pygame.draw.rect(self.screen, ACCENT_COLOR, close_button_rect, border_radius=5)
         close_text = self.small_font.render("Close", True, WHITE)
         close_rect = close_text.get_rect(center=close_button_rect.center)
         self.screen.blit(close_text, close_rect)
-        
+
         self.close_button_rect = close_button_rect
 
     def handle_click(self, pos):
         if self.token_selection_active:
             return self.handle_token_selection_click(pos)
-            
+
         for rect, player_idx, is_ai in self.token_button_rects:
             if rect.collidepoint(pos):
                 self.token_selection_active = True
                 self.token_selection_for_player = player_idx
                 self.token_selection_is_ai = is_ai
                 return False
-        
+
         if self.human_minus_button.check_hover(pos) and self.human_count > 1:
             self.human_count -= 1
             self.total_players = self.human_count + self.ai_count
             self.update_player_lists()
             return False
-            
+
         if self.human_plus_button.check_hover(pos) and self.human_count < 5 and self.total_players < 5:
             self.human_count += 1
             self.total_players = self.human_count + self.ai_count
@@ -1030,7 +1030,7 @@ class StartPage(BasePage):
             if self.name_inputs[i].rect.collidepoint(pos):
                 self.active_input = i
                 return False
-                
+
         if self.start_button.check_hover(pos) and self.start_button.active:
             return True
 
@@ -1039,14 +1039,14 @@ class StartPage(BasePage):
 
         self.active_input = -1
         return False
-        
+
     def handle_token_selection_click(self, pos):
         if hasattr(self, 'close_button_rect') and self.close_button_rect.collidepoint(pos):
             self.token_selection_active = False
             return False
-            
+
         for rect, token_idx, available in self.token_selection_rects:
-            if rect.collidepoint(pos):        
+            if rect.collidepoint(pos):
                 if self.token_selection_is_ai:
                     for i, human_token in enumerate(self.player_token_indices):
                         if human_token == token_idx:
@@ -1054,14 +1054,14 @@ class StartPage(BasePage):
                             self.ai_token_indices[self.token_selection_for_player] = token_idx
                             self.token_selection_active = False
                             return False
-                    
+
                     for i, ai_token in enumerate(self.ai_token_indices):
                         if ai_token == token_idx and i != self.token_selection_for_player:
                             self.ai_token_indices[i] = self.ai_token_indices[self.token_selection_for_player]
                             self.ai_token_indices[self.token_selection_for_player] = token_idx
                             self.token_selection_active = False
                             return False
-                    
+
                     self.ai_token_indices[self.token_selection_for_player] = token_idx
                 else:
                     for i, ai_token in enumerate(self.ai_token_indices):
@@ -1070,19 +1070,19 @@ class StartPage(BasePage):
                             self.player_token_indices[self.token_selection_for_player] = token_idx
                             self.token_selection_active = False
                             return False
-                    
+
                     for i, human_token in enumerate(self.player_token_indices):
                         if human_token == token_idx and i != self.token_selection_for_player:
                             self.player_token_indices[i] = self.player_token_indices[self.token_selection_for_player]
                             self.player_token_indices[self.token_selection_for_player] = token_idx
                             self.token_selection_active = False
                             return False
-                    
+
                     self.player_token_indices[self.token_selection_for_player] = token_idx
-                
+
                 self.token_selection_active = False
                 return False
-                
+
         return False
 
     def handle_motion(self, pos):
@@ -1098,7 +1098,7 @@ class StartPage(BasePage):
             if event.key == pygame.K_ESCAPE:
                 self.token_selection_active = False
             return False
-            
+
         if self.active_input >= 0:
             if event.key == pygame.K_RETURN:
                 self.active_input = -1
@@ -1123,7 +1123,7 @@ class StartPage(BasePage):
                     self.human_count -= 1
                     self.update_player_lists()
                 self.total_players = self.human_count + self.ai_count
-            
+
             elif event.key == pygame.K_a:
                 if event.mod & pygame.KMOD_SHIFT and self.ai_count < 4 and self.total_players < 5:
                     self.ai_count += 1
@@ -1132,11 +1132,11 @@ class StartPage(BasePage):
                     self.ai_count -= 1
                     self.update_player_lists()
                 self.total_players = self.human_count + self.ai_count
-            
+
             elif event.key == pygame.K_SPACE:
                 if self.start_button.active:
                     return True
-            
+
             elif event.key == pygame.K_RETURN and self.start_button.active:
                 return True
 
@@ -1155,14 +1155,14 @@ class PlayerSelectPage(BasePage):
         self.small_font = font_manager.get_font(24)
         self.selected_element = 0
         self.active_input = -1
-        
+
         self.player_count = 2
         self.player_names = ["" for _ in range(5)]
-        
+
         input_width = 300
         input_height = 50
         input_y_start = get_window_size()[1] // 2 - 100
-        
+
         self.name_inputs = []
         for i in range(5):
             input_rect = pygame.Rect(
@@ -1171,12 +1171,12 @@ class PlayerSelectPage(BasePage):
                 input_width,
                 input_height
             )
-            input_field = ModernInput(input_rect, "", self.input_font)
+            input_field = UIInput(input_rect, "", self.input_font)
             input_field.placeholder = f"Enter Player {i+1} name..."
             self.name_inputs.append(input_field)
 
         count_x_offset = 250
-        self.minus_button = ModernButton(
+        self.minus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0]//2 - count_x_offset,
                 input_y_start - 80,
@@ -1186,8 +1186,8 @@ class PlayerSelectPage(BasePage):
             "-",
             self.button_font
         )
-        
-        self.plus_button = ModernButton(
+
+        self.plus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0]//2 + count_x_offset - 50,
                 input_y_start - 80,
@@ -1197,10 +1197,10 @@ class PlayerSelectPage(BasePage):
             "+",
             self.button_font
         )
-        
+
         button_width = 300
         button_height = 60
-        self.continue_button = ModernButton(
+        self.continue_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] - 120,
@@ -1214,26 +1214,26 @@ class PlayerSelectPage(BasePage):
     def draw(self):
         self.draw_background()
         self.draw_title()
-        
+
         section_title = self.button_font.render("Select Number of Players", True, WHITE)
-        title_rect = section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 170)  
+        title_rect = section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 170)
         self.screen.blit(section_title, title_rect)
-        
+
         count_text = self.button_font.render(str(self.player_count), True, WHITE)
-        count_rect = count_text.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 130) 
+        count_rect = count_text.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 130)
         self.screen.blit(count_text, count_rect)
-        
+
         self.minus_button.active = self.player_count > 2
         self.plus_button.active = self.player_count < 5
         self.minus_button.is_selected = (self.selected_element == 0)
         self.plus_button.is_selected = (self.selected_element == 1)
         self.minus_button.draw(self.screen)
         self.plus_button.draw(self.screen)
-        
+
         name_section_title = self.button_font.render("Enter Player Names", True, WHITE)
         name_title_rect = name_section_title.get_rect(centerx=get_window_size()[0]//2, y=get_window_size()[1]//2 - 90)
         self.screen.blit(name_section_title, name_title_rect)
-        
+
         for i in range(self.player_count):
             self.name_inputs[i].active = (i == self.active_input)
             self.name_inputs[i].is_selected = (self.selected_element == i + 2)
@@ -1241,7 +1241,7 @@ class PlayerSelectPage(BasePage):
             if self.player_names[i]:
                 self.name_inputs[i].text = self.player_names[i]
             self.name_inputs[i].draw(self.screen)
-            
+
             if i == self.active_input:
                 help_text = self.small_font.render("Type name and press Enter", True, LIGHT_GRAY)
                 help_rect = help_text.get_rect(
@@ -1249,46 +1249,46 @@ class PlayerSelectPage(BasePage):
                     centery=self.name_inputs[i].rect.centery
                 )
                 self.screen.blit(help_text, help_rect)
-        
+
         can_continue = all(name.strip() for name in self.player_names[:self.player_count])
         self.continue_button.active = can_continue
         self.continue_button.is_selected = (self.selected_element == 7)
         self.continue_button.draw(self.screen)
-        
+
         controls = [
             "↑/↓ - Navigate fields",
             "Enter - Edit name",
             "Tab - Next field",
             "Escape - Cancel editing"
         ]
-        
+
         y_offset = get_window_size()[1] - 80
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
             hint_rect = hint_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 20
-        
+
         pygame.display.flip()
 
     def handle_click(self, pos):
         if self.minus_button.check_hover(pos) and self.player_count > 2:
             self.player_count -= 1
             return False
-            
+
         if self.plus_button.check_hover(pos) and self.player_count < 5:
             self.player_count += 1
             return False
-            
+
         for i in range(self.player_count):
             if self.name_inputs[i].rect.collidepoint(pos):
                 self.active_input = i
                 return False
-                
+
         if self.continue_button.check_hover(pos):
             if all(name.strip() for name in self.player_names[:self.player_count]):
                 return True
-                
+
         self.active_input = -1
         return False
 
@@ -1296,7 +1296,7 @@ class PlayerSelectPage(BasePage):
         self.minus_button.check_hover(pos)
         self.plus_button.check_hover(pos)
         self.continue_button.check_hover(pos)
-        
+
     def handle_key(self, event):
         if self.active_input >= 0:
             if event.key == pygame.K_RETURN:
@@ -1348,52 +1348,81 @@ class HowToPlayPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.small_font = font_manager.get_font(24)
-        
+
         button_width = 300
         button_height = 60
-        self.back_button = ModernButton(
+        self.back_button = UIButton(
             pygame.Rect(
-                (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] - 120,
-                button_width,
+                20,
+                get_window_size()[1] - 80,
+                200,
                 button_height
             ),
             "Back",
             self.button_font
         )
-        
+
         self.instructions = [
-            "How to Play Property Tycoon",
+        "How to Play",
+         "",
+            "Become the wealthiest player by buying, renting, and developing properties!",
             "",
-            "To be updated...",
+            "• Roll dice to move around the board",
+            "• Buy properties when you land on them",
+            "• Collect rent from other players",
+            "• Build houses to increase property value"
         ]
 
     def draw(self):
         self.draw_background()
         self.draw_title()
-        
-        y_offset = 280
-        for i, line in enumerate(self.instructions):
-            if i == 0:
-                text_surface = self.button_font.render(line, True, WHITE)
-            elif line == "":
-                y_offset += 10
+
+        panel_width = 1000
+        panel_height = get_window_size()[1] - 350
+        panel_x = (get_window_size()[0] - panel_width) // 2
+        panel_y = 320
+
+        shadow_offset = 5
+        shadow = pygame.Surface((panel_width + shadow_offset*2, panel_height + shadow_offset*2), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        self.screen.blit(shadow, (panel_x - shadow_offset, panel_y - shadow_offset))
+
+        pygame.draw.rect(
+            self.screen,
+            WHITE,
+            pygame.Rect(panel_x, panel_y, panel_width, panel_height),
+            border_radius=15
+        )
+
+        title = self.instructions[0]
+        title_surface = self.button_font.render(title, True, ACCENT_COLOR)
+        title_rect = title_surface.get_rect(centerx=get_window_size()[0]//2, y=panel_y + 15)
+        self.screen.blit(title_surface, title_rect)
+
+        y_offset = panel_y + 100
+
+        for i in range(1, len(self.instructions)):
+            line = self.instructions[i]
+
+            if line == "":
+                y_offset += 12
                 continue
             elif line.endswith(":"):
                 text_surface = self.button_font.render(line, True, ACCENT_COLOR)
+                y_offset += 10
             else:
-                text_surface = self.small_font.render(line, True, LIGHT_GRAY)
-            
+                text_surface = self.small_font.render(line, True, BLACK)
+
             text_rect = text_surface.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
             self.screen.blit(text_surface, text_rect)
-            y_offset += 30 if i == 0 else 25
-        
+            y_offset += 22
+
         self.back_button.draw(self.screen)
-        
-        hint_text = self.small_font.render("Press ESC or BACKSPACE to return to menu", True, LIGHT_GRAY)
-        hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20) 
+
+        hint_text = self.small_font.render("Press ESC or BACKSPACE to return", True, LIGHT_GRAY)
+        hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=get_window_size()[1] - 180)
         self.screen.blit(hint_text, hint_rect)
-        
+
         pygame.display.flip()
 
     def handle_click(self, pos):
@@ -1413,11 +1442,11 @@ class GameModePage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.small_font = font_manager.get_font(24)
-        
+
         self.game_mode = "full"
         self.time_limit = None
-        
-        self.custom_time_input = ModernInput(
+
+        self.custom_time_input = UIInput(
             pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
                 get_window_size()[1] // 2 + 50,
@@ -1428,14 +1457,14 @@ class GameModePage(BasePage):
             self.button_font,
             active_color=TIME_COLOR
         )
-        
+
         self.custom_time_input.placeholder = "Enter time..."
-        
+
         self.last_time_input = "30"
-        
+
         mode_button_width = 400
         button_height = 60
-        self.mode_button = ModernButton(
+        self.mode_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - mode_button_width) // 2,
                 get_window_size()[1] // 2 - 120,
@@ -1446,11 +1475,11 @@ class GameModePage(BasePage):
             self.button_font,
             color=MODE_COLOR
         )
-        
+
         self.time_label = "Time Limit (minutes, max 180):"
-        
+
         button_width = 300
-        self.start_button = ModernButton(
+        self.start_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] - 120,
@@ -1460,18 +1489,18 @@ class GameModePage(BasePage):
             "Start Game",
             self.button_font
         )
-        
-        self.back_button = ModernButton(
+
+        self.back_button = UIButton(
             pygame.Rect(
-                20,  
-                get_window_size()[1] - 120,
-                200, 
+                20,
+                get_window_size()[1] - 80,
+                200,
                 button_height
             ),
-            "Back",  
+            "Back",
             self.button_font
         )
-        
+
         self.full_game_text = "Full Game: Last player standing wins"
         self.abridged_text = "Abridged Game: Highest value after time limit wins"
         self.input_error = None
@@ -1479,27 +1508,27 @@ class GameModePage(BasePage):
     def draw(self):
         self.draw_background()
         self.draw_title()
-        
+
         mode_title = self.button_font.render("Select Game Mode", True, WHITE)
         mode_title_rect = mode_title.get_rect(centerx=get_window_size()[0]//2, y=100)
         self.screen.blit(mode_title, mode_title_rect)
-        
+
         self.mode_button.rect.y = get_window_size()[1] // 2 - 120
         self.mode_button.text = f"Game Mode: {'Abridged' if self.game_mode == 'abridged' else 'Full Game'}"
         self.mode_button.draw(self.screen)
-        
+
         mode_info = self.abridged_text if self.game_mode == "abridged" else self.full_game_text
         info_text = self.small_font.render(mode_info, True, LIGHT_GRAY)
         info_rect = info_text.get_rect(centerx=get_window_size()[0]//2, top=self.mode_button.rect.bottom + 10)
         self.screen.blit(info_text, info_rect)
-        
+
         if self.game_mode == "abridged":
             label_text = self.small_font.render(self.time_label, True, LIGHT_GRAY)
             label_rect = label_text.get_rect(centerx=get_window_size()[0]//2, bottom=self.custom_time_input.rect.top - 15)
             self.screen.blit(label_text, label_rect)
-            
+
             self.custom_time_input.draw(self.screen)
-            
+
             if self.input_error:
                 error_text = self.small_font.render(self.input_error, True, ERROR_COLOR)
                 error_rect = error_text.get_rect(centerx=get_window_size()[0]//2, top=self.custom_time_input.rect.bottom + 5)
@@ -1513,24 +1542,24 @@ class GameModePage(BasePage):
                     self.screen.blit(time_text, time_rect)
                 except ValueError:
                     pass
-        
+
         self.start_button.draw(self.screen)
         self.back_button.draw(self.screen)
-        
+
         controls = [
             "Controls: ↑/↓ to navigate",
             "M - Change game mode",
         ]
         if self.game_mode == "abridged":
             controls.append("Click on time input to enter custom time")
-            
-        y_offset = get_window_size()[1] - 150
+
+        y_offset = get_window_size()[1] - 180
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset) 
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
-        
+
         pygame.display.flip()
 
     def handle_click(self, pos):
@@ -1545,17 +1574,17 @@ class GameModePage(BasePage):
                     self.time_limit = minutes * 60
                     print(f"Custom time limit set: {minutes} minutes")
                 except ValueError:
-                    self.time_limit = 30 * 60  # Default 30 
+                    self.time_limit = 30 * 60
                     print("Default time limit set: 30 minutes")
             else:
                 self.time_limit = None
                 print("Game mode changed to Full Game (no time limit)")
             return False
-            
+
         if self.game_mode == "abridged" and self.custom_time_input.rect.collidepoint(pos):
             self.custom_time_input.active = True
             return False
-            
+
         if self.start_button.check_hover(pos):
             if self.game_mode == "abridged":
                 try:
@@ -1576,10 +1605,10 @@ class GameModePage(BasePage):
             else:
                 print("Starting full game (no time limit)")
             return True
-            
+
         if self.back_button.check_hover(pos):
             return "back"
-        
+
         self.custom_time_input.active = False
         return False
 
@@ -1587,7 +1616,7 @@ class GameModePage(BasePage):
         self.mode_button.check_hover(pos)
         self.start_button.check_hover(pos)
         self.back_button.check_hover(pos)
-        
+
     def handle_key(self, event):
         if self.custom_time_input.active and self.game_mode == "abridged":
             if event.key == pygame.K_RETURN:
@@ -1615,14 +1644,14 @@ class GameModePage(BasePage):
                     self.custom_time_input.text = self.custom_time_input.text[:-1]
                     self.input_error = None
                     return False
-                
+
                 if event.unicode.isdigit():
                     if len(self.custom_time_input.text) < 4:
                         self.custom_time_input.text += event.unicode
                         self.input_error = None
                     return False
                 return False
-        
+
         if event.key == pygame.K_m:
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
@@ -1634,7 +1663,7 @@ class GameModePage(BasePage):
                     self.time_limit = minutes * 60
                     print(f"Custom time limit set: {minutes} minutes")
                 except ValueError:
-                    self.time_limit = 30 * 60  # Default 30 
+                    self.time_limit = 30 * 60
                     print("Default time limit set: 30 minutes")
             else:
                 self.time_limit = None
@@ -1668,7 +1697,7 @@ class GameModePage(BasePage):
             "mode": self.game_mode,
             "time_limit": None
         }
-        
+
         if self.game_mode == "abridged":
             try:
                 minutes = int(self.custom_time_input.text)
@@ -1678,14 +1707,14 @@ class GameModePage(BasePage):
                     settings["time_limit"] = minutes * 60
                     print(f"Game settings: Abridged mode with {minutes} minutes time limit")
                 else:
-                    settings["time_limit"] = 30 * 60  # Default 30 min
+                    settings["time_limit"] = 30 * 60
                     print("Game settings: Abridged mode with default 30 minutes time limit (invalid input)")
             except ValueError:
-                settings["time_limit"] = 30 * 60  # Default 30 
+                settings["time_limit"] = 30 * 60
                 print("Game settings: Abridged mode with default 30 minutes time limit (invalid input)")
         else:
             print("Game settings: Full game mode (no time limit)")
-            
+
         return settings
 
 class EndGamePage(BasePage):
@@ -1698,26 +1727,25 @@ class EndGamePage(BasePage):
         self.voluntary_exits = voluntary_exits or []
         self.tied_winners = tied_winners or []
         self.lap_count = lap_count or {}
-        
+
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode(get_window_size())
             print("Created new surface for EndGamePage")
         else:
             print("Using existing surface for EndGamePage")
-            
+
         try:
             endgame_bg_path = os.path.join(base_path, "assets/image/EndgamePageBG.jpg")
-            self.endgame_bg = pygame.image.load(endgame_bg_path)
-            self.endgame_bg = pygame.transform.scale(self.endgame_bg, get_window_size())
+            self.original_endgame_bg = pygame.image.load(endgame_bg_path)
             print("Loaded EndgamePageBG.jpg successfully")
         except (pygame.error, FileNotFoundError) as e:
             print(f"Could not load end game background: {e}")
-            self.endgame_bg = None
-            
+            self.original_endgame_bg = None
+
         button_width = 300
         button_height = 60
-        self.play_again_button = ModernButton(
+        self.play_again_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] - 100,
@@ -1728,8 +1756,8 @@ class EndGamePage(BasePage):
             self.button_font,
             color=SUCCESS_COLOR
         )
-        
-        self.quit_button = ModernButton(
+
+        self.quit_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 get_window_size()[1] - 180,
@@ -1740,8 +1768,8 @@ class EndGamePage(BasePage):
             self.button_font,
             color=ERROR_COLOR
         )
-        
-        self.credits_button = ModernButton(
+
+        self.credits_button = UIButton(
             pygame.Rect(
                 20,
                 get_window_size()[1] - 100,
@@ -1752,7 +1780,7 @@ class EndGamePage(BasePage):
             self.button_font,
             color=MODE_COLOR
         )
-        
+
         self.confetti = []
         for _ in range(100):
             self.confetti.append({
@@ -1761,39 +1789,58 @@ class EndGamePage(BasePage):
                 'speed': random.uniform(1, 3),
                 'size': random.randint(5, 15),
                 'color': random.choice([
-                    (255, 223, 0),  
-                    (255, 0, 0),  
-                    (0, 255, 0),  
-                    (0, 0, 255),  
-                    (255, 0, 255), 
-                    (0, 255, 255), 
+                    (255, 223, 0),
+                    (255, 0, 0),
+                    (0, 255, 0),
+                    (0, 0, 255),
+                    (255, 0, 255),
+                    (0, 255, 255),
                 ])
             })
 
     def draw(self):
+        window_size = get_window_size()
 
-        if hasattr(self, 'endgame_bg') and self.endgame_bg:
-            self.screen.blit(self.endgame_bg, (0, 0))
-            overlay = pygame.Surface(get_window_size(), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 100))  
+        if hasattr(self, 'original_endgame_bg') and self.original_endgame_bg:
+            bg_width, bg_height = self.original_endgame_bg.get_size()
+            window_width, window_height = window_size
+
+            bg_aspect = bg_width / bg_height
+            window_aspect = window_width / window_height
+
+            if window_aspect > bg_aspect:
+                scaled_width = window_width
+                scaled_height = int(scaled_width / bg_aspect)
+            else:
+                scaled_height = window_height
+                scaled_width = int(scaled_height * bg_aspect)
+
+            pos_x = (window_width - scaled_width) // 2
+            pos_y = (window_height - scaled_height) // 2
+
+            scaled_bg = pygame.transform.scale(self.original_endgame_bg, (scaled_width, scaled_height))
+            self.screen.blit(scaled_bg, (pos_x, pos_y))
+
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 100))
             self.screen.blit(overlay, (0, 0))
         else:
-            self.draw_background() 
-        
+            self.draw_background()
+
         for particle in self.confetti:
             particle['y'] += particle['speed']
             if particle['y'] > get_window_size()[1]:
                 particle['y'] = random.randint(-100, 0)
                 particle['x'] = random.randint(0, get_window_size()[0])
-            
+
             pygame.draw.rect(
-                self.screen, 
-                particle['color'], 
+                self.screen,
+                particle['color'],
                 (particle['x'], particle['y'], particle['size'], particle['size'])
             )
-        
-        card_width = 700
-        card_height = 500
+
+        card_width = 900
+        card_height = 600
         card_x = (get_window_size()[0] - card_width) // 2
         card_y = (get_window_size()[1] - card_height) // 2 - 30
 
@@ -1804,33 +1851,33 @@ class EndGamePage(BasePage):
         pygame.draw.rect(self.screen, WHITE, pygame.Rect(card_x, card_y, card_width, card_height), border_radius=15)
 
         winner_text = self.title_font.render("Game Over!", True, ACCENT_COLOR)
-        self.screen.blit(winner_text, (card_x + (card_width - winner_text.get_width()) // 2, card_y + 30))
+        self.screen.blit(winner_text, (card_x + (card_width - winner_text.get_width()) // 2, card_y + 40))
 
         trophy_size = 60
         trophy_x = card_x + (card_width - trophy_size) // 2
-        trophy_y = card_y + 80
-        
+        trophy_y = card_y + 100
+
         gold_color = (255, 215, 0)
-        
+
         pygame.draw.rect(
             self.screen,
             gold_color,
             (trophy_x + 15, trophy_y + 45, 30, 15),
             border_radius=5
         )
-        
+
         pygame.draw.rect(
             self.screen,
             gold_color,
             (trophy_x + 25, trophy_y + 25, 10, 25)
         )
-        
+
         pygame.draw.ellipse(
             self.screen,
             gold_color,
             (trophy_x + 10, trophy_y, 40, 30)
         )
-        
+
         pygame.draw.ellipse(
             self.screen,
             gold_color,
@@ -1845,47 +1892,47 @@ class EndGamePage(BasePage):
         if self.winner_name == "Tie" and self.tied_winners:
             winner_text = "It's a Tie!"
             winner_name = self.button_font.render(winner_text, True, SUCCESS_COLOR)
-            self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 150))
-            
+            self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 180))
+
             tied_text = self.small_font.render(
                 f"Tied players: {', '.join(self.tied_winners)}", True, ACCENT_COLOR
             )
-            self.screen.blit(tied_text, (card_x + (card_width - tied_text.get_width()) // 2, card_y + 180))
+            self.screen.blit(tied_text, (card_x + (card_width - tied_text.get_width()) // 2, card_y + 220))
         else:
             winner_name = self.button_font.render(f"Winner: {self.winner_name}", True, SUCCESS_COLOR)
-            self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 150))
+            self.screen.blit(winner_name, (card_x + (card_width - winner_name.get_width()) // 2, card_y + 180))
 
         pygame.draw.line(
-            self.screen, 
-            LIGHT_GRAY, 
-            (card_x + 50, card_y + 190), 
-            (card_x + card_width - 50, card_y + 190), 
+            self.screen,
+            LIGHT_GRAY,
+            (card_x + 70, card_y + 230),
+            (card_x + card_width - 70, card_y + 230),
             2
         )
 
-        y_offset = card_y + 210
+        y_offset = card_y + 260
         if self.final_assets:
             assets_title = self.button_font.render("Final Assets", True, BLACK)
             self.screen.blit(assets_title, (card_x + (card_width - assets_title.get_width()) // 2, y_offset))
             y_offset += 40
-            
+
             sorted_assets = sorted(self.final_assets.items(), key=lambda x: x[1], reverse=True)
             col_width = (card_width - 100) // 2
-            
+
             for i, (name, amount) in enumerate(sorted_assets):
                 col = i % 2
                 row = i // 2
-                
+
                 x_pos = card_x + 50 + col * col_width
                 y_pos = y_offset + row * 35
-                
+
                 if self.tied_winners and name in self.tied_winners:
                     text_color = SUCCESS_COLOR
                 elif name == self.winner_name and not self.tied_winners:
                     text_color = SUCCESS_COLOR
                 else:
                     text_color = LIGHT_GRAY
-                
+
                 player_text = self.small_font.render(
                     f"{name}: £{amount:,}", True, text_color
                 )
@@ -1893,57 +1940,57 @@ class EndGamePage(BasePage):
 
         if self.bankrupted_players:
             y_offset = y_offset + (len(sorted_assets) // 2 + (1 if len(sorted_assets) % 2 else 0)) * 35 + 20
-            
+
             bankrupt_title = self.small_font.render("Bankrupted Players:", True, ERROR_COLOR)
             self.screen.blit(bankrupt_title, (card_x + 50, y_offset))
             y_offset += 30
-            
+
             bankrupt_text = self.small_font.render(
                 f"{', '.join(self.bankrupted_players)}", True, ERROR_COLOR
             )
             self.screen.blit(bankrupt_text, (card_x + 70, y_offset))
-            y_offset += 40  
+            y_offset += 40
 
         if self.voluntary_exits:
-            y_offset += 20 
+            y_offset += 20
             voluntary_title = self.small_font.render("Voluntary Exits:", True, ACCENT_COLOR)
             self.screen.blit(voluntary_title, (card_x + 50, y_offset))
             y_offset += 30
-            
+
             voluntary_text = self.small_font.render(
                 f"{', '.join(self.voluntary_exits)}", True, ACCENT_COLOR
             )
             self.screen.blit(voluntary_text, (card_x + 70, y_offset))
-            y_offset += 40 
+            y_offset += 40
 
         if self.lap_count:
-            y_offset += 50 
-            
+            y_offset += 50
+
             lap_title = self.small_font.render("Laps Completed:", True, ACCENT_COLOR)
             self.screen.blit(lap_title, (card_x + 50, y_offset))
             y_offset += 30
-            
+
             sorted_laps = sorted(self.lap_count.items(), key=lambda x: x[1], reverse=True)
-            
+
             lap_text_parts = []
             for name, laps in sorted_laps:
                 if (self.tied_winners and name in self.tied_winners) or (name == self.winner_name and not self.tied_winners):
                     lap_text_parts.append(f"{name}: {laps}")
                 else:
                     lap_text_parts.append(f"{name}: {laps}")
-            
+
             lap_text_combined = ", ".join(lap_text_parts)
-            max_width = card_width - 140 
-            
+            max_width = card_width - 140
+
             test_text = self.small_font.render(lap_text_combined, True, ACCENT_COLOR)
             if test_text.get_width() > max_width:
                 current_line = ""
                 current_y = y_offset
-                
+
                 for i, part in enumerate(lap_text_parts):
                     test_line = current_line + (", " if current_line else "") + part
                     test_render = self.small_font.render(test_line, True, ACCENT_COLOR)
-                    
+
                     if test_render.get_width() > max_width and current_line:
                         line_text = self.small_font.render(current_line, True, ACCENT_COLOR)
                         self.screen.blit(line_text, (card_x + 70, current_y))
@@ -1951,7 +1998,7 @@ class EndGamePage(BasePage):
                         current_line = part
                     else:
                         current_line = test_line if not current_line else current_line + ", " + part
-                
+
                 if current_line:
                     line_text = self.small_font.render(current_line, True, ACCENT_COLOR)
                     self.screen.blit(line_text, (card_x + 70, current_y))
@@ -1961,7 +2008,7 @@ class EndGamePage(BasePage):
 
         self.play_again_button.draw(self.screen)
         self.quit_button.draw(self.screen)
-        self.credits_button.draw(self.screen)  
+        self.credits_button.draw(self.screen)
 
     def handle_click(self, pos):
         if self.play_again_button.check_hover(pos):
@@ -1969,20 +2016,20 @@ class EndGamePage(BasePage):
         elif self.quit_button.check_hover(pos):
             return "quit"
         elif self.credits_button.check_hover(pos):
-            return "credits" 
+            return "credits"
         return None
 
     def handle_motion(self, pos):
         self.play_again_button.check_hover(pos)
         self.quit_button.check_hover(pos)
-        self.credits_button.check_hover(pos)  
+        self.credits_button.check_hover(pos)
 
     def handle_key(self, event):
         if event.key == pygame.K_SPACE:
             return "play_again"
         elif event.key == pygame.K_ESCAPE:
             return "quit"
-        elif event.key == pygame.K_c:  
+        elif event.key == pygame.K_c:
             return "credits"
         return None
 
@@ -1990,97 +2037,105 @@ class CreditsPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.small_font = font_manager.get_font(24)
-        
+
         button_width = 300
         button_height = 60
-        self.back_button = ModernButton(
+        self.back_button = UIButton(
             pygame.Rect(
-                (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] - 120,
-                button_width,
+                20,
+                get_window_size()[1] - 80,
+                200,
                 button_height
             ),
             "Back",
             self.button_font
         )
-        
+
         self.developers = [
             "Eric Shi",
             "Stuart Baker",
-            "Lin Moe Hein", 
+            "Lin Moe Hein",
             "Duncan Law",
             "Owen Chen"
         ]
-        
+
     def draw(self):
         self.draw_background()
-        
-        title_text = self.title_font.render("Property Tycoon", True, WHITE)
+
+        title_text = self.title_font.render("Property Tycoon", True, ERROR_COLOR)
         title_rect = title_text.get_rect(centerx=get_window_size()[0]//2, y=80)
         self.screen.blit(title_text, title_rect)
-        
+
         panel_width = 700
-        panel_height = get_window_size()[1] - 250  
+        panel_height = get_window_size()[1] - 250
         panel_x = (get_window_size()[0] - panel_width) // 2
         panel_y = 160
-        
+
         shadow_offset = 5
         shadow = pygame.Surface((panel_width + shadow_offset*2, panel_height + shadow_offset*2), pygame.SRCALPHA)
         pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
         self.screen.blit(shadow, (panel_x - shadow_offset, panel_y - shadow_offset))
-        
+
         pygame.draw.rect(
-            self.screen, 
-            WHITE, 
+            self.screen,
+            WHITE,
             pygame.Rect(panel_x, panel_y, panel_width, panel_height),
             border_radius=15
         )
-        
+
         credits_text = self.button_font.render("Developers", True, ACCENT_COLOR)
         credits_rect = credits_text.get_rect(centerx=get_window_size()[0]//2, y=panel_y + 30)
         self.screen.blit(credits_text, credits_rect)
-        
+
         pygame.draw.line(
-            self.screen, 
-            LIGHT_GRAY, 
-            (panel_x + 80, credits_rect.bottom + 10), 
-            (panel_x + panel_width - 80, credits_rect.bottom + 10), 
+            self.screen,
+            LIGHT_GRAY,
+            (panel_x + 80, credits_rect.bottom + 10),
+            (panel_x + panel_width - 80, credits_rect.bottom + 10),
             2
         )
-        
-        y_offset = credits_rect.bottom + 40
+
+        y_offset = credits_rect.bottom + 30
+        line_spacing = 35
+
         for dev in self.developers:
             dev_text = self.button_font.render(dev, True, BLACK)
             dev_rect = dev_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
             self.screen.blit(dev_text, dev_rect)
-            y_offset += 50
-        
+            y_offset += line_spacing
+
+        y_offset = panel_y + panel_height - 170
+
         thanks_text = self.button_font.render("Special Thanks", True, ACCENT_COLOR)
-        thanks_rect = thanks_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset + 20)
+        thanks_rect = thanks_text.get_rect(centerx=get_window_size()[0]//2, y=y_offset)
         self.screen.blit(thanks_text, thanks_rect)
-        
+
         pygame.draw.line(
-            self.screen, 
-            LIGHT_GRAY, 
-            (panel_x + 80, thanks_rect.bottom + 10), 
-            (panel_x + panel_width - 80, thanks_rect.bottom + 10), 
+            self.screen,
+            LIGHT_GRAY,
+            (panel_x + 80, thanks_rect.bottom + 10),
+            (panel_x + panel_width - 80, thanks_rect.bottom + 10),
             2
         )
-        
+
+        quentin_text = self.small_font.render("Mr Quentin Raffles @ Watson Games", True, BLACK)
+        quentin_rect = quentin_text.get_rect(centerx=get_window_size()[0]//2, y=thanks_rect.bottom + 15)
+        self.screen.blit(quentin_text, quentin_rect)
+
         thanks_msg_text = self.small_font.render("Thank you for playing our game!", True, BLACK)
-        thanks_msg_rect = thanks_msg_text.get_rect(centerx=get_window_size()[0]//2, y=thanks_rect.bottom + 30)
+        thanks_msg_rect = thanks_msg_text.get_rect(centerx=get_window_size()[0]//2, y=quentin_rect.bottom + 15)
         self.screen.blit(thanks_msg_text, thanks_msg_rect)
-        
+
         watson_text = self.small_font.render("Watson Games © 2025", True, BLACK)
-        watson_rect = watson_text.get_rect(centerx=get_window_size()[0]//2, y=thanks_msg_rect.bottom + 20)
+        watson_rect = watson_text.get_rect(centerx=get_window_size()[0]//2, y=thanks_msg_rect.bottom + 10)
         self.screen.blit(watson_text, watson_rect)
-        
+
         self.back_button.draw(self.screen)
-        
+
         hint_text = self.small_font.render("Press ESC or BACKSPACE to return", True, LIGHT_GRAY)
-        hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, bottom=get_window_size()[1]-20) 
+        hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=get_window_size()[1] - 180)
         self.screen.blit(hint_text, hint_rect)
-        
+
         pygame.display.flip()
 
     def handle_click(self, pos):
@@ -2104,7 +2159,7 @@ class AIDifficultyPage(BasePage):
         button_height = 60
         center_y = get_window_size()[1] // 2
 
-        self.easy_button = ModernButton(
+        self.easy_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 center_y - 50,
@@ -2116,7 +2171,7 @@ class AIDifficultyPage(BasePage):
             color=SUCCESS_COLOR
         )
 
-        self.hard_button = ModernButton(
+        self.hard_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
                 center_y + 50,
@@ -2128,14 +2183,14 @@ class AIDifficultyPage(BasePage):
             color=ERROR_COLOR
         )
 
-        self.back_button = ModernButton(
+        self.back_button = UIButton(
             pygame.Rect(
-                20,  
-                get_window_size()[1] - 120,
-                200,  
+                20,
+                get_window_size()[1] - 80,
+                200,
                 button_height
             ),
-            "Back", 
+            "Back",
             self.button_font
         )
 
@@ -2144,18 +2199,18 @@ class AIDifficultyPage(BasePage):
         self.draw_title()
 
         difficulty_text = self.button_font.render("Select AI Difficulty", True, WHITE)
-        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=100) 
+        text_rect = difficulty_text.get_rect(centerx=get_window_size()[0]//2, y=100)
         self.screen.blit(difficulty_text, text_rect)
 
         easy_desc = self.small_font.render("AI will make basic decisions", True, LIGHT_GRAY)
         easy_rect = easy_desc.get_rect(centerx=get_window_size()[0]//2, y=self.easy_button.rect.bottom + 10)
-        
+
         hard_desc = self.small_font.render("AI will make strategic decisions", True, LIGHT_GRAY)
         hard_rect = hard_desc.get_rect(centerx=get_window_size()[0]//2, y=self.hard_button.rect.bottom + 10)
 
         self.easy_button.draw(self.screen)
         self.hard_button.draw(self.screen)
-        
+
         self.screen.blit(easy_desc, easy_rect)
         self.screen.blit(hard_desc, hard_rect)
 
@@ -2163,10 +2218,10 @@ class AIDifficultyPage(BasePage):
             "Press E for Easy mode",
             "Press H for Hard mode"
         ]
-        y_offset = get_window_size()[1] - 150  
+        y_offset = get_window_size()[1] - 180
         for hint in controls:
             hint_text = self.small_font.render(hint, True, LIGHT_GRAY)
-            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)  
+            hint_rect = hint_text.get_rect(right=get_window_size()[0] - 20, y=y_offset)
             self.screen.blit(hint_text, hint_rect)
             y_offset += 25
 
@@ -2202,76 +2257,74 @@ class DevelopmentNotification:
         self.screen = screen
         self.player_name = player_name
         self.window_size = screen.get_size()
-        
+
         if font:
             self.font = font
         else:
             self.font = font_manager.get_font(24)
-            
+
         self.dev_font = font_manager.get_font(26)
-        
+
         self.text = f"{self.player_name}, you may modify properties now"
         self.sub_text = "Click Continue to end your turn"
-        
+
         self.padding = 20
         self.notification_text = self.dev_font.render(self.text, True, WHITE)
         self.sub_notification_text = self.font.render(self.sub_text, True, WHITE)
-        
+
         text_width = max(self.notification_text.get_width(), self.sub_notification_text.get_width())
         self.bg_width = text_width + self.padding * 2
         self.bg_height = self.notification_text.get_height() + self.sub_notification_text.get_height() + self.padding * 3
-        
+
         self.x = (self.window_size[0] - self.bg_width) // 2
         self.y = 80
-        
+
         self.button_width = 150
         self.button_height = 50
         self.continue_button = pygame.Rect(
-            (self.window_size[0] - self.button_width) // 2, 
+            (self.window_size[0] - self.button_width) // 2,
             self.y + self.bg_height + 15,
-            self.button_width, 
+            self.button_width,
             self.button_height
         )
-        
+
         self.dev_color = (0, 180, 120)
 
     def draw(self, mouse_pos):
         bg_surface = pygame.Surface((self.bg_width, self.bg_height), pygame.SRCALPHA)
-        
+
         pygame.draw.rect(bg_surface, (*self.dev_color, 230), bg_surface.get_rect(), border_radius=15)
-        
+
         for i in range(4):
             alpha = 80 - i * 20
-            pygame.draw.rect(bg_surface, (*self.dev_color, alpha), 
-                           (-i, -i, self.bg_width + i*2, self.bg_height + i*2), 
+            pygame.draw.rect(bg_surface, (*self.dev_color, alpha),
+                           (-i, -i, self.bg_width + i*2, self.bg_height + i*2),
                            border_radius=15)
-        
+
         self.screen.blit(bg_surface, (self.x, self.y))
-        
-        # Draw main text
+
         self.screen.blit(self.notification_text, (self.x + self.padding, self.y + self.padding))
-        
-        # Draw instruction text
-        self.screen.blit(self.sub_notification_text, 
-                       (self.x + self.padding, 
+
+        self.screen.blit(self.sub_notification_text,
+                       (self.x + self.padding,
                         self.y + self.padding + self.notification_text.get_height() + self.padding))
-        
+
         hover = self.continue_button.collidepoint(mouse_pos)
         button_color = (50, 180, 100) if hover else (30, 150, 80)
-        
+
         pygame.draw.rect(self.screen, button_color, self.continue_button, border_radius=10)
         pygame.draw.rect(self.screen, (255, 255, 255), self.continue_button, 2, border_radius=10)
-        
+
         button_text = self.font.render("Continue", True, WHITE)
         text_x = self.continue_button.x + (self.continue_button.width - button_text.get_width()) // 2
         text_y = self.continue_button.y + (self.continue_button.height - button_text.get_height()) // 2
         self.screen.blit(button_text, (text_x, text_y))
-    
+
     def check_button_click(self, pos):
         return self.continue_button.collidepoint(pos)
 
 class AIEmotionUI:
-    
+
     def __init__(self, screen, ai_player, game_instance):
 
         self.screen = screen
@@ -2279,42 +2332,42 @@ class AIEmotionUI:
         self.game = game_instance
         self.visible = False
         self.window_size = get_window_size()
-        
+
         button_size = (48, 48)
-        panel_width = 130
-        panel_height = 160
-        
+        panel_width = 200
+        panel_height = 120
+
         self.panel_rect = pygame.Rect(
-            10, 
-            340,  
+            10,
+            340,
             panel_width,
             panel_height
         )
-        
+
         self.happy_button_rect = pygame.Rect(
-            self.panel_rect.x + (self.panel_rect.width - button_size[0]) // 2,
-            self.panel_rect.y + 30,  
+            self.panel_rect.x + 30,
+            self.panel_rect.y + (self.panel_rect.height - button_size[1]) // 2,
             button_size[0],
             button_size[1]
         )
-        
+
         self.angry_button_rect = pygame.Rect(
-            self.panel_rect.x + (self.panel_rect.width - button_size[0]) // 2,
-            self.panel_rect.y + 30 + button_size[1] + 15,   
+            self.panel_rect.x + panel_width - button_size[0] - 30,
+            self.panel_rect.y + (self.panel_rect.height - button_size[1]) // 2,
             button_size[0],
             button_size[1]
         )
-        
+
         self.happy_image = None
         self.angry_image = None
         self.happy_hover = False
         self.angry_hover = False
-        
+
         try:
             happy_path = os.path.join(base_path, "assets/image/Happy.png")
             self.happy_image = pygame.image.load(happy_path)
             self.happy_image = pygame.transform.scale(self.happy_image, button_size)
-            
+
             angry_path = os.path.join(base_path, "assets/image/Angry.png")
             self.angry_image = pygame.image.load(angry_path)
             self.angry_image = pygame.transform.scale(self.angry_image, button_size)
@@ -2324,48 +2377,48 @@ class AIEmotionUI:
             self.happy_image.fill((50, 200, 50))
             self.angry_image = pygame.Surface(button_size)
             self.angry_image.fill((200, 50, 50))
-        
-        self.font = font_manager.get_font(14)
-        
+
+        self.font = font_manager.get_font(18)
+
         self.happy_clicks_after_limit = 0
         self.angry_clicks_after_limit = 0
         self.easter_egg_threshold = 5
         self.youtube_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=ygUJcmljayByb2xs"
         self.easter_egg_triggered = False
-    
+
     def show(self):
         self.visible = True
-    
+
     def hide(self):
         self.visible = False
-    
+
     def draw(self):
         if not self.visible:
             return
-            
+
         if not self.ai_player or not self.ai_player.is_ai or not hasattr(self.ai_player, 'ai_controller') or not hasattr(self.ai_player.ai_controller, 'mood_modifier'):
             return
-            
-        pygame.draw.rect(self.screen, (*MODERN_BG, 220), self.panel_rect, border_radius=10)
+
+        pygame.draw.rect(self.screen, (*UI_BG, 220), self.panel_rect, border_radius=10)
         pygame.draw.rect(self.screen, ACCENT_COLOR, self.panel_rect, 2, border_radius=10)
-        
-        title_text = self.font.render("Taunt", True, WHITE)
+
+        title_text = self.font.render("Taunt AI", True, WHITE)
         title_rect = title_text.get_rect(centerx=self.panel_rect.centerx, y=self.panel_rect.y + 5)
         self.screen.blit(title_text, title_rect)
-        
+
         if self.happy_hover:
             glow = pygame.Surface((self.happy_button_rect.width + 4, self.happy_button_rect.height + 4), pygame.SRCALPHA)
             pygame.draw.rect(glow, (255, 255, 255, 128), glow.get_rect(), border_radius=5)
             self.screen.blit(glow, (self.happy_button_rect.x - 2, self.happy_button_rect.y - 2))
-            
+
         if self.angry_hover:
             glow = pygame.Surface((self.angry_button_rect.width + 4, self.angry_button_rect.height + 4), pygame.SRCALPHA)
             pygame.draw.rect(glow, (255, 255, 255, 128), glow.get_rect(), border_radius=5)
             self.screen.blit(glow, (self.angry_button_rect.x - 2, self.angry_button_rect.y - 2))
-        
+
         self.screen.blit(self.happy_image, self.happy_button_rect)
         self.screen.blit(self.angry_image, self.angry_button_rect)
-        
+
         mood_value = getattr(self.ai_player.ai_controller, 'mood_modifier', 0)
         mood_text = f"Mood: {mood_value:.2f}"
         mood_color = (
@@ -2376,54 +2429,54 @@ class AIEmotionUI:
         mood_surface = self.font.render(mood_text, True, mood_color)
         mood_rect = mood_surface.get_rect(centerx=self.panel_rect.centerx, bottom=self.panel_rect.bottom - 5)
         self.screen.blit(mood_surface, mood_rect)
-        
+
         total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
         if total_clicks > 0 and total_clicks < self.easter_egg_threshold:
             egg_text = f"{self.easter_egg_threshold - total_clicks} more..."
             egg_surface = self.font.render(egg_text, True, (255, 215, 0))
             egg_rect = egg_surface.get_rect(centerx=self.panel_rect.centerx, bottom=self.panel_rect.bottom - 25)
             self.screen.blit(egg_surface, egg_rect)
-    
+
     def check_hover(self, pos):
 
         if not self.visible:
             return False
-            
+
         self.happy_hover = self.happy_button_rect.collidepoint(pos)
         self.angry_hover = self.angry_button_rect.collidepoint(pos)
-        
+
         return self.happy_hover or self.angry_hover
-    
+
     def handle_click(self, pos):
 
         if not self.visible:
             return False
-            
+
         if self.happy_button_rect.collidepoint(pos):
             mood_value = getattr(self.ai_player.ai_controller, 'mood_modifier', 0)
             if mood_value >= 0.3:
                 self.happy_clicks_after_limit += 1
                 self._check_easter_egg()
-            
+
             print(f"Happy button clicked for {self.ai_player.name} - making AI happier")
             self.game.update_ai_mood(self.ai_player.name, False)
             return True
-            
+
         if self.angry_button_rect.collidepoint(pos):
             mood_value = getattr(self.ai_player.ai_controller, 'mood_modifier', 0)
             if mood_value <= -0.3:
                 self.angry_clicks_after_limit += 1
                 self._check_easter_egg()
-            
+
             print(f"Angry button clicked for {self.ai_player.name} - making AI angrier")
             self.game.update_ai_mood(self.ai_player.name, True)
             return True
-            
+
         return False
-        
+
     def _check_easter_egg(self):
         total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
-        
+
         if total_clicks >= self.easter_egg_threshold and not self.easter_egg_triggered:
             try:
                 print("Easter egg triggered: Opening YouTube...")
@@ -2432,4 +2485,4 @@ class AIEmotionUI:
                 self.happy_clicks_after_limit = 0
                 self.angry_clicks_after_limit = 0
             except Exception as e:
-                print(f"Error opening YouTube URL: {e}")    
+                print(f"Error opening YouTube URL: {e}")

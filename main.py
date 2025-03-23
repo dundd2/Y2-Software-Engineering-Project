@@ -412,8 +412,6 @@ async def handle_end_game(game_over_data):
                         sys.exit()
                     elif result == "credits":
                         current_page = CreditsPage()
-                elif isinstance(current_page, CreditsPage) and result:
-                    current_page = end_page
             elif end_event.type == pygame.MOUSEMOTION:
                 current_page.handle_motion(end_event.pos)
 
@@ -421,9 +419,25 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
     try:
         base_path = os.path.dirname(os.path.abspath(__file__))
         bg_path = os.path.join(base_path, "assets/image/starterbackground.png")
-        background = pygame.image.load(bg_path)
+        original_background = pygame.image.load(bg_path)
         window_size = screen.get_size()
-        background = pygame.transform.scale(background, window_size)
+        window_width, window_height = window_size
+        
+        bg_width, bg_height = original_background.get_size()
+        bg_aspect = bg_width / bg_height
+        window_aspect = window_width / window_height
+        
+        if window_aspect > bg_aspect:
+            scaled_width = window_width
+            scaled_height = int(scaled_width / bg_aspect)
+        else:
+            scaled_height = window_height
+            scaled_width = int(scaled_height * bg_aspect)
+            
+        pos_x = (window_width - scaled_width) // 2
+        pos_y = (window_height - scaled_height) // 2
+        
+        background = pygame.transform.scale(original_background, (scaled_width, scaled_height))
         
         logo = pygame.image.load(logo_path)
         
@@ -436,7 +450,8 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
         
         # Fade in
         for alpha in range(0, 255, 5):
-            screen.blit(background, (0, 0))
+            screen.fill((0, 0, 0))  
+            screen.blit(background, (pos_x, pos_y))
             
             overlay = pygame.Surface(window_size, pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 128))
@@ -454,7 +469,8 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
         await asyncio.sleep(1.5)
         
         for alpha in range(255, -1, -5):
-            screen.blit(background, (0, 0))
+            screen.fill((0, 0, 0)) 
+            screen.blit(background, (pos_x, pos_y))
             
             overlay = pygame.Surface(window_size, pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 128))

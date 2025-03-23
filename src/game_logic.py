@@ -220,6 +220,9 @@ class GameLogic:
             if not space.get('can_be_bought', False):
                 return None, None
                 
+            if self.completed_circuits.get(player['name'], 0) < 1:
+                return None, None
+                
             self.add_message(f"Would you like to buy {space['name']} for £{space['price']}?")
             return "can_buy", None
             
