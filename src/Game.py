@@ -4457,9 +4457,9 @@ class Game:
 
         current_player = self.logic.players[self.logic.current_player_index]
 
-        if current_player.get("exited", False):
+        if current_player.get("exited", False) or current_player.get("bankrupt", False):
             print(
-                f"Current player {current_player['name']} has exited, moving to next player"
+                f"Current player {current_player['name']} has exited (exited: {current_player.get('exited', False)}, bankrupt: {current_player.get('bankrupt', False)}), moving to next player"
             )
             self.logic.current_player_index = (
                 self.logic.current_player_index + 1
@@ -4476,6 +4476,13 @@ class Game:
                 self.logic.current_player_index + 1
             ) % len(self.logic.players)
             return self.check_and_trigger_ai_turn(recursion_depth + 1)
+
+        if player_obj.in_jail != current_player.get("in_jail", False):
+            print(f"Synchronizing jail state for {player_obj.name}")
+            player_obj.in_jail = current_player.get("in_jail", False)
+            current_player["in_jail"] = player_obj.in_jail
+            player_obj.jail_turns = current_player.get("jail_turns", 0)
+            current_player["jail_turns"] = player_obj.jail_turns
 
         if player_obj.in_jail and player_obj.stay_in_jail:
             print(
@@ -4496,6 +4503,14 @@ class Game:
             self.current_player_is_ai = True
             pygame.time.delay(500)
             try:
+                if player_obj.in_jail and current_player.get("in_jail", False):
+                    print(f"AI player {current_player['name']} is in jail - handling jail turn first")
+                    jail_result = self.handle_jail_turn(current_player)
+                    if not jail_result:
+                        print(f"AI player {current_player['name']} stays in jail - moving to next player")
+                        self.handle_turn_end()
+                        return self.check_and_trigger_ai_turn(recursion_depth + 1)
+                
                 if self.state == "DEVELOPMENT":
                     print(
                         f"Closing development UI for AI player {current_player['name']}"
@@ -4511,7 +4526,7 @@ class Game:
                 self.logic.current_player_index = (
                     self.logic.current_player_index + 1
                 ) % len(self.logic.players)
-                return False
+                return self.check_and_trigger_ai_turn(recursion_depth + 1)
         else:
             print(
                 f"Player {current_player['name']} is not an AI - waiting for user input"
