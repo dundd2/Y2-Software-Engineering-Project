@@ -108,7 +108,7 @@ class Board:
     def add_message(self, text):
         if text is None:
             return
-            
+
         max_chars = 35
 
         if len(text) > max_chars:

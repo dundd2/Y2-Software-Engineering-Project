@@ -694,16 +694,20 @@ class Game:
 
                     houses = prop.get("houses", 0)
                     if houses > 0:
-                        if houses == 5: 
+                        if houses == 5:
                             indicator_color = RED
                             indicator_text = "H"
-                        else: 
+                        else:
                             indicator_color = GREEN
                             indicator_text = str(houses)
-                        
-                        indicator_surface = self.tiny_font.render(indicator_text, True, WHITE)
-                        indicator_rect = indicator_surface.get_rect(center=prop_rect.center)
-                        
+
+                        indicator_surface = self.tiny_font.render(
+                            indicator_text, True, WHITE
+                        )
+                        indicator_rect = indicator_surface.get_rect(
+                            center=prop_rect.center
+                        )
+
                         self.screen.blit(indicator_surface, indicator_rect)
 
                     if prop_rect.collidepoint(mouse_pos):
@@ -1167,7 +1171,9 @@ class Game:
                 hotel_text = self.small_font.render("Has Hotel", True, RED)
                 self.screen.blit(hotel_text, (x + padding, current_y))
             else:
-                house_text = self.small_font.render(f"Houses Built: {houses}", True, GREEN)
+                house_text = self.small_font.render(
+                    f"Houses Built: {houses}", True, GREEN
+                )
                 self.screen.blit(house_text, (x + padding, current_y))
             current_y += line_height
         elif property_data.get("has_hotel", False):
@@ -1317,7 +1323,7 @@ class Game:
                         )
                         self.state = "ROLL"
                         return False
-                    
+
                     self.board.add_message(
                         f"{current_player['name']} landed on {space['name']}"
                     )
@@ -1332,7 +1338,7 @@ class Game:
                     self.state = "BUY"
                     self.current_property = space
                     print("Buy state activated")
-                    
+
                     if current_player_obj and current_player_obj.is_ai:
                         print("\nAI player making purchase decision")
                         pygame.time.delay(1000)
@@ -1446,7 +1452,7 @@ class Game:
                 self.board.add_message(f"{current_player['name']} stays in jail")
                 self.handle_turn_end()
                 return True
-        
+
         old_position = current_player["position"]
 
         self.lap_count[current_player["name"]] += 1
@@ -2715,7 +2721,7 @@ class Game:
         if not player_obj:
             print(f"Warning: Could not find player object for {player['name']}")
             return False
-        
+
         if not player_obj.in_jail:
             print(f"Synchronizing jail state for {player['name']}")
             player_obj.in_jail = True
@@ -2794,7 +2800,7 @@ class Game:
 
         player["jail_turns"] = player.get("jail_turns", 0) + 1
         player_obj.jail_turns = player["jail_turns"]
-        
+
         if player["jail_turns"] >= 3:
             if player["money"] >= 50:
                 player["money"] -= 50
@@ -4563,7 +4569,11 @@ class Game:
         if current_player:
             print(f"Current player: {current_player.name} (AI: {current_player.is_ai})")
             self.board.add_message(f"{current_player.name}'s turn")
-            if hasattr(current_player, "is_ai") and current_player.is_ai and hasattr(current_player, "ai_controller"):
+            if (
+                hasattr(current_player, "is_ai")
+                and current_player.is_ai
+                and hasattr(current_player, "ai_controller")
+            ):
                 print(f"AI type: {type(current_player.ai_controller).__name__}")
                 if hasattr(current_player.ai_controller, "mood_modifier"):
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")

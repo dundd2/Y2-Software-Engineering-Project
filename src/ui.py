@@ -971,8 +971,12 @@ class StartPage(BasePage):
                     self.token_button_rects.append((ai_input_rect, i, True))
                 else:
                     _, idx, is_ai = self.token_button_rects[self.human_count + i]
-                    self.token_button_rects[self.human_count + i] = (ai_input_rect, i, True)
-                
+                    self.token_button_rects[self.human_count + i] = (
+                        ai_input_rect,
+                        i,
+                        True,
+                    )
+
                 token_rect = pygame.Rect(
                     ai_input_rect.right + 10, ai_input_rect.centery - 20, 40, 40
                 )
@@ -984,7 +988,7 @@ class StartPage(BasePage):
                 self.screen.blit(token_image, token_rect)
 
                 pygame.draw.rect(self.screen, AI_COLOR, token_rect, 2, border_radius=5)
-                
+
                 button_index = self.human_count + i
                 token_button_index = len(self.token_button_rects)
                 self.token_button_rects.append((token_rect, i, True))
@@ -1004,7 +1008,7 @@ class StartPage(BasePage):
             "H/h - Adjust human players",
             "A/a - Adjust AI players",
             "Enter - Edit selected name",
-            "Tab - Switch between name fields", 
+            "Tab - Switch between name fields",
             "Space - Start game",
             "ESC/Back - Return to menu",
             "Click token icon - Change player token",
@@ -1217,7 +1221,7 @@ class StartPage(BasePage):
             if rect.collidepoint(pos):
                 self.active_input = i
                 return False
-        
+
         for i in range(self.ai_count):
             ai_input_rect = pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
@@ -1225,7 +1229,7 @@ class StartPage(BasePage):
                 300,
                 50,
             )
-            
+
             if ai_input_rect.collidepoint(pos):
                 self.active_input = self.human_count + i
                 return False
@@ -1337,11 +1341,11 @@ class StartPage(BasePage):
                 else:
                     ai_idx = self.active_input - self.human_count
                     name = self.ai_names[ai_idx]
-                    self.ai_names[ai_idx] = (
-                        name[:-1] if len(name) > 0 else ""
-                    )
+                    self.ai_names[ai_idx] = name[:-1] if len(name) > 0 else ""
             elif event.key == pygame.K_TAB:
-                self.active_input = (self.active_input + 1) % (self.human_count + self.ai_count)
+                self.active_input = (self.active_input + 1) % (
+                    self.human_count + self.ai_count
+                )
             elif event.key == pygame.K_ESCAPE:
                 self.active_input = -1
             else:

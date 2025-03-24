@@ -20,12 +20,12 @@ class Player:
         self.money = 1500
         self.properties = []
         self.is_ai = is_ai
-        
+
         if is_ai and not name.startswith("ai-"):
             self.name = f"ai-{name}"
         else:
             self.name = name
-            
+
         self.player_number = player_number
         self.ai_difficulty = ai_difficulty
         self.rect = pygame.Rect(0, 0, 40, 40)
