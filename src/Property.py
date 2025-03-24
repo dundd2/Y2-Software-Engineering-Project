@@ -142,8 +142,8 @@ class Property:
     def get_hotel_sale_value(self):
         if not self.house_costs:
             return 0
-        hotel_cost = self.house_costs[-1]
-        return hotel_cost // 2
+        hotel_purchase_price = self.house_costs[0] * 5 if self.house_costs else 0
+        return hotel_purchase_price // 2
 
     def charge_rent(self, player, dice_roll=None):
         if self.owner and self.owner != player:
