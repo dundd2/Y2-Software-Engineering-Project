@@ -457,9 +457,10 @@ class GameLogic:
         player["position"] = 11
         player["in_jail"] = True
         player["jail_turns"] = 0
+        self.is_going_to_jail = True
         self.doubles_count = 0
-        self.add_message(f"{player['name']} goes to jail!")
-        return True
+        self.add_message("Go to jail. Do not pass GO, do not collect £200")
+        return "Go to jail. Do not pass GO, do not collect £200"
 
     def try_leave_jail(self, player, dice1, dice2):
         if not player.get("in_jail", False):
@@ -481,6 +482,7 @@ class GameLogic:
         if dice1 == dice2:
             player["in_jail"] = False
             player["jail_turns"] = 0
+            self.doubles_count = 0
             return True, f"{player['name']} rolled doubles and left jail!"
 
         if player["money"] >= 50 and (
@@ -537,15 +539,6 @@ class GameLogic:
                 return True, winner
 
         return False, None
-
-    def handle_jail(self, player):
-        player["position"] = 11
-        player["in_jail"] = True
-        player["jail_turns"] = 0
-        self.is_going_to_jail = True
-        self.doubles_count = 0
-        self.add_message("Go to jail. Do not pass GO, do not collect £200")
-        return "Go to jail. Do not pass GO, do not collect £200"
 
     def calculate_space_rent(self, space, player):
         if space.get("is_mortgaged", False):
@@ -804,7 +797,7 @@ class GameLogic:
 
         self.add_message(f"{player['name']} bids £{bid_amount}")
         self.move_to_next_bidder()
-        return True, None
+        return True, f"{player['name']} bids £{bid_amount}"
 
     def process_auction_pass(self, player):
         print(f"\n=== Processing Pass: {player['name']} ===")

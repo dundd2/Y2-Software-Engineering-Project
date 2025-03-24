@@ -72,6 +72,7 @@ class Game:
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
+        self.tiny_font = font_manager.get_font(16)
         self.button_font = font_manager.get_font(32)
         self.message_font = font_manager.get_font(24)
 
@@ -691,6 +692,20 @@ class Game:
 
                     pygame.draw.rect(self.screen, color, prop_rect, border_radius=3)
 
+                    houses = prop.get("houses", 0)
+                    if houses > 0:
+                        if houses == 5: 
+                            indicator_color = RED
+                            indicator_text = "H"
+                        else: 
+                            indicator_color = GREEN
+                            indicator_text = str(houses)
+                        
+                        indicator_surface = self.tiny_font.render(indicator_text, True, WHITE)
+                        indicator_rect = indicator_surface.get_rect(center=prop_rect.center)
+                        
+                        self.screen.blit(indicator_surface, indicator_rect)
+
                     if prop_rect.collidepoint(mouse_pos):
                         hovered_property = prop
                         pygame.draw.rect(
@@ -1148,8 +1163,12 @@ class Game:
 
         if property_data.get("houses", 0) > 0:
             houses = property_data["houses"]
-            house_text = self.small_font.render(f"Houses Built: {houses}", True, GREEN)
-            self.screen.blit(house_text, (x + padding, current_y))
+            if houses == 5:
+                hotel_text = self.small_font.render("Has Hotel", True, RED)
+                self.screen.blit(hotel_text, (x + padding, current_y))
+            else:
+                house_text = self.small_font.render(f"Houses Built: {houses}", True, GREEN)
+                self.screen.blit(house_text, (x + padding, current_y))
             current_y += line_height
         elif property_data.get("has_hotel", False):
             hotel_text = self.small_font.render("Has Hotel", True, RED)
@@ -1262,13 +1281,16 @@ class Game:
                 current_player["jail_turns"] = 0
                 current_player["position"] = 11
 
-                if current_player_obj:
-                    current_player_obj.position = 11
-                    current_player_obj.in_jail = True
-                    current_player_obj.just_went_to_jail = True
+                for player in self.players:
+                    if player.name == current_player["name"]:
+                        player.position = 11
+                        player.in_jail = True
+                        player.jail_turns = 0
+                        player.just_went_to_jail = True
+                        break
 
                 self.logic.is_going_to_jail = True
-
+                self.handle_turn_end()
                 self.state = "ROLL"
                 self.board.update_board_positions()
             elif (
@@ -1310,7 +1332,7 @@ class Game:
                     self.state = "BUY"
                     self.current_property = space
                     print("Buy state activated")
-
+                    
                     if current_player_obj and current_player_obj.is_ai:
                         print("\nAI player making purchase decision")
                         pygame.time.delay(1000)
@@ -1345,7 +1367,8 @@ class Game:
             print("Not a property space or already processed by card handling")
             self.state = "ROLL"
 
-        self.update_current_player()
+        if self.state != "BUY":
+            self.update_current_player()
 
         self.wait_for_animations()
 
@@ -1399,6 +1422,13 @@ class Game:
             print(f"Warning: Could not find player object for {current_player['name']}")
             return False
 
+        if player_obj.in_jail != current_player.get("in_jail", False):
+            print(f"Synchronizing jail status for {player_obj.name}")
+            player_obj.in_jail = current_player.get("in_jail", False)
+            current_player["in_jail"] = player_obj.in_jail
+            player_obj.jail_turns = current_player.get("jail_turns", 0)
+            current_player["jail_turns"] = player_obj.jail_turns
+
         if player_obj.in_jail and player_obj.stay_in_jail:
             print(
                 f"Player {current_player['name']} chose to stay in jail - skipping turn"
@@ -1409,6 +1439,14 @@ class Game:
             self.handle_turn_end()
             return True
 
+        if player_obj.in_jail and current_player.get("in_jail", False):
+            print(f"Player {current_player['name']} is in jail - showing jail options")
+            jail_result = self.handle_jail_turn(current_player)
+            if not jail_result:
+                self.board.add_message(f"{current_player['name']} stays in jail")
+                self.handle_turn_end()
+                return True
+        
         old_position = current_player["position"]
 
         self.lap_count[current_player["name"]] += 1
@@ -1418,8 +1456,6 @@ class Game:
 
         self.dice_animation = True
         self.animation_start = pygame.time.get_ticks()
-
-        self.board.add_message(f"{current_player['name']}'s turn")
 
         dice1, dice2 = self.logic.play_turn()
         if dice1 is None:
@@ -1623,6 +1659,8 @@ class Game:
 
         if not hasattr(self.logic, "current_auction") or not self.logic.current_auction:
             print(f"Final state: {self.state}")
+            if self.state == "ROLL":
+                self.update_current_player()
         else:
             print(f"Auction in progress - state is {self.state}")
 
@@ -1644,6 +1682,7 @@ class Game:
             message = "No players have completed a circuit - property remains unsold"
             self.board.add_message(message)
             self.state = "ROLL"
+            self.update_current_player()
             return
 
         any_moving = any(player.is_moving for player in self.players)
@@ -1664,6 +1703,7 @@ class Game:
             print(f"Failed to start auction: {result}")
             self.state = "ROLL"
             print(f"State changed to {self.state}")
+            self.update_current_player()
 
     def handle_space(self, current_player):
         position = str(current_player["position"])
@@ -1902,6 +1942,7 @@ class Game:
                 self.state = "ROLL"
                 self.current_property = None
                 self.board.update_ownership(self.logic.properties)
+                self.update_current_player()
             else:
                 print("Auction continues - maintaining AUCTION state")
             return False
@@ -2674,6 +2715,11 @@ class Game:
         if not player_obj:
             print(f"Warning: Could not find player object for {player['name']}")
             return False
+        
+        if not player_obj.in_jail:
+            print(f"Synchronizing jail state for {player['name']}")
+            player_obj.in_jail = True
+            player_obj.jail_turns = player["jail_turns"]
 
         if player_obj.is_ai:
             if self.logic.jail_free_cards.get(player["name"], 0) > 0:
@@ -2740,10 +2786,15 @@ class Game:
             elif choice == "stay":
                 player_obj.stay_in_jail = True
                 player["jail_turns"] = player.get("jail_turns", 0) + 1
+                player_obj.jail_turns = player["jail_turns"]
                 self.board.add_message(f"{player['name']} chose to stay in jail!")
                 return False
+            elif choice == "roll":
+                return True
 
         player["jail_turns"] = player.get("jail_turns", 0) + 1
+        player_obj.jail_turns = player["jail_turns"]
+        
         if player["jail_turns"] >= 3:
             if player["money"] >= 50:
                 player["money"] -= 50
@@ -2857,7 +2908,7 @@ class Game:
             message_text = self.small_font.render(line, True, BLACK)
             self.screen.blit(message_text, (card_x + 20, message_y + i * 30))
 
-        continue_y = card_y + card_height - 40
+        continue_y = card_y + card_height - 25
         continue_text = self.small_font.render(
             "Tap or click to continue...", True, GRAY
         )
@@ -4511,7 +4562,8 @@ class Game:
 
         if current_player:
             print(f"Current player: {current_player.name} (AI: {current_player.is_ai})")
-            if current_player.is_ai and hasattr(current_player, "ai_controller"):
+            self.board.add_message(f"{current_player.name}'s turn")
+            if hasattr(current_player, "is_ai") and current_player.is_ai and hasattr(current_player, "ai_controller"):
                 print(f"AI type: {type(current_player.ai_controller).__name__}")
                 if hasattr(current_player.ai_controller, "mood_modifier"):
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")

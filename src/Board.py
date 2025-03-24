@@ -106,6 +106,9 @@ class Board:
         self.small_font = font_manager.get_font(14)
 
     def add_message(self, text):
+        if text is None:
+            return
+            
         max_chars = 35
 
         if len(text) > max_chars:

@@ -686,7 +686,7 @@ class StartPage(BasePage):
         self.ai_count = 1
         self.total_players = self.human_count + self.ai_count
         self.player_names = ["Human Player 1"]
-        self.ai_names = ["AI-1"]
+        self.ai_names = ["Bot 1"]
         self.ai_name_counter = 1
 
         self.token_images = []
@@ -810,7 +810,7 @@ class StartPage(BasePage):
 
     def generate_unique_ai_name(self):
         self.ai_name_counter += 1
-        return f"AI-{self.ai_name_counter}"
+        return f"Bot {self.ai_name_counter}"
 
     def update_player_lists(self):
         while len(self.ai_names) < self.ai_count:
@@ -948,6 +948,11 @@ class StartPage(BasePage):
                     50,
                 )
 
+                if self.active_input == self.human_count + i:
+                    pygame.draw.rect(
+                        self.screen, ACCENT_COLOR, ai_input_rect, 2, border_radius=5
+                    )
+
                 ai_text = self.input_font.render(self.ai_names[i], True, LIGHT_GRAY)
                 ai_rect = ai_text.get_rect(center=ai_input_rect.center)
 
@@ -962,6 +967,12 @@ class StartPage(BasePage):
                 )
                 self.screen.blit(ai_label, label_rect)
 
+                if self.human_count + i >= len(self.token_button_rects):
+                    self.token_button_rects.append((ai_input_rect, i, True))
+                else:
+                    _, idx, is_ai = self.token_button_rects[self.human_count + i]
+                    self.token_button_rects[self.human_count + i] = (ai_input_rect, i, True)
+                
                 token_rect = pygame.Rect(
                     ai_input_rect.right + 10, ai_input_rect.centery - 20, 40, 40
                 )
@@ -973,12 +984,10 @@ class StartPage(BasePage):
                 self.screen.blit(token_image, token_rect)
 
                 pygame.draw.rect(self.screen, AI_COLOR, token_rect, 2, border_radius=5)
-
+                
                 button_index = self.human_count + i
-                if button_index >= len(self.token_button_rects):
-                    self.token_button_rects.append((token_rect, i, True))
-                else:
-                    self.token_button_rects[button_index] = (token_rect, i, True)
+                token_button_index = len(self.token_button_rects)
+                self.token_button_rects.append((token_rect, i, True))
 
         can_start = (
             all(name.strip() for name in self.player_names[: self.human_count])
@@ -994,10 +1003,12 @@ class StartPage(BasePage):
             "Controls:",
             "H/h - Adjust human players",
             "A/a - Adjust AI players",
-            "Enter - Edit name",
+            "Enter - Edit selected name",
+            "Tab - Switch between name fields", 
             "Space - Start game",
             "ESC/Back - Return to menu",
             "Click token icon - Change player token",
+            "Click player name - Edit name",
         ]
 
         y_offset = get_window_size()[1] - 210
@@ -1151,17 +1162,17 @@ class StartPage(BasePage):
         if self.token_selection_active:
             return self.handle_token_selection_click(pos)
 
-        for rect, player_idx, is_ai in self.token_button_rects:
-            if rect.collidepoint(pos):
-                self.token_selection_active = True
-                self.token_selection_for_player = player_idx
-                self.token_selection_is_ai = is_ai
-                return False
+        if self.start_button.check_hover(pos):
+            return True
+
+        if self.back_button.check_hover(pos):
+            return "back"
 
         if self.human_minus_button.check_hover(pos) and self.human_count > 1:
             self.human_count -= 1
-            self.total_players = self.human_count + self.ai_count
+            self.active_input = -1
             self.update_player_lists()
+            self.total_players = self.human_count + self.ai_count
             return False
 
         if (
@@ -1170,16 +1181,18 @@ class StartPage(BasePage):
             and self.total_players < 5
         ):
             self.human_count += 1
-            self.total_players = self.human_count + self.ai_count
+            self.active_input = -1
             if len(self.player_names) < self.human_count:
                 self.player_names.append(f"Human Player {self.human_count}")
             self.update_player_lists()
+            self.total_players = self.human_count + self.ai_count
             return False
 
         if self.ai_minus_button.check_hover(pos) and self.ai_count > 0:
             self.ai_count -= 1
-            self.total_players = self.human_count + self.ai_count
+            self.active_input = -1
             self.update_player_lists()
+            self.total_players = self.human_count + self.ai_count
             return False
 
         if (
@@ -1188,20 +1201,41 @@ class StartPage(BasePage):
             and self.total_players < 5
         ):
             self.ai_count += 1
-            self.total_players = self.human_count + self.ai_count
+            self.active_input = -1
             self.update_player_lists()
+            self.total_players = self.human_count + self.ai_count
             return False
 
         for i in range(self.human_count):
-            if self.name_inputs[i].rect.collidepoint(pos):
+            rect = pygame.Rect(
+                (get_window_size()[0] - 300) // 2,
+                (get_window_size()[1] // 2 - 50) + i * 50,
+                300,
+                50,
+            )
+
+            if rect.collidepoint(pos):
                 self.active_input = i
                 return False
+        
+        for i in range(self.ai_count):
+            ai_input_rect = pygame.Rect(
+                (get_window_size()[0] - 300) // 2,
+                (get_window_size()[1] // 2 - 50) + (self.human_count + i) * 50,
+                300,
+                50,
+            )
+            
+            if ai_input_rect.collidepoint(pos):
+                self.active_input = self.human_count + i
+                return False
 
-        if self.start_button.check_hover(pos) and self.start_button.active:
-            return True
-
-        if self.back_button.check_hover(pos):
-            return "back"
+        for rect, player_idx, is_ai in self.token_button_rects:
+            if rect.collidepoint(pos):
+                self.token_selection_active = True
+                self.token_selection_for_player = player_idx
+                self.token_selection_is_ai = is_ai
+                return False
 
         self.active_input = -1
         return False
@@ -1295,17 +1329,29 @@ class StartPage(BasePage):
             if event.key == pygame.K_RETURN:
                 self.active_input = -1
             elif event.key == pygame.K_BACKSPACE:
-                name = self.player_names[self.active_input]
-                self.player_names[self.active_input] = (
-                    name[:-1] if len(name) > 0 else ""
-                )
+                if self.active_input < self.human_count:
+                    name = self.player_names[self.active_input]
+                    self.player_names[self.active_input] = (
+                        name[:-1] if len(name) > 0 else ""
+                    )
+                else:
+                    ai_idx = self.active_input - self.human_count
+                    name = self.ai_names[ai_idx]
+                    self.ai_names[ai_idx] = (
+                        name[:-1] if len(name) > 0 else ""
+                    )
             elif event.key == pygame.K_TAB:
-                self.active_input = (self.active_input + 1) % self.human_count
+                self.active_input = (self.active_input + 1) % (self.human_count + self.ai_count)
             elif event.key == pygame.K_ESCAPE:
                 self.active_input = -1
             else:
-                if len(self.player_names[self.active_input]) < 15:
-                    self.player_names[self.active_input] += event.unicode
+                if self.active_input < self.human_count:
+                    if len(self.player_names[self.active_input]) < 15:
+                        self.player_names[self.active_input] += event.unicode
+                else:
+                    ai_idx = self.active_input - self.human_count
+                    if len(self.ai_names[ai_idx]) < 15:
+                        self.ai_names[ai_idx] += event.unicode
         else:
             if event.key == pygame.K_h:
                 if (
@@ -2608,13 +2654,16 @@ class DevelopmentNotification:
         self.x = (self.window_size[0] - self.bg_width) // 2
         self.y = 80
 
-        self.button_width = 150
-        self.button_height = 50
+        button_width = 120
+        button_height = 45
+        button_margin = 20
+        button_y = self.window_size[1] - button_height - button_margin
+
         self.continue_button = pygame.Rect(
-            (self.window_size[0] - self.button_width) // 2,
-            self.y + self.bg_height + 15,
-            self.button_width,
-            self.button_height,
+            self.window_size[0] - button_width - button_margin,
+            button_y,
+            button_width,
+            button_height,
         )
 
         self.dev_color = (0, 180, 120)
@@ -2645,15 +2694,12 @@ class DevelopmentNotification:
             self.sub_notification_text,
             (
                 self.x + self.padding,
-                self.y
-                + self.padding
-                + self.notification_text.get_height()
-                + self.padding,
+                self.y + self.padding * 2 + self.notification_text.get_height(),
             ),
         )
 
         hover = self.continue_button.collidepoint(mouse_pos)
-        button_color = (50, 180, 100) if hover else (30, 150, 80)
+        button_color = BUTTON_HOVER if hover else ACCENT_COLOR
 
         pygame.draw.rect(
             self.screen, button_color, self.continue_button, border_radius=10
@@ -2673,7 +2719,7 @@ class DevelopmentNotification:
         )
         self.screen.blit(button_text, (text_x, text_y))
 
-    def check_button_click(self, pos):
+    def check_click(self, pos):
         return self.continue_button.collidepoint(pos)
 
 

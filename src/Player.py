@@ -16,12 +16,20 @@ base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Player:
     def __init__(self, name, player_number=1, is_ai=False, ai_difficulty="easy"):
-        self.name = name
-        self.player_number = player_number
-        self.is_ai = is_ai
-        self.money = 0
-        self.properties = []
         self.position = 1
+        self.money = 1500
+        self.properties = []
+        self.is_ai = is_ai
+        
+        if is_ai and not name.startswith("ai-"):
+            self.name = f"ai-{name}"
+        else:
+            self.name = name
+            
+        self.player_number = player_number
+        self.ai_difficulty = ai_difficulty
+        self.rect = pygame.Rect(0, 0, 40, 40)
+        self.color = AI_COLOR if is_ai else HUMAN_COLOR
         self.in_jail = False
         self.jail_turns = 0
         self.jail_cards = 0
@@ -29,8 +37,6 @@ class Player:
         self.bankrupt = False
         self.voluntary_exit = False
         self.final_assets = 0
-        self.color = AI_COLOR if is_ai else HUMAN_COLOR
-        self.rect = pygame.Rect(0, 0, 40, 40)
         self.animation_offset = 0
         self.animation_time = 0
         self.highlight_intensity = 0
