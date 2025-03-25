@@ -2,6 +2,7 @@
 # This file contains the classes for the AI players in the Property Tycoon game.
 # It contains the classes for the AI players, such as the AI player logic, the AI player strategy, and the AI player actions.
 
+import pygame
 import random
 from src.Property import Property
 from src.Player import Player
@@ -824,3 +825,309 @@ class HardAIPlayer:
 
         print(f"DEBUG: Final decision: {'Buy' if base_decision else 'Pass'}")
         return base_decision
+    
+    def check_and_trigger_ai_turn(self, recursion_depth=0):
+        if recursion_depth > len(self.logic.players):
+            print(
+                "Maximum recursion depth reached in check_and_trigger_ai_turn, aborting"
+            )
+            return False
+
+        if self.state != "ROLL" and self.state != "DEVELOPMENT":
+            print(
+                f"Not in ROLL or DEVELOPMENT state, skipping AI turn check. Current state: {self.state}"
+            )
+            return False
+
+        if not self.logic.players:
+            print("No players left in the game")
+            return False
+
+        if self.logic.current_player_index >= len(self.logic.players):
+            print(
+                f"Invalid current_player_index: {self.logic.current_player_index}, max: {len(self.logic.players) - 1}"
+            )
+            self.logic.current_player_index = 0
+
+        current_player = self.logic.players[self.logic.current_player_index]
+
+        if current_player.get("exited", False) or current_player.get("bankrupt", False):
+            print(
+                f"Current player {current_player['name']} has exited (exited: {current_player.get('exited', False)}, bankrupt: {current_player.get('bankrupt', False)}), moving to next player"
+            )
+            self.logic.current_player_index = (
+                self.logic.current_player_index + 1
+            ) % len(self.logic.players)
+            return self.check_and_trigger_ai_turn(recursion_depth + 1)
+
+        player_obj = next(
+            (p for p in self.players if p.name == current_player["name"]), None
+        )
+
+        if not player_obj:
+            print(f"Could not find Player object for {current_player['name']}")
+            self.logic.current_player_index = (
+                self.logic.current_player_index + 1
+            ) % len(self.logic.players)
+            return self.check_and_trigger_ai_turn(recursion_depth + 1)
+
+        if player_obj.in_jail != current_player.get("in_jail", False):
+            print(f"Synchronizing jail state for {player_obj.name}")
+            player_obj.in_jail = current_player.get("in_jail", False)
+            current_player["in_jail"] = player_obj.in_jail
+            player_obj.jail_turns = current_player.get("jail_turns", 0)
+            current_player["jail_turns"] = player_obj.jail_turns
+
+        if player_obj.in_jail and player_obj.stay_in_jail:
+            print(
+                f"Player {current_player['name']} chose to stay in jail - skipping turn"
+            )
+            self.board.add_message(
+                f"{current_player['name']} is staying in jail - skipping turn"
+            )
+            self.logic.current_player_index = (
+                self.logic.current_player_index + 1
+            ) % len(self.logic.players)
+            return self.check_and_trigger_ai_turn(recursion_depth + 1)
+
+        if player_obj.is_ai:
+            print(
+                f"Player {current_player['name']} is an AI - automatically triggering their turn"
+            )
+            self.current_player_is_ai = True
+            pygame.time.delay(500)
+            try:
+                if player_obj.in_jail and current_player.get("in_jail", False):
+                    print(
+                        f"AI player {current_player['name']} is in jail - handling jail turn first"
+                    )
+                    jail_result = self.handle_jail_turn(current_player)
+                    if not jail_result:
+                        print(
+                            f"AI player {current_player['name']} stays in jail - moving to next player"
+                        )
+                        self.handle_turn_end()
+                        return self.check_and_trigger_ai_turn(recursion_depth + 1)
+
+                if self.state == "DEVELOPMENT" and self.development_mode:
+                    print(
+                        f"AI player {current_player['name']} is in development mode - automatically handling development"
+                    )
+                    self.development_mode = False
+                    self.state = "ROLL"
+                    self.selected_property = None
+                    self.handle_turn_end()
+                    return self.check_and_trigger_ai_turn(recursion_depth + 1)
+
+                if self.state == "ROLL":
+                    turn_result = self.play_turn()
+                    if turn_result:
+                        print(
+                            f"AI player {current_player['name']} completed their turn"
+                        )
+                        return True
+                    return False
+
+                return True
+            except Exception as e:
+                print(f"Error in AI turn for {current_player['name']}: {e}")
+                self.logic.current_player_index = (
+                    self.logic.current_player_index + 1
+                ) % len(self.logic.players)
+                return self.check_and_trigger_ai_turn(recursion_depth + 1)
+        else:
+            print(
+                f"Player {current_player['name']} is not an AI - waiting for user input"
+            )
+            self.current_player_is_ai = False
+            return False
+
+    def update_ai_mood(self, ai_player_name, is_happy):
+
+        ai_player_obj = next(
+            (p for p in self.players if p.name == ai_player_name and p.is_ai), None
+        )
+
+        if not ai_player_obj:
+            print(f"Warning: Could not find AI player object for {ai_player_name}")
+            return False
+
+        any_updated = False
+
+        for player in self.players:
+            if (
+                player.is_ai
+                and hasattr(player, "ai_controller")
+                and hasattr(player.ai_controller, "update_mood")
+            ):
+                player.ai_controller.update_mood(is_happy)
+                any_updated = True
+
+        if any_updated:
+            mood_text = "happier" if is_happy else "angrier"
+            self.board.add_message(f"All AI players are getting {mood_text}!")
+            return True
+
+        return False
+
+    def handle_ai_turn(self, ai_player):
+        MAX_ITERATIONS = 100
+        iteration_count = 0
+
+        try:
+            player_obj = next(
+                (player for player in self.players if player.name == ai_player["name"]),
+                None,
+            )
+
+            if not player_obj:
+                return None
+
+            if not player_obj.is_ai:
+                return None
+
+            player_pos_valid = (
+                isinstance(player_obj.position, int) and 1 <= player_obj.position <= 40
+            )
+            logic_pos_valid = (
+                isinstance(ai_player.get("position"), int)
+                and 1 <= ai_player.get("position", 0) <= 40
+            )
+
+            if not player_pos_valid and logic_pos_valid:
+                player_obj.position = ai_player["position"]
+            elif player_pos_valid and not logic_pos_valid:
+                ai_player["position"] = player_obj.position
+            elif not player_pos_valid and not logic_pos_valid:
+                player_obj.position = 1
+                ai_player["position"] = 1
+            elif player_obj.position != ai_player["position"]:
+                player_obj.position = ai_player["position"]
+        except Exception as e:
+            return None
+
+        if self.state == "ROLL":
+            self.play_turn()
+
+            start_time = pygame.time.get_ticks()
+            while self.state == "BUY" and self.current_property:
+
+                current_time = pygame.time.get_ticks()
+                if current_time - start_time > 5000:
+                    print(
+                        f"Timeout reached for AI {ai_player['name']} in BUY state - forcing decision"
+                    )
+                    self.handle_buy_decision(False)
+                    break
+
+                iteration_count += 1
+                if iteration_count > MAX_ITERATIONS:
+                    print(
+                        f"Maximum iterations reached for AI {ai_player['name']} in BUY state - forcing decision"
+                    )
+                    self.handle_buy_decision(False)
+                    break
+
+                print(f"\n=== AI Purchase Decision ===")
+                print(f"AI Player: {ai_player['name']}")
+                print(f"Property: {self.current_property['name']}")
+                print(f"Price: £{self.current_property['price']}")
+                print(f"AI Money: £{ai_player['money']}")
+
+                try:
+                    should_buy = self.logic.ai_player.should_buy_property(
+                        self.current_property,
+                        ai_player["money"],
+                        [
+                            p
+                            for p in self.logic.properties.values()
+                            if p.get("owner") == ai_player["name"]
+                        ],
+                    )
+
+                    if should_buy:
+                        print("AI Decision: Buy")
+                        self.handle_buy_decision(True)
+                    else:
+                        print("AI Decision: Pass")
+                        self.handle_buy_decision(False)
+                except Exception as e:
+                    print(f"Error in AI purchase decision: {e}")
+                    self.handle_buy_decision(False)
+                break
+
+        elif self.state == "AUCTION" and hasattr(self.logic, "current_auction"):
+            auction_data = self.logic.current_auction
+
+            if auction_data is None:
+                print("Warning: Auction data is None in handle_ai_turn")
+                return None
+
+            start_time = pygame.time.get_ticks()
+            while (
+                auction_data["active_players"][auction_data["current_bidder_index"]][
+                    "name"
+                ]
+                == ai_player["name"]
+            ):
+                current_time = pygame.time.get_ticks()
+                if current_time - start_time > 5000:
+                    print(
+                        f"Timeout reached for AI {ai_player['name']} in AUCTION state - forcing pass"
+                    )
+                    success, message = self.logic.process_auction_pass(ai_player)
+                    if message:
+                        self.board.add_message(message)
+                    break
+
+                iteration_count += 1
+                if iteration_count > MAX_ITERATIONS:
+                    print(
+                        f"Maximum iterations reached for AI {ai_player['name']} in AUCTION state - forcing pass"
+                    )
+                    success, message = self.logic.process_auction_pass(ai_player)
+                    if message:
+                        self.board.add_message(message)
+                    break
+
+                print(f"\n=== AI Auction Turn ===")
+                print(f"AI Player: {ai_player['name']}")
+                print(f"Property: {auction_data['property']['name']}")
+                print(f"Current bid: £{auction_data['current_bid']}")
+                print(f"Minimum bid: £{auction_data['minimum_bid']}")
+
+                if ai_player["name"] in auction_data.get("passed_players", set()):
+                    print(f"AI {ai_player['name']} has already passed")
+                    break
+
+                try:
+                    bid_amount = self.logic.get_ai_auction_bid(
+                        ai_player, auction_data["property"], auction_data["current_bid"]
+                    )
+
+                    if bid_amount and bid_amount >= auction_data["minimum_bid"]:
+                        print(f"AI Decision: Bid £{bid_amount}")
+                        success, message = self.logic.process_auction_bid(
+                            ai_player, bid_amount
+                        )
+                        if message:
+                            self.board.add_message(message)
+                    else:
+                        print("AI Decision: Pass")
+                        success, message = self.logic.process_auction_pass(ai_player)
+                        if message:
+                            self.board.add_message(message)
+                except Exception as e:
+                    print(f"Error in AI auction decision: {e}")
+                    success, message = self.logic.process_auction_pass(ai_player)
+                    if message:
+                        self.board.add_message(message)
+
+                result_message = self.logic.check_auction_end()
+                if result_message:
+                    self.board.add_message(result_message)
+                    self.state = "ROLL"
+                    self.board.update_ownership(self.logic.properties)
+                break
+
+        return None

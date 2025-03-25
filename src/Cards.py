@@ -2,10 +2,11 @@
 # This file contains the classes for the cards in the Property Tycoon game.
 # It contains the classes for the cards, such as the card type, the card text, and the card action.
 
+import pygame
 from enum import Enum
 import random
+import sys
 from src.Game_Logic import pot_luck_cards, opportunity_knocks_cards
-
 
 class CardType(Enum):
     POT_LUCK = "pot luck"
@@ -102,3 +103,49 @@ class CardDeck:
 
     def get_discard_count(self):
         return len(self.discard_pile)
+
+
+    def handle_card_action(self, card, player):
+        print(f"Processing card action: {card.text} for player {player['name']}")
+
+        self.show_card = True
+        self.current_card = {"type": card.card_type.name, "message": card.text}
+        self.current_card_player = player
+        self.card_display_time = pygame.time.get_ticks()
+
+        pygame.event.clear()
+        waiting = True
+        while waiting:
+            self.draw()
+            pygame.display.flip()
+
+            for event in pygame.event.get():
+                if event.type in [pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN]:
+                    waiting = False
+                    self.show_card = False
+                    self.current_card = None
+                    self.current_card_player = None
+                elif event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            pygame.time.wait(30)
+
+        result = card.action(player, self)
+
+        return result
+
+    def handle_card_draw(self, player, card_type):
+
+        result, message = self.logic.handle_card_draw(player, card_type)
+
+        if result == "moved":
+            player_obj = next(
+                (p for p in self.players if p.name == player["name"]), None
+            )
+            if player_obj:
+                player_obj.start_move([player["position"]])
+                self.wait_for_animations()
+                self.board.update_board_positions()
+
+        return result

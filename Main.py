@@ -13,6 +13,13 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from src.Board import Board
 from src.Game import Game
+from src.Game_Logic import GameLogic 
+from src.Game_Auction import GameAuction
+from src.Game_Bankruptcy import GameBankruptcy
+from src.Game_Development import GameDevelopment
+from src.Game_Jail import GameJail
+from src.Game_Message import GameMessage
+from src.Game_Renderer import GameRenderer
 from src.Player import Player
 from src.UI import (
     MainMenuPage,
