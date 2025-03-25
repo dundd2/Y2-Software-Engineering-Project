@@ -1677,12 +1677,32 @@ class Game:
         print(
             f"Completed circuits: {self.logic.completed_circuits.get(current_player['name'], 0)}"
         )
+        print(f"Current lap count: {self.lap_count.get(current_player['name'], 0)}")
+
+        print(f"Property owner before: {property_data.get('owner', 'None')}")
 
         if wants_to_buy:
             if current_player["money"] >= property_data["price"]:
                 print("\nAttempting purchase...")
                 current_player["money"] -= property_data["price"]
                 property_data["owner"] = current_player["name"]
+                print(f"Property owner set to: {property_data['owner']}")
+                print(f"Property data position: {property_data['position']}")
+                print(
+                    f"Property in self.logic.properties: {property_data['position'] in self.logic.properties}"
+                )
+
+                if str(property_data["position"]) in self.logic.properties:
+                    print(
+                        f"Global property owner: {self.logic.properties[str(property_data['position'])].get('owner', 'None')}"
+                    )
+                    self.logic.properties[str(property_data["position"])]["owner"] = (
+                        current_player["name"]
+                    )
+                    print(
+                        f"Updated global property owner: {self.logic.properties[str(property_data['position'])].get('owner', 'None')}"
+                    )
+
                 self.board.add_message(
                     f"{current_player['name']} bought {property_data['name']} for £{property_data['price']}"
                 )
@@ -1696,6 +1716,16 @@ class Game:
                     self.state = "ROLL"
                 else:
                     print("Auction in progress - maintaining AUCTION state")
+
+                print("\nPlayer properties after purchase:")
+                owned_count = 0
+                for prop_pos, prop in self.logic.properties.items():
+                    if prop.get("owner") == current_player["name"]:
+                        owned_count += 1
+                        print(
+                            f"  - {prop['name']} (Position: {prop_pos}, Group: {prop.get('group', 'None')})"
+                        )
+                print(f"Total properties owned: {owned_count}")
 
                 self.board.update_ownership(self.logic.properties)
             else:
@@ -1842,10 +1872,11 @@ class Game:
         if (
             self.development_mode
             and self.dev_notification
-            and self.dev_notification.check_button_click(pos)
+            and self.dev_notification.check_click(pos)
         ):
             print("Continuing from development mode")
             self.development_mode = False
+            print(f"Development mode set to: {self.development_mode}")
             self.selected_property = None
             self.state = "ROLL"
             self.dev_notification = None
@@ -4174,8 +4205,10 @@ class Game:
 
         current_player = self.logic.players[self.logic.current_player_index]
         print(f"Player: {current_player['name']}")
+        print(f"Player lap count: {self.lap_count.get(current_player['name'], 0)}")
         print(f"Property: {property_data['name']}")
         print(f"Houses: {property_data.get('houses', 0)}")
+        print(f"Development mode: {self.development_mode}")
 
         for action, button in self.development_buttons.items():
             if button.collidepoint(pos):
@@ -4185,6 +4218,7 @@ class Game:
                     self.selected_property = None
                     self.state = "ROLL"
                     print("Closing development UI")
+                    print(f"Development mode remains: {self.development_mode}")
                     return True
 
                 elif action == "upgrade":
@@ -4774,6 +4808,23 @@ class Game:
         )
         is_ai_player = player_obj and player_obj.is_ai
 
+        print(f"\n=== DEVELOPMENT MODE DEBUG - Turn End ===")
+        print(f"Player: {current_player['name']}")
+        print(f"Current development_mode: {self.development_mode}")
+        print(f"Lap count: {self.lap_count.get(current_player['name'], 0)}")
+
+        owned_properties = [
+            prop
+            for prop in self.logic.properties.values()
+            if prop.get("owner") == current_player["name"]
+        ]
+        print(f"Owned properties: {len(owned_properties)}")
+        for prop in owned_properties:
+            print(f"  - {prop['name']} (Group: {prop.get('group', 'None')})")
+
+        can_develop_properties = self.can_develop(current_player)
+        print(f"Can develop properties: {can_develop_properties}")
+
         if (
             is_ai_player
             and not self.development_mode
@@ -4783,16 +4834,39 @@ class Game:
                 f"AI player {current_player['name']} could develop properties but chose not to"
             )
             self.development_mode = False
+            print(f"Development mode set to: {self.development_mode}")
         elif (
             not is_ai_player
             and not self.development_mode
             and self.can_develop(current_player)
         ):
+            print(
+                f"Human player {current_player['name']} can develop - entering development mode"
+            )
             self.state = "DEVELOPMENT"
             self.development_mode = True
+            print(f"Development mode set to: {self.development_mode}")
+
+            print(f"\n=== Properties eligible for development ===")
+            for prop in owned_properties:
+                can_build_house, house_error = self.logic.can_build_house(
+                    prop, current_player
+                )
+                can_build_hotel, hotel_error = self.logic.can_build_hotel(
+                    prop, current_player
+                )
+                print(f"  - {prop['name']} (Houses: {prop.get('houses', 0)})")
+                print(
+                    f"    Can build house: {can_build_house} {'' if can_build_house else '- ' + (house_error or 'Unknown error')}"
+                )
+                print(
+                    f"    Can build hotel: {can_build_hotel} {'' if can_build_hotel else '- ' + (hotel_error or 'Unknown error')}"
+                )
+
             return
 
         self.development_mode = False
+        print(f"Development mode set to: {self.development_mode}")
         self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
             self.logic.players
         )
@@ -4807,7 +4881,11 @@ class Game:
         self.dice_values = None
 
     def can_develop(self, player):
+        print(f"\n=== DEVELOPMENT MODE DEBUG - can_develop check ===")
+        print(f"Player: {player['name'] if player else 'None'}")
+
         if not player or not isinstance(player, dict):
+            print("Cannot develop: Invalid player data")
             return False
 
         if self.lap_count.get(player["name"], 0) < 1:
@@ -4818,10 +4896,13 @@ class Game:
             for prop in self.logic.properties.values()
             if prop.get("owner") == player["name"]
         ]
+        print(f"Player owns {len(owned_properties)} properties")
 
         if not owned_properties:
+            print("Cannot develop: Player owns no properties")
             return False
 
+        can_develop_property = False
         for prop in owned_properties:
             if self.logic.can_build_house(prop, player) or self.logic.can_build_hotel(
                 prop, player
