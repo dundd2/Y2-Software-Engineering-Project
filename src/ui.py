@@ -259,13 +259,13 @@ class BasePage:
             self.screen.blit(self.logo_image, logo_rect)
         elif isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage):
             title_shadow = self.title_font.render(
-                "Property Tycoon Alpha 23.03.2025", True, BLACK
+                "Property Tycoon Alpha 25.03.2025", True, BLACK
             )
             title_glow = self.title_font.render(
-                "Property Tycoon Alpha 23.03.2025", True, ACCENT_COLOR
+                "Property Tycoon Alpha 25.03.2025", True, ACCENT_COLOR
             )
             title_text = self.title_font.render(
-                "Property Tycoon Alpha 23.03.2025", True, WHITE
+                "Property Tycoon Alpha 25.03.2025", True, WHITE
             )
             title_rect = title_text.get_rect(centerx=window_size[0] // 2, y=80)
             shadow_rect = title_rect.copy()
@@ -408,7 +408,7 @@ class MainMenuPage(BasePage):
             self.screen.blit(self.github_logo, self.github_rect)
 
         version_text = self.version_font.render(
-            "Build Version: 21.03.2025", True, ERROR_COLOR
+            "Build Version: Alpha 25.03.2025", True, ERROR_COLOR
         )
         version_rect = version_text.get_rect(
             right=get_window_size()[0] - 20, bottom=get_window_size()[1] - 20
@@ -673,7 +673,7 @@ class StartPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
-        pygame.display.set_caption("Property Tycoon Alpha 23.03.2025")
+        pygame.display.set_caption("Property Tycoon Alpha 25.03.2025")
         self.title_font = font_manager.get_font(82)
         self.button_font = font_manager.get_font(42)
         self.version_font = font_manager.get_font(28)

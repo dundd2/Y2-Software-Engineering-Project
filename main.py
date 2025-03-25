@@ -63,7 +63,7 @@ async def apply_screen_settings(resolution):
     WINDOW_SIZE = resolution
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
 
-    pygame.display.set_caption("Property Tycoon Alpha 23.03.2025")
+    pygame.display.set_caption("Property Tycoon Alpha 25.03.2025")
     try:
         icon_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "assets", "image", "icon.ico"
@@ -403,17 +403,14 @@ async def run_game(game, game_settings):
                                     "name"
                                 ]
                                 bid_amount = game.logic.current_auction["current_bid"]
-                                game.show_notification(
-                                    f"{winner['name']} won {property_name} for £{bid_amount}",
-                                    3000,
+                                game.board.add_message(
+                                    f"{winner['name']} won {property_name} for £{bid_amount}"
                                 )
                             else:
                                 property_name = game.logic.current_auction["property"][
                                     "name"
                                 ]
-                                game.show_notification(
-                                    f"No one bid on {property_name}", 3000
-                                )
+                                game.board.add_message(f"No one bid on {property_name}")
 
                         game.auction_end_time = pygame.time.get_ticks()
                         game.auction_end_delay = 3000

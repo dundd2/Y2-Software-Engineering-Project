@@ -227,6 +227,36 @@ class Player:
                 exited_image = self.player_image.copy()
                 exited_image.set_alpha(128)
                 screen.blit(exited_image, self.rect)
+        elif self.bankrupt:
+            bankrupt_font = font_manager.get_font(12)
+            bankrupt_text = bankrupt_font.render("BANKRUPT", True, (200, 0, 0))
+            bankrupt_rect = bankrupt_text.get_rect(
+                center=(self.rect.centerx, self.rect.y - 15)
+            )
+            screen.blit(bankrupt_text, bankrupt_rect)
+
+            glow_surface = pygame.Surface(
+                (self.rect.width + 8, self.rect.height + 8), pygame.SRCALPHA
+            )
+            for i in range(4):
+                alpha = int(50 * (1 - i / 4))
+                pygame.draw.circle(
+                    glow_surface,
+                    (*self.color[:3], alpha),
+                    (self.rect.width // 2 + 4, self.rect.height // 2 + 4),
+                    self.rect.width // 2 - i,
+                )
+            screen.blit(glow_surface, (self.rect.x - 4, self.rect.y - 4))
+
+            if hasattr(self, "player_image") and self.player_image is not None:
+                bankrupt_image = self.player_image.copy()
+                bankrupt_image.set_alpha(128)
+                screen.blit(bankrupt_image, self.rect)
+            else:
+                self.create_fallback_token()
+                bankrupt_image = self.player_image.copy()
+                bankrupt_image.set_alpha(128)
+                screen.blit(bankrupt_image, self.rect)
         else:
             glow_surface = pygame.Surface(
                 (self.rect.width + 8, self.rect.height + 8), pygame.SRCALPHA

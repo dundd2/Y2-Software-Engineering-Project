@@ -68,7 +68,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
-        pygame.display.set_caption("Property Tycoon Alpha 23.03.2025")
+        pygame.display.set_caption("Property Tycoon Alpha 25.03.2025")
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
@@ -519,6 +519,19 @@ class Game:
             )
         self.screen.blit(gradient, (0, 0))
 
+        if self.development_mode and self.state == "DEVELOPMENT":
+            if (
+                not any(player.is_moving for player in self.players)
+                and not self.dice_animation
+            ):
+                current_player = self.logic.players[self.logic.current_player_index]
+                if not current_player.get("is_ai", False):
+                    if not hasattr(self, "dev_notification"):
+                        self.dev_notification = DevelopmentNotification(
+                            self.screen, current_player["name"]
+                        )
+                    self.dev_notification.draw(pygame.mouse.get_pos())
+
         self.board.draw(self.screen)
 
         for emotion_ui in self.emotion_uis.values():
@@ -620,8 +633,13 @@ class Game:
                 scaled_logo = pygame.transform.scale(
                     player_obj.player_image, (logo_size, logo_size)
                 )
-                if player_data.get("exited", False) or (
-                    player_obj and player_obj.voluntary_exit
+                if (
+                    player_data.get("exited", False)
+                    or player_data.get("bankrupt", False)
+                    or (
+                        player_obj
+                        and (player_obj.voluntary_exit or player_obj.bankrupt)
+                    )
                 ):
                     scaled_logo.set_alpha(128)
                 self.screen.blit(scaled_logo, logo_rect)
@@ -638,6 +656,11 @@ class Game:
             ):
                 name_text = player_data["name"]
                 name_color = (200, 0, 0)
+            elif player_data.get("bankrupt", False) or (
+                player_obj and player_obj.bankrupt
+            ):
+                name_text = player_data["name"]
+                name_color = (200, 0, 0)
             else:
                 name_text = player_data["name"]
 
@@ -651,10 +674,19 @@ class Game:
                 self.screen.blit(
                     exit_text, (info_x, info_y + name_surface.get_height())
                 )
+            elif player_data.get("bankrupt", False) or (
+                player_obj and player_obj.bankrupt
+            ):
+                bankrupt_text = self.small_font.render("[BANKRUPT]", True, (200, 0, 0))
+                self.screen.blit(
+                    bankrupt_text, (info_x, info_y + name_surface.get_height())
+                )
 
             money_y = info_y + 30
-            if player_data.get("exited", False) or (
-                player_obj and player_obj.voluntary_exit
+            if (
+                player_data.get("exited", False)
+                or player_data.get("bankrupt", False)
+                or (player_obj and (player_obj.voluntary_exit or player_obj.bankrupt))
             ):
                 money_y += 15
 
@@ -815,37 +847,42 @@ class Game:
             self.draw_property_card(self.current_property)
             self.draw_buy_options(mouse_pos)
         elif self.state == "AUCTION" and hasattr(self.logic, "current_auction"):
-            if self.logic.current_auction is None:
-                print("Warning: current_auction is None - resetting state to ROLL")
+            if self.logic.current_auction is None and not hasattr(
+                self, "auction_completed"
+            ):
+                print(
+                    "Warning: current_auction is None and no completion in progress - resetting state to ROLL"
+                )
                 self.state = "ROLL"
                 return
 
-            self.draw_auction(self.logic.current_auction)
-            result_message = self.logic.check_auction_end()
-            if result_message == "auction_completed":
-                print("Auction completed in draw method - setting up delay")
+            if self.logic.current_auction:
+                self.draw_auction(self.logic.current_auction)
+                result_message = self.logic.check_auction_end()
+                if result_message == "auction_completed":
+                    print("Auction completed in draw method - setting up delay")
 
-                if self.logic.current_auction and self.logic.current_auction.get(
-                    "highest_bidder"
-                ):
-                    winner = self.logic.current_auction["highest_bidder"]
-                    property_name = self.logic.current_auction.get("property", {}).get(
-                        "name", "Unknown property"
-                    )
-                    bid_amount = self.logic.current_auction.get("current_bid", 0)
-                    self.board.add_message(
-                        f"{winner['name']} won {property_name} for £{bid_amount}"
-                    )
-                else:
-                    property_name = self.logic.current_auction.get("property", {}).get(
-                        "name", "Unknown property"
-                    )
-                    self.board.add_message(f"No one bid on {property_name}")
+                    if self.logic.current_auction and self.logic.current_auction.get(
+                        "highest_bidder"
+                    ):
+                        winner = self.logic.current_auction["highest_bidder"]
+                        property_name = self.logic.current_auction.get(
+                            "property", {}
+                        ).get("name", "Unknown property")
+                        bid_amount = self.logic.current_auction.get("current_bid", 0)
+                        self.board.add_message(
+                            f"{winner['name']} won {property_name} for £{bid_amount}"
+                        )
+                    else:
+                        property_name = self.logic.current_auction.get(
+                            "property", {}
+                        ).get("name", "Unknown property")
+                        self.board.add_message(f"No one bid on {property_name}")
 
-                self.auction_end_time = pygame.time.get_ticks()
-                self.auction_end_delay = 3000
-                self.auction_completed = True
-                self.board.update_ownership(self.logic.properties)
+                    self.auction_end_time = pygame.time.get_ticks()
+                    self.auction_end_delay = 3000
+                    self.auction_completed = True
+                    self.board.update_ownership(self.logic.properties)
         elif self.state == "DEVELOPMENT" and self.selected_property is not None:
             if hasattr(self.logic, "current_auction") and self.logic.current_auction:
                 print("Auction in progress - not showing development UI")
@@ -1229,7 +1266,7 @@ class Game:
                 current_player["in_jail"] = False
                 current_player["jail_turns"] = 0
                 self.board.add_message(
-                    f"{current_player['name']} rolled doubles and got out of jail!"
+                    f"{current_player['name']} rolled doubles ({dice1},{dice2}) and left jail!"
                 )
 
                 for player in self.players:
@@ -1419,11 +1456,16 @@ class Game:
             self.board.add_message("Error: No current player found")
             return False
 
-        self.update_current_player()
-
         player_obj = next(
             (p for p in self.players if p.name == current_player["name"]), None
         )
+        is_ai_player = player_obj and player_obj.is_ai
+
+        if self.development_mode and not is_ai_player:
+            return False
+
+        self.update_current_player()
+
         if not player_obj:
             print(f"Warning: Could not find player object for {current_player['name']}")
             return False
@@ -1460,33 +1502,43 @@ class Game:
             f"Lap count for {current_player['name']}: {self.lap_count[current_player['name']]}"
         )
 
-        self.dice_animation = True
-        self.animation_start = pygame.time.get_ticks()
+        if self.state == "ROLL":
+            self.dice_animation = True
+            self.animation_start = pygame.time.get_ticks()
 
-        dice1, dice2 = self.logic.play_turn()
-        if dice1 is None:
-            self.dice_animation = False
-            return True
+            dice1, dice2 = self.logic.play_turn()
+            if dice1 is None:
+                self.dice_animation = False
+                return True
 
-        self.dice_values = (dice1, dice2)
+            while self.logic.message_queue:
+                message = self.logic.message_queue.pop(0)
+                print(f"Processing message: {message}")
+                self.board.add_message(message)
+                if "left jail" in message:
+                    print(f"Jail exit notification: {message}")
 
-        for player in self.players:
-            if player.name == current_player["name"]:
-                if player.position != old_position:
+            self.dice_values = (dice1, dice2)
+
+            for player in self.players:
+                if player.name == current_player["name"]:
+                    if player.position != old_position:
+                        print(
+                            f"Correcting position mismatch for {player.name}: Player object: {player.position}, Game logic: {old_position}"
+                        )
+                        player.position = old_position
+
+                    spaces_to_move = (current_player["position"] - old_position) % 40
+                    if (
+                        spaces_to_move == 0
+                        and current_player["position"] != old_position
+                    ):
+                        spaces_to_move = 40
+
+                    self.move_player(player, spaces_to_move)
                     print(
-                        f"Correcting position mismatch for {player.name}: Player object: {player.position}, Game logic: {old_position}"
+                        f"Starting animation for {player.name} to move {spaces_to_move} spaces from {old_position} to {current_player['position']}"
                     )
-                    player.position = old_position
-
-                spaces_to_move = (current_player["position"] - old_position) % 40
-                if spaces_to_move == 0 and current_player["position"] != old_position:
-                    spaces_to_move = 40
-
-                self.move_player(player, spaces_to_move)
-                print(
-                    f"Starting animation for {player.name} to move {spaces_to_move} spaces from {old_position} to {current_player['position']}"
-                )
-                break
 
         self.wait_for_animations()
 
@@ -1943,14 +1995,16 @@ class Game:
             auction_result = self.handle_auction_click(pos)
             print(f"Auction click result: {auction_result}")
 
-            if auction_result == True:
+            if auction_result == True and not hasattr(self, "auction_completed"):
                 print("Auction completed - changing state to ROLL")
                 self.state = "ROLL"
                 self.current_property = None
                 self.board.update_ownership(self.logic.properties)
                 self.update_current_player()
             else:
-                print("Auction continues - maintaining AUCTION state")
+                print(
+                    "Auction continues or completion in progress - maintaining AUCTION state"
+                )
             return False
 
         elif self.state == "DEVELOPMENT" and self.selected_property:
@@ -2067,15 +2121,15 @@ class Game:
                 self.board.add_message(f"Rounds: {min_rounds}-{max_rounds}")
 
     def handle_bankruptcy(self, player):
+        for ui_player in self.players:
+            if ui_player.name == player["name"]:
+                ui_player.bankrupt = True
+                print(f"Marking player {ui_player.name} as bankrupt in UI")
+                break
+
         if self.logic.remove_player(player["name"]):
             self.board.add_message(f"{player['name']} bankrupt!")
             self.board.update_ownership(self.logic.properties)
-
-            for ui_player in self.players:
-                if ui_player.name == player["name"]:
-                    ui_player.bankrupt = True
-                    print(f"Marking player {ui_player.name} as bankrupt in UI")
-                    break
 
             if self.check_one_player_remains():
                 print("Only one player remains after bankruptcy - ending game")
@@ -2436,9 +2490,33 @@ class Game:
         current_bidder = auction_data["active_players"][
             auction_data["current_bidder_index"]
         ]
+
+        if current_bidder.get("exited", False):
+            print(f"Current bidder {current_bidder['name']} has exited - skipping")
+            auction_data["passed_players"].add(current_bidder["name"])
+            self.logic.move_to_next_bidder()
+            return False
+
         current_bidder_obj = next(
             (p for p in self.players if p.name == current_bidder["name"]), None
         )
+
+        if not current_bidder_obj or (
+            hasattr(current_bidder_obj, "voluntary_exit")
+            and current_bidder_obj.voluntary_exit
+        ):
+            print(
+                f"Current bidder {current_bidder['name']} doesn't have UI representation or has voluntarily exited"
+            )
+            auction_data["passed_players"].add(current_bidder["name"])
+            self.logic.move_to_next_bidder()
+            return False
+
+        if current_bidder.get("in_jail", False) and current_bidder.get("is_ai", False):
+            print(f"AI bidder {current_bidder['name']} is in jail - auto-passing")
+            auction_data["passed_players"].add(current_bidder["name"])
+            self.logic.move_to_next_bidder()
+            return False
 
         print(f"Current bidder: {current_bidder['name']}")
         print(f"Is AI: {current_bidder_obj.is_ai if current_bidder_obj else 'Unknown'}")
@@ -2714,7 +2792,16 @@ class Game:
         return choice or "roll"
 
     def handle_jail_turn(self, player):
+        print(f"\n=== Jail Turn Handler for {player['name']} ===")
+        print(f"In jail: {player['in_jail']}")
+        print(f"Jail turns: {player.get('jail_turns', 0)}")
+        print(f"Money: £{player['money']}")
+        print(
+            f"Has jail free cards: {self.logic.jail_free_cards.get(player['name'], 0)}"
+        )
+
         if not player["in_jail"]:
+            print("Player not in jail - exiting jail handler")
             return False
 
         player_obj = next((p for p in self.players if p.name == player["name"]), None)
@@ -2728,22 +2815,32 @@ class Game:
             player_obj.jail_turns = player["jail_turns"]
 
         if player_obj.is_ai:
+            print(f"AI player {player['name']} deciding how to handle jail")
+
             if self.logic.jail_free_cards.get(player["name"], 0) > 0:
+                print(f"AI using 'Get Out of Jail Free' card")
                 card_type = player_obj.use_jail_card()
                 if card_type == CardType.POT_LUCK:
                     self.pot_luck_deck.return_jail_card(card_type)
+                    print("Returned Pot Luck jail card to deck")
                 else:
                     self.opportunity_deck.return_jail_card(card_type)
+                    print("Returned Opportunity Knocks jail card to deck")
+
                 player["in_jail"] = False
                 player["jail_turns"] = 0
                 player_obj.in_jail = False
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False
                 self.board.add_message(
-                    f"{player['name']} used Get Out of Jail Free card!"
+                    f"{player['name']} used Get Out of Jail Free card and left jail!"
                 )
+                print(f"AI player {player['name']} successfully left jail using card")
                 return True
             elif player["money"] >= 50 and random.random() < 0.5:
+                print(
+                    f"AI player {player['name']} paying £50 to leave jail (randomly decided)"
+                )
                 player["money"] -= 50
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot()
@@ -2752,18 +2849,26 @@ class Game:
                 player_obj.in_jail = False
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False
-                self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
+                self.board.add_message(f"{player['name']} paid £50 and left jail!")
+                print(
+                    f"AI player {player['name']} successfully left jail by paying £50"
+                )
                 return True
+            else:
+                print(f"AI player {player['name']} will try to roll doubles")
         else:
+            print(f"Human player {player['name']} choosing jail option")
             self.draw()
             pygame.display.flip()
 
             choice = self.get_jail_choice(player)
+            print(f"Human player selected option: {choice}")
 
             if (
                 choice == "card"
                 and self.logic.jail_free_cards.get(player["name"], 0) > 0
             ):
+                print(f"Using 'Get Out of Jail Free' card")
                 card_type = player_obj.use_jail_card()
                 if card_type == CardType.POT_LUCK:
                     self.pot_luck_deck.return_jail_card(card_type)
@@ -2775,10 +2880,12 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False
                 self.board.add_message(
-                    f"{player['name']} used Get Out of Jail Free card!"
+                    f"{player['name']} used Get Out of Jail Free card and left jail!"
                 )
+                print(f"Player {player['name']} successfully left jail using card")
                 return True
             elif choice == "pay" and player["money"] >= 50:
+                print(f"Paying £50 to leave jail")
                 player["money"] -= 50
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot()
@@ -2787,22 +2894,32 @@ class Game:
                 player_obj.in_jail = False
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False
-                self.board.add_message(f"{player['name']} paid £50 to get out of jail!")
+                self.board.add_message(f"{player['name']} paid £50 and left jail!")
+                try:
+                    self.board.add_message(f"{player['name']} paid £50 and left jail!")
+                except AttributeError:
+                    print("Error: board.add_message call failed")
+                print(f"Player {player['name']} successfully left jail by paying £50")
                 return True
             elif choice == "stay":
+                print(f"Player {player['name']} chose to stay in jail")
                 player_obj.stay_in_jail = True
                 player["jail_turns"] = player.get("jail_turns", 0) + 1
                 player_obj.jail_turns = player["jail_turns"]
                 self.board.add_message(f"{player['name']} chose to stay in jail!")
                 return False
             elif choice == "roll":
+                print(f"Player {player['name']} will try to roll doubles")
                 return True
 
         player["jail_turns"] = player.get("jail_turns", 0) + 1
         player_obj.jail_turns = player["jail_turns"]
+        print(f"Jail turn count increased to {player['jail_turns']}")
 
         if player["jail_turns"] >= 3:
+            print(f"Player {player['name']} has been in jail for 3 turns")
             if player["money"] >= 50:
+                print("Forcing payment after 3 turns")
                 player["money"] -= 50
                 self.logic.free_parking_fund += 50
                 self.synchronize_free_parking_pot()
@@ -2812,19 +2929,28 @@ class Game:
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False
                 self.board.add_message(
-                    f"{player['name']} paid £50 after 3 turns in jail!"
+                    f"{player['name']} paid £50 after 3 turns and left jail!"
+                )
+                print(
+                    f"Player {player['name']} successfully left jail after 3 turns by paying £50"
                 )
                 return True
             else:
+                print(
+                    f"Player {player['name']} can't pay jail fine - leaving jail bankrupt"
+                )
                 player["in_jail"] = False
                 player["jail_turns"] = 0
                 player_obj.in_jail = False
                 player_obj.jail_turns = 0
                 player_obj.stay_in_jail = False
-                self.board.add_message(f"{player['name']} couldn't pay jail fine!")
+                self.board.add_message(
+                    f"{player['name']} couldn't pay jail fine and left jail bankrupt!"
+                )
                 self.handle_bankruptcy(player)
                 return True
 
+        print(f"Player {player['name']} remains in jail - jail turn handled\n")
         return False
 
     def draw_notification(self):
@@ -4441,8 +4567,10 @@ class Game:
             )
             return False
 
-        if self.state != "ROLL":
-            print("Not in ROLL state, skipping AI turn check")
+        if self.state != "ROLL" and self.state != "DEVELOPMENT":
+            print(
+                f"Not in ROLL or DEVELOPMENT state, skipping AI turn check. Current state: {self.state}"
+            )
             return False
 
         if not self.logic.players:
@@ -4504,22 +4632,36 @@ class Game:
             pygame.time.delay(500)
             try:
                 if player_obj.in_jail and current_player.get("in_jail", False):
-                    print(f"AI player {current_player['name']} is in jail - handling jail turn first")
+                    print(
+                        f"AI player {current_player['name']} is in jail - handling jail turn first"
+                    )
                     jail_result = self.handle_jail_turn(current_player)
                     if not jail_result:
-                        print(f"AI player {current_player['name']} stays in jail - moving to next player")
+                        print(
+                            f"AI player {current_player['name']} stays in jail - moving to next player"
+                        )
                         self.handle_turn_end()
                         return self.check_and_trigger_ai_turn(recursion_depth + 1)
-                
-                if self.state == "DEVELOPMENT":
+
+                if self.state == "DEVELOPMENT" and self.development_mode:
                     print(
-                        f"Closing development UI for AI player {current_player['name']}"
+                        f"AI player {current_player['name']} is in development mode - automatically handling development"
                     )
+                    self.development_mode = False
                     self.state = "ROLL"
                     self.selected_property = None
-                    self.development_mode = False
+                    self.handle_turn_end()
+                    return self.check_and_trigger_ai_turn(recursion_depth + 1)
 
-                self.play_turn()
+                if self.state == "ROLL":
+                    turn_result = self.play_turn()
+                    if turn_result:
+                        print(
+                            f"AI player {current_player['name']} completed their turn"
+                        )
+                        return True
+                    return False
+
                 return True
             except Exception as e:
                 print(f"Error in AI turn for {current_player['name']}: {e}")
@@ -4563,14 +4705,46 @@ class Game:
         return False
 
     def update_current_player(self):
+        if self.logic.current_player_index >= len(self.logic.players):
+            print(f"Invalid current player index: {self.logic.current_player_index}")
+            if len(self.logic.players) > 0:
+                self.logic.current_player_index = 0
+            else:
+                print("No players left in the game")
+                return
+
+        current_logic_player = self.logic.players[self.logic.current_player_index]
+
+        if current_logic_player.get("exited", False):
+            print(
+                f"Current player {current_logic_player['name']} has exited, moving to next player"
+            )
+            self.logic.current_player_index = (
+                self.logic.current_player_index + 1
+            ) % len(self.logic.players)
+            return self.update_current_player()
+
         current_player = next(
-            (
-                p
-                for p in self.players
-                if p.name == self.logic.players[self.logic.current_player_index]["name"]
-            ),
+            (p for p in self.players if p.name == current_logic_player["name"]),
             None,
         )
+
+        if not current_player or (
+            hasattr(current_player, "voluntary_exit") and current_player.voluntary_exit
+        ):
+            print(
+                f"Player {current_logic_player['name']} has no UI representation or has voluntarily exited"
+            )
+            if not current_logic_player.get("exited", False):
+                print(
+                    f"Marking player {current_logic_player['name']} as exited in game logic"
+                )
+                current_logic_player["exited"] = True
+            self.logic.current_player_index = (
+                self.logic.current_player_index + 1
+            ) % len(self.logic.players)
+            return self.update_current_player()
+
         self.current_player_is_ai = current_player and current_player.is_ai
 
         for name, emotion_ui in self.emotion_uis.items():
@@ -4594,6 +4768,31 @@ class Game:
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")
 
     def handle_turn_end(self):
+        current_player = self.logic.players[self.logic.current_player_index]
+        player_obj = next(
+            (p for p in self.players if p.name == current_player["name"]), None
+        )
+        is_ai_player = player_obj and player_obj.is_ai
+
+        if (
+            is_ai_player
+            and not self.development_mode
+            and self.can_develop(current_player)
+        ):
+            print(
+                f"AI player {current_player['name']} could develop properties but chose not to"
+            )
+            self.development_mode = False
+        elif (
+            not is_ai_player
+            and not self.development_mode
+            and self.can_develop(current_player)
+        ):
+            self.state = "DEVELOPMENT"
+            self.development_mode = True
+            return
+
+        self.development_mode = False
         self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
             self.logic.players
         )
@@ -4606,3 +4805,27 @@ class Game:
         self.roll_time = 0
         self.dice_animation = False
         self.dice_values = None
+
+    def can_develop(self, player):
+        if not player or not isinstance(player, dict):
+            return False
+
+        if self.lap_count.get(player["name"], 0) < 1:
+            return False
+
+        owned_properties = [
+            prop
+            for prop in self.logic.properties.values()
+            if prop.get("owner") == player["name"]
+        ]
+
+        if not owned_properties:
+            return False
+
+        for prop in owned_properties:
+            if self.logic.can_build_house(prop, player) or self.logic.can_build_hotel(
+                prop, player
+            ):
+                return True
+
+        return False

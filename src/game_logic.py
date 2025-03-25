@@ -477,13 +477,19 @@ class GameLogic:
             self.jail_free_cards[player["name"]] -= 1
             player["in_jail"] = False
             player["jail_turns"] = 0
-            return True, f"{player['name']} uses Get Out of Jail Free card!"
+            return (
+                True,
+                f"{player['name']} uses Get Out of Jail Free card and left jail!",
+            )
 
         if dice1 == dice2:
             player["in_jail"] = False
             player["jail_turns"] = 0
             self.doubles_count = 0
-            return True, f"{player['name']} rolled doubles and left jail!"
+            return (
+                True,
+                f"{player['name']} rolled doubles ({dice1},{dice2}) and left jail!",
+            )
 
         if player["money"] >= 50 and (
             player.get("is_ai", False)
@@ -494,7 +500,7 @@ class GameLogic:
             self.free_parking_fund += 50
             player["in_jail"] = False
             player["jail_turns"] = 0
-            return True, f"{player['name']} paid £50 to leave jail"
+            return True, f"{player['name']} paid £50 and left jail"
 
         player["jail_turns"] += 1
 
@@ -504,12 +510,15 @@ class GameLogic:
                 self.free_parking_fund += 50
                 player["in_jail"] = False
                 player["jail_turns"] = 0
-                return True, f"{player['name']} paid £50 to leave jail after 3 turns"
+                return True, f"{player['name']} paid £50 after 3 turns and left jail"
             else:
                 self.handle_bankruptcy(player)
                 player["in_jail"] = False
                 player["jail_turns"] = 0
-                return True, f"{player['name']} went bankrupt trying to pay jail fine"
+                return (
+                    True,
+                    f"{player['name']} couldn't pay jail fine and left jail bankrupt",
+                )
 
         return False, f"{player['name']} stays in jail (turn {player['jail_turns']}/3)"
 
@@ -706,9 +715,9 @@ class GameLogic:
         eligible_players = [
             p
             for p in self.players
-            if p["money"] >= property_data["price"] // 2
-            and not p.get("in_jail", False)
-            and self.completed_circuits.get(p["name"], 0) >= 1
+            if not p.get("in_jail", False)
+            and not p.get("exited", False)
+            and p["money"] >= (property_data["price"] // 2)
         ]
 
         print(f"Eligible players: {len(eligible_players)}")
@@ -853,7 +862,6 @@ class GameLogic:
                 print(f"Auction completed - {result_message}")
                 self.add_message(result_message)
 
-            self.current_auction = None
             return "auction_completed"
 
         active_bidders = [
@@ -1013,6 +1021,7 @@ class GameLogic:
             p
             for p in self.players
             if not p.get("in_jail", False)
+            and not p.get("exited", False)
             and p["money"] >= (property_data["price"] // 2)
         ]
 
