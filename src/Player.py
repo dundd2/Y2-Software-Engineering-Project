@@ -5,7 +5,7 @@
 import pygame
 import math
 import os
-from src.FontManager import font_manager
+from src.Font_Manager import font_manager
 
 WHITE = (255, 255, 255)
 HUMAN_COLOR = (75, 139, 190)
@@ -56,7 +56,7 @@ class Player:
         self.current_path_index = 0
 
         if self.is_ai:
-            from src.ai_player_logic import EasyAIPlayer, HardAIPlayer
+            from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 
             if ai_difficulty.lower() == "hard":
                 self.ai_controller = HardAIPlayer()

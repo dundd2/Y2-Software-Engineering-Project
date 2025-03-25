@@ -4,7 +4,7 @@
 
 from enum import Enum
 import random
-from src.game_logic import pot_luck_cards, opportunity_knocks_cards
+from src.Game_Logic import pot_luck_cards, opportunity_knocks_cards
 
 
 class CardType(Enum):

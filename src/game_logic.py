@@ -3,8 +3,8 @@
 # will add more comment later to reference for which part of code is based on which part of the flowchart
 import random
 import pygame
-from src.loadexcel import load_property_data
-from src.ai_player_logic import EasyAIPlayer, HardAIPlayer
+from src.Loadexcel import load_property_data
+from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 
 pot_luck_cards = [
     {

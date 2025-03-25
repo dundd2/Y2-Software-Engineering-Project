@@ -21,7 +21,7 @@ from src.Board import Board
 from src.Game import Game
 from src.Player import Player
 from src.Property import Property
-from src.game_logic import GameLogic, pot_luck_cards, opportunity_knocks_cards
+from src.Game_Logic import GameLogic, pot_luck_cards, opportunity_knocks_cards
 
 class TestGame(unittest.TestCase):
     @classmethod

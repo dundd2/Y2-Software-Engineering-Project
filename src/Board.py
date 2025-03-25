@@ -8,8 +8,8 @@ import math
 import os
 from src.Property import Property
 from typing import Optional, List
-from src.loadexcel import load_property_data
-from src.FontManager import font_manager
+from src.Loadexcel import load_property_data
+from src.Font_Manager import font_manager
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

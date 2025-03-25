@@ -1,17 +1,18 @@
 import pygame
 import sys
+import os
+import time
+import random
+import math
 from src.Board import Board
 from src.Property import Property
-from src.game_logic import GameLogic
-from src.cards import CardType
+from src.Game_Logic import GameLogic
+from src.Cards import CardType
+from src.Font_Manager import font_manager
+from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 from typing import Optional
-import time
-import math
-import os
-import random
 import string
-from src.ui import DevelopmentNotification, AIEmotionUI
-from src.FontManager import font_manager
+from src.UI import DevelopmentNotification, AIEmotionUI
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -168,11 +169,11 @@ class Game:
             self.logic.ai_difficulty = self.ai_difficulty
 
             if self.ai_difficulty == "hard":
-                from src.ai_player_logic import HardAIPlayer
+                from src.Ai_Player_Logic import HardAIPlayer
 
                 self.logic.ai_player = HardAIPlayer()
             else:
-                from src.ai_player_logic import EasyAIPlayer
+                from src.Ai_Player_Logic import EasyAIPlayer
 
                 self.logic.ai_player = EasyAIPlayer()
 
@@ -185,7 +186,7 @@ class Game:
             self.players = players
             self.board = Board(self.players)
 
-            from src.cards import CardDeck, CardType
+            from src.Cards import CardDeck, CardType
 
             self.pot_luck_deck = CardDeck(CardType.POT_LUCK)
             self.opportunity_deck = CardDeck(CardType.OPPORTUNITY_KNOCKS)

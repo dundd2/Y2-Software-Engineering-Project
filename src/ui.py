@@ -8,7 +8,7 @@ import sys
 import time
 import math
 import random
-from src.FontManager import font_manager
+from src.Font_Manager import font_manager
 import os
 import webbrowser
 

@@ -14,7 +14,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from src.Board import Board
 from src.Game import Game
 from src.Player import Player
-from src.ui import (
+from src.UI import (
     MainMenuPage,
     StartPage,
     GameModePage,
@@ -24,7 +24,7 @@ from src.ui import (
     AIDifficultyPage,
     CreditsPage,
 )
-from src.FontManager import font_manager
+from src.Font_Manager import font_manager
 
 WINDOW_SIZE = (1280, 720)
 WHITE = (255, 255, 255)
