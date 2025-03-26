@@ -32,7 +32,7 @@ AI_COLOR = DARK_RED
 
 GROUP_COLORS = {
     "Brown": (139, 69, 19),
-    "Blue": (0, 0, 255),
+    "Blue": (0, 200, 255),
     "Purple": (128, 0, 128),
     "Orange": (255, 165, 0),
     "Red": (255, 0, 0),
