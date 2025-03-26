@@ -169,7 +169,7 @@ async def run_game(game, game_settings):
             and not game.game_paused
         ):
             last_time_check = current_time
-            if game_actions.check_time_limit():
+            if game.check_time_limit():
                 print(
                     "Time limit reached and all players completed same number of laps - ending game"
                 )
