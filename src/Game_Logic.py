@@ -321,7 +321,7 @@ class GameLogic:
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
         current_player = self.players[self.current_player_index]
 
-        while current_player.get("exited", False):
+        while current_player.get("exited", False) or current_player.get("bankrupt", False):
             self.current_player_index = (self.current_player_index + 1) % len(
                 self.players
             )
@@ -334,7 +334,7 @@ class GameLogic:
             return None, None
 
         current_player = self.players[self.current_player_index]
-        while current_player.get("exited", False):
+        while current_player.get("exited", False) or current_player.get("bankrupt", False):
             self.current_player_index = (self.current_player_index + 1) % len(
                 self.players
             )
@@ -999,7 +999,7 @@ class GameLogic:
                 player["exited"] = True
                 self.voluntary_exits.append(player_name)
             else:
-                self.players.remove(player)
+                player["bankrupt"] = True
                 self.bankrupted_players.append(player_name)
 
             if len(self.players) > 0:

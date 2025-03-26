@@ -53,7 +53,7 @@ GROUP_COLORS = {
     "Red": (255, 0, 0),
     "Yellow": (255, 236, 93),
     "Green": (0, 153, 0),
-    "Deep Blue": (0, 0, 153),
+    "Deep blue": (0, 0, 153),
     "Stations": (128, 128, 128),
     "Utilities": (192, 192, 192),
 }
@@ -964,7 +964,7 @@ class Game:
         active_player_data = [
             p
             for p in self.logic.players
-            if p["money"] > 0 and not p.get("exited", False)
+            if p["money"] > 0 and not p.get("exited", False) and not p.get("bankrupt", False)
         ]
 
         if (

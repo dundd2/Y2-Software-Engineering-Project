@@ -38,7 +38,7 @@ GROUP_COLORS = {
     "Red": (255, 0, 0),
     "Yellow": (255, 236, 93),
     "Green": (0, 153, 0),
-    "Deep Blue": (0, 0, 153),
+    "Deep blue": (0, 0, 153),
     "Stations": (128, 128, 128),
     "Utilities": (192, 192, 192),
 }

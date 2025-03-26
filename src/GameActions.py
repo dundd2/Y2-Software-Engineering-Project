@@ -919,7 +919,7 @@ class GameActions:
                 ui_player.bankrupt = True
                 print(f"Marking player {ui_player.name} as bankrupt in UI")
                 break
-
+                
         if self.game.logic.remove_player(player["name"]):
             self.game.board.add_message(f"{player['name']} bankrupt!")
             self.game.board.update_ownership(self.game.logic.properties)
@@ -945,6 +945,7 @@ class GameActions:
             amount = self.game.free_parking_pot
             player["money"] += amount
             self.game.free_parking_pot = 0
+            self.game.logic.free_parking_fund = 0
             self.game.board.add_message(
                 f"{player['name']} collected £{amount} from Free Parking!"
             )
