@@ -47,7 +47,7 @@ PASSING_GO_AMOUNT = 200
 HOTEL_VALUE_IN_HOUSES = 5  # A hotel is worth 5 houses
 HOTEL_REPLACES_HOUSES = True  # When building a hotel, houses are returned to bank
 
-FPS = 20
+FPS = 30
 
 GAME_INSTRUCTIONS = [
     "Use WASD or Arrow keys to move",
