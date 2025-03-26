@@ -20,6 +20,7 @@ BURGUNDY = (128, 0, 32)
 
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+YELLOW = (255, 255, 0)
 
 ACCENT_COLOR = BURGUNDY
 BUTTON_HOVER = (160, 20, 40)
@@ -54,6 +55,8 @@ class GameRenderer:
         self.tiny_font = game.tiny_font
         self.button_font = game.button_font
         self.message_font = game.message_font
+        self.last_star_flash_time = 0
+        self.show_property_stars = True
 
     def draw_button(self, button, text, hover=False, active=True):
         if not active:
@@ -292,6 +295,31 @@ class GameRenderer:
                     self.game.dev_notification.draw(pygame.mouse.get_pos())
 
         self.game.board.draw(self.screen)
+
+        if self.game.development_mode:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_star_flash_time >= 500:
+                self.last_star_flash_time = current_time
+                self.show_property_stars = not self.show_property_stars
+            
+            if self.show_property_stars:
+                current_player = self.game.logic.players[self.game.logic.current_player_index]
+                player_obj = next(
+                    (p for p in self.game.players if p.name == current_player["name"]), None
+                )
+                
+                if player_obj and not player_obj.is_ai:
+                    owned_properties = [
+                        prop for prop in self.game.logic.properties.values()
+                        if prop.get("owner") == current_player["name"]
+                    ]
+                    
+                    for prop in owned_properties:
+                        if "position" in prop:
+                            position = int(prop["position"])
+                            property_position = self.game.board.get_property_position(position)
+                            if property_position:
+                                self.draw_star(property_position[0], property_position[1])
 
         for emotion_ui in self.game.emotion_uis.values():
             emotion_ui.draw()
@@ -1787,3 +1815,17 @@ class GameRenderer:
             centerx=panel_x + panel_width // 2, top=title_rect.bottom + 10
         )
         self.screen.blit(money_text, money_rect)
+
+    def draw_star(self, x, y):
+        size = 20
+        
+        points = []
+        for i in range(10):
+            angle = math.pi/2 + (2*math.pi/10) * i
+            radius = size/2 if i % 2 == 0 else size/4
+            point_x = x + radius * math.cos(angle)
+            point_y = y + radius * math.sin(angle)
+            points.append((point_x, point_y))
+        
+        pygame.draw.polygon(self.screen, YELLOW, points)
+        pygame.draw.polygon(self.screen, BLACK, points, 1)

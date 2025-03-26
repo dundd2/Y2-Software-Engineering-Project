@@ -255,7 +255,16 @@ class GameActions:
             self.start_auction(property_data)
 
         print("\nFinal state:")
-        
+        print(f"Property owner: {property_data['owner']}")
+        print(f"Player money: £{current_player['money']}")
+
+        if not hasattr(self.game.logic, "current_auction") or not self.game.logic.current_auction:
+            print(f"Final state: {self.game.state}")
+            if self.game.state == "ROLL":
+                self.game.update_current_player()
+        else:
+            print(f"Auction in progress - state is {self.game.state}")
+            
         self.game.renderer.draw()
         pygame.display.flip()
 

@@ -495,17 +495,6 @@ async def run_game(game, game_settings):
 async def handle_end_game(game_over_data):
     print("Entering handle_end_game function")
     print(f"Game over data: {game_over_data}")
-
-    if game_over_data is True or not isinstance(game_over_data, dict):
-        print("Warning: game_over_data is not a dictionary. Creating default game over data.")
-        game_over_data = {
-            "winner": "Unknown",
-            "final_assets": {},
-            "bankrupted_players": [],
-            "voluntary_exits": [],
-            "tied_winners": [],
-            "lap_count": {}
-        }
     
     sound_manager.play_sound('game_over')
 

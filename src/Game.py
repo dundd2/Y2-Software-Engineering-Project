@@ -585,12 +585,17 @@ class Game:
         self.renderer.draw()
         pygame.display.flip()
 
+        self.development_mode = True
+
         current_player = self.logic.players[self.logic.current_player_index]
         owned_properties = [
             p
             for p in self.logic.properties.values()
             if p.get("owner") == current_player["name"]
         ]
+
+        if not owned_properties:
+            self.development_mode = False
 
         self.logic.is_going_to_jail = False
         
@@ -1820,10 +1825,24 @@ class Game:
         can_develop_properties = self.can_develop(current_player)
         print(f"Can develop properties: {can_develop_properties}")
 
+        if (
+            is_ai_player
+            and not self.development_mode
+            and self.can_develop(current_player)
+        ):
+            print(
+                f"AI player {current_player['name']} could develop properties but chose not to"
+            )
+        
         if self.development_mode:
             print(f"Ending development phase for {current_player['name']}")
             self.development_mode = False
             print(f"Development mode set to: {self.development_mode}")
+        elif (
+            not is_ai_player
+            and not self.development_mode
+            and self.can_develop(current_player)
+        ):
             self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
                 self.logic.players
             )

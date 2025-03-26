@@ -20,26 +20,16 @@ class GameEventHandler:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     result = self.handle_click(event.pos)
-                    if result is True:
-                        return {
-                            "winner": "Unknown",
-                            "final_assets": {},
-                            "bankrupted_players": [],
-                            "voluntary_exits": []
-                        }
+                    if result == True:
+                        return "game_over"
                     elif isinstance(result, dict) and "winner" in result:
                         return result
             elif event.type == pygame.MOUSEMOTION:
                 self.handle_motion(event.pos)
             elif event.type == pygame.KEYDOWN:
                 result = self.handle_key(event)
-                if result is True:
-                    return {
-                        "winner": "Unknown",
-                        "final_assets": {},
-                        "bankrupted_players": [],
-                        "voluntary_exits": []
-                    }
+                if result == True:
+                        return "game_over"
                 elif isinstance(result, dict) and "winner" in result:
                     return result
         return None
@@ -84,6 +74,11 @@ class GameEventHandler:
             self.game.state = "ROLL"
             self.game.dev_notification = None
             self.game.notification = None
+            self.game.logic.current_player_index = (
+            self.game.logic.current_player_index + 1
+            ) % len(self.game.logic.players)
+            self.game.update_current_player()
+            self.game_actions.check_and_trigger_ai_turn()
             self.game.handle_turn_end()
             return False
 
@@ -171,30 +166,12 @@ class GameEventHandler:
 
                         game_over_result = self.game_actions.check_game_over()
                         if game_over_result:
-                            if isinstance(game_over_result, dict):
-                                return game_over_result
-                            else:
-                                return {
-                                    "winner": "Unknown",
-                                    "final_assets": {},
-                                    "bankrupted_players": [],
-                                    "voluntary_exits": []
-                                }
-
+                            return game_over_result
                         if len(self.game.logic.players) > 0:
                             self.game.state = "ROLL"
                             self.game_actions.check_and_trigger_ai_turn()
                         else:
-                            result = self.game_actions.check_game_over()
-                            if isinstance(result, dict):
-                                return result
-                            elif result is True:
-                                return {
-                                    "winner": "Unknown",
-                                    "final_assets": {},
-                                    "bankrupted_players": [],
-                                    "voluntary_exits": []
-                                }
+                            return self.game_actions.check_game_over()
                 return False
 
             if self.game.development_mode:
@@ -357,16 +334,7 @@ class GameEventHandler:
                             self.game.state = "ROLL"
                             self.game_actions.check_and_trigger_ai_turn()
                         else:
-                            result = self.game_actions.check_game_over()
-                            if isinstance(result, dict):
-                                return result
-                            elif result is True:
-                                return {
-                                    "winner": "Unknown",
-                                    "final_assets": {},
-                                    "bankrupted_players": [],
-                                    "voluntary_exits": []
-                                }
+                         return self.game_actions.check_game_over()
                 return False
             elif event.key == pygame.K_t and self.game.game_mode == "abridged":
                 self.game_actions.show_time_stats()
