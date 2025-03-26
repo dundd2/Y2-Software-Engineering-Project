@@ -687,7 +687,6 @@ class HardAIPlayer:
             property_data, ai_player, board_properties
         )
 
-        # Amplified mood effect on property valuation (2.0x more impact)
         mood_multiplier = 1.0 + (self.mood_modifier * 2.0)
         final_value = base_value * mood_multiplier
 

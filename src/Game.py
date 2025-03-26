@@ -91,6 +91,56 @@ class Game:
             self.original_background = pygame.image.load(bg_path)
             background = pygame.transform.scale(self.original_background, window_size)
 
+            board_path = os.path.join(base_path, "assets/image/board.png")
+            self.original_board = pygame.image.load(board_path)
+            
+            board_width = int(window_size[0] * 0.3)
+            board_height = int(board_width)
+            board_image = pygame.transform.scale(self.original_board, (board_width, board_height))
+            
+            board_x = (window_size[0] - board_width) // 2
+            board_y = (window_size[1] - board_height) // 2 - 50  
+            
+            self.screen.blit(background, (0, 0))
+            
+            overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))
+            self.screen.blit(overlay, (0, 0))
+            
+            border_size = 10
+            border_rect = pygame.Rect(
+                board_x - border_size, 
+                board_y - border_size,
+                board_width + (border_size * 2),
+                board_height + (border_size * 2)
+            )
+            pygame.draw.rect(self.screen, (218, 165, 32), border_rect, border_radius=10) 
+            
+            for alpha in range(0, 256, 10):
+                board_surface = board_image.copy()
+                board_surface.set_alpha(alpha)
+                self.screen.blit(background, (0, 0))
+                self.screen.blit(overlay, (0, 0))
+                pygame.draw.rect(self.screen, (218, 165, 32), border_rect, border_radius=10)
+                self.screen.blit(board_surface, (board_x, board_y))
+                
+                tip_text = "TIP: You can move the board position using WASD and zoom with +/- keys"
+                
+                shadow_surface = self.small_font.render(tip_text, True, (0, 0, 0))
+                shadow_rect = shadow_surface.get_rect(center=(window_size[0]//2 + 2, window_size[1] - 100 + 2))
+                shadow_surface.set_alpha(min(alpha, 150))
+                self.screen.blit(shadow_surface, shadow_rect)
+                
+                text_surface = self.small_font.render(tip_text, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=(window_size[0]//2, window_size[1] - 100))
+                text_surface.set_alpha(alpha)
+                self.screen.blit(text_surface, text_rect)
+                
+                pygame.display.flip()
+                pygame.time.delay(20)
+            
+            pygame.time.wait(2000)
+
             shuffling_path = os.path.join(base_path, "assets/image/Cards shuffling.png")
             self.original_shuffling = pygame.image.load(shuffling_path)
             shuffling_image = pygame.transform.scale(
