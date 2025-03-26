@@ -64,7 +64,9 @@ class SoundManager:
             'menu_click': 'menu_click.mp3',
             'game_start': 'game_start.mp3',
             'game_over': 'game_over.mp3',
-            'card_draw': 'card_draw.mp3'
+            'card_draw': 'card_draw.mp3',
+            'happy_click': 'happy_click.mp3',
+            'angry_click': 'angry_click.mp3'
         }
         
         for sound_name, file_name in required_sounds.items():

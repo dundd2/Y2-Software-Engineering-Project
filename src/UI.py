@@ -9,6 +9,7 @@ import time
 import math
 import random
 from src.Font_Manager import font_manager
+from src.Sound_Manager import sound_manager
 import os
 import webbrowser
 
@@ -499,7 +500,6 @@ class SettingsPage(BasePage):
         self.show_confirmation = False
         self.confirmation_time = 0
         
-        from src.Sound_Manager import sound_manager
         self.sound_manager = sound_manager
         
         self.sound_volume = int(self.sound_manager.sound_volume * 100)
@@ -2994,6 +2994,7 @@ class AIEmotionUI:
                 self._check_easter_egg()
 
             print(f"Happy button clicked for {self.ai_player.name} - making AI happier")
+            sound_manager.play_sound('happy_click')
             self.game.update_ai_mood(self.ai_player.name, False)
             return True
 
@@ -3004,6 +3005,7 @@ class AIEmotionUI:
                 self._check_easter_egg()
 
             print(f"Angry button clicked for {self.ai_player.name} - making AI angrier")
+            sound_manager.play_sound('angry_click')
             self.game.update_ai_mood(self.ai_player.name, True)
             return True
 

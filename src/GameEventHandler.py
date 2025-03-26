@@ -84,11 +84,6 @@ class GameEventHandler:
             self.game.state = "ROLL"
             self.game.dev_notification = None
             self.game.notification = None
-            self.game.logic.current_player_index = (
-             self.game.logic.current_player_index + 1
-            ) % len(self.game.logic.players)
-            self.game.update_current_player()
-            self.game_actions.check_and_trigger_ai_turn()
             self.game.handle_turn_end()
             return False
 
