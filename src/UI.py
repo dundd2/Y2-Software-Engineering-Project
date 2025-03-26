@@ -498,13 +498,19 @@ class SettingsPage(BasePage):
         self.current_font = 0
         self.show_confirmation = False
         self.confirmation_time = 0
+        
+        from src.Sound_Manager import sound_manager
+        self.sound_manager = sound_manager
+        
+        self.sound_volume = int(self.sound_manager.sound_volume * 100)
+        self.music_volume = int(self.sound_manager.music_volume * 100)
 
         button_width = 500
         button_height = 60
         self.resolution_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] // 2 - 150,
+                get_window_size()[1] // 2 - 220,
                 button_width,
                 button_height,
             ),
@@ -515,11 +521,35 @@ class SettingsPage(BasePage):
         self.font_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
-                get_window_size()[1] // 2 - 50,
+                get_window_size()[1] // 2 - 150,
                 button_width,
                 button_height,
             ),
             f"Font: {self.font_options[self.current_font][0]}",
+            self.button_font,
+            color=MODE_COLOR,
+        )
+        
+        self.sound_volume_button = UIButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                get_window_size()[1] // 2 - 80,
+                button_width,
+                button_height,
+            ),
+            f"Sound Volume: {self.sound_volume}%",
+            self.button_font,
+            color=MODE_COLOR,
+        )
+        
+        self.music_volume_button = UIButton(
+            pygame.Rect(
+                (get_window_size()[0] - button_width) // 2,
+                get_window_size()[1] // 2 - 10,
+                button_width,
+                button_height,
+            ),
+            f"Music Volume: {self.music_volume}%",
             self.button_font,
             color=MODE_COLOR,
         )
@@ -528,7 +558,7 @@ class SettingsPage(BasePage):
         self.confirm_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - confirm_button_width) // 2,
-                get_window_size()[1] // 2 + 50,
+                get_window_size()[1] // 2 + 60,
                 confirm_button_width,
                 button_height,
             ),
@@ -540,6 +570,30 @@ class SettingsPage(BasePage):
             pygame.Rect(20, get_window_size()[1] - 80, 200, button_height),
             "Back",
             self.button_font,
+        )
+        
+        self.test_sound_button = UIButton(
+            pygame.Rect(
+                (get_window_size()[0] + button_width) // 2 + 20,
+                get_window_size()[1] // 2 - 80,
+                100,
+                button_height,
+            ),
+            "Test",
+            self.button_font,
+            color=(0, 150, 200),
+        )
+        
+        self.test_music_button = UIButton(
+            pygame.Rect(
+                (get_window_size()[0] + button_width) // 2 + 20,
+                get_window_size()[1] // 2 - 10,
+                100,
+                button_height,
+            ),
+            "Test",
+            self.button_font,
+            color=(0, 150, 200),
         )
 
     def draw(self):
@@ -564,6 +618,14 @@ class SettingsPage(BasePage):
 
         self.font_button.text = f"Font: {self.font_options[self.current_font][0]}"
         self.font_button.draw(self.screen)
+        
+        self.sound_volume_button.text = f"Sound Volume: {self.sound_volume}%"
+        self.sound_volume_button.draw(self.screen)
+        self.test_sound_button.draw(self.screen)
+        
+        self.music_volume_button.text = f"Music Volume: {self.music_volume}%"
+        self.music_volume_button.draw(self.screen)
+        self.test_music_button.draw(self.screen)
 
         if self.show_confirmation:
             current_time = pygame.time.get_ticks()
@@ -583,6 +645,8 @@ class SettingsPage(BasePage):
             "Controls:",
             "R - Change screen resolution",
             "F - Change font",
+            "S - Adjust sound volume",
+            "M - Adjust music volume",
             "Enter/Space - Apply and return",
         ]
 
@@ -611,6 +675,28 @@ class SettingsPage(BasePage):
             self.show_confirmation = True
             self.confirmation_time = pygame.time.get_ticks()
             return False
+        elif self.sound_volume_button.check_hover(pos):
+            self.sound_volume = (self.sound_volume + 10) % 110
+            self.sound_manager.set_sound_volume(self.sound_volume / 100.0)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
+        elif self.music_volume_button.check_hover(pos):
+            self.music_volume = (self.music_volume + 10) % 110
+            self.sound_manager.set_music_volume(self.music_volume / 100.0)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
+        elif self.test_sound_button.check_hover(pos):
+            self.sound_manager.play_sound('menu_click')
+            return False
+        elif self.test_music_button.check_hover(pos):
+            if not pygame.mixer.music.get_busy():
+                self.sound_manager.load_music()
+                self.sound_manager.play_music(loop=0)
+            else:
+                self.sound_manager.stop_music()
+            return False
         elif self.confirm_button.check_hover(pos):
             current_resolution = get_window_size()
             new_resolution = self.resolution_options[self.current_resolution]
@@ -629,6 +715,10 @@ class SettingsPage(BasePage):
     def handle_motion(self, pos):
         self.resolution_button.check_hover(pos)
         self.font_button.check_hover(pos)
+        self.sound_volume_button.check_hover(pos)
+        self.music_volume_button.check_hover(pos)
+        self.test_sound_button.check_hover(pos)
+        self.test_music_button.check_hover(pos)
         self.confirm_button.check_hover(pos)
         self.back_button.check_hover(pos)
 
@@ -642,6 +732,18 @@ class SettingsPage(BasePage):
             return False
         elif event.key == pygame.K_f:
             self.current_font = (self.current_font + 1) % len(self.font_options)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
+        elif event.key == pygame.K_s:
+            self.sound_volume = (self.sound_volume + 10) % 110
+            self.sound_manager.set_sound_volume(self.sound_volume / 100.0)
+            self.show_confirmation = True
+            self.confirmation_time = pygame.time.get_ticks()
+            return False
+        elif event.key == pygame.K_m:
+            self.music_volume = (self.music_volume + 10) % 110
+            self.sound_manager.set_music_volume(self.music_volume / 100.0)
             self.show_confirmation = True
             self.confirmation_time = pygame.time.get_ticks()
             return False
@@ -666,6 +768,8 @@ class SettingsPage(BasePage):
             "font": os.path.join(
                 base_path, "assets", "font", self.font_options[self.current_font][1]
             ),
+            "sound_volume": self.sound_volume / 100.0,
+            "music_volume": self.music_volume / 100.0
         }
 
 

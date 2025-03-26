@@ -9,6 +9,7 @@ from src.Property import Property
 from src.Game_Logic import GameLogic
 from src.Cards import CardType, CardDeck
 from src.Font_Manager import font_manager
+from src.Sound_Manager import sound_manager
 from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 from typing import Optional
 import string
@@ -106,6 +107,8 @@ class GameActions:
             self.game.dice_animation = True
             self.game.animation_start = pygame.time.get_ticks()
 
+            sound_manager.play_sound('dice_roll')
+            
             dice1, dice2 = self.game.logic.play_turn()
             if dice1 is None:
                 self.game.dice_animation = False
@@ -117,6 +120,7 @@ class GameActions:
                 self.game.board.add_message(message)
                 if "left jail" in message:
                     print(f"Jail exit notification: {message}")
+                    sound_manager.play_sound('jail')
 
             self.game.dice_values = (dice1, dice2)
 
@@ -148,6 +152,7 @@ class GameActions:
             self.game.rounds_completed[current_player["name"]] += 1
             self.game.board.add_message("*** PASSED GO! ***")
             self.game.board.add_message(f"{current_player['name']} collected £200")
+            sound_manager.play_sound('collect_money')
 
         self.game.board.add_message(f"{current_player['name']} rolled {dice1 + dice2}")
 
@@ -211,6 +216,8 @@ class GameActions:
                     f"{current_player['name']} bought {property_data['name']} for £{property_data['price']}"
                 )
                 print("Purchase successful")
+                
+                sound_manager.play_sound('buy_property')
 
                 if (
                     not hasattr(self.game.logic, "current_auction")

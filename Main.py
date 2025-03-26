@@ -18,6 +18,7 @@ from src.Player import Player
 from src.GameRenderer import GameRenderer
 from src.GameEventHandler import GameEventHandler
 from src.GameActions import GameActions
+from src.Sound_Manager import sound_manager
 from src.UI import (
     MainMenuPage,
     StartPage,
@@ -139,6 +140,8 @@ def create_game(player_info, game_settings):
     game.bank_money = bank_money
     game.free_parking_pot = 0
 
+    sound_manager.play_sound('game_start')
+
     return game
 
 
@@ -157,6 +160,8 @@ async def run_game(game, game_settings):
     event_handler = GameEventHandler(game, game_actions)
     
     event_handler.handle_motion((0, 0))
+
+    sound_manager.play_music(loop=-1)  
 
     while running:
         await asyncio.sleep(0)
@@ -239,6 +244,8 @@ async def run_game(game, game_settings):
                 game_over_data = event_handler.handle_click(game_event.pos)
                 if game_over_data:
                     running = False
+
+                sound_manager.play_sound('menu_click')
             elif game_event.type == pygame.KEYDOWN:
                 print(f"Key pressed: {pygame.key.name(game_event.key)}")
 
@@ -481,6 +488,7 @@ async def run_game(game, game_settings):
 
         clock.tick(FPS)
 
+    sound_manager.stop_music()
     return game_over_data
 
 
@@ -498,6 +506,8 @@ async def handle_end_game(game_over_data):
             "tied_winners": [],
             "lap_count": {}
         }
+    
+    sound_manager.play_sound('game_over')
 
     pygame.display.flip()
 
@@ -645,11 +655,16 @@ async def show_company_logo(screen):
     group_logo_path = os.path.join(base_path, "assets/image/Group 5 Persent.png")
     await show_logo_screen(screen, group_logo_path, scale_factor=0.9)
 
+    sound_manager.play_sound('game_start')
+
 
 async def main():
     global WINDOW_SIZE
     font_manager.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
+
+    sound_manager.load_sounds()
+    sound_manager.load_music()
 
     await show_company_logo(screen)
 
@@ -673,6 +688,8 @@ async def main():
                 elif (
                     event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN
                 ):
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        sound_manager.play_sound('menu_click')
                     result = (
                         current_page.handle_click(event.pos)
                         if event.type == pygame.MOUSEBUTTONDOWN
