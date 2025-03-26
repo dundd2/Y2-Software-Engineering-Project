@@ -8,12 +8,15 @@ import asyncio
 import os
 import random
 
+
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from src.Board import Board
 from src.Game import Game
 from src.Player import Player
+from src.GameRenderer import GameRenderer
+from src.GameEventHandler import GameEventHandler
 from src.UI import (
     MainMenuPage,
     StartPage,
@@ -146,6 +149,12 @@ async def run_game(game, game_settings):
     ai_timeout_duration = 10000
 
     clock = pygame.time.Clock()
+    
+    renderer = GameRenderer(game)
+    game.renderer = renderer  
+    event_handler = GameEventHandler(game, game)
+    
+    event_handler.handle_motion((0, 0))
 
     while running:
         await asyncio.sleep(0)
@@ -198,7 +207,7 @@ async def run_game(game, game_settings):
         if not game.current_player_is_ai:
             last_ai_progress_time = current_time
 
-        game.draw()
+        renderer.draw()
 
         if hasattr(game, "waiting_for_animation") and game.waiting_for_animation:
             any_moving = any(player.is_moving for player in game.players)
@@ -221,7 +230,7 @@ async def run_game(game, game_settings):
                     pygame.display.flip()
                     continue
 
-                game_over_data = game.handle_click(game_event.pos)
+                game_over_data = event_handler.handle_click(game_event.pos)
                 if game_over_data:
                     running = False
             elif game_event.type == pygame.KEYDOWN:
@@ -233,15 +242,15 @@ async def run_game(game, game_settings):
 
                 if game.state == "AUCTION":
                     print("Handling auction key input in main loop")
-                    game.handle_auction_input(game_event)
+                    event_handler.handle_auction_input(game_event)
                 else:
-                    game_over_data = game.handle_key(game_event)
+                    game_over_data = event_handler.handle_key(game_event)
                     if game_over_data:
                         running = False
             elif game_event.type == pygame.VIDEORESIZE:
                 await apply_screen_settings((game_event.w, game_event.h))
             elif game_event.type == pygame.MOUSEMOTION:
-                game.handle_motion(game_event.pos)
+                event_handler.handle_motion(game_event.pos)
 
         current_time = pygame.time.get_ticks()
         if (
