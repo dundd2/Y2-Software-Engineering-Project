@@ -17,6 +17,7 @@ from src.Game import Game
 from src.Player import Player
 from src.GameRenderer import GameRenderer
 from src.GameEventHandler import GameEventHandler
+from src.GameActions import GameActions
 from src.UI import (
     MainMenuPage,
     StartPage,
@@ -150,9 +151,10 @@ async def run_game(game, game_settings):
 
     clock = pygame.time.Clock()
     
-    renderer = GameRenderer(game)
+    game_actions = GameActions(game)
+    renderer = GameRenderer(game, game_actions)
     game.renderer = renderer  
-    event_handler = GameEventHandler(game, game)
+    event_handler = GameEventHandler(game, game_actions)
     
     event_handler.handle_motion((0, 0))
 
@@ -167,11 +169,11 @@ async def run_game(game, game_settings):
             and not game.game_paused
         ):
             last_time_check = current_time
-            if game.check_time_limit():
+            if game_actions.check_time_limit():
                 print(
                     "Time limit reached and all players completed same number of laps - ending game"
                 )
-                game_over_data = game.end_abridged_game()
+                game_over_data = game_actions.end_abridged_game()
                 running = False
                 continue
 
@@ -200,7 +202,7 @@ async def run_game(game, game_settings):
                     game.state = "ROLL"
                     game.current_player_is_ai = False
 
-                    game.check_and_trigger_ai_turn()
+                    game_actions.check_and_trigger_ai_turn()
 
                 last_ai_progress_time = current_time
 
@@ -330,7 +332,7 @@ async def run_game(game, game_settings):
                     ai_player.position = 1
                     current_player["position"] = 1
 
-                game_over_data = game.handle_ai_turn(current_player)
+                game_over_data = game_actions.handle_ai_turn(current_player)
                 if game_over_data:
                     running = False
 
@@ -455,20 +457,20 @@ async def run_game(game, game_settings):
 
         if (
             game_settings["mode"] == "full"
-            and game.check_one_player_remains()
+            and game_actions.check_one_player_remains()
             and not game_over_data
         ):
             print("Only one player remains - ending game")
-            game_over_data = game.end_full_game()
+            game_over_data = game_actions.end_full_game()
             running = False
 
         elif (
             game_settings["mode"] == "abridged"
-            and game.check_one_player_remains()
+            and game_actions.check_one_player_remains()
             and not game_over_data
         ):
             print("Only one player remains in abridged mode - ending game")
-            game_over_data = game.end_abridged_game()
+            game_over_data = game_actions.end_abridged_game()
             running = False
 
         pygame.display.flip()

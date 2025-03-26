@@ -43,8 +43,9 @@ GROUP_COLORS = {
 
 
 class GameRenderer:
-    def __init__(self, game):
+    def __init__(self, game, game_actions):
         self.game = game
+        self.game_actions = game_actions
         self.screen = game.screen
         self.font = game.font
         self.small_font = game.small_font
@@ -324,7 +325,7 @@ class GameRenderer:
                 print("Animations completed - starting pending auction")
                 property_data = self.game.pending_auction_property
                 self.game.pending_auction_property = None
-                self.game.start_auction(property_data)
+                self.game_actions.start_auction(property_data)
 
         if hasattr(self.game, "auction_completed") and self.game.auction_completed:
             current_time = pygame.time.get_ticks()

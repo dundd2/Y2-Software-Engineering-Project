@@ -15,6 +15,7 @@ import string
 from src.UI import DevelopmentNotification, AIEmotionUI
 from src.GameRenderer import GameRenderer
 from src.GameEventHandler import GameEventHandler
+from src.GameActions import GameActions 
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -73,7 +74,8 @@ class Game:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
         pygame.display.set_caption("Property Tycoon Alpha 25.03.2025")
 
-        self.renderer = None
+        self.renderer = None  
+        self.game_actions = GameActions(self) 
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
@@ -347,7 +349,7 @@ class Game:
                         break
             else:
                 print("Failed to roll doubles - staying in jail")
-                self.handle_jail_turn(current_player)
+                self.game_actions.handle_jail_turn(current_player)  
                 self.state = "ROLL"
                 return
 
@@ -431,7 +433,9 @@ class Game:
                             "Player has not completed a circuit - cannot buy property"
                         )
                         self.state = "ROLL"
-                        return False
+                        return (
+                            False 
+                        )
 
                     self.board.add_message(
                         f"{current_player['name']} landed on {space['name']}"
@@ -456,7 +460,9 @@ class Game:
                             and current_player["money"] >= space["price"]
                         )
                         print(f"AI decision: {'Buy' if will_buy else 'Pass'}")
-                        self.handle_buy_decision(will_buy)
+                        self.game_actions.handle_buy_decision(
+                            will_buy
+                        )  
             else:
                 print("Property already owned or not purchasable")
                 self.state = "ROLL"
@@ -512,124 +518,6 @@ class Game:
             self.development_mode = False
 
         self.logic.is_going_to_jail = False
-
-    def play_turn(self):
-        if self.game_over:
-            return False
-
-        if self.dice_animation:
-            return False
-
-        if any(player.is_moving for player in self.players):
-            return False
-
-        current_player = self.logic.players[self.logic.current_player_index]
-        if not current_player:
-            self.board.add_message("Error: No current player found")
-            return False
-
-        player_obj = next(
-            (p for p in self.players if p.name == current_player["name"]), None
-        )
-        is_ai_player = player_obj and player_obj.is_ai
-
-        if self.development_mode and not is_ai_player:
-            return False
-
-        self.update_current_player()
-
-        if not player_obj:
-            print(f"Warning: Could not find player object for {current_player['name']}")
-            return False
-
-        if player_obj.in_jail != current_player.get("in_jail", False):
-            print(f"Synchronizing jail status for {player_obj.name}")
-            player_obj.in_jail = current_player.get("in_jail", False)
-            current_player["in_jail"] = player_obj.in_jail
-            player_obj.jail_turns = current_player.get("jail_turns", 0)
-            current_player["jail_turns"] = player_obj.jail_turns
-
-        if player_obj.in_jail and player_obj.stay_in_jail:
-            print(
-                f"Player {current_player['name']} chose to stay in jail - skipping turn"
-            )
-            self.board.add_message(
-                f"{current_player['name']} is staying in jail - skipping turn"
-            )
-            self.handle_turn_end()
-            return True
-
-        if player_obj.in_jail and current_player.get("in_jail", False):
-            print(f"Player {current_player['name']} is in jail - showing jail options")
-            jail_result = self.handle_jail_turn(current_player)
-            if not jail_result:
-                self.board.add_message(f"{current_player['name']} stays in jail")
-                self.handle_turn_end()
-                return True
-
-        old_position = current_player["position"]
-
-        self.lap_count[current_player["name"]] += 1
-        print(
-            f"Lap count for {current_player['name']}: {self.lap_count[current_player['name']]}"
-        )
-
-        if self.state == "ROLL":
-            self.dice_animation = True
-            self.animation_start = pygame.time.get_ticks()
-
-            dice1, dice2 = self.logic.play_turn()
-            if dice1 is None:
-                self.dice_animation = False
-                return True
-
-            while self.logic.message_queue:
-                message = self.logic.message_queue.pop(0)
-                print(f"Processing message: {message}")
-                self.board.add_message(message)
-                if "left jail" in message:
-                    print(f"Jail exit notification: {message}")
-
-            self.dice_values = (dice1, dice2)
-
-            for player in self.players:
-                if player.name == current_player["name"]:
-                    if player.position != old_position:
-                        print(
-                            f"Correcting position mismatch for {player.name}: Player object: {player.position}, Game logic: {old_position}"
-                        )
-                        player.position = old_position
-
-                    spaces_to_move = (current_player["position"] - old_position) % 40
-                    if (
-                        spaces_to_move == 0
-                        and current_player["position"] != old_position
-                    ):
-                        spaces_to_move = 40
-
-                    self.move_player(player, spaces_to_move)
-                    print(
-                        f"Starting animation for {player.name} to move {spaces_to_move} spaces from {old_position} to {current_player['position']}"
-                    )
-
-        self.wait_for_animations()
-
-        self.board.update_board_positions()
-
-        if current_player["position"] < old_position:
-            self.rounds_completed[current_player["name"]] += 1
-            self.board.add_message("*** PASSED GO! ***")
-            self.board.add_message(f"{current_player['name']} collected £200")
-
-        self.board.add_message(f"{current_player['name']} rolled {dice1 + dice2}")
-
-        if dice1 == dice2:
-            self.board.add_message("Doubles! Roll again!")
-
-        if self.check_game_over():
-            return True
-
-        return False
 
     def check_game_over(self):
         current_time = pygame.time.get_ticks()
@@ -730,141 +618,6 @@ class Game:
 
         return None
 
-    def handle_buy_decision(self, wants_to_buy):
-        self.development_mode = False
-        self.selected_property = None
-        self.dev_notification = None
-
-        current_player = self.logic.players[self.logic.current_player_index]
-        property_data = self.current_property
-
-        print("\n=== Property Purchase Debug ===")
-        print(f"Current state: {self.state}")
-        print(f"Player: {current_player['name']}")
-        print(f"Player money: £{current_player['money']}")
-        print(f"Property: {property_data['name']}")
-        print(f"Property price: £{property_data['price']}")
-        print(f"Wants to buy: {wants_to_buy}")
-        print(f"Is AI: {self.current_player_is_ai}")
-        print(
-            f"Completed circuits: {self.logic.completed_circuits.get(current_player['name'], 0)}"
-        )
-        print(f"Current lap count: {self.lap_count.get(current_player['name'], 0)}")
-
-        print(f"Property owner before: {property_data.get('owner', 'None')}")
-
-        if wants_to_buy:
-            if current_player["money"] >= property_data["price"]:
-                print("\nAttempting purchase...")
-                current_player["money"] -= property_data["price"]
-                property_data["owner"] = current_player["name"]
-                print(f"Property owner set to: {property_data['owner']}")
-                print(f"Property data position: {property_data['position']}")
-                print(
-                    f"Property in self.logic.properties: {property_data['position'] in self.logic.properties}"
-                )
-
-                if str(property_data["position"]) in self.logic.properties:
-                    print(
-                        f"Global property owner: {self.logic.properties[str(property_data['position'])].get('owner', 'None')}"
-                    )
-                    self.logic.properties[str(property_data["position"])]["owner"] = (
-                        current_player["name"]
-                    )
-                    print(
-                        f"Updated global property owner: {self.logic.properties[str(property_data['position'])].get('owner', 'None')}"
-                    )
-
-                self.board.add_message(
-                    f"{current_player['name']} bought {property_data['name']} for £{property_data['price']}"
-                )
-                print("Purchase successful")
-
-                if (
-                    not hasattr(self.logic, "current_auction")
-                    or not self.logic.current_auction
-                ):
-                    print("State changed to ROLL")
-                    self.state = "ROLL"
-                else:
-                    print("Auction in progress - maintaining AUCTION state")
-
-                print("\nPlayer properties after purchase:")
-                owned_count = 0
-                for prop_pos, prop in self.logic.properties.items():
-                    if prop.get("owner") == current_player["name"]:
-                        owned_count += 1
-                        print(
-                            f"  - {prop['name']} (Position: {prop_pos}, Group: {prop.get('group', 'None')})"
-                        )
-                print(f"Total properties owned: {owned_count}")
-
-                self.board.update_ownership(self.logic.properties)
-            else:
-                print("\nNot enough money for purchase")
-                self.board.add_message(
-                    f"{current_player['name']} doesn't have enough money to buy {property_data['name']}"
-                )
-
-                print("Starting auction due to insufficient funds")
-                self.start_auction(property_data)
-        else:
-            print("\nPlayer passed on purchase")
-
-            self.start_auction(property_data)
-
-        print("\nFinal state:")
-        print(f"Property owner: {property_data['owner']}")
-        print(f"Player money: £{current_player['money']}")
-
-        if not hasattr(self.logic, "current_auction") or not self.logic.current_auction:
-            print(f"Final state: {self.state}")
-            if self.state == "ROLL":
-                self.update_current_player()
-        else:
-            print(f"Auction in progress - state is {self.state}")
-
-    def start_auction(self, property_data):
-        print(f"\n=== Starting Auction for {property_data['name']} ===")
-
-        self.development_mode = False
-        self.selected_property = None
-        self.dev_notification = None
-
-        any_eligible = False
-        for player in self.logic.players:
-            if self.logic.completed_circuits.get(player["name"], 0) >= 1:
-                any_eligible = True
-                break
-
-        if not any_eligible:
-            print("No players have completed a circuit - skipping auction")
-            message = "No players have completed a circuit - property remains unsold"
-            self.board.add_message(message)
-            self.state = "ROLL"
-            self.update_current_player()
-            return
-
-        any_moving = any(player.is_moving for player in self.players)
-        if any_moving:
-            print("Animations in progress - delaying auction start")
-            self.pending_auction_property = property_data
-            self.waiting_for_animation = True
-            return
-
-        result = self.logic.auction_property(property_data["position"])
-
-        if result == "auction_in_progress":
-            self.state = "AUCTION"
-            self.auction_bid_amount = ""
-            print(f"State changed to {self.state}")
-            self.auction_just_started = True
-        else:
-            print(f"Failed to start auction: {result}")
-            self.state = "ROLL"
-            print(f"State changed to {self.state}")
-            self.update_current_player()
-
     def handle_space(self, current_player):
         position = str(current_player["position"])
         if position not in self.logic.properties:
@@ -881,7 +634,7 @@ class Game:
             self.state = "BUY"
 
             if self.logic.completed_circuits.get(current_player["name"], 0) < 1:
-                self.start_auction(space)
+                self.game_actions.start_auction(space)  
                 return None, None
 
             player_obj = next(
@@ -906,48 +659,12 @@ class Game:
                         if p.get("owner") == current_player["name"]
                     ],
                 ):
-                    self.handle_buy_decision(True)
+                    self.game_actions.handle_buy_decision(True)  
                 else:
-                    self.handle_buy_decision(False)
+                    self.game_actions.handle_buy_decision(False)  
                 return None, None
 
         return self.logic.handle_space(current_player)
-
-    def show_time_stats(self):
-        if self.game_mode == "abridged" and self.time_limit:
-            current_time = pygame.time.get_ticks()
-            elapsed = (current_time - self.start_time) // 1000
-            remaining = max(0, self.time_limit - elapsed)
-            minutes = remaining // 60
-            seconds = remaining % 60
-
-            self.board.add_message(f"Time: {minutes:02d}:{seconds:02d}")
-
-            min_rounds = min(self.rounds_completed.values())
-            max_rounds = max(self.rounds_completed.values())
-            if min_rounds != max_rounds:
-                self.board.add_message(f"Rounds: {min_rounds}-{max_rounds}")
-
-    def handle_bankruptcy(self, player):
-        for ui_player in self.players:
-            if ui_player.name == player["name"]:
-                ui_player.bankrupt = True
-                print(f"Marking player {ui_player.name} as bankrupt in UI")
-                break
-
-        if self.logic.remove_player(player["name"]):
-            self.board.add_message(f"{player['name']} bankrupt!")
-            self.board.update_ownership(self.logic.properties)
-
-            if self.check_one_player_remains():
-                print("Only one player remains after bankruptcy - ending game")
-                if self.game_settings.get("mode") == "full":
-                    self.end_full_game()
-                else:
-                    self.end_abridged_game()
-
-            return True
-        return False
 
     def handle_game_over(self, winner_name):
         if self.game_over:
@@ -1080,174 +797,13 @@ class Game:
 
             if need_redraw:
                 self.renderer.draw()
-                self.draw_jail_options(player)
+                if hasattr(self.renderer, "draw_jail_options"):
+                    self.renderer.draw_jail_options(player)
                 pygame.display.flip()
                 need_redraw = False
                 last_redraw_time = current_time
 
         return choice or "roll"
-
-    def handle_jail_turn(self, player):
-        print(f"\n=== Jail Turn Handler for {player['name']} ===")
-        print(f"In jail: {player['in_jail']}")
-        print(f"Jail turns: {player.get('jail_turns', 0)}")
-        print(f"Money: £{player['money']}")
-        print(
-            f"Has jail free cards: {self.logic.jail_free_cards.get(player['name'], 0)}"
-        )
-
-        if not player["in_jail"]:
-            print("Player not in jail - exiting jail handler")
-            return False
-
-        player_obj = next((p for p in self.players if p.name == player["name"]), None)
-        if not player_obj:
-            print(f"Warning: Could not find player object for {player['name']}")
-            return False
-
-        if not player_obj.in_jail:
-            print(f"Synchronizing jail state for {player['name']}")
-            player_obj.in_jail = True
-            player_obj.jail_turns = player["jail_turns"]
-
-        if player_obj.is_ai:
-            print(f"AI player {player['name']} deciding how to handle jail")
-
-            if self.logic.jail_free_cards.get(player["name"], 0) > 0:
-                print(f"AI using 'Get Out of Jail Free' card")
-                card_type = player_obj.use_jail_card()
-                if card_type == CardType.POT_LUCK:
-                    self.pot_luck_deck.return_jail_card(card_type)
-                    print("Returned Pot Luck jail card to deck")
-                else:
-                    self.opportunity_deck.return_jail_card(card_type)
-                    print("Returned Opportunity Knocks jail card to deck")
-
-                player["in_jail"] = False
-                player["jail_turns"] = 0
-                player_obj.in_jail = False
-                player_obj.jail_turns = 0
-                player_obj.stay_in_jail = False
-                self.board.add_message(
-                    f"{player['name']} used Get Out of Jail Free card and left jail!"
-                )
-                print(f"AI player {player['name']} successfully left jail using card")
-                return True
-            elif player["money"] >= 50 and random.random() < 0.5:
-                print(
-                    f"AI player {player['name']} paying £50 to leave jail (randomly decided)"
-                )
-                player["money"] -= 50
-                self.logic.free_parking_fund += 50
-                self.synchronize_free_parking_pot()
-                player["in_jail"] = False
-                player["jail_turns"] = 0
-                player_obj.in_jail = False
-                player_obj.jail_turns = 0
-                player_obj.stay_in_jail = False
-                self.board.add_message(f"{player['name']} paid £50 and left jail!")
-                print(
-                    f"AI player {player['name']} successfully left jail by paying £50"
-                )
-                return True
-            else:
-                print(f"AI player {player['name']} will try to roll doubles")
-        else:
-            print(f"Human player {player['name']} choosing jail option")
-            self.renderer.draw()
-            pygame.display.flip()
-
-            choice = self.get_jail_choice(player)
-            print(f"Human player selected option: {choice}")
-
-            if (
-                choice == "card"
-                and self.logic.jail_free_cards.get(player["name"], 0) > 0
-            ):
-                print(f"Using 'Get Out of Jail Free' card")
-                card_type = player_obj.use_jail_card()
-                if card_type == CardType.POT_LUCK:
-                    self.pot_luck_deck.return_jail_card(card_type)
-                else:
-                    self.opportunity_deck.return_jail_card(card_type)
-                player["in_jail"] = False
-                player["jail_turns"] = 0
-                player_obj.in_jail = False
-                player_obj.jail_turns = 0
-                player_obj.stay_in_jail = False
-                self.board.add_message(
-                    f"{player['name']} used Get Out of Jail Free card and left jail!"
-                )
-                print(f"Player {player['name']} successfully left jail using card")
-                return True
-            elif choice == "pay" and player["money"] >= 50:
-                print(f"Paying £50 to leave jail")
-                player["money"] -= 50
-                self.logic.free_parking_fund += 50
-                self.synchronize_free_parking_pot()
-                player["in_jail"] = False
-                player["jail_turns"] = 0
-                player_obj.in_jail = False
-                player_obj.jail_turns = 0
-                player_obj.stay_in_jail = False
-                self.board.add_message(f"{player['name']} paid £50 and left jail!")
-                try:
-                    self.board.add_message(f"{player['name']} paid £50 and left jail!")
-                except AttributeError:
-                    print("Error: board.add_message call failed")
-                print(f"Player {player['name']} successfully left jail by paying £50")
-                return True
-            elif choice == "stay":
-                print(f"Player {player['name']} chose to stay in jail")
-                player_obj.stay_in_jail = True
-                player["jail_turns"] = player.get("jail_turns", 0) + 1
-                player_obj.jail_turns = player["jail_turns"]
-                self.board.add_message(f"{player['name']} chose to stay in jail!")
-                return False
-            elif choice == "roll":
-                print(f"Player {player['name']} will try to roll doubles")
-                return True
-
-        player["jail_turns"] = player.get("jail_turns", 0) + 1
-        player_obj.jail_turns = player["jail_turns"]
-        print(f"Jail turn count increased to {player['jail_turns']}")
-
-        if player["jail_turns"] >= 3:
-            print(f"Player {player['name']} has been in jail for 3 turns")
-            if player["money"] >= 50:
-                print("Forcing payment after 3 turns")
-                player["money"] -= 50
-                self.logic.free_parking_fund += 50
-                self.synchronize_free_parking_pot()
-                player["in_jail"] = False
-                player["jail_turns"] = 0
-                player_obj.in_jail = False
-                player_obj.jail_turns = 0
-                player_obj.stay_in_jail = False
-                self.board.add_message(
-                    f"{player['name']} paid £50 after 3 turns and left jail!"
-                )
-                print(
-                    f"Player {player['name']} successfully left jail after 3 turns by paying £50"
-                )
-                return True
-            else:
-                print(
-                    f"Player {player['name']} can't pay jail fine - leaving jail bankrupt"
-                )
-                player["in_jail"] = False
-                player["jail_turns"] = 0
-                player_obj.in_jail = False
-                player_obj.jail_turns = 0
-                player_obj.stay_in_jail = False
-                self.board.add_message(
-                    f"{player['name']} couldn't pay jail fine and left jail bankrupt!"
-                )
-                self.handle_bankruptcy(player)
-                return True
-
-        print(f"Player {player['name']} remains in jail - jail turn handled\n")
-        return False
 
     def handle_card_action(self, card, player):
         print(f"Processing card action: {card.text} for player {player['name']}")
@@ -1432,12 +988,7 @@ class Game:
 
                 print("Clearing UI states to continue the game...")
                 self.state = "ROLL"
-                self.auction_data = None
-                self.jail_options_visible = False
-                self.confirmation_dialog_visible = False
                 self.popup_message = None
-                self.card_alert_visible = False
-                self.development_ui_visible = False
 
                 self._time_limit_notified = True
                 self.time_limit_reached = True
@@ -1477,7 +1028,9 @@ class Game:
                             status = "Bankrupt"
                         else:
                             try:
-                                assets = self.calculate_player_assets(logic_player)
+                                assets = self.game_actions.calculate_player_assets(
+                                    logic_player
+                                )  
                                 status = "Active"
                             except Exception as e:
                                 print(
@@ -1538,7 +1091,9 @@ class Game:
             if player_obj and player_obj.voluntary_exit:
                 final_assets[player_name] = player_obj.final_assets
             else:
-                final_assets[player_name] = self.calculate_player_assets(logic_player)
+                final_assets[player_name] = self.game_actions.calculate_player_assets(
+                    logic_player
+                )  
 
         print(f"End full game assets: {final_assets}")
 
@@ -1551,12 +1106,7 @@ class Game:
         }
 
     def end_abridged_game(self):
-        self.auction_data = None
-        self.jail_options_visible = False
-        self.confirmation_dialog_visible = False
         self.popup_message = None
-        self.card_alert_visible = False
-        self.development_ui_visible = False
         self.state = "ROLL"
         self.game_over = True
 
@@ -1569,7 +1119,9 @@ class Game:
             if player_obj and player_obj.voluntary_exit:
                 final_assets[player_name] = player_obj.final_assets
             else:
-                final_assets[player_name] = self.calculate_player_assets(logic_player)
+                final_assets[player_name] = self.game_actions.calculate_player_assets(
+                    logic_player
+                )  
 
         active_players = [
             p for p in self.players if not p.bankrupt and not p.voluntary_exit
@@ -1619,138 +1171,6 @@ class Game:
             "tied_winners": tied_winners,
             "lap_count": self.lap_count,
         }
-
-    def calculate_player_assets(self, player):
-        try:
-            if not player or not isinstance(player, dict):
-                print(
-                    f"Warning: Invalid player object in calculate_player_assets: {player}"
-                )
-                return 0
-
-            total = player.get("money", 0)
-
-            if not hasattr(self.logic, "properties") or not self.logic.properties:
-                print("Warning: No properties found in game logic")
-                return total
-
-            for prop_id, prop in self.logic.properties.items():
-                if not isinstance(prop, dict):
-                    continue
-
-                if prop.get("owner") == player.get("name"):
-                    total += prop.get("price", 0)
-
-                    if "houses" in prop and prop["houses"] > 0:
-                        house_costs = prop.get("house_costs", [])
-
-                        if isinstance(house_costs, list) and house_costs:
-                            houses_count = min(prop["houses"], len(house_costs))
-                            for i in range(houses_count):
-                                total += house_costs[i]
-                        elif isinstance(house_costs, (int, float)):
-                            total += house_costs * prop["houses"]
-
-            return total
-
-        except Exception as e:
-            print(f"Error in calculate_player_assets: {e}")
-            return player.get("money", 0)
-
-    def handle_voluntary_exit(self, player_name, final_assets):
-        print(f"\n=== Voluntary Exit Debug ===")
-        print(f"Player {player_name} is exiting the game")
-
-        logic_player = next(
-            (p for p in self.logic.players if p["name"] == player_name), None
-        )
-        if logic_player:
-            actual_final_assets = self.calculate_player_assets(logic_player)
-            print(f"Final assets calculated from game logic: {actual_final_assets}")
-        else:
-            actual_final_assets = final_assets
-            print(f"Using provided final assets: {final_assets}")
-
-        print(f"Current number of players: {len(self.logic.players)}")
-        print(f"Current player index before exit: {self.logic.current_player_index}")
-
-        self.board.add_message(f"{player_name} exits game")
-
-        player_obj = next((p for p in self.players if p.name == player_name), None)
-        if not player_obj:
-            print(f"Error: Could not find player object for {player_name}")
-            return False
-
-        print(f"Found player object: {player_obj.name}")
-
-        player_properties = [
-            p for p in self.logic.properties.values() if p.get("owner") == player_name
-        ]
-        print(
-            f"Player has {len(player_properties)} properties that will be returned to bank"
-        )
-
-        if hasattr(player_obj, "handle_voluntary_exit"):
-            print(f"Setting voluntary_exit flag for {player_name}")
-            player_obj.final_assets = actual_final_assets
-            player_obj.handle_voluntary_exit()
-
-        result = self.logic.remove_player(player_name, voluntary=True)
-        print(f"Game logic marked player as exited: {result}")
-
-        if result:
-            exited_player = next(
-                (p for p in self.logic.players if p["name"] == player_name), None
-            )
-            if exited_player and exited_player.get("exited", False):
-                print(f"Player {player_name} successfully marked as exited")
-            else:
-                print(f"Warning: Player {player_name} not properly marked as exited")
-
-            self.board.update_ownership(self.logic.properties)
-
-            active_players = [
-                p for p in self.logic.players if not p.get("exited", False)
-            ]
-            print(f"Active players after exit: {[p['name'] for p in active_players]}")
-
-            next_player_found = False
-            original_index = self.logic.current_player_index
-
-            while not next_player_found and active_players:
-                self.logic.current_player_index = (
-                    self.logic.current_player_index + 1
-                ) % len(self.logic.players)
-
-                if self.logic.current_player_index == original_index:
-                    break
-
-                current_player = self.logic.players[self.logic.current_player_index]
-                if not current_player.get("exited", False):
-                    next_player_found = True
-                    print(
-                        f"Next active player: {current_player['name']} (index: {self.logic.current_player_index})"
-                    )
-
-            print(f"Current player index after exit: {self.logic.current_player_index}")
-
-            if len(active_players) <= 1:
-                print(
-                    f"Only {len(active_players)} active player(s) left - game should end soon"
-                )
-                if self.check_one_player_remains():
-                    print("Game ending due to only one player remaining")
-                    game_over_data = self.end_full_game()
-                    return game_over_data
-
-            self.state = "ROLL"
-            print("Checking if next player is an AI...")
-            self.check_and_trigger_ai_turn()
-
-            return True
-        else:
-            print("Failed to mark player as exited in game logic")
-            return False
 
     def move_player(self, player, spaces):
         try:
@@ -1897,361 +1317,19 @@ class Game:
         except Exception as e:
             print(f"Error in synchronize_player_positions: {e}")
 
-    def handle_ai_turn(self, ai_player):
-        MAX_ITERATIONS = 100
-        iteration_count = 0
-
-        try:
-            player_obj = next(
-                (player for player in self.players if player.name == ai_player["name"]),
-                None,
-            )
-
-            if not player_obj:
-                return None
-
-            if not player_obj.is_ai:
-                return None
-
-            player_pos_valid = (
-                isinstance(player_obj.position, int) and 1 <= player_obj.position <= 40
-            )
-            logic_pos_valid = (
-                isinstance(ai_player.get("position"), int)
-                and 1 <= ai_player.get("position", 0) <= 40
-            )
-
-            if not player_pos_valid and logic_pos_valid:
-                player_obj.position = ai_player["position"]
-            elif player_pos_valid and not logic_pos_valid:
-                ai_player["position"] = player_obj.position
-            elif not player_pos_valid and not logic_pos_valid:
-                player_obj.position = 1
-                ai_player["position"] = 1
-            elif player_obj.position != ai_player["position"]:
-                player_obj.position = ai_player["position"]
-        except Exception as e:
-            return None
-
-        if self.state == "ROLL":
-            self.play_turn()
-
-            start_time = pygame.time.get_ticks()
-            while self.state == "BUY" and self.current_property:
-
-                current_time = pygame.time.get_ticks()
-                if current_time - start_time > 5000:
-                    print(
-                        f"Timeout reached for AI {ai_player['name']} in BUY state - forcing decision"
-                    )
-                    self.handle_buy_decision(False)
-                    break
-
-                iteration_count += 1
-                if iteration_count > MAX_ITERATIONS:
-                    print(
-                        f"Maximum iterations reached for AI {ai_player['name']} in BUY state - forcing decision"
-                    )
-                    self.handle_buy_decision(False)
-                    break
-
-                print(f"\n=== AI Purchase Decision ===")
-                print(f"AI Player: {ai_player['name']}")
-                print(f"Property: {self.current_property['name']}")
-                print(f"Price: £{self.current_property['price']}")
-                print(f"AI Money: £{ai_player['money']}")
-
-                try:
-                    should_buy = self.logic.ai_player.should_buy_property(
-                        self.current_property,
-                        ai_player["money"],
-                        [
-                            p
-                            for p in self.logic.properties.values()
-                            if p.get("owner") == ai_player["name"]
-                        ],
-                    )
-
-                    if should_buy:
-                        print("AI Decision: Buy")
-                        self.handle_buy_decision(True)
-                    else:
-                        print("AI Decision: Pass")
-                        self.handle_buy_decision(False)
-                except Exception as e:
-                    print(f"Error in AI purchase decision: {e}")
-                    self.handle_buy_decision(False)
-                break
-
-        elif self.state == "AUCTION" and hasattr(self.logic, "current_auction"):
-            auction_data = self.logic.current_auction
-
-            if auction_data is None:
-                print("Warning: Auction data is None in handle_ai_turn")
-                return None
-
-            start_time = pygame.time.get_ticks()
-            while (
-                auction_data["active_players"][auction_data["current_bidder_index"]][
-                    "name"
-                ]
-                == ai_player["name"]
-            ):
-                current_time = pygame.time.get_ticks()
-                if current_time - start_time > 5000:
-                    print(
-                        f"Timeout reached for AI {ai_player['name']} in AUCTION state - forcing pass"
-                    )
-                    success, message = self.logic.process_auction_pass(ai_player)
-                    if message:
-                        self.board.add_message(message)
-                    break
-
-                iteration_count += 1
-                if iteration_count > MAX_ITERATIONS:
-                    print(
-                        f"Maximum iterations reached for AI {ai_player['name']} in AUCTION state - forcing pass"
-                    )
-                    success, message = self.logic.process_auction_pass(ai_player)
-                    if message:
-                        self.board.add_message(message)
-                    break
-
-                print(f"\n=== AI Auction Turn ===")
-                print(f"AI Player: {ai_player['name']}")
-                print(f"Property: {auction_data['property']['name']}")
-                print(f"Current bid: £{auction_data['current_bid']}")
-                print(f"Minimum bid: £{auction_data['minimum_bid']}")
-
-                if ai_player["name"] in auction_data.get("passed_players", set()):
-                    print(f"AI {ai_player['name']} has already passed")
-                    break
-
-                try:
-                    bid_amount = self.logic.get_ai_auction_bid(
-                        ai_player, auction_data["property"], auction_data["current_bid"]
-                    )
-
-                    if bid_amount and bid_amount >= auction_data["minimum_bid"]:
-                        print(f"AI Decision: Bid £{bid_amount}")
-                        success, message = self.logic.process_auction_bid(
-                            ai_player, bid_amount
+    def synchronize_player_money(self):
+        for player in self.players:
+            for logic_player in self.logic.players:
+                if player.name == logic_player["name"]:
+                    if hasattr(player, "money") and player.money != logic_player.get(
+                        "money", 0
+                    ):
+                        old_money = player.money
+                        player.money = logic_player.get("money", 0)
+                        print(
+                            f"Money synchronized for {player.name}: {old_money} -> {player.money}"
                         )
-                        if message:
-                            self.board.add_message(message)
-                    else:
-                        print("AI Decision: Pass")
-                        success, message = self.logic.process_auction_pass(ai_player)
-                        if message:
-                            self.board.add_message(message)
-                except Exception as e:
-                    print(f"Error in AI auction decision: {e}")
-                    success, message = self.logic.process_auction_pass(ai_player)
-                    if message:
-                        self.board.add_message(message)
-
-                result_message = self.logic.check_auction_end()
-                if result_message:
-                    self.board.add_message(result_message)
-                    self.state = "ROLL"
-                    self.board.update_ownership(self.logic.properties)
-                break
-
-        return None
-
-    def handle_development_click(self, pos, property_data):
-        print("\n=== Development Click Debug ===")
-
-        if not property_data:
-            print("Error: No property selected")
-            return False
-
-        current_player = self.logic.players[self.logic.current_player_index]
-        print(f"Player: {current_player['name']}")
-        print(f"Player lap count: {self.lap_count.get(current_player['name'], 0)}")
-        print(f"Property: {property_data['name']}")
-        print(f"Houses: {property_data.get('houses', 0)}")
-        print(f"Development mode: {self.development_mode}")
-
-        for action, button in self.development_buttons.items():
-            if button.collidepoint(pos):
-                print(f"Button clicked: {action}")
-
-                if action == "close":
-                    self.selected_property = None
-                    self.state = "ROLL"
-                    print("Closing development UI")
-                    print(f"Development mode remains: {self.development_mode}")
-                    return True
-
-                elif action == "upgrade":
-                    houses = property_data.get("houses", 0)
-                    if houses < 4:
-                        result = self.logic.build_house(property_data, current_player)
-                        if result:
-                            self.board.add_message(
-                                f"{current_player['name']} built a house on {property_data['name']}"
-                            )
-                            print(
-                                f"House built successfully on {property_data['name']}"
-                            )
-                        else:
-                            print("Failed to build house")
-                    else:
-                        result = self.logic.build_hotel(property_data, current_player)
-                        if result:
-                            self.board.add_message(
-                                f"{current_player['name']} built a hotel on {property_data['name']}"
-                            )
-                            print(
-                                f"Hotel built successfully on {property_data['name']}"
-                            )
-                        else:
-                            print("Failed to build hotel")
-
-                    print(f"Upgrade result: {result}")
-                    self.board.update_ownership(self.logic.properties)
-                    return False
-
-                elif action == "mortgage":
-                    is_mortgaged = property_data.get("is_mortgaged", False)
-                    if is_mortgaged:
-                        result = self.logic.unmortgage_property(
-                            property_data, current_player
-                        )
-                        if result:
-                            self.board.add_message(
-                                f"{current_player['name']} unmortgaged {property_data['name']}"
-                            )
-                            print(
-                                f"Property unmortgaged successfully: {property_data['name']}"
-                            )
-                        else:
-                            print("Failed to unmortgage property")
-                    else:
-                        result = self.logic.mortgage_property(
-                            property_data, current_player
-                        )
-                        if result:
-                            self.board.add_message(
-                                f"{current_player['name']} mortgaged {property_data['name']}"
-                            )
-                            print(
-                                f"Property mortgaged successfully: {property_data['name']}"
-                            )
-                        else:
-                            print("Failed to mortgage property")
-
-                    print(f"Mortgage/Unmortgage result: {result}")
-                    self.board.update_ownership(self.logic.properties)
-                    return False
-
-                elif action == "sell":
-                    houses = property_data.get("houses", 0)
-                    if houses == 5:
-                        result = self.logic.sell_hotel(property_data, current_player)
-                        if result:
-                            self.board.add_message(
-                                f"{current_player['name']} sold a hotel from {property_data['name']}"
-                            )
-                            print(
-                                f"Hotel sold successfully from {property_data['name']}"
-                            )
-                        else:
-                            print("Failed to sell hotel")
-                    elif houses > 0:
-                        result = self.logic.sell_house(property_data, current_player)
-                        if result:
-                            self.board.add_message(
-                                f"{current_player['name']} sold a house from {property_data['name']}"
-                            )
-                            print(
-                                f"House sold successfully from {property_data['name']}"
-                            )
-                        else:
-                            print("Failed to sell house")
-                    else:
-                        self.board.add_message("No houses/hotels to sell")
-                        result = False
-                        print("Nothing to sell: property has no houses or hotels")
-
-                    print(f"Sell result: {result}")
-                    self.board.update_ownership(self.logic.properties)
-                    return False
-
-                elif action == "auction":
-                    current_player = self.logic.players[self.logic.current_player_index]
-
-                    property_data["owner"] = None
-
-                    self.board.add_message(
-                        f"{current_player['name']} put {property_data['name']} up for auction"
-                    )
-                    print(
-                        f"Player {current_player['name']} is auctioning {property_data['name']}"
-                    )
-
-                    self.start_auction(property_data)
-
-                    self.board.update_ownership(self.logic.properties)
-
-                    return False
-
-        return False
-
-    def add_to_free_parking(self, amount):
-        self.free_parking_pot += amount
-        self.board.add_message(
-            f"£{amount} added to Free Parking pot (Total: £{self.free_parking_pot})"
-        )
-
-    def collect_free_parking(self, player):
-        if self.free_parking_pot > 0:
-            amount = self.free_parking_pot
-            player["money"] += amount
-            self.free_parking_pot = 0
-            self.board.add_message(
-                f"{player['name']} collected £{amount} from Free Parking!"
-            )
-
-            self.show_card = True
-            self.current_card = {
-                "type": "Free Parking",
-                "message": f"You collected £{amount:,} from the Free Parking pot!",
-            }
-            self.current_card_player = player
-            self.card_display_time = pygame.time.get_ticks()
-
-            pygame.event.clear()
-            waiting = True
-            while waiting:
-                self.renderer.draw()
-                pygame.display.flip()
-
-                for event in pygame.event.get():
-                    if event.type in [pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN]:
-                        waiting = False
-                        self.show_card = False
-                        self.current_card = None
-                        self.current_card_player = None
-                    elif event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-
-                pygame.time.wait(30)
-
-            return True
-        return False
-
-    def handle_fine_payment(self, player, amount, reason="fine"):
-        if player["money"] >= amount:
-            player["money"] -= amount
-            self.add_to_free_parking(amount)
-            self.board.add_message(f"{player['name']} paid £{amount} {reason}")
-            return True
-        else:
-            self.board.add_message(f"{player['name']} cannot pay £{amount} {reason}")
-            return False
+                    break
 
     def synchronize_free_parking_pot(self):
         if hasattr(self.logic, "free_parking_fund"):
@@ -2405,20 +1483,6 @@ class Game:
 
         return confirm_exit
 
-    def synchronize_player_money(self):
-        for player in self.players:
-            for logic_player in self.logic.players:
-                if player.name == logic_player["name"]:
-                    if hasattr(player, "money") and player.money != logic_player.get(
-                        "money", 0
-                    ):
-                        old_money = player.money
-                        player.money = logic_player.get("money", 0)
-                        print(
-                            f"Money synchronized for {player.name}: {old_money} -> {player.money}"
-                        )
-                    break
-
     def check_and_trigger_ai_turn(self, recursion_depth=0):
         if recursion_depth > len(self.logic.players):
             print(
@@ -2494,7 +1558,9 @@ class Game:
                     print(
                         f"AI player {current_player['name']} is in jail - handling jail turn first"
                     )
-                    jail_result = self.handle_jail_turn(current_player)
+                    jail_result = self.game_actions.handle_jail_turn(
+                        current_player
+                    )   
                     if not jail_result:
                         print(
                             f"AI player {current_player['name']} stays in jail - moving to next player"
@@ -2513,7 +1579,7 @@ class Game:
                     return self.check_and_trigger_ai_turn(recursion_depth + 1)
 
                 if self.state == "ROLL":
-                    turn_result = self.play_turn()
+                    turn_result = self.game_actions.play_turn() 
                     if turn_result:
                         print(
                             f"AI player {current_player['name']} completed their turn"
