@@ -401,6 +401,9 @@ class GameLogic:
         space = self.properties[position]
         space_type = space.get("type", "")
 
+        if position == "20":
+            return "free_parking", None
+
         if space_type == "special":
             return None, None
         elif space_type == "tax":

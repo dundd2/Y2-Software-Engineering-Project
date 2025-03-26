@@ -20,16 +20,26 @@ class GameEventHandler:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     result = self.handle_click(event.pos)
-                    if result == True:
-                        return "game_over"
+                    if result is True:
+                        return {
+                            "winner": "Unknown",
+                            "final_assets": {},
+                            "bankrupted_players": [],
+                            "voluntary_exits": []
+                        }
                     elif isinstance(result, dict) and "winner" in result:
                         return result
             elif event.type == pygame.MOUSEMOTION:
                 self.handle_motion(event.pos)
             elif event.type == pygame.KEYDOWN:
                 result = self.handle_key(event)
-                if result == True:
-                    return "game_over"
+                if result is True:
+                    return {
+                        "winner": "Unknown",
+                        "final_assets": {},
+                        "bankrupted_players": [],
+                        "voluntary_exits": []
+                    }
                 elif isinstance(result, dict) and "winner" in result:
                     return result
         return None
@@ -75,10 +85,11 @@ class GameEventHandler:
             self.game.dev_notification = None
             self.game.notification = None
             self.game.logic.current_player_index = (
-                self.game.logic.current_player_index + 1
+             self.game.logic.current_player_index + 1
             ) % len(self.game.logic.players)
             self.game.update_current_player()
             self.game_actions.check_and_trigger_ai_turn()
+            self.game.handle_turn_end()
             return False
 
         if (
@@ -165,13 +176,30 @@ class GameEventHandler:
 
                         game_over_result = self.game_actions.check_game_over()
                         if game_over_result:
-                            return game_over_result
+                            if isinstance(game_over_result, dict):
+                                return game_over_result
+                            else:
+                                return {
+                                    "winner": "Unknown",
+                                    "final_assets": {},
+                                    "bankrupted_players": [],
+                                    "voluntary_exits": []
+                                }
 
                         if len(self.game.logic.players) > 0:
                             self.game.state = "ROLL"
                             self.game_actions.check_and_trigger_ai_turn()
                         else:
-                            return self.game_actions.check_game_over()
+                            result = self.game_actions.check_game_over()
+                            if isinstance(result, dict):
+                                return result
+                            elif result is True:
+                                return {
+                                    "winner": "Unknown",
+                                    "final_assets": {},
+                                    "bankrupted_players": [],
+                                    "voluntary_exits": []
+                                }
                 return False
 
             if self.game.development_mode:
@@ -222,13 +250,19 @@ class GameEventHandler:
                     f"{current_player['name']} cannot buy property while in jail!"
                 )
                 self.game.state = "ROLL"
+                self.game.renderer.draw()
+                pygame.display.flip()
                 return False
 
             if self.game.yes_button.collidepoint(pos):
                 self.game_actions.handle_buy_decision(True)
+                self.game.renderer.draw()
+                pygame.display.flip()
                 return False
             elif self.game.no_button.collidepoint(pos):
                 self.game_actions.handle_buy_decision(False)
+                self.game.renderer.draw()
+                pygame.display.flip()
                 return False
             return False
 
@@ -328,7 +362,16 @@ class GameEventHandler:
                             self.game.state = "ROLL"
                             self.game_actions.check_and_trigger_ai_turn()
                         else:
-                            return self.game_actions.check_game_over()
+                            result = self.game_actions.check_game_over()
+                            if isinstance(result, dict):
+                                return result
+                            elif result is True:
+                                return {
+                                    "winner": "Unknown",
+                                    "final_assets": {},
+                                    "bankrupted_players": [],
+                                    "voluntary_exits": []
+                                }
                 return False
             elif event.key == pygame.K_t and self.game.game_mode == "abridged":
                 self.game_actions.show_time_stats()

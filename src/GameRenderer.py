@@ -31,14 +31,16 @@ HUMAN_COLOR = DARK_GREEN
 AI_COLOR = DARK_RED
 
 GROUP_COLORS = {
-    "Brown": (139, 69, 19),
+    "Brown": (102, 51, 0),
     "Blue": (0, 200, 255),
     "Purple": (128, 0, 128),
-    "Orange": (255, 165, 0),
+    "Orange": (255, 128, 0),
     "Red": (255, 0, 0),
-    "Yellow": (255, 255, 0),
-    "Green": (0, 255, 0),
-    "Deep Blue": (0, 0, 139),
+    "Yellow": (255, 236, 93),
+    "Green": (0, 153, 0),
+    "Deep Blue": (0, 0, 153),
+    "Stations": (128, 128, 128),
+    "Utilities": (192, 192, 192),
 }
 
 
@@ -894,6 +896,32 @@ class GameRenderer:
             self.screen.blit(utility_text2, (card_x + padding, y_offset))
 
     def draw_buy_options(self, mouse_pos):
+        if self.game.current_player_is_ai:
+            window_size = self.screen.get_size()
+            message = "AI player is deciding..."
+            
+            message_surface = self.font.render(message, True, GOLD)
+            
+            msg_x = (window_size[0] - message_surface.get_width()) // 2
+            msg_y = window_size[1] // 4
+            
+            padding = 15
+            bg_rect = pygame.Rect(
+                msg_x - padding, 
+                msg_y - padding,
+                message_surface.get_width() + (padding * 2),
+                message_surface.get_height() + (padding * 2)
+            )
+            
+            bg_surface = pygame.Surface((bg_rect.width, bg_rect.height), pygame.SRCALPHA)
+            bg_surface.fill((0, 0, 0, 180)) 
+            self.screen.blit(bg_surface, (bg_rect.x, bg_rect.y))
+            
+            pygame.draw.rect(self.screen, ACCENT_COLOR, bg_rect, 2, border_radius=5)
+            
+            self.screen.blit(message_surface, (msg_x, msg_y))
+            return
+
         window_size = self.screen.get_size()
         button_width = 100
         button_height = 40
@@ -918,7 +946,6 @@ class GameRenderer:
         no_hover = self.game.no_button.collidepoint(mouse_pos)
 
         self.draw_button(self.game.yes_button, "Buy", hover=yes_hover, active=True)
-
         self.draw_button(self.game.no_button, "Pass", hover=no_hover, active=True)
 
     def draw_property_tooltip(self, property_data, mouse_pos):

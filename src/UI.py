@@ -2724,7 +2724,10 @@ class DevelopmentNotification:
         self.screen.blit(button_text, (text_x, text_y))
 
     def check_click(self, pos):
-        return self.continue_button.collidepoint(pos)
+        if self.continue_button.collidepoint(pos):
+            print("Development notification continue button clicked")
+            return True
+        return False
 
 
 class AIEmotionUI:

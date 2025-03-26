@@ -89,7 +89,7 @@ class GameActions:
 
         if player_obj.in_jail and current_player.get("in_jail", False):
             print(f"Player {current_player['name']} is in jail - showing jail options")
-            jail_result = self.game.handle_jail_turn(current_player)
+            jail_result = self.handle_jail_turn(current_player)
             if not jail_result:
                 self.game.board.add_message(f"{current_player['name']} stays in jail")
                 self.game.handle_turn_end()
@@ -153,6 +153,9 @@ class GameActions:
 
         if dice1 == dice2:
             self.game.board.add_message("Doubles! Roll again!")
+
+        self.game.renderer.draw()
+        pygame.display.flip()
 
         if self.game.check_game_over():
             return True
@@ -229,6 +232,9 @@ class GameActions:
                 print(f"Total properties owned: {owned_count}")
 
                 self.game.board.update_ownership(self.game.logic.properties)
+                
+                self.game.renderer.draw()
+                pygame.display.flip()
             else:
                 print("\nNot enough money for purchase")
                 self.game.board.add_message(
@@ -239,19 +245,12 @@ class GameActions:
                 self.start_auction(property_data)
         else:
             print("\nPlayer passed on purchase")
-
             self.start_auction(property_data)
 
         print("\nFinal state:")
-        print(f"Property owner: {property_data['owner']}")
-        print(f"Player money: £{current_player['money']}")
-
-        if not hasattr(self.game.logic, "current_auction") or not self.game.logic.current_auction:
-            print(f"Final state: {self.game.state}")
-            if self.game.state == "ROLL":
-                self.game.update_current_player()
-        else:
-            print(f"Auction in progress - state is {self.game.state}")
+        
+        self.game.renderer.draw()
+        pygame.display.flip()
 
     def start_auction(self, property_data):
         print(f"\n=== Starting Auction for {property_data['name']} ===")
@@ -271,6 +270,8 @@ class GameActions:
             message = "No players have completed a circuit - property remains unsold"
             self.game.board.add_message(message)
             self.game.state = "ROLL"
+            self.game.renderer.draw()
+            pygame.display.flip()
             self.game.update_current_player()
             return
 
@@ -281,6 +282,19 @@ class GameActions:
             self.game.waiting_for_animation = True
             return
 
+        active_players = [
+            p["name"]
+            for p in self.game.logic.players
+            if not p.get("bankrupt", False) and not p.get("exited", False)
+        ]
+        if len(active_players) == 1:
+            print(f"Only one active player ({active_players[0]}) - skipping auction")
+            self.game.state = "ROLL"
+            self.game.renderer.draw()
+            pygame.display.flip()
+            self.game.update_current_player()
+            return
+
         result = self.game.logic.auction_property(property_data["position"])
 
         if result == "auction_in_progress":
@@ -288,11 +302,20 @@ class GameActions:
             self.game.auction_bid_amount = ""
             print(f"State changed to {self.game.state}")
             self.game.auction_just_started = True
+            self.game.board.add_message(f"Auction for {property_data['name']} started!")
+            
+            self.game.renderer.draw()
+            pygame.display.flip()
         else:
             print(f"Failed to start auction: {result}")
             self.game.state = "ROLL"
             print(f"State changed to {self.game.state}")
+            self.game.renderer.draw()
+            pygame.display.flip()
             self.game.update_current_player()
+            
+        print(f"Final state: {self.game.state}")
+        print("=== End Auction ===\n")
 
     def handle_jail_turn(self, player):
         print(f"\n=== Jail Turn Handler for {player['name']} ===")
@@ -454,7 +477,7 @@ class GameActions:
                 return True
 
         print(f"Player {player['name']} remains in jail - jail turn handled\n")
-        return self.game.handle_jail_turn(player)
+        return False
 
     def handle_development_click(self, pos, property_data):
         print("\n=== Development Click Debug ===")

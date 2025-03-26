@@ -21,16 +21,17 @@ ERROR_COLOR = (220, 53, 69)
 
 GROUP_COLORS = {
     "Brown": (102, 51, 0),
-    "Blue": (0, 112, 255),
+    "Blue": (0, 200, 255),
     "Purple": (128, 0, 128),
     "Orange": (255, 128, 0),
     "Red": (255, 0, 0),
-    "Yellow": (255, 255, 0),
+    "Yellow": (255, 236, 93),
     "Green": (0, 153, 0),
     "Deep Blue": (0, 0, 153),
     "Stations": (128, 128, 128),
     "Utilities": (192, 192, 192),
 }
+
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

@@ -46,14 +46,16 @@ HUMAN_COLOR = DARK_GREEN
 AI_COLOR = DARK_RED
 
 GROUP_COLORS = {
-    "Brown": (139, 69, 19),
+    "Brown": (102, 51, 0),
     "Blue": (0, 200, 255),
     "Purple": (128, 0, 128),
-    "Orange": (255, 165, 0),
+    "Orange": (255, 128, 0),
     "Red": (255, 0, 0),
-    "Yellow": (255, 255, 0),
-    "Green": (0, 255, 0),
-    "Deep Blue": (0, 0, 139),
+    "Yellow": (255, 236, 93),
+    "Green": (0, 153, 0),
+    "Deep Blue": (0, 0, 153),
+    "Stations": (128, 128, 128),
+    "Utilities": (192, 192, 192),
 }
 
 KEY_ROLL = [pygame.K_SPACE, pygame.K_RETURN]
@@ -351,6 +353,8 @@ class Game:
                 print("Failed to roll doubles - staying in jail")
                 self.game_actions.handle_jail_turn(current_player)  
                 self.state = "ROLL"
+                self.renderer.draw()
+                pygame.display.flip()
                 return
 
         position = current_player["position"]
@@ -363,6 +367,17 @@ class Game:
             (p for p in self.players if p.name == current_player["name"]), None
         )
 
+        if position == 20:
+            print(f"Player landed on Free Parking space")
+            self.board.add_message(f"{current_player['name']} landed on Free Parking")
+            
+            self.game_actions.collect_free_parking(current_player)
+            
+            self.state = "ROLL"
+            self.renderer.draw()
+            pygame.display.flip()
+            return
+
         card_type = None
         if position == 3 or position == 18 or position == 34:
             print(f"Player landed on Pot Luck space {position}")
@@ -373,6 +388,8 @@ class Game:
             if result == "moved":
                 self.wait_for_animations()
                 self.board.update_board_positions()
+                self.renderer.draw()
+                pygame.display.flip()
 
         elif position == 8 or position == 23 or position == 37:
             print(f"Player landed on Opportunity Knocks space {position}")
@@ -385,6 +402,8 @@ class Game:
             if result == "moved":
                 self.wait_for_animations()
                 self.board.update_board_positions()
+                self.renderer.draw()
+                pygame.display.flip()
 
         if str(position) in self.logic.properties and not card_type:
             space = self.logic.properties[str(position)]
@@ -410,6 +429,8 @@ class Game:
                 self.handle_turn_end()
                 self.state = "ROLL"
                 self.board.update_board_positions()
+                self.renderer.draw()
+                pygame.display.flip()
             elif (
                 "price" in space
                 and space.get("owner") is None
@@ -421,6 +442,8 @@ class Game:
                         f"{current_player['name']} cannot buy property while in jail!"
                     )
                     self.state = "ROLL"
+                    self.renderer.draw()
+                    pygame.display.flip()
                 else:
                     print("\nUnowned property - initiating buy sequence")
                     print(f"Property price: £{space['price']}")
@@ -433,6 +456,8 @@ class Game:
                             "Player has not completed a circuit - cannot buy property"
                         )
                         self.state = "ROLL"
+                        self.renderer.draw()
+                        pygame.display.flip()
                         return (
                             False 
                         )
@@ -444,13 +469,13 @@ class Game:
                         f"Buy {space['name']} for £{space['price']}?"
                     )
 
-                    self.renderer.draw()
-                    pygame.display.flip()
-
-                    pygame.time.delay(500)
                     self.state = "BUY"
                     self.current_property = space
                     print("Buy state activated")
+                    
+                    self.renderer.draw()
+                    pygame.display.flip()
+                    pygame.time.delay(500)
 
                     if current_player_obj and current_player_obj.is_ai:
                         print("\nAI player making purchase decision")
@@ -466,6 +491,8 @@ class Game:
             else:
                 print("Property already owned or not purchasable")
                 self.state = "ROLL"
+                self.renderer.draw()
+                pygame.display.flip()
 
                 if current_player_obj and current_player_obj.is_ai:
                     property_to_develop = (
@@ -487,6 +514,8 @@ class Game:
         else:
             print("Not a property space or already processed by card handling")
             self.state = "ROLL"
+            self.renderer.draw()
+            pygame.display.flip()
 
         if self.state != "BUY":
             self.update_current_player()
@@ -506,18 +535,17 @@ class Game:
         self.renderer.draw()
         pygame.display.flip()
 
-        self.development_mode = True
-
         current_player = self.logic.players[self.logic.current_player_index]
         owned_properties = [
             p
             for p in self.logic.properties.values()
             if p.get("owner") == current_player["name"]
         ]
-        if not owned_properties:
-            self.development_mode = False
 
         self.logic.is_going_to_jail = False
+        
+        self.renderer.draw()
+        pygame.display.flip()
 
     def check_game_over(self):
         current_time = pygame.time.get_ticks()
@@ -614,6 +642,7 @@ class Game:
                             "final_assets": assets,
                             "bankrupted_players": self.logic.bankrupted_players,
                             "voluntary_exits": self.logic.voluntary_exits,
+                            "lap_count": self.lap_count
                         }
 
         return None
@@ -625,6 +654,13 @@ class Game:
 
         space = self.logic.properties[position]
 
+        if position == "20":
+            print(f"Player landed on Free Parking space")
+            self.board.add_message(f"{current_player['name']} landed on Free Parking")
+            
+            self.game_actions.collect_free_parking(current_player)
+            return "free_parking", None
+
         if (
             "price" in space
             and space["owner"] is None
@@ -635,6 +671,8 @@ class Game:
 
             if self.logic.completed_circuits.get(current_player["name"], 0) < 1:
                 self.game_actions.start_auction(space)  
+                self.renderer.draw()
+                pygame.display.flip()
                 return None, None
 
             player_obj = next(
@@ -648,6 +686,8 @@ class Game:
                 self.board.add_message(
                     f"Would you like to buy {space['name']} for £{space['price']}?"
                 )
+                self.renderer.draw()
+                pygame.display.flip()
                 return "can_buy", None
             else:
                 if self.logic.ai_player.should_buy_property(
@@ -664,7 +704,16 @@ class Game:
                     self.game_actions.handle_buy_decision(False)  
                 return None, None
 
-        return self.logic.handle_space(current_player)
+        result, message = self.logic.handle_space(current_player)
+        
+        if result == "free_parking":
+            print(f"Game_Logic detected Free Parking space")
+            self.board.add_message(f"{current_player['name']} landed on Free Parking")
+            
+            self.game_actions.collect_free_parking(current_player)
+            return "free_parking", None
+            
+        return result, message
 
     def handle_game_over(self, winner_name):
         if self.game_over:
@@ -885,6 +934,9 @@ class Game:
                 player_obj.start_move([player["position"]])
                 self.wait_for_animations()
                 self.board.update_board_positions()
+                
+                self.renderer.draw()
+                pygame.display.flip()
 
         return result
 
@@ -1703,6 +1755,8 @@ class Game:
         print(f"Player: {current_player['name']}")
         print(f"Current development_mode: {self.development_mode}")
         print(f"Lap count: {self.lap_count.get(current_player['name'], 0)}")
+        print(f"Current state: {self.state}")
+        print(f"Is AI player: {is_ai_player}")
 
         owned_properties = [
             prop
@@ -1716,21 +1770,16 @@ class Game:
         can_develop_properties = self.can_develop(current_player)
         print(f"Can develop properties: {can_develop_properties}")
 
-        if (
-            is_ai_player
-            and not self.development_mode
-            and self.can_develop(current_player)
-        ):
-            print(
-                f"AI player {current_player['name']} could develop properties but chose not to"
-            )
+        if self.development_mode:
+            print(f"Ending development phase for {current_player['name']}")
             self.development_mode = False
             print(f"Development mode set to: {self.development_mode}")
-        elif (
-            not is_ai_player
-            and not self.development_mode
-            and self.can_develop(current_player)
-        ):
+            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
+                self.logic.players
+            )
+            print(f"Moving to next player, new index: {self.logic.current_player_index}")
+            self.update_current_player()
+        elif not is_ai_player and can_develop_properties:
             print(
                 f"Human player {current_player['name']} can develop - entering development mode"
             )
@@ -1753,16 +1802,19 @@ class Game:
                 print(
                     f"    Can build hotel: {can_build_hotel} {'' if can_build_hotel else '- ' + (hotel_error or 'Unknown error')}"
                 )
-
+                
+            self.renderer.draw()
+            pygame.display.flip()
             return
-
-        self.development_mode = False
-        print(f"Development mode set to: {self.development_mode}")
-        self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
-            self.logic.players
-        )
-
-        self.update_current_player()
+        else:
+            print(f"No development phase needed for {current_player['name']}")
+            self.development_mode = False
+            print(f"Development mode set to: {self.development_mode}")
+            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
+                self.logic.players
+            )
+            print(f"Moving to next player, new index: {self.logic.current_player_index}")
+            self.update_current_player()
 
         self.state = "ROLL"
         self.current_property = None
@@ -1770,6 +1822,10 @@ class Game:
         self.roll_time = 0
         self.dice_animation = False
         self.dice_values = None
+        
+        self.renderer.draw()
+        pygame.display.flip()
+        print(f"Final state after turn end: {self.state}")
 
     def can_develop(self, player):
         print(f"\n=== DEVELOPMENT MODE DEBUG - can_develop check ===")
