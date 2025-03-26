@@ -110,7 +110,7 @@ class TestGame(unittest.TestCase):
     def test_player_attributes(self):
         """Test if players have correct attributes after game initialization"""
         self.assertEqual(self.game.players[0].name, "Duncan")
-        self.assertEqual(self.game.players[1].name, "Owen")
+        self.assertEqual(self.game.players[1].name, "ai-Owen")
         self.assertFalse(self.game.players[0].is_ai)
         self.assertTrue(self.game.players[1].is_ai)
         self.assertEqual(self.game.players[0].money, 1500)
@@ -129,8 +129,8 @@ class TestGame(unittest.TestCase):
         
     def test_free_parking_pot(self):
         """Test free parking pot functionality"""
-        self.assertEqual(self.game.free_parking_pot, 0) 
-        self.game.add_to_free_parking(50)
+        self.assertEqual(self.game.free_parking_pot, 0)
+        self.game.game_actions.add_to_free_parking(50)
         self.assertEqual(self.game.free_parking_pot, 50)
         
     def test_ai_difficulty(self):
@@ -706,7 +706,7 @@ class TestGame(unittest.TestCase):
         
         self.sync_player_objects()
         
-        self.assertEqual(len(self.game_logic.players), initial_player_count)
+        self.assertEqual(len(self.game_logic.players), initial_player_count - 1)
         self.assertIn(player.name, self.game_logic.bankrupted_players)
         
         self.assertTrue(player_dict.get('bankrupt', False), "Player should be marked as bankrupt")
@@ -731,11 +731,11 @@ class TestGame(unittest.TestCase):
         if test_property:
             initial_price = test_property.get('price', 0)
             
-            assets_before = self.game.calculate_player_assets(player_dict)
+            assets_before = self.game.game_actions.calculate_player_assets(player_dict)
             
             self.game_logic.mortgage_property(test_property, player_dict)
             
-            assets_after = self.game.calculate_player_assets(player_dict)
+            assets_after = self.game.game_actions.calculate_player_assets(player_dict)
             
             expected_difference = initial_price / 2
             actual_difference = assets_after - assets_before

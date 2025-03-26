@@ -1336,6 +1336,7 @@ class GameLogic:
                 if "houses" in prop:
                     prop["houses"] = 0
 
+        player["bankrupt"] = True
         self.players.remove(player)
         self.bankrupted_players.append(player["name"])
 
