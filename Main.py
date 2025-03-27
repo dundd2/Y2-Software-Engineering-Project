@@ -151,6 +151,12 @@ async def run_game(game, game_settings):
     last_time_check = pygame.time.get_ticks()
     last_ai_progress_time = pygame.time.get_ticks()
     ai_timeout_duration = 10000
+    
+    time_warning_active = False
+    warning_flash_rate = 300 
+    warning_edge_size = 0
+    warning_max_edge = 60
+    last_warning_update = 0
 
     clock = pygame.time.Clock()
     
@@ -158,6 +164,10 @@ async def run_game(game, game_settings):
     renderer = GameRenderer(game, game_actions)
     game.renderer = renderer  
     event_handler = GameEventHandler(game, game_actions)
+    
+    game.time_warning_start = 30 
+    game.warning_flash_rate = 200  
+    game.warning_border_max_width = 60  
     
     event_handler.handle_motion((0, 0))
 
@@ -175,6 +185,27 @@ async def run_game(game, game_settings):
         ):
             last_time_check = current_time
             time_limit_result = game.check_time_limit()
+            
+            if game.time_limit and not game.game_paused:
+                elapsed = (current_time - game.start_time - game.total_pause_time) // 1000
+                remaining = max(0, game.time_limit - elapsed)
+                
+                if remaining <= 30 and not hasattr(game, "time_limit_reached"):
+                    time_warning_active = True
+                    game.time_warning_active = True  
+                    
+                    if current_time - last_warning_update > 50:
+                        last_warning_update = current_time
+                        warning_intensity = (30 - remaining) / 30  
+                        warning_edge_target = int(warning_max_edge * warning_intensity)
+                        warning_edge_size = min(warning_edge_size + 2, warning_edge_target)
+                        game.warning_border_width = warning_edge_size
+                else:
+                    time_warning_active = False
+                    game.time_warning_active = False 
+                    warning_edge_size = max(0, warning_edge_size - 2) 
+                    game.warning_border_width = warning_edge_size  
+            
             if time_limit_result:
                 print(
                     "Time limit reached and all players completed same number of laps - ending game"
@@ -502,6 +533,17 @@ async def handle_end_game(game_over_data):
 
     clock = pygame.time.Clock()
 
+    if isinstance(game_over_data, bool):
+        print("WARNING: Game over data is a boolean instead of a dictionary")
+        game_over_data = {
+            "winner": "Last Player Standing",
+            "final_assets": {},
+            "bankrupted_players": [],
+            "voluntary_exits": [],
+            "tied_winners": [],
+            "lap_count": {}
+        }
+
     end_page = EndGamePage(
         winner_name=game_over_data["winner"],
         final_assets=game_over_data.get("final_assets", {}),
@@ -637,11 +679,14 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
 
 async def show_company_logo(screen):
     base_path = os.path.dirname(os.path.abspath(__file__))
+    from src.Sound_Manager import sound_manager
 
     logo_path = os.path.join(base_path, "assets/image/Watson Games 2025.png")
+    sound_manager.play_sound('watson_games')
     await show_logo_screen(screen, logo_path, scale_factor=0.7)
 
     group_logo_path = os.path.join(base_path, "assets/image/Group 5 Persent.png")
+    sound_manager.play_sound('group_present')
     await show_logo_screen(screen, group_logo_path, scale_factor=0.9)
 
     sound_manager.play_sound('game_start')

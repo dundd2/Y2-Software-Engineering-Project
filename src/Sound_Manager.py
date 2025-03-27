@@ -66,7 +66,11 @@ class SoundManager:
             'game_over': 'game_over.mp3',
             'card_draw': 'card_draw.mp3',
             'happy_click': 'happy_click.mp3',
-            'angry_click': 'angry_click.mp3'
+            'angry_click': 'angry_click.mp3',
+            'countdown': 'countdown.mp3', 
+            'credits': 'credits.mp3',
+            'watson_games': 'watson_games.mp3',
+            'group_present': 'group_present.mp3'
         }
         
         for sound_name, file_name in required_sounds.items():
@@ -137,4 +141,4 @@ class SoundManager:
         return self.missing_files
 
 
-sound_manager = SoundManager() 
+sound_manager = SoundManager()

@@ -1065,6 +1065,30 @@ class Game:
             elapsed_time_ms -= current_pause_duration
 
         time_limit_ms = self.time_limit * 1000
+        
+        from src.Sound_Manager import sound_manager
+        remaining_time_seconds = (time_limit_ms - elapsed_time_ms) // 1000
+        
+        if self.game_mode == "abridged" and self.time_limit:
+            if remaining_time_seconds <= 60 and remaining_time_seconds > 0:
+                if not hasattr(self, "_last_countdown_sound_time"):
+                    self._last_countdown_sound_time = 0
+                
+                if remaining_time_seconds <= 10:
+                    if current_time - self._last_countdown_sound_time >= 1000:
+                        sound_manager.play_sound('countdown') 
+                        self._last_countdown_sound_time = current_time
+                        self.board.add_message(f"Time remaining: {remaining_time_seconds} seconds")
+                elif remaining_time_seconds <= 30:
+                    if current_time - self._last_countdown_sound_time >= 5000:
+                        sound_manager.play_sound('countdown')
+                        self._last_countdown_sound_time = current_time
+                        self.board.add_message(f"Time remaining: {remaining_time_seconds} seconds")
+                elif remaining_time_seconds == 60:
+                    if not hasattr(self, "_one_minute_warning_played") or not self._one_minute_warning_played:
+                        sound_manager.play_sound('jail') 
+                        self.board.add_message("WARNING: 1 minute remaining!")
+                        self._one_minute_warning_played = True
 
         if elapsed_time_ms >= time_limit_ms:
             if (
@@ -1074,7 +1098,9 @@ class Game:
                 minutes = self.time_limit // 60
                 print(f"\n\n!!!TIME LIMIT REACHED!!!: {minutes} minutes have elapsed!")
                 print("Game will end after all players complete their current lap...")
-
+                
+                sound_manager.play_sound('game_over')
+                
                 self.board.add_message(f"TIME'S UP! Game will end after this lap.")
 
                 if (

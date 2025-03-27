@@ -2512,6 +2512,8 @@ class CreditsPage(BasePage):
             "Duncan Law",
             "Owen Chen",
         ]
+        
+        sound_manager.play_sound('credits')
 
     def draw(self):
         self.draw_background()

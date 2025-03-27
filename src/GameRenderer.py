@@ -138,6 +138,39 @@ class GameRenderer:
 
             window_size = self.screen.get_size()
 
+            if remaining <= 30 and not hasattr(self.game, "time_limit_reached"):
+                warning_intensity = (30 - remaining) / 30
+                
+                flash_value = abs(math.sin(current_time / 300)) 
+                pulse_intensity = 0.4 + (flash_value * 0.6 * warning_intensity)
+                
+                border_width = int(20 + (30 * warning_intensity * flash_value))
+                
+                border_color = (255, 0, 0, int(180 * pulse_intensity))
+                
+                warning_surface = pygame.Surface(window_size, pygame.SRCALPHA)
+                
+                pygame.draw.rect(warning_surface, border_color, 
+                                (0, 0, window_size[0], border_width))
+                
+                pygame.draw.rect(warning_surface, border_color, 
+                                (0, window_size[1] - border_width, window_size[0], border_width))
+                
+                pygame.draw.rect(warning_surface, border_color, 
+                                (0, border_width, border_width, window_size[1] - (2 * border_width)))
+                
+                pygame.draw.rect(warning_surface, border_color, 
+                                (window_size[0] - border_width, border_width, 
+                                border_width, window_size[1] - (2 * border_width)))
+                
+                self.screen.blit(warning_surface, (0, 0))
+                
+                if remaining <= 10:
+                    overlay_intensity = int(25 * (10 - remaining) / 10 * flash_value)
+                    overlay = pygame.Surface(window_size, pygame.SRCALPHA)
+                    overlay.fill((255, 0, 0, overlay_intensity))
+                    self.screen.blit(overlay, (0, 0))
+
             if (
                 hasattr(self.game, "time_limit_reached")
                 and self.game.time_limit_reached
