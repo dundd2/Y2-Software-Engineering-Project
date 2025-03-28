@@ -15,7 +15,8 @@ import string
 from src.UI import DevelopmentNotification, AIEmotionUI
 from src.GameRenderer import GameRenderer
 from src.GameEventHandler import GameEventHandler
-from src.GameActions import GameActions 
+from src.GameActions import GameActions
+from src.DevelopmentMode import DevelopmentMode
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -78,12 +79,15 @@ class Game:
 
         self.renderer = None  
         self.game_actions = GameActions(self) 
+        self.development_mode = False 
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
         self.tiny_font = font_manager.get_font(16)
         self.button_font = font_manager.get_font(32)
         self.message_font = font_manager.get_font(24)
+
+        self.dev_manager = DevelopmentMode(self, self.game_actions)
 
         window_size = self.screen.get_size()
         try:
@@ -336,11 +340,6 @@ class Game:
             self.current_card_player = None
             self.card_display_time = 0
             self.CARD_DISPLAY_DURATION = 3000
-
-            self.development_mode = False
-            self.selected_property = None
-            self.development_buttons = {}
-            self.dev_notification = None
 
             self.free_parking_pot = 0
 
@@ -1701,13 +1700,10 @@ class Game:
                         self.handle_turn_end()
                         return self.check_and_trigger_ai_turn(recursion_depth + 1)
 
-                if self.state == "DEVELOPMENT" and self.development_mode:
+                if self.state == "DEVELOPMENT" and self.dev_manager.is_active:
                     print(
                         f"AI player {current_player['name']} is in development mode - automatically handling development"
                     )
-                    self.development_mode = False
-                    self.state = "ROLL"
-                    self.selected_property = None
                     self.handle_turn_end()
                     return self.check_and_trigger_ai_turn(recursion_depth + 1)
 
@@ -1869,18 +1865,24 @@ class Game:
             and not self.development_mode
             and self.can_develop(current_player)
         ):
-            self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
-                self.logic.players
-            )
-            print(f"Moving to next player, new index: {self.logic.current_player_index}")
-            self.update_current_player()
-        elif not is_ai_player and can_develop_properties:
             print(
                 f"Human player {current_player['name']} can develop - entering development mode"
             )
             self.state = "DEVELOPMENT"
             self.development_mode = True
-            print(f"Development mode set to: {self.development_mode}")
+
+            activated = self.dev_manager.activate(current_player)
+
+            if not activated:
+                print("WARNING: Development mode state set, but dev_manager failed to activate!")
+                self.state = "ROLL"
+                self.development_mode = False
+                self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+                print(f"Moving to next player due to failed activation, new index: {self.logic.current_player_index}")
+                self.update_current_player()
+                return
+
+            print(f"Development mode set to: {self.development_mode}, DevManager active: {self.dev_manager.is_active}")
 
             print(f"\n=== Properties eligible for development ===")
             for prop in owned_properties:
@@ -1922,33 +1924,3 @@ class Game:
         pygame.display.flip()
         print(f"Final state after turn end: {self.state}")
 
-    def can_develop(self, player):
-        print(f"\n=== DEVELOPMENT MODE DEBUG - can_develop check ===")
-        print(f"Player: {player['name'] if player else 'None'}")
-
-        if not player or not isinstance(player, dict):
-            print("Cannot develop: Invalid player data")
-            return False
-
-        if self.lap_count.get(player["name"], 0) < 1:
-            return False
-
-        owned_properties = [
-            prop
-            for prop in self.logic.properties.values()
-            if prop.get("owner") == player["name"]
-        ]
-        print(f"Player owns {len(owned_properties)} properties")
-
-        if not owned_properties:
-            print("Cannot develop: Player owns no properties")
-            return False
-
-        can_develop_property = False
-        for prop in owned_properties:
-            if self.logic.can_build_house(prop, player) or self.logic.can_build_hotel(
-                prop, player
-            ):
-                return True
-
-        return False

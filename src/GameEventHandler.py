@@ -29,7 +29,7 @@ class GameEventHandler:
             elif event.type == pygame.KEYDOWN:
                 result = self.handle_key(event)
                 if result == True:
-                        return "game_over"
+                    return "game_over"
                 elif isinstance(result, dict) and "winner" in result:
                     return result
         return None
@@ -37,6 +37,9 @@ class GameEventHandler:
     def handle_click(self, pos):
         if self.game.game_over:
             return False
+
+        if self.game.dev_manager.is_active:
+            return self.game.dev_manager.handle_click(pos)
 
         for emotion_ui in self.game.emotion_uis.values():
             if emotion_ui.handle_click(pos):
@@ -60,27 +63,6 @@ class GameEventHandler:
 
         print(f"\n=== Handle Click Debug ===")
         print(f"Current state: {self.game.state}")
-        print(f"Development mode: {self.game.development_mode}")
-
-        if (
-            self.game.development_mode
-            and self.game.dev_notification
-            and self.game.dev_notification.check_click(pos)
-        ):
-            print("Continuing from development mode")
-            self.game.development_mode = False
-            print(f"Development mode set to: {self.game.development_mode}")
-            self.game.selected_property = None
-            self.game.state = "ROLL"
-            self.game.dev_notification = None
-            self.game.notification = None
-            self.game.logic.current_player_index = (
-            self.game.logic.current_player_index + 1
-            ) % len(self.game.logic.players)
-            self.game.update_current_player()
-            self.game_actions.check_and_trigger_ai_turn()
-            self.game.handle_turn_end()
-            return False
 
         if (
             hasattr(self.game, "auction_just_started")
@@ -122,11 +104,6 @@ class GameEventHandler:
                 ):
                     self.game.board.add_message(
                         "Game is paused. Click Continue to resume."
-                    )
-                    return False
-                elif self.game.development_mode:
-                    self.game.board.add_message(
-                        "Current player must complete development before the next player can roll"
                     )
                     return False
                 else:
@@ -174,45 +151,6 @@ class GameEventHandler:
                             return self.game_actions.check_game_over()
                 return False
 
-            if self.game.development_mode:
-                if (
-                    hasattr(self.game.logic, "current_auction")
-                    and self.game.logic.current_auction
-                ):
-                    print("Auction in progress - ignoring development click")
-                    return False
-
-                current_player = self.game.logic.players[
-                    self.game.logic.current_player_index
-                ]
-                print(f"Checking property clicks for player {current_player['name']}")
-
-                property_pos = self.game.board.property_clicked(pos)
-                if property_pos:
-                    print(f"Clicked on property at position {property_pos}")
-
-                    pos_str = str(property_pos)
-                    if pos_str in self.game.logic.properties:
-                        prop_data = self.game.logic.properties[pos_str]
-
-                        if prop_data.get("owner") == current_player["name"]:
-                            print(
-                                f"Player {current_player['name']} clicked on their property {prop_data['name']}"
-                            )
-                            self.game.selected_property = prop_data
-                            self.game.state = "DEVELOPMENT"
-                            return False
-                        else:
-                            owner = prop_data.get("owner", "Bank")
-                            print(
-                                f"Property {prop_data['name']} is owned by {owner}, not {current_player['name']}"
-                            )
-                            self.game.board.add_message(
-                                f"Property {prop_data['name']} is owned by {owner}"
-                            )
-                    else:
-                        print(f"No property data found for position {property_pos}")
-
         elif self.game.state == "BUY" and self.game.current_property is not None:
             current_player = self.game.logic.players[
                 self.game.logic.current_player_index
@@ -228,11 +166,13 @@ class GameEventHandler:
 
             if self.game.yes_button.collidepoint(pos):
                 self.game_actions.handle_buy_decision(True)
+                self.game.dev_manager.deactivate()
                 self.game.renderer.draw()
                 pygame.display.flip()
                 return False
             elif self.game.no_button.collidepoint(pos):
                 self.game_actions.handle_buy_decision(False)
+                self.game.dev_manager.deactivate()
                 self.game.renderer.draw()
                 pygame.display.flip()
                 return False
@@ -249,20 +189,12 @@ class GameEventHandler:
                 self.game.current_property = None
                 self.game.board.update_ownership(self.game.logic.properties)
                 self.game.update_current_player()
+                self.game.dev_manager.deactivate()
                 self.game_actions.check_and_trigger_ai_turn()
             else:
                 print(
                     "Auction continues or completion in progress - maintaining AUCTION state"
                 )
-            return False
-
-        elif self.game.state == "DEVELOPMENT" and self.game.selected_property:
-            result = self.game_actions.handle_development_click(
-                pos, self.game.selected_property
-            )
-            if result:
-                self.game.selected_property = None
-                self.game.state = "ROLL"
             return False
 
         print(f"Final state after click: {self.game.state}")
@@ -296,6 +228,9 @@ class GameEventHandler:
         return False
 
     def handle_key(self, event):
+        if self.game.dev_manager.is_active:
+            return self.game.dev_manager.handle_key(event)
+
         any_player_moving = any(player.is_moving for player in self.game.players)
         if any_player_moving and event.key not in [
             pygame.K_LEFT,
@@ -334,7 +269,7 @@ class GameEventHandler:
                             self.game.state = "ROLL"
                             self.game_actions.check_and_trigger_ai_turn()
                         else:
-                         return self.game_actions.check_game_over()
+                            return self.game_actions.check_game_over()
                 return False
             elif event.key == pygame.K_t and self.game.game_mode == "abridged":
                 self.game_actions.show_time_stats()

@@ -499,9 +499,9 @@ class SettingsPage(BasePage):
         self.current_font = 0
         self.show_confirmation = False
         self.confirmation_time = 0
-        
+
         self.sound_manager = sound_manager
-        
+
         self.sound_volume = int(self.sound_manager.sound_volume * 100)
         self.music_volume = int(self.sound_manager.music_volume * 100)
 
@@ -529,7 +529,7 @@ class SettingsPage(BasePage):
             self.button_font,
             color=MODE_COLOR,
         )
-        
+
         self.sound_volume_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
@@ -541,7 +541,7 @@ class SettingsPage(BasePage):
             self.button_font,
             color=MODE_COLOR,
         )
-        
+
         self.music_volume_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] - button_width) // 2,
@@ -571,7 +571,7 @@ class SettingsPage(BasePage):
             "Back",
             self.button_font,
         )
-        
+
         self.test_sound_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] + button_width) // 2 + 20,
@@ -583,7 +583,7 @@ class SettingsPage(BasePage):
             self.button_font,
             color=(0, 150, 200),
         )
-        
+
         self.test_music_button = UIButton(
             pygame.Rect(
                 (get_window_size()[0] + button_width) // 2 + 20,
@@ -618,11 +618,11 @@ class SettingsPage(BasePage):
 
         self.font_button.text = f"Font: {self.font_options[self.current_font][0]}"
         self.font_button.draw(self.screen)
-        
+
         self.sound_volume_button.text = f"Sound Volume: {self.sound_volume}%"
         self.sound_volume_button.draw(self.screen)
         self.test_sound_button.draw(self.screen)
-        
+
         self.music_volume_button.text = f"Music Volume: {self.music_volume}%"
         self.music_volume_button.draw(self.screen)
         self.test_music_button.draw(self.screen)
@@ -688,7 +688,7 @@ class SettingsPage(BasePage):
             self.confirmation_time = pygame.time.get_ticks()
             return False
         elif self.test_sound_button.check_hover(pos):
-            self.sound_manager.play_sound('menu_click')
+            self.sound_manager.play_sound("menu_click")
             return False
         elif self.test_music_button.check_hover(pos):
             if not pygame.mixer.music.get_busy():
@@ -769,7 +769,7 @@ class SettingsPage(BasePage):
                 base_path, "assets", "font", self.font_options[self.current_font][1]
             ),
             "sound_volume": self.sound_volume / 100.0,
-            "music_volume": self.music_volume / 100.0
+            "music_volume": self.music_volume / 100.0,
         }
 
 
@@ -2512,8 +2512,8 @@ class CreditsPage(BasePage):
             "Duncan Law",
             "Owen Chen",
         ]
-        
-        sound_manager.play_sound('credits')
+
+        sound_manager.play_sound("credits")
 
     def draw(self):
         self.draw_background()
@@ -2996,7 +2996,7 @@ class AIEmotionUI:
                 self._check_easter_egg()
 
             print(f"Happy button clicked for {self.ai_player.name} - making AI happier")
-            sound_manager.play_sound('happy_click')
+            sound_manager.play_sound("happy_click")
             self.game.update_ai_mood(self.ai_player.name, False)
             return True
 
@@ -3007,7 +3007,7 @@ class AIEmotionUI:
                 self._check_easter_egg()
 
             print(f"Angry button clicked for {self.ai_player.name} - making AI angrier")
-            sound_manager.play_sound('angry_click')
+            sound_manager.play_sound("angry_click")
             self.game.update_ai_mood(self.ai_player.name, True)
             return True
 

@@ -321,7 +321,9 @@ class GameLogic:
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
         current_player = self.players[self.current_player_index]
 
-        while current_player.get("exited", False) or current_player.get("bankrupt", False):
+        while current_player.get("exited", False) or current_player.get(
+            "bankrupt", False
+        ):
             self.current_player_index = (self.current_player_index + 1) % len(
                 self.players
             )
@@ -334,7 +336,9 @@ class GameLogic:
             return None, None
 
         current_player = self.players[self.current_player_index]
-        while current_player.get("exited", False) or current_player.get("bankrupt", False):
+        while current_player.get("exited", False) or current_player.get(
+            "bankrupt", False
+        ):
             self.current_player_index = (self.current_player_index + 1) % len(
                 self.players
             )
@@ -1353,14 +1357,14 @@ class GameLogic:
         print(f"Property: {property_data.get('name', 'Unknown')}")
         print(f"Player: {player['name'] if player else 'None'}")
         print(f"Property position: {property_data.get('position', 'Unknown')}")
-        
+
         if property_data.get("is_mortgaged", False):
             print("Cannot build - property is mortgaged")
             return False, "Cannot build on mortgaged property"
 
         color_group = property_data.get("group")
         print(f"Color group: {color_group}")
-        
+
         if not color_group:
             print("Cannot build - not a valid property group")
             return False, "Cannot build houses on this type of property"
@@ -1368,26 +1372,32 @@ class GameLogic:
         color_group_properties = [
             p for p in self.properties.values() if p.get("group") == color_group
         ]
-        
+
         print(f"Total properties in group: {len(color_group_properties)}")
         for prop in color_group_properties:
             prop_owner = prop.get("owner", "None")
-            print(f"  - {prop.get('name', 'Unknown')} (Position: {prop.get('position', 'Unknown')}, Owner: {prop_owner})")
-            
+            print(
+                f"  - {prop.get('name', 'Unknown')} (Position: {prop.get('position', 'Unknown')}, Owner: {prop_owner})"
+            )
+
             if prop.get("owner") != player["name"]:
-                print(f"Cannot build - {prop.get('name', 'Unknown')} is owned by {prop.get('owner', 'None')}, not {player['name']}")
+                print(
+                    f"Cannot build - {prop.get('name', 'Unknown')} is owned by {prop.get('owner', 'None')}, not {player['name']}"
+                )
                 return False, f"Must own all {color_group} properties to build"
 
         current_houses = property_data.get("houses", 0)
         print(f"Current houses on property: {current_houses}")
-        
+
         for prop in color_group_properties:
             if prop != property_data:
                 other_houses = prop.get("houses", 0)
                 print(f"  - {prop.get('name', 'Unknown')} has {other_houses} houses")
-                
+
                 if current_houses + 1 > other_houses + 1:
-                    print(f"Cannot build - houses must be built evenly. This property would have {current_houses + 1} houses while {prop.get('name', 'Unknown')} has {other_houses}")
+                    print(
+                        f"Cannot build - houses must be built evenly. This property would have {current_houses + 1} houses while {prop.get('name', 'Unknown')} has {other_houses}"
+                    )
                     return False, "Must build houses evenly across properties"
 
         if current_houses >= 5:
