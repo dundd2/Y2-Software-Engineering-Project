@@ -42,36 +42,36 @@ class LogRedirector:
         self.level = level
         self.buffer = ""
         self._writing = False
-    
+
     def write(self, buf):
         if self._writing:
             if sys.__stdout__ is not None:
                 try:
                     sys.__stdout__.write(buf)
                 except (AttributeError, IOError):
-                    pass  
+                    pass
             return
-            
+
         self._writing = True
         try:
             for line in buf.rstrip().splitlines():
                 if line.strip():
                     self.logger.log(self.level, line.rstrip())
-            
+
             if sys.__stdout__ is not None:
                 try:
                     sys.__stdout__.write(buf)
                 except (AttributeError, IOError):
-                    pass 
+                    pass
         except Exception as e:
-            if not self._writing: 
+            if not self._writing:
                 print(f"Error in LogRedirector: {e}", file=sys.__stderr__)
         finally:
             self._writing = False
-    
+
     def flush(self):
         try:
-            if hasattr(sys, '__stdout__') and sys.__stdout__ is not None:
+            if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
                 sys.__stdout__.flush()
         except (AttributeError, IOError):
             pass
