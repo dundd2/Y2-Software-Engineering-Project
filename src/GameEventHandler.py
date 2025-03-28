@@ -1,3 +1,6 @@
+# Property Tycoon GameEventHandler.py
+# It contains the classes for the game event handler, such as the handle input, the handle click, and the handle motion.
+
 import pygame
 import sys
 from src.Cards import CardType

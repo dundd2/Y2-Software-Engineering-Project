@@ -1,6 +1,7 @@
 # Property Tycoon main.py
-# Created for Year 2 G6046: Software Engineering Project-Group 5
+# Created for 2025 UOS Year 2 G6046: Software Engineering Project-Group 5
 # -*- coding: utf-8 -*-
+# It contains the main function for the game.
 
 import pygame
 import sys

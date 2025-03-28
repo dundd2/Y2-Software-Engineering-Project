@@ -1,3 +1,6 @@
+# Property Tycoon GameRenderer.py
+# It contains the classes for the game renderer, such as the draw functions, the draw buttons, and the draw time remaining. 
+
 import pygame
 import math
 import os

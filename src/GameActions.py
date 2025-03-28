@@ -1,3 +1,6 @@
+# Property Tycoon GameActions.py
+# It contains the classes for the game actions, such as the play turn, the handle buy decision, and the start auction.
+
 import pygame
 import sys
 import os

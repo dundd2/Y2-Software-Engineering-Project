@@ -1,8 +1,9 @@
 # Base on PropertyTycoonCardData.xlsx from canvas
 # script based on Eric's provided flowchart photo (flowchart.drawio.png)
 # will add more comment later to reference for which part of code is based on which part of the flowchart
-import random
+
 import pygame
+import random
 from src.Loadexcel import load_property_data
 from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 
@@ -396,6 +397,7 @@ class GameLogic:
 
     def add_message(self, message):
         self.message_queue.append(message)
+        print(f"[GAME] {message}")
 
     def handle_space(self, player):
         position = str(player["position"])

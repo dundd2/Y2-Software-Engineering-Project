@@ -1,6 +1,6 @@
-# load PropertyTycoonBoardData.xlsx data to the game
-# currently only load data with PropertyTycoonBoardData.xlsx ,not include PropertyTycoonCardData.xlsx
-# will do if have time
+# Property Tycoon Loadexcel.py
+# It contains the classes for loading the property data, the game text, and the card data.  
+
 import pandas as pd
 import os
 

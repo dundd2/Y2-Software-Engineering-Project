@@ -1,5 +1,4 @@
 # Property Tycoon cards.py
-# This file contains the classes for the cards in the Property Tycoon game.
 # It contains the classes for the cards, such as the card type, the card text, and the card action.
 
 from enum import Enum

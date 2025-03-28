@@ -1,8 +1,9 @@
-# Property Tycoon test_game.py
+# Property Tycoon Test_Game.py
 # Created for Year 2 G6046: Software Engineering Project-Group 5
 # -*- coding: utf-8 -*-
 # Thanks to owen for creating the base of the test code
 # start on 17/03/2025 for build 16.03.2025
+# It contains the classes for the test game, such as the test player, and the test property.
 
 import unittest
 import sys

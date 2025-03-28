@@ -1,5 +1,4 @@
 # Property Tycoon ai_player_logic.py
-# This file contains the classes for the AI players in the Property Tycoon game.
 # It contains the classes for the AI players, such as the AI player logic, the AI player strategy, and the AI player actions.
 
 import random
