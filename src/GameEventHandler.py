@@ -232,7 +232,23 @@ class GameEventHandler:
 
     def handle_key(self, event):
         if self.game.dev_manager.is_active:
+            if hasattr(self.game.dev_manager, 'notification') and self.game.dev_manager.notification:
+                if self.game.dev_manager.notification.handle_key(event):
+                    self.game.dev_manager.deactivate()
+                    return False
             return self.game.dev_manager.handle_key(event)
+
+        if self.game.show_popup:
+            if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
+                self.game.show_popup = False
+                return False
+
+        if self.game.show_card:
+            if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
+                self.game.show_card = False
+                self.game.current_card = None
+                self.game.current_card_player = None
+                return False
 
         any_player_moving = any(player.is_moving for player in self.game.players)
         if any_player_moving and event.key not in [
@@ -249,33 +265,55 @@ class GameEventHandler:
         print(f"Current state: {self.game.state}")
 
         if self.game.state == "ROLL":
-            if not self.game.current_player_is_ai and event.key in KEY_ROLL:
-                return self.game_actions.play_turn()
-            elif event.key == pygame.K_q and not self.game.current_player_is_ai:
-                confirm_exit = self.game_actions.show_exit_confirmation()
-
-                if confirm_exit:
-                    current_player = self.game.logic.players[
-                        self.game.logic.current_player_index
-                    ]
-                    final_assets = self.game_actions.calculate_player_assets(
-                        current_player
-                    )
-                    result = self.game_actions.handle_voluntary_exit(
-                        current_player["name"], final_assets
-                    )
-                    if result:
+            if not self.game.current_player_is_ai:
+                if event.key in KEY_ROLL:
+                    if (
+                        self.game.game_mode == "abridged"
+                        and self.game.time_limit
+                        and self.game.game_paused
+                    ):
                         self.game.board.add_message(
-                            f"{current_player['name']} has voluntarily exited the game"
+                            "Game is paused. Press P to resume."
                         )
-                        if len(self.game.logic.players) > 0:
-                            self.game.state = "ROLL"
-                            self.game_actions.check_and_trigger_ai_turn()
-                        else:
-                            return self.game_actions.check_game_over()
-                return False
-            elif event.key == pygame.K_t and self.game.game_mode == "abridged":
-                self.game_actions.show_time_stats()
+                        return False
+                    return self.game_actions.play_turn()
+                elif event.key == pygame.K_q:
+                    confirm_exit = self.game_actions.show_exit_confirmation()
+                    if confirm_exit:
+                        current_player = self.game.logic.players[
+                            self.game.logic.current_player_index
+                        ]
+                        final_assets = self.game_actions.calculate_player_assets(
+                            current_player
+                        )
+                        result = self.game_actions.handle_voluntary_exit(
+                            current_player["name"], final_assets
+                        )
+                        if result:
+                            self.game.board.add_message(
+                                f"{current_player['name']} has voluntarily exited the game"
+                            )
+                            if len(self.game.logic.players) > 0:
+                                self.game.state = "ROLL"
+                                self.game_actions.check_and_trigger_ai_turn()
+                            else:
+                                return self.game_actions.check_game_over()
+                    return False
+                elif event.key == pygame.K_t and self.game.game_mode == "abridged":
+                    self.game_actions.show_time_stats()
+                elif event.key == pygame.K_p and self.game.game_mode == "abridged" and self.game.time_limit:
+                    current_time = pygame.time.get_ticks()
+                    if self.game.game_paused:
+                        pause_duration = current_time - self.game.pause_start_time
+                        self.game.total_pause_time += pause_duration
+                        self.game.game_paused = False
+                        self.game.board.add_message("Game resumed")
+                    else:
+                        self.game.game_paused = True
+                        self.game.pause_start_time = current_time
+                        self.game.board.add_message("Game paused")
+                    return False
+
         elif self.game.state == "BUY":
             if event.key in KEY_BUY:
                 self.game_actions.handle_buy_decision(True)
@@ -283,6 +321,7 @@ class GameEventHandler:
             elif event.key in KEY_PASS:
                 self.game_actions.handle_buy_decision(False)
                 return False
+
         elif self.game.state == "AUCTION":
             print("Processing auction input")
             self.handle_auction_input(event)

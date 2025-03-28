@@ -1930,3 +1930,37 @@ class Game:
         pygame.display.flip()
         print(f"Final state after turn end: {self.state}")
 
+    def handle_key(self, event):
+        if self.dev_manager.is_active:
+            if hasattr(self.dev_manager, 'notification') and self.dev_manager.notification:
+                if self.dev_manager.notification.handle_key(event):
+                    self.dev_manager.deactivate()
+                    return False
+            return self.dev_manager.handle_key(event)
+
+        if self.show_popup:
+            if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
+                self.show_popup = False
+                return False
+
+        if self.show_card:
+            if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
+                self.show_card = False
+                self.current_card = None
+                self.current_card_player = None
+                return False
+
+        for emotion_ui in self.emotion_uis.values():
+            if emotion_ui.handle_key(event):
+                return False
+
+        any_player_moving = any(player.is_moving for player in self.players)
+        if any_player_moving and event.key not in [
+            pygame.K_LEFT,
+            pygame.K_RIGHT,
+            pygame.K_UP,
+            pygame.K_DOWN,
+        ]:
+            print("Animations in progress, ignoring key input")
+            return False
+

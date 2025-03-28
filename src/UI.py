@@ -1429,6 +1429,32 @@ class StartPage(BasePage):
         if self.token_selection_active:
             if event.key == pygame.K_ESCAPE:
                 self.token_selection_active = False
+            elif event.key == pygame.K_LEFT:
+                if self.token_selection_for_player >= 0:
+                    current_indices = self.player_token_indices if not self.token_selection_is_ai else self.ai_token_indices
+                    current_idx = current_indices[self.token_selection_for_player]
+                    used_indices = self.player_token_indices + self.ai_token_indices
+                    for i in range(current_idx - 1, -1, -1):
+                        if i not in used_indices or i == current_idx:
+                            if not self.token_selection_is_ai:
+                                self.player_token_indices[self.token_selection_for_player] = i
+                            else:
+                                self.ai_token_indices[self.token_selection_for_player] = i
+                            break
+            elif event.key == pygame.K_RIGHT:
+                if self.token_selection_for_player >= 0:
+                    current_indices = self.player_token_indices if not self.token_selection_is_ai else self.ai_token_indices
+                    current_idx = current_indices[self.token_selection_for_player]
+                    used_indices = self.player_token_indices + self.ai_token_indices
+                    for i in range(current_idx + 1, 6):
+                        if i not in used_indices or i == current_idx:
+                            if not self.token_selection_is_ai:
+                                self.player_token_indices[self.token_selection_for_player] = i
+                            else:
+                                self.ai_token_indices[self.token_selection_for_player] = i
+                            break
+            elif event.key == pygame.K_RETURN:
+                self.token_selection_active = False
             return False
 
         if self.active_input >= 0:
@@ -1445,6 +1471,19 @@ class StartPage(BasePage):
                     name = self.ai_names[ai_idx]
                     self.ai_names[ai_idx] = name[:-1] if len(name) > 0 else ""
             elif event.key == pygame.K_TAB:
+                if event.mod & pygame.KMOD_SHIFT:
+                    self.active_input = (self.active_input - 1) % (
+                        self.human_count + self.ai_count
+                    )
+                else:
+                    self.active_input = (self.active_input + 1) % (
+                        self.human_count + self.ai_count
+                    )
+            elif event.key == pygame.K_UP:
+                self.active_input = (self.active_input - 1) % (
+                    self.human_count + self.ai_count
+                )
+            elif event.key == pygame.K_DOWN:
                 self.active_input = (self.active_input + 1) % (
                     self.human_count + self.ai_count
                 )
@@ -1487,12 +1526,16 @@ class StartPage(BasePage):
                     self.update_player_lists()
                 self.total_players = self.human_count + self.ai_count
 
-            elif event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_t:
+                # Toggle token selection for the first human player
+                if self.human_count > 0:
+                    self.token_selection_active = True
+                    self.token_selection_for_player = 0
+                    self.token_selection_is_ai = False
+
+            elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                 if self.start_button.active:
                     return True
-
-            elif event.key == pygame.K_RETURN and self.start_button.active:
-                return True
 
             elif event.key == pygame.K_ESCAPE:
                 return "back"
@@ -2049,23 +2092,21 @@ class GameModePage(BasePage):
                 except ValueError:
                     self.input_error = "Please enter a valid number"
                 return False
-            elif event.key == pygame.K_ESCAPE:
+            elif event.key == pygame.K_ESCAPE or event.key == pygame.K_TAB:
                 self.custom_time_input.active = False
                 return False
-            else:
-                if event.key == pygame.K_BACKSPACE:
-                    self.custom_time_input.text = self.custom_time_input.text[:-1]
-                    self.input_error = None
-                    return False
-
-                if event.unicode.isdigit():
-                    if len(self.custom_time_input.text) < 4:
-                        self.custom_time_input.text += event.unicode
-                        self.input_error = None
-                    return False
+            elif event.key == pygame.K_BACKSPACE:
+                self.custom_time_input.text = self.custom_time_input.text[:-1]
+                self.input_error = None
                 return False
+            elif event.unicode.isdigit() and len(self.custom_time_input.text) < 4:
+                self.custom_time_input.text += event.unicode
+                self.input_error = None
+                return False
+            return False
 
         if event.key == pygame.K_m:
+            # Toggle game mode
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
                 try:
@@ -2081,7 +2122,9 @@ class GameModePage(BasePage):
             else:
                 self.time_limit = None
                 print("Game mode changed to Full Game (no time limit)")
-        elif event.key == pygame.K_RETURN:
+        elif event.key == pygame.K_t and self.game_mode == "abridged":
+            self.custom_time_input.active = True
+        elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
             if self.game_mode == "abridged":
                 try:
                     minutes = int(self.custom_time_input.text)
@@ -2743,7 +2786,7 @@ class DevelopmentNotification:
         self.dev_font = font_manager.get_font(26)
 
         self.text = f"{self.player_name}, you may modify properties now"
-        self.sub_text = "Click Continue to end your turn"
+        self.sub_text = "Click Continue or press SPACE/ENTER to end your turn"
 
         self.padding = 20
         self.notification_text = self.dev_font.render(self.text, True, WHITE)
@@ -2775,6 +2818,7 @@ class DevelopmentNotification:
         )
 
         self.dev_color = (0, 180, 120)
+        self.button_hover = False
 
     def draw(self, mouse_pos):
         bg_surface = pygame.Surface((self.bg_width, self.bg_height), pygame.SRCALPHA)
@@ -2806,8 +2850,8 @@ class DevelopmentNotification:
             ),
         )
 
-        hover = self.continue_button.collidepoint(mouse_pos)
-        button_color = BUTTON_HOVER if hover else ACCENT_COLOR
+        self.button_hover = self.continue_button.collidepoint(mouse_pos)
+        button_color = BUTTON_HOVER if self.button_hover else ACCENT_COLOR
 
         pygame.draw.rect(
             self.screen, button_color, self.continue_button, border_radius=10
@@ -2829,7 +2873,11 @@ class DevelopmentNotification:
 
     def check_click(self, pos):
         if self.continue_button.collidepoint(pos):
-            print("Development notification continue button clicked")
+            return True
+        return False
+
+    def handle_key(self, event):
+        if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
             return True
         return False
 
@@ -3011,12 +3059,37 @@ class AIEmotionUI:
 
         return False
 
+    def handle_key(self, event):
+        if not self.visible:
+            return False
+
+        if event.key == pygame.K_h: 
+            mood_value = getattr(self.ai_player.ai_controller, "mood_modifier", 0)
+            if mood_value >= 0.3:
+                self.happy_clicks_after_limit += 1
+                self._check_easter_egg()
+
+            sound_manager.play_sound("happy_click")
+            self.game.update_ai_mood(self.ai_player.name, False)
+            return True
+
+        elif event.key == pygame.K_a:  
+            mood_value = getattr(self.ai_player.ai_controller, "mood_modifier", 0)
+            if mood_value <= -0.3:
+                self.angry_clicks_after_limit += 1
+                self._check_easter_egg()
+
+            sound_manager.play_sound("angry_click")
+            self.game.update_ai_mood(self.ai_player.name, True)
+            return True
+
+        return False
+
     def _check_easter_egg(self):
         total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
 
         if total_clicks >= self.easter_egg_threshold and not self.easter_egg_triggered:
             try:
-                print("Easter egg triggered: Opening YouTube...")
                 webbrowser.open(self.youtube_url)
                 self.easter_egg_triggered = True
                 self.happy_clicks_after_limit = 0
