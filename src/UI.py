@@ -1431,27 +1431,43 @@ class StartPage(BasePage):
                 self.token_selection_active = False
             elif event.key == pygame.K_LEFT:
                 if self.token_selection_for_player >= 0:
-                    current_indices = self.player_token_indices if not self.token_selection_is_ai else self.ai_token_indices
+                    current_indices = (
+                        self.player_token_indices
+                        if not self.token_selection_is_ai
+                        else self.ai_token_indices
+                    )
                     current_idx = current_indices[self.token_selection_for_player]
                     used_indices = self.player_token_indices + self.ai_token_indices
                     for i in range(current_idx - 1, -1, -1):
                         if i not in used_indices or i == current_idx:
                             if not self.token_selection_is_ai:
-                                self.player_token_indices[self.token_selection_for_player] = i
+                                self.player_token_indices[
+                                    self.token_selection_for_player
+                                ] = i
                             else:
-                                self.ai_token_indices[self.token_selection_for_player] = i
+                                self.ai_token_indices[
+                                    self.token_selection_for_player
+                                ] = i
                             break
             elif event.key == pygame.K_RIGHT:
                 if self.token_selection_for_player >= 0:
-                    current_indices = self.player_token_indices if not self.token_selection_is_ai else self.ai_token_indices
+                    current_indices = (
+                        self.player_token_indices
+                        if not self.token_selection_is_ai
+                        else self.ai_token_indices
+                    )
                     current_idx = current_indices[self.token_selection_for_player]
                     used_indices = self.player_token_indices + self.ai_token_indices
                     for i in range(current_idx + 1, 6):
                         if i not in used_indices or i == current_idx:
                             if not self.token_selection_is_ai:
-                                self.player_token_indices[self.token_selection_for_player] = i
+                                self.player_token_indices[
+                                    self.token_selection_for_player
+                                ] = i
                             else:
-                                self.ai_token_indices[self.token_selection_for_player] = i
+                                self.ai_token_indices[
+                                    self.token_selection_for_player
+                                ] = i
                             break
             elif event.key == pygame.K_RETURN:
                 self.token_selection_active = False
@@ -1527,7 +1543,6 @@ class StartPage(BasePage):
                 self.total_players = self.human_count + self.ai_count
 
             elif event.key == pygame.K_t:
-                # Toggle token selection for the first human player
                 if self.human_count > 0:
                     self.token_selection_active = True
                     self.token_selection_for_player = 0
@@ -1794,6 +1809,17 @@ class HowToPlayPage(BasePage):
             self.button_font,
         )
 
+        self.shortcuts_button = UIButton(
+            pygame.Rect(
+                get_window_size()[0] - 320,
+                get_window_size()[1] - 80,
+                300,
+                button_height,
+            ),
+            "Keyboard Shortcuts",
+            self.button_font,
+        )
+
         self.instructions = [
             "How to Play",
             "",
@@ -1855,6 +1881,182 @@ class HowToPlayPage(BasePage):
             )
             self.screen.blit(text_surface, text_rect)
             y_offset += 22
+
+        self.back_button.draw(self.screen)
+        self.shortcuts_button.draw(self.screen)
+
+        hint_text = self.small_font.render(
+            "Press ESC or BACKSPACE to return", True, LIGHT_GRAY
+        )
+        hint_rect = hint_text.get_rect(
+            right=get_window_size()[0] - 20, y=get_window_size()[1] - 180
+        )
+        self.screen.blit(hint_text, hint_rect)
+
+        pygame.display.flip()
+
+    def handle_click(self, pos):
+        if self.back_button.check_hover(pos):
+            return True
+        if self.shortcuts_button.check_hover(pos):
+            return "keyboard_shortcuts"
+        return None
+
+    def handle_motion(self, pos):
+        self.back_button.check_hover(pos)
+        self.shortcuts_button.check_hover(pos)
+
+    def handle_key(self, event):
+        if event.key in [pygame.K_ESCAPE, pygame.K_BACKSPACE]:
+            return True
+        return None
+
+
+class KeyboardShortcutsPage(BasePage):
+    def __init__(self, instructions=None):
+        super().__init__(instructions=instructions)
+        self.small_font = font_manager.get_font(24)
+
+        button_width = 200
+        button_height = 60
+        self.back_button = UIButton(
+            pygame.Rect(20, get_window_size()[1] - 80, button_width, button_height),
+            "Back",
+            self.button_font,
+        )
+
+        self.shortcuts = [
+            ["General", ""],
+            ["Space/Enter", "Roll dice"],
+            ["Q", "Exit game voluntarily"],
+            ["Arrow Keys", "Move camera view"],
+            ["ESC", "Close popups"],
+            ["", ""],
+            ["Property Buying", ""],
+            ["Y/Enter", "Buy property"],
+            ["N/ESC", "Pass on buying property"],
+            ["", ""],
+            ["Auction", ""],
+            ["Number Keys", "Enter bid amount"],
+            ["Backspace", "Delete last digit of bid"],
+            ["Enter", "Submit bid"],
+            ["ESC", "Pass in auction"],
+            ["", ""],
+            ["Property Management", ""],
+            ["1", "Build house/hotel"],
+            ["2", "Mortgage/Unmortgage property"],
+            ["3", "Sell house/hotel"],
+            ["4", "Put property up for auction"],
+            ["ESC", "Exit property development mode"],
+            ["", ""],
+            ["Jail Options", ""],
+            ["1", "Use Get Out of Jail Free card"],
+            ["2", "Pay £50 fine"],
+            ["3", "Try rolling doubles"],
+            ["4", "Stay in jail (skip turns)"],
+            ["", ""],
+            ["Abridged Mode", ""],
+            ["P", "Pause/Resume game"],
+            ["T", "Show time statistics"],
+        ]
+
+    def draw(self):
+        self.draw_background()
+
+        title = "Keyboard Shortcuts"
+        title_surface = self.title_font.render(title, True, DARK_RED)
+        title_rect = title_surface.get_rect(centerx=get_window_size()[0] // 2, y=50)
+        self.screen.blit(title_surface, title_rect)
+
+        panel_width = 1000
+        panel_height = get_window_size()[1] - 150
+        panel_x = (get_window_size()[0] - panel_width) // 2
+        panel_y = 120
+
+        shadow_offset = 5
+        shadow = pygame.Surface(
+            (panel_width + shadow_offset * 2, panel_height + shadow_offset * 2),
+            pygame.SRCALPHA,
+        )
+        pygame.draw.rect(shadow, (*BLACK, 128), shadow.get_rect(), border_radius=15)
+        self.screen.blit(shadow, (panel_x - shadow_offset, panel_y - shadow_offset))
+
+        pygame.draw.rect(
+            self.screen,
+            WHITE,
+            pygame.Rect(panel_x, panel_y, panel_width, panel_height),
+            border_radius=15,
+        )
+
+        left_column = []
+        right_column = []
+
+        current_category = None
+        for shortcut in self.shortcuts:
+            key, description = shortcut
+
+            if description == "" and key != "":
+                current_category = key
+
+            if current_category in ["General", "Property Buying", "Auction"]:
+                left_column.append(shortcut)
+            else:
+                right_column.append(shortcut)
+
+        y_offset = panel_y + 10
+        section_header_font = self.button_font
+        column_width = panel_width // 2 - 20
+
+        for i, (key, description) in enumerate(left_column):
+            if key == "" and description == "":
+                y_offset += 15
+                continue
+
+            if description == "":
+                text_surface = section_header_font.render(key, True, ACCENT_COLOR)
+                text_rect = text_surface.get_rect(x=panel_x + 30, y=y_offset)
+                self.screen.blit(text_surface, text_rect)
+                y_offset += 35
+            else:
+                key_width = 200
+                key_surface = self.small_font.render(key, True, BLACK)
+                key_rect = key_surface.get_rect(x=panel_x + 50, y=y_offset)
+                self.screen.blit(key_surface, key_rect)
+
+                desc_surface = self.small_font.render(description, True, BLACK)
+                desc_rect = desc_surface.get_rect(
+                    x=panel_x + 50 + key_width, y=y_offset
+                )
+                self.screen.blit(desc_surface, desc_rect)
+
+                y_offset += 30
+
+        y_offset = panel_y + 10
+        right_x = panel_x + panel_width // 2
+
+        for i, (key, description) in enumerate(right_column):
+            if key == "" and description == "":
+                y_offset += 15
+                continue
+
+            if description == "":
+                text_surface = section_header_font.render(key, True, ACCENT_COLOR)
+                text_rect = text_surface.get_rect(x=right_x + 30, y=y_offset)
+                self.screen.blit(text_surface, text_rect)
+                y_offset += 35
+            else:
+                key_width = 200
+                key_surface = self.small_font.render(key, True, BLACK)
+                key_rect = key_surface.get_rect(x=right_x + 50, y=y_offset)
+                self.screen.blit(key_surface, key_rect)
+
+                desc_surface = self.small_font.render(description, True, BLACK)
+                desc_rect = desc_surface.get_rect(
+                    x=right_x + 50 + key_width, y=y_offset
+                )
+                self.screen.blit(desc_surface, desc_rect)
+
+                y_offset += 30
 
         self.back_button.draw(self.screen)
 
@@ -2106,7 +2308,6 @@ class GameModePage(BasePage):
             return False
 
         if event.key == pygame.K_m:
-            # Toggle game mode
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
                 try:
@@ -3063,7 +3264,7 @@ class AIEmotionUI:
         if not self.visible:
             return False
 
-        if event.key == pygame.K_h: 
+        if event.key == pygame.K_h:
             mood_value = getattr(self.ai_player.ai_controller, "mood_modifier", 0)
             if mood_value >= 0.3:
                 self.happy_clicks_after_limit += 1
@@ -3073,7 +3274,7 @@ class AIEmotionUI:
             self.game.update_ai_mood(self.ai_player.name, False)
             return True
 
-        elif event.key == pygame.K_a:  
+        elif event.key == pygame.K_a:
             mood_value = getattr(self.ai_player.ai_controller, "mood_modifier", 0)
             if mood_value <= -0.3:
                 self.angry_clicks_after_limit += 1

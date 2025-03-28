@@ -232,7 +232,10 @@ class GameEventHandler:
 
     def handle_key(self, event):
         if self.game.dev_manager.is_active:
-            if hasattr(self.game.dev_manager, 'notification') and self.game.dev_manager.notification:
+            if (
+                hasattr(self.game.dev_manager, "notification")
+                and self.game.dev_manager.notification
+            ):
                 if self.game.dev_manager.notification.handle_key(event):
                     self.game.dev_manager.deactivate()
                     return False
@@ -301,7 +304,11 @@ class GameEventHandler:
                     return False
                 elif event.key == pygame.K_t and self.game.game_mode == "abridged":
                     self.game_actions.show_time_stats()
-                elif event.key == pygame.K_p and self.game.game_mode == "abridged" and self.game.time_limit:
+                elif (
+                    event.key == pygame.K_p
+                    and self.game.game_mode == "abridged"
+                    and self.game.time_limit
+                ):
                     current_time = pygame.time.get_ticks()
                     if self.game.game_paused:
                         pause_duration = current_time - self.game.pause_start_time

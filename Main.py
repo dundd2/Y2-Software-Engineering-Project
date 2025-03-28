@@ -78,6 +78,7 @@ from src.UI import (
     HowToPlayPage,
     AIDifficultyPage,
     CreditsPage,
+    KeyboardShortcutsPage,
 )
 from src.Font_Manager import font_manager
 
@@ -357,10 +358,19 @@ async def run_game(game, game_settings):
                 logger.debug(f"Key pressed: {pygame.key.name(game_event.key)}")
 
                 if game_event.key == pygame.K_ESCAPE:
-                    running = False
-                    return None
-
-                if game.state == "AUCTION":
+                    if game.game_mode == "abridged" and game.time_limit:
+                        current_time = pygame.time.get_ticks()
+                        if game.game_paused:
+                            pause_duration = current_time - game.pause_start_time
+                            game.total_pause_time += pause_duration
+                            game.game_paused = False
+                            game.board.add_message("Game resumed")
+                        else:
+                            game.game_paused = True
+                            game.pause_start_time = current_time
+                            game.board.add_message("Game paused")
+                    pass
+                elif game.state == "AUCTION":
                     logger.info("Handling auction key input in main loop")
                     event_handler.handle_auction_input(game_event)
                 else:
@@ -823,7 +833,16 @@ async def main():
                                     instructions=GAME_INSTRUCTIONS
                                 )
                         elif isinstance(current_page, HowToPlayPage):
-                            current_page = MainMenuPage(instructions=GAME_INSTRUCTIONS)
+                            if result == "keyboard_shortcuts":
+                                current_page = KeyboardShortcutsPage(
+                                    instructions=GAME_INSTRUCTIONS
+                                )
+                            else:
+                                current_page = MainMenuPage(
+                                    instructions=GAME_INSTRUCTIONS
+                                )
+                        elif isinstance(current_page, KeyboardShortcutsPage):
+                            current_page = HowToPlayPage(instructions=GAME_INSTRUCTIONS)
                         elif isinstance(current_page, SettingsPage):
                             settings = current_page.get_settings()
                             if settings["resolution"] != WINDOW_SIZE:

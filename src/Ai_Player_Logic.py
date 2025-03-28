@@ -716,15 +716,19 @@ class HardAIPlayer:
                 perceived_value = self.get_property_value(
                     property_data, ai_player, board_properties
                 )
-                bid = current_minimum + random.randint(10, 50 + int(100 * max(0, self.mood_modifier)))
-                bid = min(bid, ai_player.money * (0.7 + max(0, self.mood_modifier * 0.2)))
+                bid = current_minimum + random.randint(
+                    10, 50 + int(100 * max(0, self.mood_modifier))
+                )
+                bid = min(
+                    bid, ai_player.money * (0.7 + max(0, self.mood_modifier * 0.2))
+                )
                 print(f"DEBUG: Emotion triggered bid: £{bid}")
                 return bid
             return None
 
         mood_multiplier = 1.0 + (self.mood_modifier * 1.5)
         final_bid = int(base_bid * mood_multiplier)
-        
+
         max_percentage = 0.9 + max(0, self.mood_modifier * 0.1)
         final_bid = min(final_bid, int(ai_player.money * max_percentage))
 
@@ -789,14 +793,16 @@ class HardAIPlayer:
                             player_properties.append(prop)
 
                     for prop in player_properties:
-                        if hasattr(prop, "group") and self.easy_ai.check_group_ownership(
+                        if hasattr(
+                            prop, "group"
+                        ) and self.easy_ai.check_group_ownership(
                             prop.group, board_properties, ai_player["name"]
                         ):
-                            money_reserve = 0.3 - (self.mood_modifier * 0.1) 
+                            money_reserve = 0.3 - (self.mood_modifier * 0.1)
                             house_cost = prop.price / 2
                             money_after_purchase = ai_player["money"] - house_cost
                             minimum_reserve = ai_player["money"] * money_reserve
-                            
+
                             if money_after_purchase >= minimum_reserve:
                                 return prop
 
@@ -819,14 +825,14 @@ class HardAIPlayer:
 
             max_price_ratio = 0.7 + (self.mood_modifier * 0.2)
             can_afford = player_money * max_price_ratio >= property_data["price"]
-            
+
             if can_afford and random.random() < buy_chance:
                 print(f"DEBUG: Emotion triggered decision to buy property")
                 print(f"DEBUG: Max price ratio: {max_price_ratio}")
                 return True
 
         elif base_decision and self.mood_modifier < 0:
-            pass_chance = -self.mood_modifier * 1.5 
+            pass_chance = -self.mood_modifier * 1.5
             print(f"DEBUG: Amplified chance to pass: {pass_chance}")
 
             if random.random() < pass_chance:
