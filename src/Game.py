@@ -1821,6 +1821,9 @@ class Game:
                 if hasattr(current_player.ai_controller, "mood_modifier"):
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")
 
+    def can_develop(self, player):
+        return self.dev_manager.can_develop(player)
+
     def handle_turn_end(self):
         current_player = self.logic.players[self.logic.current_player_index]
         player_obj = next(

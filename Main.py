@@ -7,7 +7,56 @@ import sys
 import asyncio
 import os
 import random
+import logging
+from datetime import datetime
 
+
+logs_dir = "logs"
+if not os.path.exists(logs_dir):
+    os.makedirs(logs_dir)
+
+log_filename = os.path.join(
+    logs_dir, f"game_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+)
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+
+class LogRedirector:
+    def __init__(self, logger, level):
+        self.logger = logger
+        self.level = level
+        self.buffer = ""
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            if line.strip():
+                self.logger.log(self.level, line.rstrip())
+        sys.__stdout__.write(buf)
+
+    def flush(self):
+        pass
+
+
+sys.stdout = LogRedirector(logger, logging.INFO)
+sys.stderr = LogRedirector(logger, logging.ERROR)
+
+logger.info("=== Game Session Started ===")
+
+file_handler.flush()
 
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -76,7 +125,7 @@ async def apply_screen_settings(resolution):
         icon = pygame.image.load(icon_path)
         pygame.display.set_icon(icon)
     except (pygame.error, FileNotFoundError) as e:
-        print(f"Could not load game icon: {e}")
+        logger.error(f"Could not load game icon: {e}")
 
     font_manager.update_scale_factor(resolution[0], resolution[1])
 
@@ -87,6 +136,10 @@ async def apply_screen_settings(resolution):
             pygame.display.flip()
 
     return screen
+
+
+def can_develop(self, player):
+    return self.dev_manager.can_develop(player)
 
 
 def create_game(player_info, game_settings):
@@ -152,6 +205,19 @@ async def run_game(game, game_settings):
     last_ai_progress_time = pygame.time.get_ticks()
     ai_timeout_duration = 10000
 
+    last_log_flush_time = pygame.time.get_ticks()
+    log_flush_interval = 1500
+
+    logger.info(f"Starting game with settings: {game_settings}")
+    logger.info(f"Players: {[player.name for player in game.players]}")
+    logger.info(f"Game mode: {game_settings.get('mode', 'full')}")
+    if game_settings.get("time_limit"):
+        logger.info(f"Time limit: {game_settings.get('time_limit')} seconds")
+
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            handler.flush()
+
     time_warning_active = False
     warning_flash_rate = 300
     warning_edge_size = 0
@@ -177,6 +243,12 @@ async def run_game(game, game_settings):
         await asyncio.sleep(0)
 
         current_time = pygame.time.get_ticks()
+
+        if current_time - last_log_flush_time > log_flush_interval:
+            last_log_flush_time = current_time
+            for handler in logger.handlers:
+                if isinstance(handler, logging.FileHandler):
+                    handler.flush()
 
         if (
             game_settings["mode"] == "abridged"
@@ -211,7 +283,7 @@ async def run_game(game, game_settings):
                     game.warning_border_width = warning_edge_size
 
             if time_limit_result:
-                print(
+                logger.info(
                     "Time limit reached and all players completed same number of laps - ending game"
                 )
                 if isinstance(time_limit_result, dict):
@@ -223,13 +295,13 @@ async def run_game(game, game_settings):
 
         if game.current_player_is_ai and not game.game_paused:
             if current_time - last_ai_progress_time > ai_timeout_duration:
-                print(
+                logger.warning(
                     f"AI player turn timeout reached after {ai_timeout_duration/1000} seconds"
                 )
 
                 if game.logic.players and len(game.logic.players) > 0:
                     current_player = game.logic.players[game.logic.current_player_index]
-                    print(
+                    logger.warning(
                         f"Forcing AI player {current_player['name']} to skip their turn due to timeout"
                     )
 
@@ -237,7 +309,7 @@ async def run_game(game, game_settings):
                         game.state = "ROLL"
                         game.selected_property = None
                         game.development_mode = False
-                        print("Closing stuck development UI due to timeout")
+                        logger.info("Closing stuck development UI due to timeout")
 
                     game.logic.current_player_index = (
                         game.logic.current_player_index + 1
@@ -265,12 +337,11 @@ async def run_game(game, game_settings):
 
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                safe_exit()
             elif game_event.type == pygame.MOUSEBUTTONDOWN:
                 any_moving = any(player.is_moving for player in game.players)
                 if any_moving and game.state == "AUCTION":
-                    print(
+                    logger.info(
                         "Animations in progress during AUCTION state - delaying click processing"
                     )
                     pygame.display.flip()
@@ -282,14 +353,14 @@ async def run_game(game, game_settings):
 
                 sound_manager.play_sound("menu_click")
             elif game_event.type == pygame.KEYDOWN:
-                print(f"Key pressed: {pygame.key.name(game_event.key)}")
+                logger.debug(f"Key pressed: {pygame.key.name(game_event.key)}")
 
                 if game_event.key == pygame.K_ESCAPE:
                     running = False
                     return None
 
                 if game.state == "AUCTION":
-                    print("Handling auction key input in main loop")
+                    logger.info("Handling auction key input in main loop")
                     event_handler.handle_auction_input(game_event)
                 else:
                     game_over_data = event_handler.handle_key(game_event)
@@ -308,43 +379,45 @@ async def run_game(game, game_settings):
             pass
         else:
             if hasattr(game, "state"):
-                print(f"Current game state: {game.state}")
+                logger.debug(f"Current game state: {game.state}")
                 game.last_debug_time = current_time
 
                 if game.state == "AUCTION" and hasattr(game.logic, "current_auction"):
                     auction_data = game.logic.current_auction
                     if auction_data is not None:
-                        print(f"\n=== Auction State Debug ===")
-                        print(f"Property: {auction_data['property']['name']}")
-                        print(f"Current bid: £{auction_data['current_bid']}")
-                        print(f"Minimum bid: £{auction_data['minimum_bid']}")
+                        logger.debug(f"\n=== Auction State Debug ===")
+                        logger.debug(f"Property: {auction_data['property']['name']}")
+                        logger.debug(f"Current bid: £{auction_data['current_bid']}")
+                        logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
 
                         if auction_data["highest_bidder"]:
-                            print(
+                            logger.debug(
                                 f"Highest bidder: {auction_data['highest_bidder']['name']}"
                             )
                         else:
-                            print("No bids yet")
+                            logger.debug("No bids yet")
 
-                        print(
+                        logger.debug(
                             f"Current bidder index: {auction_data['current_bidder_index']}"
                         )
                         if auction_data["active_players"]:
                             current_bidder = auction_data["active_players"][
                                 auction_data["current_bidder_index"]
                             ]
-                            print(f"Current bidder: {current_bidder['name']}")
+                            logger.debug(f"Current bidder: {current_bidder['name']}")
 
-                        print(
+                        logger.debug(
                             f"Passed players: {auction_data.get('passed_players', set())}"
                         )
-                        print(
+                        logger.debug(
                             f"Active players: {[p['name'] for p in auction_data.get('active_players', [])]}"
                         )
-                        print(f"Completed: {auction_data.get('completed', False)}")
+                        logger.debug(
+                            f"Completed: {auction_data.get('completed', False)}"
+                        )
                     else:
-                        print("\n=== Auction State Debug ===")
-                        print("No auction data available")
+                        logger.debug("\n=== Auction State Debug ===")
+                        logger.debug("No auction data available")
 
         if (
             hasattr(game.logic, "current_auction")
@@ -352,7 +425,9 @@ async def run_game(game, game_settings):
             and not game.logic.current_auction.get("completed", False)
         ):
             if game.state != "AUCTION":
-                print("Auction in progress but state is not AUCTION - correcting state")
+                logger.warning(
+                    "Auction in progress but state is not AUCTION - correcting state"
+                )
                 game.state = "AUCTION"
 
         if (
@@ -372,7 +447,7 @@ async def run_game(game, game_settings):
                 if not isinstance(ai_player.position, int) or not (
                     1 <= ai_player.position <= 40
                 ):
-                    print(
+                    logger.warning(
                         f"Warning: Invalid position {ai_player.position} detected for AI {ai_player.name}, resetting to position 1"
                     )
                     ai_player.position = 1
@@ -415,11 +490,11 @@ async def run_game(game, game_settings):
                         and current_bidder["name"]
                         not in auction_data.get("passed_players", set())
                     ):
-                        print(f"\n=== AI Auction Turn in Main Loop ===")
-                        print(f"AI Player: {current_bidder['name']}")
-                        print(f"Current bid: £{auction_data['current_bid']}")
-                        print(f"Minimum bid: £{auction_data['minimum_bid']}")
-                        print(f"AI money: £{current_bidder['money']}")
+                        logger.debug(f"\n=== AI Auction Turn in Main Loop ===")
+                        logger.debug(f"AI Player: {current_bidder['name']}")
+                        logger.debug(f"Current bid: £{auction_data['current_bid']}")
+                        logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
+                        logger.debug(f"AI money: £{current_bidder['money']}")
 
                         ai_decision = random.random() > 0.5
                         if (
@@ -430,13 +505,15 @@ async def run_game(game, game_settings):
                                 current_bidder["money"],
                                 auction_data["minimum_bid"] + random.randint(10, 50),
                             )
-                            print(f"AI {current_bidder['name']} bids £{bid_amount}")
+                            logger.debug(
+                                f"AI {current_bidder['name']} bids £{bid_amount}"
+                            )
                             success, message = game.logic.process_auction_bid(
                                 current_bidder, bid_amount
                             )
                             game.board.add_message(message)
                         else:
-                            print(f"AI {current_bidder['name']} passes")
+                            logger.debug(f"AI {current_bidder['name']} passes")
                             success, message = game.logic.process_auction_pass(
                                 current_bidder
                             )
@@ -448,7 +525,7 @@ async def run_game(game, game_settings):
                 ):
                     result_message = game.logic.check_auction_end()
                     if result_message == "auction_completed":
-                        print("Auction completed in main loop - setting up delay")
+                        logger.info("Auction completed in main loop - setting up delay")
 
                         if (
                             hasattr(game.logic, "current_auction")
@@ -484,7 +561,7 @@ async def run_game(game, game_settings):
             and game.logic.current_auction
             and game.logic.current_auction.get("completed", False)
         ):
-            print(
+            logger.warning(
                 "Auction marked as completed but state not updated - forcing state to ROLL"
             )
             game.state = "ROLL"
@@ -498,7 +575,9 @@ async def run_game(game, game_settings):
                 or game.logic.current_auction is None
             )
         ):
-            print("State is AUCTION but no auction data exists - resetting to ROLL")
+            logger.warning(
+                "State is AUCTION but no auction data exists - resetting to ROLL"
+            )
             game.state = "ROLL"
 
         if (
@@ -506,7 +585,7 @@ async def run_game(game, game_settings):
             and game_actions.check_one_player_remains()
             and not game_over_data
         ):
-            print("Only one player remains - ending game")
+            logger.info("Only one player remains - ending game")
             game_over_data = game_actions.end_full_game()
             running = False
 
@@ -515,7 +594,7 @@ async def run_game(game, game_settings):
             and game_actions.check_one_player_remains()
             and not game_over_data
         ):
-            print("Only one player remains in abridged mode - ending game")
+            logger.info("Only one player remains in abridged mode - ending game")
             game_over_data = game_actions.end_abridged_game()
             running = False
 
@@ -528,8 +607,8 @@ async def run_game(game, game_settings):
 
 
 async def handle_end_game(game_over_data):
-    print("Entering handle_end_game function")
-    print(f"Game over data: {game_over_data}")
+    logger.info("Entering handle_end_game function")
+    logger.debug(f"Game over data: {game_over_data}")
 
     sound_manager.play_sound("game_over")
 
@@ -538,7 +617,7 @@ async def handle_end_game(game_over_data):
     clock = pygame.time.Clock()
 
     if isinstance(game_over_data, bool):
-        print("WARNING: Game over data is a boolean instead of a dictionary")
+        logger.warning("WARNING: Game over data is a boolean instead of a dictionary")
         game_over_data = {
             "winner": "Last Player Standing",
             "final_assets": {},
@@ -557,7 +636,7 @@ async def handle_end_game(game_over_data):
         lap_count=game_over_data.get("lap_count", {}),
     )
 
-    print("EndGamePage created successfully")
+    logger.info("EndGamePage created successfully")
 
     debug_drawn = False
     current_page = end_page
@@ -570,13 +649,12 @@ async def handle_end_game(game_over_data):
         clock.tick(FPS)
 
         if not debug_drawn and isinstance(current_page, EndGamePage):
-            print("EndGamePage drawn")
+            logger.debug("EndGamePage drawn")
             debug_drawn = True
 
         for end_event in pygame.event.get():
             if end_event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                safe_exit()
             elif end_event.type == pygame.MOUSEBUTTONDOWN:
                 result = current_page.handle_click(end_event.pos)
 
@@ -584,8 +662,7 @@ async def handle_end_game(game_over_data):
                     if result == "play_again":
                         return True
                     elif result == "quit":
-                        pygame.quit()
-                        sys.exit()
+                        safe_exit()
                     elif result == "credits":
                         current_page = CreditsPage()
                 elif isinstance(current_page, CreditsPage) and result:
@@ -597,8 +674,7 @@ async def handle_end_game(game_over_data):
                     if result == "play_again":
                         return True
                     elif result == "quit":
-                        pygame.quit()
-                        sys.exit()
+                        safe_exit()
                     elif result == "credits":
                         current_page = CreditsPage()
             elif end_event.type == pygame.MOUSEMOTION:
@@ -678,7 +754,7 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
             await asyncio.sleep(0.01)
 
     except Exception as e:
-        print(f"Error showing logo screen: {e}")
+        logger.error(f"Error showing logo screen: {e}")
 
 
 async def show_company_logo(screen):
@@ -721,8 +797,7 @@ async def main():
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    safe_exit()
                 elif (
                     event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN
                 ):
@@ -812,6 +887,24 @@ async def main():
 
             # Limit fps
             clock.tick(FPS)
+
+
+def safe_exit(code=0):
+    logger.info("Game is shutting down...")
+
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            handler.flush()
+
+    logger.info("=== Game Session Ended ===")
+
+    logging.shutdown()
+
+    pygame.quit()
+    sys.exit(code)
 
 
 if __name__ == "__main__":
