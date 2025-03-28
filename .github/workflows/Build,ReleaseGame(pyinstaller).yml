@@ -31,7 +31,7 @@ jobs:
     - name: Build executable for Windows
       working-directory: ${{ github.workspace }}
       run: |
-        pyinstaller --onefile --windowed --name PropertyTycoon --icon "${{ github.workspace }}/assets/image/icon.ico" --add-data "${{ github.workspace }}/assets;assets" main.py
+        pyinstaller --onefile --windowed --name PropertyTycoon --icon "${{ github.workspace }}/assets/image/icon.ico" --add-data "${{ github.workspace }}/assets;assets" Main.py
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
@@ -84,9 +84,9 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: |
         if [ -f "icon.icns" ]; then
-          pyinstaller --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+          pyinstaller --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon Main.py
         else
-          pyinstaller --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon main.py
+          pyinstaller --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon Main.py
         fi
 
         chmod -R +x dist/PropertyTycoon.app
@@ -132,11 +132,10 @@ jobs:
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
     - name: Build ARM64 .deb package using QEMU
-      uses: uraimo/run-on-arch-action@v2.7.0
+      uses: uraimo/run-on-arch-action@v3
       with:
-        arch: arm64
+        arch: aarch64
         distro: ubuntu22.04
-        githubToken: ${{ secrets.GITHUB_TOKEN }}
         install: |
           apt-get update -q -y
           apt-get install -q -y \
@@ -144,18 +143,21 @@ jobs:
             libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev \
             patchelf \
             fakeroot \
-            dpkg-deb \
-            imagemagick
+            dpkg-dev \
+            imagemagick \
+            python3-pil \
+            python3-pil.imagetk
         run: |
           export DEBIAN_FRONTEND=noninteractive
+          
           python3 -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install wheel
-          pip install pygame pyinstaller
+          pip install pygame pyinstaller pillow
           pip install -r requirements.txt
 
-          pyinstaller --onefile --name PropertyTycoon --add-data "assets:assets" main.py
+          pyinstaller --onefile --name PropertyTycoon --add-data "assets:assets" Main.py
 
           PKG_NAME="propertytycoon"
           PKG_VERSION="${{ steps.get_version_deb.outputs.version }}"
@@ -186,7 +188,7 @@ jobs:
           Maintainer: Your Name <your.email@example.com>
           Depends: python3, libsdl2-2.0-0, libsdl2-image-2.0-0, libsdl2-mixer-2.0-0, libsdl2-ttf-2.0-0
           Description: Property Tycoon Game
-           A fun property trading game. Built for Linux ARM64.
+          Property Tycoon deb version Built for Linux ARM64.
           EOF
 
           cat << EOF > "${APP_DIR}/${PKG_NAME}.desktop"
@@ -200,12 +202,39 @@ jobs:
           Categories=Game;BoardGame;
           EOF
 
-          if [ -f "${ICON_SOURCE}" ]; then
-            echo "Converting ${ICON_SOURCE} to ${ICON_DIR}/${ICON_PNG}"
-            convert "${ICON_SOURCE}" -resize ${ICON_SIZE}x${ICON_SIZE} "${ICON_DIR}/${ICON_PNG}"
+          echo "Creating icon for application..."
+          cat > create_icon.py << 'EOF'
+          from PIL import Image, ImageDraw, ImageFont
+          import os
+          import sys
+
+          icon_dir = sys.argv[1]
+          icon_name = sys.argv[2]
+          icon_size = int(sys.argv[3])
+
+          if not os.path.exists(icon_dir):
+              os.makedirs(icon_dir, exist_ok=True)
+
+          img = Image.new('RGB', (icon_size, icon_size), color=(0, 120, 212))
+          draw = ImageDraw.Draw(img)
+
+          text_pos = (icon_size//2-20, icon_size//2-10)
+          draw.text(text_pos, "PT", fill=(255, 255, 255), font=None)
+
+          output_path = os.path.join(icon_dir, icon_name)
+          img.save(output_path)
+          print(f"Icon created at {output_path}")
+          EOF
+
+          python3 create_icon.py "${ICON_DIR}" "${ICON_PNG}" "${ICON_SIZE}"
+          
+          if [ -f "${ICON_DIR}/${ICON_PNG}" ]; then
             chmod 644 "${ICON_DIR}/${ICON_PNG}"
+            echo "Icon file created successfully at ${ICON_DIR}/${ICON_PNG}"
           else
-            echo "Warning: Icon file ${ICON_SOURCE} not found. Skipping icon installation."
+            echo "WARNING: Failed to create icon file. Creating empty file as fallback."
+            touch "${ICON_DIR}/${ICON_PNG}"
+            chmod 644 "${ICON_DIR}/${ICON_PNG}"
           fi
 
           echo "Building .deb package..."
@@ -263,10 +292,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: |
-          dist-windows/PropertyTycoon.exe
+          dist-windows/PropertyTycoon-Windows.exe
           dist-macos-dmg/PropertyTycoon-macOS.dmg
           dist-macos-zip/PropertyTycoon-macOS.zip
-          dist-linux-arm64/*.deb
+          dist-linux-arm64.deb
         name: Build-${{ steps.get_version.outputs.version }}
         tag_name: Build-${{ steps.get_version.outputs.version }}
         draft: false
