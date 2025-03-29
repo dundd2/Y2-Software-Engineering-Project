@@ -1,0 +1,1386 @@
+{
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Bandit",
+          "organization": "PyCQA",
+          "rules": [
+            {
+              "id": "B311",
+              "name": "blacklist",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-330"
+                ],
+                "precision": "high"
+              },
+              "helpUri": "https://bandit.readthedocs.io/en/1.8.3/blacklists/blacklist_calls.html#b311-random"
+            }
+          ],
+          "version": "1.8.3",
+          "semanticVersion": "1.8.3"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "endTimeUtc": "2025-03-29T02:03:40Z"
+        }
+      ],
+      "properties": {
+        "metrics": {
+          "_totals": {
+            "loc": 12199,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "SEVERITY.LOW": 30,
+            "CONFIDENCE.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.HIGH": 30
+          },
+          "./Main.py": {
+            "loc": 784,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 2,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 2
+          },
+          "./src/Ai_Player_Logic.py": {
+            "loc": 678,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 12,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 12
+          },
+          "./src/Board.py": {
+            "loc": 447,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/Cards.py": {
+            "loc": 85,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/DevelopmentMode.py": {
+            "loc": 592,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/Font_Manager.py": {
+            "loc": 51,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/Game.py": {
+            "loc": 1661,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 2,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 2
+          },
+          "./src/GameActions.py": {
+            "loc": 783,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 1,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 1
+          },
+          "./src/GameEventHandler.py": {
+            "loc": 514,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/GameRenderer.py": {
+            "loc": 1356,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/Game_Logic.py": {
+            "loc": 1609,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 4,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 4
+          },
+          "./src/Loadexcel.py": {
+            "loc": 133,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/Player.py": {
+            "loc": 435,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 2,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 2
+          },
+          "./src/Property.py": {
+            "loc": 126,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/Sound_Manager.py": {
+            "loc": 115,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          },
+          "./src/UI.py": {
+            "loc": 2830,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 7,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 7
+          },
+          "./src/__init__.py": {
+            "loc": 0,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
+          }
+        }
+      },
+      "results": [
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                        ai_decision = random.random() > 0.5\n"
+                  },
+                  "endColumn": 54,
+                  "endLine": 535,
+                  "startColumn": 39,
+                  "startLine": 535
+                },
+                "artifactLocation": {
+                  "uri": "Main.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n                        ai_decision = random.random() > 0.5\n                        if (\n"
+                  },
+                  "endLine": 536,
+                  "startLine": 534
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                                auction_data[\"minimum_bid\"] + random.randint(10, 50),\n"
+                  },
+                  "endColumn": 85,
+                  "endLine": 542,
+                  "startColumn": 63,
+                  "startLine": 542
+                },
+                "artifactLocation": {
+                  "uri": "Main.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                                current_bidder[\"money\"],\n                                auction_data[\"minimum_bid\"] + random.randint(10, 50),\n                            )\n"
+                  },
+                  "endLine": 543,
+                  "startLine": 541
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                if random.random() < 0.7 and ai_player.money >= current_location.price:\n"
+                  },
+                  "endColumn": 35,
+                  "endLine": 121,
+                  "startColumn": 20,
+                  "startLine": 121
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "            elif not current_location.owner:\n                if random.random() < 0.7 and ai_player.money >= current_location.price:\n                    success = ai_player.buy_property(current_location)\n"
+                  },
+                  "endLine": 122,
+                  "startLine": 120
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                            if random.random() < 0.5:\n"
+                  },
+                  "endColumn": 47,
+                  "endLine": 134,
+                  "startColumn": 32,
+                  "startLine": 134
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                        ):\n                            if random.random() < 0.5:\n                                group_properties = self.get_group_properties(\n"
+                  },
+                  "endLine": 135,
+                  "startLine": 133
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                if random.random() < 0.7 and ai_player.money >= property_data.price:\n"
+                  },
+                  "endColumn": 35,
+                  "endLine": 220,
+                  "startColumn": 20,
+                  "startLine": 220
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "            elif not property_data.owner:\n                if random.random() < 0.7 and ai_player.money >= property_data.price:\n                    return True\n"
+                  },
+                  "endLine": 221,
+                  "startLine": 219
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        bid = current_minimum + random.randint(10, increment)\n"
+                  },
+                  "endColumn": 62,
+                  "endLine": 310,
+                  "startColumn": 33,
+                  "startLine": 310
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n        bid = current_minimum + random.randint(10, increment)\n        bid = min(bid, max_bid)\n"
+                  },
+                  "endLine": 311,
+                  "startLine": 309
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            risky_bid_chance = random.random()\n"
+                  },
+                  "endColumn": 47,
+                  "endLine": 315,
+                  "startColumn": 32,
+                  "startLine": 315
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "        if bid > perceived_value * 0.6:\n            risky_bid_chance = random.random()\n            print(f\"\\nRisk assessment:\")\n"
+                  },
+                  "endLine": 316,
+                  "startLine": 314
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        return total_value_difference > 0 and random.random() < 0.8\n"
+                  },
+                  "endColumn": 62,
+                  "endLine": 436,
+                  "startColumn": 47,
+                  "startLine": 436
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n        return total_value_difference > 0 and random.random() < 0.8\n\n"
+                  },
+                  "endLine": 437,
+                  "startLine": 435
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            if random.random() < angry_bid_chance:\n"
+                  },
+                  "endColumn": 31,
+                  "endLine": 715,
+                  "startColumn": 16,
+                  "startLine": 715
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n            if random.random() < angry_bid_chance:\n                perceived_value = self.get_property_value(\n"
+                  },
+                  "endLine": 716,
+                  "startLine": 714
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                bid = current_minimum + random.randint(\n"
+                  },
+                  "endColumn": 18,
+                  "endLine": 720,
+                  "startColumn": 41,
+                  "startLine": 719
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                )\n                bid = current_minimum + random.randint(\n                    10, 50 + int(100 * max(0, self.mood_modifier))\n                )\n                bid = min(\n"
+                  },
+                  "endLine": 722,
+                  "startLine": 718
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            if random.random() < pay_chance:\n"
+                  },
+                  "endColumn": 31,
+                  "endLine": 755,
+                  "startColumn": 16,
+                  "startLine": 755
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n            if random.random() < pay_chance:\n                print(f\"DEBUG: Emotion triggered decision to pay fine\")\n"
+                  },
+                  "endLine": 756,
+                  "startLine": 754
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                if random.random() < develop_chance:\n"
+                  },
+                  "endColumn": 35,
+                  "endLine": 784,
+                  "startColumn": 20,
+                  "startLine": 784
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n                if random.random() < develop_chance:\n                    player_properties = []\n"
+                  },
+                  "endLine": 785,
+                  "startLine": 783
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            if can_afford and random.random() < buy_chance:\n"
+                  },
+                  "endColumn": 46,
+                  "endLine": 829,
+                  "startColumn": 31,
+                  "startLine": 829
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n            if can_afford and random.random() < buy_chance:\n                print(f\"DEBUG: Emotion triggered decision to buy property\")\n"
+                  },
+                  "endLine": 830,
+                  "startLine": 828
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            if random.random() < pass_chance:\n"
+                  },
+                  "endColumn": 31,
+                  "endLine": 838,
+                  "startColumn": 16,
+                  "startLine": 838
+                },
+                "artifactLocation": {
+                  "uri": "src/Ai_Player_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n            if random.random() < pass_chance:\n                print(f\"DEBUG: Emotion triggered decision to pass on property\")\n"
+                  },
+                  "endLine": 839,
+                  "startLine": 837
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                            random.random() < 0.7\n"
+                  },
+                  "endColumn": 44,
+                  "endLine": 542,
+                  "startColumn": 29,
+                  "startLine": 542
+                },
+                "artifactLocation": {
+                  "uri": "src/Game.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                        will_buy = (\n                            random.random() < 0.7\n                            and current_player[\"money\"] >= space[\"price\"]\n"
+                  },
+                  "endLine": 543,
+                  "startLine": 541
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            elif player[\"money\"] >= 50 and random.random() < 0.5:\n"
+                  },
+                  "endColumn": 59,
+                  "endLine": 797,
+                  "startColumn": 44,
+                  "startLine": 797
+                },
+                "artifactLocation": {
+                  "uri": "src/Game.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                return \"card\"\n            elif player[\"money\"] >= 50 and random.random() < 0.5:\n                return \"pay\"\n"
+                  },
+                  "endLine": 798,
+                  "startLine": 796
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            elif player[\"money\"] >= 50 and random.random() < 0.5:\n"
+                  },
+                  "endColumn": 59,
+                  "endLine": 384,
+                  "startColumn": 44,
+                  "startLine": 384
+                },
+                "artifactLocation": {
+                  "uri": "src/GameActions.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                return True\n            elif player[\"money\"] >= 50 and random.random() < 0.5:\n                print(\n"
+                  },
+                  "endLine": 385,
+                  "startLine": 383
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        dice1 = random.randint(1, 6)\n"
+                  },
+                  "endColumn": 37,
+                  "endLine": 350,
+                  "startColumn": 17,
+                  "startLine": 350
+                },
+                "artifactLocation": {
+                  "uri": "src/Game_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n        dice1 = random.randint(1, 6)\n        dice2 = random.randint(1, 6)\n"
+                  },
+                  "endLine": 351,
+                  "startLine": 349
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        dice2 = random.randint(1, 6)\n"
+                  },
+                  "endColumn": 37,
+                  "endLine": 351,
+                  "startColumn": 17,
+                  "startLine": 351
+                },
+                "artifactLocation": {
+                  "uri": "src/Game_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "        dice1 = random.randint(1, 6)\n        dice2 = random.randint(1, 6)\n        self.last_dice_roll = (dice1, dice2)\n"
+                  },
+                  "endLine": 352,
+                  "startLine": 350
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        bid = current_minimum + random.randint(10, increment)\n"
+                  },
+                  "endColumn": 62,
+                  "endLine": 1232,
+                  "startColumn": 33,
+                  "startLine": 1232
+                },
+                "artifactLocation": {
+                  "uri": "src/Game_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "        increment = min(50, max(10, int(bid_headroom * 0.2)))\n        bid = current_minimum + random.randint(10, increment)\n        bid = min(bid, max_bid)\n"
+                  },
+                  "endLine": 1233,
+                  "startLine": 1231
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            risky_bid_chance = random.random()\n"
+                  },
+                  "endColumn": 47,
+                  "endLine": 1241,
+                  "startColumn": 32,
+                  "startLine": 1241
+                },
+                "artifactLocation": {
+                  "uri": "src/Game_Logic.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "        if bid > perceived_value * 0.8:\n            risky_bid_chance = random.random()\n            print(f\"\\nRisk assessment:\")\n"
+                  },
+                  "endLine": 1242,
+                  "startLine": 1240
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            if self.jail_cards and random.random() < 0.7:\n"
+                  },
+                  "endColumn": 51,
+                  "endLine": 417,
+                  "startColumn": 36,
+                  "startLine": 417
+                },
+                "artifactLocation": {
+                  "uri": "src/Player.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n            if self.jail_cards and random.random() < 0.7:\n                return self.use_jail_card()\n"
+                  },
+                  "endLine": 418,
+                  "startLine": 416
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "            elif self.money >= 50 and random.random() < 0.5:\n"
+                  },
+                  "endColumn": 54,
+                  "endLine": 419,
+                  "startColumn": 39,
+                  "startLine": 419
+                },
+                "artifactLocation": {
+                  "uri": "src/Player.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                return self.use_jail_card()\n            elif self.money >= 50 and random.random() < 0.5:\n                self.pay(50)\n"
+                  },
+                  "endLine": 420,
+                  "startLine": 418
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    \"x\": random.randint(0, get_window_size()[0]),\n"
+                  },
+                  "endColumn": 65,
+                  "endLine": 2452,
+                  "startColumn": 26,
+                  "startLine": 2452
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                {\n                    \"x\": random.randint(0, get_window_size()[0]),\n                    \"y\": random.randint(-100, 0),\n"
+                  },
+                  "endLine": 2453,
+                  "startLine": 2451
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    \"y\": random.randint(-100, 0),\n"
+                  },
+                  "endColumn": 49,
+                  "endLine": 2453,
+                  "startColumn": 26,
+                  "startLine": 2453
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                    \"x\": random.randint(0, get_window_size()[0]),\n                    \"y\": random.randint(-100, 0),\n                    \"speed\": random.uniform(1, 3),\n"
+                  },
+                  "endLine": 2454,
+                  "startLine": 2452
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    \"speed\": random.uniform(1, 3),\n"
+                  },
+                  "endColumn": 50,
+                  "endLine": 2454,
+                  "startColumn": 30,
+                  "startLine": 2454
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                    \"y\": random.randint(-100, 0),\n                    \"speed\": random.uniform(1, 3),\n                    \"size\": random.randint(5, 15),\n"
+                  },
+                  "endLine": 2455,
+                  "startLine": 2453
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    \"size\": random.randint(5, 15),\n"
+                  },
+                  "endColumn": 50,
+                  "endLine": 2455,
+                  "startColumn": 29,
+                  "startLine": 2455
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                    \"speed\": random.uniform(1, 3),\n                    \"size\": random.randint(5, 15),\n                    \"color\": random.choice(\n"
+                  },
+                  "endLine": 2456,
+                  "startLine": 2454
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    \"color\": random.choice(\n"
+                  },
+                  "endColumn": 22,
+                  "endLine": 2457,
+                  "startColumn": 30,
+                  "startLine": 2456
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                    \"size\": random.randint(5, 15),\n                    \"color\": random.choice(\n                        [\n                            (255, 223, 0),\n                            (255, 0, 0),\n                            (0, 255, 0),\n                            (0, 0, 255),\n                            (255, 0, 255),\n                            (0, 255, 255),\n                        ]\n                    ),\n                }\n"
+                  },
+                  "endLine": 2466,
+                  "startLine": 2455
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                particle[\"y\"] = random.randint(-100, 0)\n"
+                  },
+                  "endColumn": 56,
+                  "endLine": 2503,
+                  "startColumn": 33,
+                  "startLine": 2503
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "            if particle[\"y\"] > get_window_size()[1]:\n                particle[\"y\"] = random.randint(-100, 0)\n                particle[\"x\"] = random.randint(0, get_window_size()[0])\n"
+                  },
+                  "endLine": 2504,
+                  "startLine": 2502
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                particle[\"x\"] = random.randint(0, get_window_size()[0])\n"
+                  },
+                  "endColumn": 72,
+                  "endLine": 2504,
+                  "startColumn": 33,
+                  "startLine": 2504
+                },
+                "artifactLocation": {
+                  "uri": "src/UI.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "                particle[\"y\"] = random.randint(-100, 0)\n                particle[\"x\"] = random.randint(0, get_window_size()[0])\n\n"
+                  },
+                  "endLine": 2505,
+                  "startLine": 2503
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        }
+      ]
+    }
+  ],
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json"
+}
