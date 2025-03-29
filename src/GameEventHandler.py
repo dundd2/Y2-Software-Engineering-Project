@@ -137,6 +137,7 @@ class GameEventHandler:
                     result = self.game_actions.handle_voluntary_exit(
                         current_player["name"], final_assets
                     )
+                    sound_manager.play_sound("player_exit")
 
                     if isinstance(result, dict):
                         return result
@@ -293,6 +294,7 @@ class GameEventHandler:
                         result = self.game_actions.handle_voluntary_exit(
                             current_player["name"], final_assets
                         )
+                        sound_manager.play_sound("player_exit")
                         if result:
                             self.game.board.add_message(
                                 f"{current_player['name']} has voluntarily exited the game"

@@ -78,6 +78,12 @@ class SoundManager:
             "auction_bid": "auction_bid.mp3",
             "auction_win": "auction_win.mp3",
             "bankruptcy": "bankruptcy.mp3",
+            "roll_doubles": "roll_doubles.mp3",
+            "land_free_parking": "free_parking.mp3",
+            "auction_start": "auction_start.mp3",
+            "mortgage": "mortgage.mp3",
+            "unmortgage": "unmortgage.mp3",
+            "player_exit": "player_exit.mp3",
         }
 
         for sound_name, file_name in required_sounds.items():

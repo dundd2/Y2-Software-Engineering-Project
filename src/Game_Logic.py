@@ -6,6 +6,7 @@ import pygame
 import random
 from src.Loadexcel import load_property_data
 from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
+from src.Sound_Manager import sound_manager
 
 pot_luck_cards = [
     {
@@ -358,6 +359,7 @@ class GameLogic:
                 return dice1, dice2
 
         if dice1 == dice2:
+            sound_manager.play_sound("roll_doubles")
             self.doubles_count += 1
             if self.doubles_count == 3:
                 print(
@@ -408,6 +410,7 @@ class GameLogic:
         space_type = space.get("type", "")
 
         if position == "20":
+            sound_manager.play_sound("land_free_parking")
             return "free_parking", None
 
         if space_type == "special":
@@ -760,6 +763,7 @@ class GameLogic:
         print(f"First bidder: {self.current_auction['active_players'][0]['name']}")
         self.add_message(f"\n🔨 AUCTION: {property_data['name']}")
         self.add_message(f"Starting bid: £{starting_bid}")
+        sound_manager.play_sound("auction_start")
 
         return "auction_in_progress"
 
@@ -1006,6 +1010,7 @@ class GameLogic:
                 self.voluntary_exits.append(player_name)
             else:
                 player["bankrupt"] = True
+                self.bankrupted_players.append(player_name)
 
             if len(self.players) > 0:
                 self.current_player_index = self.current_player_index % len(
@@ -1345,12 +1350,7 @@ class GameLogic:
                     prop["houses"] = 0
 
         player["bankrupt"] = True
-        # self.players.remove(player)  # Keep player in list, rely on bankrupt flag
-        # self.bankrupted_players.append(player["name"]) # Redundant if player stays in list
-
-        # Index adjustment should happen in advance_to_next_player by skipping inactive players
-        # if len(self.players) > 0:
-        #     self.current_player_index = self.current_player_index % len(self.players)
+        self.bankrupted_players.append(player["name"])
 
         return True
 
@@ -1536,6 +1536,7 @@ class GameLogic:
         self.add_message(
             f"{player['name']} mortgaged {property_data['name']} for £{mortgage_value}"
         )
+        sound_manager.play_sound("mortgage")
         return True
 
     def unmortgage_property(self, property_data, player):
@@ -1550,6 +1551,7 @@ class GameLogic:
             self.add_message(
                 f"{player['name']} unmortgaged {property_data['name']} for £{unmortgage_cost}"
             )
+            sound_manager.play_sound("unmortgage")
             return True
         else:
             self.add_message(f"Not enough money to unmortgage {property_data['name']}")
