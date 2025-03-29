@@ -21,6 +21,7 @@ from src.GameRenderer import GameRenderer
 from src.GameEventHandler import GameEventHandler
 from src.GameActions import GameActions
 from src.DevelopmentMode import DevelopmentMode
+import logging
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -1403,15 +1404,36 @@ class Game:
         self.waiting_for_animation = True
 
     def check_passing_go(self, player, old_position):
+        if player.bankrupt or player.voluntary_exit:
+            logging.debug(f"check_passing_go: Player {player.name} is already bankrupt or exited. Skipping GO check.")
+            return
+
         new_position = player.position
 
         if new_position < old_position and not self.logic.is_going_to_jail:
-            player_dict = next(
-                p for p in self.logic.players if p["name"] == player.name
-            )
-            player_dict["money"] += 200
-            self.logic.bank_money -= 200
-            self.board.add_message(f"{player.name} collected £200 for passing GO")
+            try:
+                player_dict = next(
+                    (p for p in self.logic.players if p["name"] == player.name), None
+                )
+
+                if player_dict:
+                    player_dict["money"] += 200
+                    if hasattr(self.logic, 'bank_money'): 
+                         self.logic.bank_money -= 200
+                    else:
+                         logging.warning("Logic object missing 'bank_money' attribute during GO check.")
+                    self.board.add_message(f"{player.name} collected £200 for passing GO")
+                    logging.info(f"{player.name} collected £200 for passing GO. New balance: {player_dict['money']}")
+                    player.money = player_dict["money"]
+
+                else:
+                    logging.warning(
+                        f"check_passing_go: Player {player.name} not found in logic.players. "
+                        f"Likely bankrupt or exited. No GO money awarded."
+                    )
+
+            except Exception as e:
+                logging.error(f"Error during check_passing_go for player {player.name}: {e}", exc_info=True)
 
     def synchronize_player_positions(self):
         try:
