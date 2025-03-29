@@ -605,15 +605,6 @@ class SettingsPage(BasePage):
         self.resolution_button.text = f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}"
         self.resolution_button.draw(self.screen)
 
-        info_text = self.small_font.render(
-            "All resolutions maintain 16:9 aspect ratio", True, LIGHT_GRAY
-        )
-        info_rect = info_text.get_rect(
-            centerx=get_window_size()[0] // 2,
-            top=self.resolution_button.rect.bottom + 10,
-        )
-        self.screen.blit(info_text, info_rect)
-
         self.font_button.text = f"Font: {self.font_options[self.current_font][0]}"
         self.font_button.draw(self.screen)
 
@@ -638,6 +629,15 @@ class SettingsPage(BasePage):
                 self.screen.blit(confirm_text, confirm_rect)
             else:
                 self.show_confirmation = False
+
+        info_text = self.small_font.render(
+            "All resolutions maintain 16:9 aspect ratio", True, LIGHT_GRAY
+        )
+        info_rect = info_text.get_rect(
+            centerx=get_window_size()[0] // 2,
+            top=self.confirm_button.rect.bottom + (40 if self.show_confirmation else 10),
+        )
+        self.screen.blit(info_text, info_rect)
 
         controls = [
             "Controls:",

@@ -12,6 +12,7 @@ from src.Property import Property
 from src.Game_Logic import GameLogic
 from src.Cards import CardType, CardDeck
 from src.Font_Manager import font_manager
+from src.Sound_Manager import sound_manager
 from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 from typing import Optional
 import string
@@ -969,6 +970,7 @@ class Game:
         print(
             f"Showing rent popup: {player['name']} paid £{rent_amount} to {owner['name']}"
         )
+        sound_manager.play_sound("pay_money")
 
     def show_tax_popup(self, player, tax_name, tax_amount):
         self.show_card = True
@@ -1073,8 +1075,6 @@ class Game:
             elapsed_time_ms -= current_pause_duration
 
         time_limit_ms = self.time_limit * 1000
-
-        from src.Sound_Manager import sound_manager
 
         remaining_time_seconds = (time_limit_ms - elapsed_time_ms) // 1000
 

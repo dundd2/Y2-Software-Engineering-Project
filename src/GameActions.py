@@ -821,6 +821,7 @@ class GameActions:
 
         if self.game.logic.remove_player(player["name"]):
             self.game.board.add_message(f"{player['name']} bankrupt!")
+            sound_manager.play_sound("bankruptcy")
             self.game.board.update_ownership(self.game.logic.properties)
 
             if self.game.check_one_player_remains():

@@ -4,6 +4,7 @@
 import pygame
 import sys
 from src.Cards import CardType
+from src.Sound_Manager import sound_manager
 
 KEY_ROLL = [pygame.K_SPACE, pygame.K_RETURN]
 KEY_BUY = [pygame.K_y, pygame.K_RETURN]
@@ -448,6 +449,7 @@ class GameEventHandler:
             if success:
                 self.game.auction_bid_amount = ""
                 print(f"Bid successful: £{bid_amount}")
+                sound_manager.play_sound("auction_bid")
             else:
                 print(f"Bid failed: {message}")
         except ValueError:
@@ -547,6 +549,7 @@ class GameEventHandler:
                 if success:
                     self.game.auction_bid_amount = ""
                     print(f"Bid successful: £{bid_amount}")
+                    sound_manager.play_sound("auction_bid")
                 else:
                     print(f"Bid failed: {message}")
             except ValueError:
@@ -581,6 +584,7 @@ class GameEventHandler:
                     self.game.board.add_message(
                         f"{winner['name']} won {property_name} for £{bid_amount}"
                     )
+                    sound_manager.play_sound("auction_win")
                 else:
                     property_name = auction_data["property"]["name"]
                     self.game.board.add_message(f"No one bid on {property_name}")

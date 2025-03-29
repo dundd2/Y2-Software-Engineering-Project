@@ -75,6 +75,9 @@ class SoundManager:
             "credits": "credits.mp3",
             "watson_games": "watson_games.mp3",
             "group_present": "group_present.mp3",
+            "auction_bid": "auction_bid.mp3",
+            "auction_win": "auction_win.mp3",
+            "bankruptcy": "bankruptcy.mp3",
         }
 
         for sound_name, file_name in required_sounds.items():
