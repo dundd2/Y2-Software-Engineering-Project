@@ -1006,7 +1006,6 @@ class GameLogic:
                 self.voluntary_exits.append(player_name)
             else:
                 player["bankrupt"] = True
-                self.bankrupted_players.append(player_name)
 
             if len(self.players) > 0:
                 self.current_player_index = self.current_player_index % len(
@@ -1346,11 +1345,12 @@ class GameLogic:
                     prop["houses"] = 0
 
         player["bankrupt"] = True
-        self.players.remove(player)
-        self.bankrupted_players.append(player["name"])
+        # self.players.remove(player)  # Keep player in list, rely on bankrupt flag
+        # self.bankrupted_players.append(player["name"]) # Redundant if player stays in list
 
-        if len(self.players) > 0:
-            self.current_player_index = self.current_player_index % len(self.players)
+        # Index adjustment should happen in advance_to_next_player by skipping inactive players
+        # if len(self.players) > 0:
+        #     self.current_player_index = self.current_player_index % len(self.players)
 
         return True
 

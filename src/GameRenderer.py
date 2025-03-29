@@ -328,10 +328,10 @@ class GameRenderer:
             )
         self.screen.blit(gradient, (0, 0))
 
+        self.game.board.draw(self.screen)
+
         if self.game.state == "DEVELOPMENT" and self.game.dev_manager.is_active:
             self.game.dev_manager.draw(pygame.mouse.get_pos())
-
-        self.game.board.draw(self.screen)
 
         if self.game.development_mode:
             self.game.dev_manager.draw(pygame.mouse.get_pos())
@@ -380,6 +380,7 @@ class GameRenderer:
                 self.game.auction_completed = False
 
         self.game.board.draw(self.screen)
+        self.game.dev_manager._draw_property_stars()
 
         mouse_pos = pygame.mouse.get_pos()
 

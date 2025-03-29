@@ -143,8 +143,6 @@ class DevelopmentMode:
         if not self.is_active:
             return
 
-        self._draw_property_stars()
-
         current_player = self.game.logic.players[self.game.logic.current_player_index]
         is_ai = current_player.get("is_ai", False)
 
@@ -405,24 +403,19 @@ class DevelopmentMode:
         current_player_logic = self.game.logic.players[
             self.game.logic.current_player_index
         ]
-        player_obj = next(
-            (p for p in self.game.players if p.name == current_player_logic["name"]),
-            None,
-        )
 
-        if player_obj and not player_obj.is_ai and self.is_active:
-            owned_properties = [
-                prop
-                for prop in self.game.logic.properties.values()
-                if prop.get("owner") == current_player_logic["name"]
-            ]
+        owned_properties = [
+            prop
+            for prop in self.game.logic.properties.values()
+            if prop.get("owner") == current_player_logic["name"]
+        ]
 
-            for prop in owned_properties:
-                if "position" in prop:
-                    position = int(prop["position"])
-                    property_center = self.game.board.get_property_position(position)
-                    if property_center:
-                        self._draw_star(property_center[0], property_center[1])
+        for prop in owned_properties:
+            if "position" in prop:
+                position = int(prop["position"])
+                property_center = self.game.board.get_property_position(position)
+                if property_center:
+                    self._draw_star(property_center[0], property_center[1])
 
     def _draw_star(self, x, y):
         size = 15
