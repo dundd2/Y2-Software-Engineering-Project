@@ -754,12 +754,13 @@ class GameRenderer:
                     if p.get("owner") == current_player["name"]
                 ]
                 if owned_properties:
-                    if not self.game.dev_notification:
-                        self.game.dev_notification = DevelopmentNotification(
+                    if not hasattr(self.game, 'notification') or not self.game.notification:
+                        self.game.notification = DevelopmentNotification(
                             self.screen, current_player["name"], self.font
                         )
 
-                    self.game.dev_notification.draw(mouse_pos)
+                    if self.game.notification:
+                        self.game.notification.draw(mouse_pos)
 
         current_time = pygame.time.get_ticks()
         if self.game.dice_animation:

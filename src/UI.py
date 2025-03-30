@@ -258,13 +258,13 @@ class BasePage:
             self.screen.blit(self.logo_image, logo_rect)
         elif isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage):
             title_shadow = self.title_font.render(
-                "Property Tycoon Alpha 25.03.2025", True, BLACK
+                "Property Tycoon Alpha 30.03.2025", True, BLACK
             )
             title_glow = self.title_font.render(
-                "Property Tycoon Alpha 25.03.2025", True, ACCENT_COLOR
+                "Property Tycoon Alpha 30.03.2025", True, ACCENT_COLOR
             )
             title_text = self.title_font.render(
-                "Property Tycoon Alpha 25.03.2025", True, WHITE
+                "Property Tycoon Alpha 30.03.2025", True, WHITE
             )
             title_rect = title_text.get_rect(centerx=window_size[0] // 2, y=80)
             shadow_rect = title_rect.copy()
@@ -407,7 +407,7 @@ class MainMenuPage(BasePage):
             self.screen.blit(self.github_logo, self.github_rect)
 
         version_text = self.version_font.render(
-            "Build Version: Alpha 25.03.2025", True, ERROR_COLOR
+            "Build Version: Alpha 30.03.2025", True, ERROR_COLOR
         )
         version_rect = version_text.get_rect(
             right=get_window_size()[0] - 20, bottom=get_window_size()[1] - 20
@@ -775,7 +775,7 @@ class StartPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
-        pygame.display.set_caption("Property Tycoon Alpha 25.03.2025")
+        pygame.display.set_caption("Property Tycoon Alpha 30.03.2025")
         self.title_font = font_manager.get_font(82)
         self.button_font = font_manager.get_font(42)
         self.version_font = font_manager.get_font(28)
@@ -2986,8 +2986,8 @@ class DevelopmentNotification:
 
         self.dev_font = font_manager.get_font(26)
 
-        self.text = f"{self.player_name}, you may modify properties now"
-        self.sub_text = "Click Continue or press SPACE/ENTER to end your turn"
+        self.text = f"{self.player_name}, you may develop properties."
+        self.sub_text = "Click on owned properties on the board or click End Turn."
 
         self.padding = 20
         self.notification_text = self.dev_font.render(self.text, True, WHITE)
@@ -3010,16 +3010,16 @@ class DevelopmentNotification:
         button_height = 45
         button_margin = 20
         button_y = self.window_size[1] - button_height - button_margin
-
-        self.continue_button = pygame.Rect(
-            self.window_size[0] - button_width - button_margin,
+        
+        self.endturn_button = pygame.Rect(
+            (self.window_size[0] - button_width) // 2,
             button_y,
             button_width,
             button_height,
         )
 
         self.dev_color = (0, 180, 120)
-        self.button_hover = False
+        self.endturn_hover = False
 
     def draw(self, mouse_pos):
         bg_surface = pygame.Surface((self.bg_width, self.bg_height), pygame.SRCALPHA)
@@ -3051,36 +3051,36 @@ class DevelopmentNotification:
             ),
         )
 
-        self.button_hover = self.continue_button.collidepoint(mouse_pos)
-        button_color = BUTTON_HOVER if self.button_hover else ACCENT_COLOR
-
+        self.endturn_hover = self.endturn_button.collidepoint(mouse_pos)
+        
+        endturn_color = BUTTON_HOVER if self.endturn_hover else ACCENT_COLOR
         pygame.draw.rect(
-            self.screen, button_color, self.continue_button, border_radius=10
+            self.screen, endturn_color, self.endturn_button, border_radius=10
         )
         pygame.draw.rect(
-            self.screen, (255, 255, 255), self.continue_button, 2, border_radius=10
+            self.screen, (255, 255, 255), self.endturn_button, 2, border_radius=10
         )
 
-        button_text = self.font.render("Continue", True, WHITE)
-        text_x = (
-            self.continue_button.x
-            + (self.continue_button.width - button_text.get_width()) // 2
+        endturn_text = self.font.render("End Turn", True, WHITE)
+        endturn_x = (
+            self.endturn_button.x
+            + (self.endturn_button.width - endturn_text.get_width()) // 2
         )
-        text_y = (
-            self.continue_button.y
-            + (self.continue_button.height - button_text.get_height()) // 2
+        endturn_y = (
+            self.endturn_button.y
+            + (self.endturn_button.height - endturn_text.get_height()) // 2
         )
-        self.screen.blit(button_text, (text_x, text_y))
+        self.screen.blit(endturn_text, (endturn_x, endturn_y))
 
     def check_click(self, pos):
-        if self.continue_button.collidepoint(pos):
-            return True
-        return False
+        if self.endturn_button.collidepoint(pos):
+            return "endturn"
+        return None
 
     def handle_key(self, event):
-        if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
-            return True
-        return False
+        if event.key == pygame.K_ESCAPE:
+            return "endturn"
+        return None
 
 
 class AIEmotionUI:
@@ -3166,7 +3166,7 @@ class AIEmotionUI:
             self.screen, ACCENT_COLOR, self.panel_rect, 2, border_radius=10
         )
 
-        title_text = self.font.render("Taunt AI", True, WHITE)
+        title_text = self.font.render("Your Feeling", True, WHITE)
         title_rect = title_text.get_rect(
             centerx=self.panel_rect.centerx, y=self.panel_rect.y + 5
         )

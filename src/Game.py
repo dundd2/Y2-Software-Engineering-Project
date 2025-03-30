@@ -80,7 +80,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
-        pygame.display.set_caption("Property Tycoon Alpha 25.03.2025")
+        pygame.display.set_caption("Property Tycoon Alpha 30.03.2025")
 
         self.renderer = None
         self.game_actions = GameActions(self)
@@ -914,6 +914,11 @@ class Game:
                 pygame.display.flip()
                 need_redraw = False
                 last_redraw_time = current_time
+
+        pygame.time.wait(100)
+
+        self.renderer.draw()
+        pygame.display.flip()
 
         return choice or "roll"
 
@@ -1861,7 +1866,7 @@ class Game:
     def can_develop(self, player):
         return self.dev_manager.can_develop(player)
 
-    def handle_turn_end(self):
+    def handle_turn_end(self, force_end=False):
         current_player = self.logic.players[self.logic.current_player_index]
         player_obj = next(
             (p for p in self.players if p.name == current_player["name"]), None
@@ -1874,6 +1879,7 @@ class Game:
         print(f"Lap count: {self.lap_count.get(current_player['name'], 0)}")
         print(f"Current state: {self.state}")
         print(f"Is AI player: {is_ai_player}")
+        print(f"Force end: {force_end}")
 
         owned_properties = [
             prop
@@ -1904,6 +1910,7 @@ class Game:
             not is_ai_player
             and not self.development_mode
             and self.can_develop(current_player)
+            and not force_end
         ):
             print(
                 f"Human player {current_player['name']} can develop - entering development mode"

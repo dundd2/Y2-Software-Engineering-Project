@@ -42,8 +42,15 @@ class GameEventHandler:
         if self.game.game_over:
             return False
 
-        if self.game.dev_manager.is_active:
-            return self.game.dev_manager.handle_click(pos)
+        if self.game.dev_manager.is_active and self.game.state not in ["AUCTION", "BUY"]:
+            dev_result = self.game.dev_manager.handle_click(pos)
+            if dev_result is not None:
+                if isinstance(dev_result, dict) and "winner" in dev_result:
+                    return dev_result
+                elif dev_result == True:
+                    return True
+                else:
+                    return False
 
         for emotion_ui in self.game.emotion_uis.values():
             if emotion_ui.handle_click(pos):
@@ -233,15 +240,22 @@ class GameEventHandler:
         return False
 
     def handle_key(self, event):
-        if self.game.dev_manager.is_active:
+        if self.game.dev_manager.is_active and self.game.state not in ["AUCTION", "BUY"]:
             if (
                 hasattr(self.game.dev_manager, "notification")
                 and self.game.dev_manager.notification
             ):
                 if self.game.dev_manager.notification.handle_key(event):
                     self.game.dev_manager.deactivate()
+                    return False 
+            dev_result = self.game.dev_manager.handle_key(event)
+            if dev_result is not None:
+                if isinstance(dev_result, dict) and "winner" in dev_result:
+                    return dev_result
+                elif dev_result == True:
+                    return True
+                else:
                     return False
-            return self.game.dev_manager.handle_key(event)
 
         if self.game.show_popup:
             if event.key in [pygame.K_SPACE, pygame.K_RETURN, pygame.K_ESCAPE]:
@@ -590,6 +604,9 @@ class GameEventHandler:
                 else:
                     property_name = auction_data["property"]["name"]
                     self.game.board.add_message(f"No one bid on {property_name}")
+                
+                self.game.logic.current_auction = None
+                print("Cleared game.logic.current_auction")
 
             self.game.auction_end_time = pygame.time.get_ticks()
             self.game.auction_end_delay = 3000

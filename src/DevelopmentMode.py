@@ -258,11 +258,16 @@ class DevelopmentMode:
             if ui_rect.collidepoint(pos):
                 return False
 
-        if self.notification and self.notification.check_click(pos):
-            print("Development notification 'Continue' clicked - ending turn.")
-            self.deactivate()
-            self.game.handle_turn_end(force_end=True)
-            return True
+        if self.notification:
+            notification_result = self.notification.check_click(pos)
+            if notification_result:
+                print(f"Development notification '{notification_result}' clicked")
+                
+                if notification_result == "endturn":
+                    self.deactivate()
+                    self.game.handle_turn_end(force_end=True)
+                    return True
+                return False 
 
         property_pos_index = self.game.board.property_clicked(pos)
         if property_pos_index:
@@ -292,20 +297,25 @@ class DevelopmentMode:
         if current_player.get("is_ai", False):
             return None
 
-        if event.key == pygame.K_ESCAPE:
-            if self.selected_property:
-                self.selected_property = None
-                return False
-            else:
-                self.deactivate()
-                self.game.handle_turn_end(force_end=True)
-                return True
+        if event.key == pygame.K_ESCAPE and self.selected_property:
+            self.selected_property = None
 
-        if event.key in (pygame.K_RETURN, pygame.K_SPACE):
-            if self.notification and not self.selected_property:
-                self.deactivate()
-                self.game.handle_turn_end(force_end=True)
-                return True
+            if not current_player.get("is_ai", False) and self.can_develop(current_player):
+                self.notification = DevelopmentNotification(
+                    self.screen, current_player["name"], self.font
+                )
+            return False
+
+        if self.notification and not self.selected_property:
+            notification_result = self.notification.handle_key(event)
+            if notification_result:
+                print(f"Development notification key result: {notification_result}")
+                
+                if notification_result == "endturn":
+                    self.deactivate()
+                    self.game.handle_turn_end(force_end=True)
+                    return True  
+                return False 
 
         if self.selected_property:
             if event.key == pygame.K_1:
