@@ -1837,7 +1837,7 @@ class Game:
 
     def can_develop(self, player):
         if not player.get("is_ai", False):
-            print(f"Development mode disabled for human player {player.get('name', 'Unknown')}")
+            print(f"Development check skipped for player {player.get('name', 'Unknown')} as logic data lacks is_ai=True.")
             return False
         return self.dev_manager.can_develop(player)
 

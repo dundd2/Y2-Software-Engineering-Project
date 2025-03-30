@@ -548,12 +548,16 @@ async def run_game(game, game_settings):
                                 current_bidder, bid_amount
                             )
                             game.board.add_message(message)
+                            if success:
+                                pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'action': 'ai_auction_action_complete'}))
                         else:
                             logger.debug(f"AI {current_bidder['name']} passes")
                             success, message = game.logic.process_auction_pass(
                                 current_bidder
                             )
                             game.board.add_message(message)
+                            if success:
+                                pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'action': 'ai_auction_action_complete'}))
 
                 if (
                     hasattr(game.logic, "current_auction")
