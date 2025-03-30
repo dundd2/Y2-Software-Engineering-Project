@@ -330,11 +330,21 @@ class GameRenderer:
 
         self.game.board.draw(self.screen)
 
-        if self.game.state == "DEVELOPMENT" and self.game.dev_manager.is_active:
-            self.game.dev_manager.draw(pygame.mouse.get_pos())
+        if self.game.dev_manager.is_active:
+            mouse_pos = pygame.mouse.get_pos()
+            self.game.dev_manager.draw(mouse_pos)
 
-        if self.game.development_mode:
-            self.game.dev_manager.draw(pygame.mouse.get_pos())
+            if (
+                hasattr(self.game, "complete_button")
+                and not self.game.current_player_is_ai
+            ):
+                complete_hover = self.game.complete_button.collidepoint(mouse_pos)
+                self.draw_button(
+                    self.game.complete_button,
+                    "Complete",
+                    hover=complete_hover,
+                    active=True,
+                )
 
         for emotion_ui in self.game.emotion_uis.values():
             emotion_ui.draw()
@@ -378,7 +388,7 @@ class GameRenderer:
                 print("Auction delay timer elapsed - changing state to ROLL")
                 self.game.state = "ROLL"
                 self.game.auction_completed = False
-                
+
                 if hasattr(self.game.logic, "current_auction"):
                     self.game.logic.current_auction = None
                     print("Ensuring current_auction is cleared after auction delay")
@@ -606,6 +616,27 @@ class GameRenderer:
                     hover=self.game.roll_button.collidepoint(mouse_pos),
                 )
 
+                current_player = self.game.logic.players[
+                    self.game.logic.current_player_index
+                ]
+                can_develop = self.game.lap_count.get(current_player["name"], 0) >= 1
+
+                if can_develop:
+                    owned_properties = [
+                        prop
+                        for prop in self.game.logic.properties.values()
+                        if prop.get("owner") == current_player["name"]
+                    ]
+
+                    if owned_properties:
+                        develop_hover = self.game.develop_button.collidepoint(mouse_pos)
+                        self.draw_button(
+                            self.game.develop_button,
+                            "Develop",
+                            hover=develop_hover,
+                            active=True,
+                        )
+
                 if self.game.game_mode == "abridged" and self.game.time_limit:
                     pause_hover = self.game.pause_button.collidepoint(mouse_pos)
                     button_text = "Continue" if self.game.game_paused else "Pause"
@@ -717,13 +748,7 @@ class GameRenderer:
                     None,
                 )
 
-                if not player_obj or not player_obj.is_ai:
-                    print("Development UI skipped for human player")
-                    self.game.state = "ROLL"
-                    self.game.selected_property = None
-                    self.game.development_mode = False
-                    self.game.handle_turn_end(force_end=True)
-                elif current_player.get("in_jail", False):
+                if current_player.get("in_jail", False):
                     print(
                         f"Player {current_player['name']} is in jail - not showing development UI"
                     )
@@ -733,7 +758,11 @@ class GameRenderer:
                 else:
                     self.draw_development_ui(self.game.selected_property)
 
-        if self.game.development_mode and not any_player_moving and not self.game.dice_animation:
+        if (
+            self.game.development_mode
+            and not any_player_moving
+            and not self.game.dice_animation
+        ):
             if self.game.state in ["BUY", "AUCTION"]:
                 return
 
@@ -750,7 +779,7 @@ class GameRenderer:
                     (p for p in self.game.players if p.name == current_player["name"]),
                     None,
                 )
-                
+
                 if player_obj and player_obj.is_ai:
                     owned_properties = [
                         p
@@ -758,7 +787,9 @@ class GameRenderer:
                         if p.get("owner") == current_player["name"]
                     ]
                     if owned_properties:
-                        print(f"AI player {current_player['name']} has properties to develop")
+                        print(
+                            f"AI player {current_player['name']} has properties to develop"
+                        )
                         self.game.state = "DEVELOPMENT"
 
         current_time = pygame.time.get_ticks()
@@ -1606,6 +1637,13 @@ class GameRenderer:
         )
         self.screen.blit(money_text, money_rect)
 
-    def handle_development_click(self, pos, property_data):
+    def draw_development_ui(self, property_data):
+        if property_data is None:
+            return
 
+        mouse_pos = pygame.mouse.get_pos()
+
+        self.game.dev_manager._draw_development_ui(property_data, mouse_pos)
+
+    def handle_development_click(self, pos, property_data):
         return self.game.dev_manager.handle_click(pos)

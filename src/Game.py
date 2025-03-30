@@ -85,6 +85,7 @@ class Game:
         self.renderer = None
         self.game_actions = GameActions(self)
         self.development_mode = False
+        self.selected_property = None
 
         self.font = font_manager.get_font(32)
         self.small_font = font_manager.get_font(24)
@@ -300,16 +301,25 @@ class Game:
                 button_height,
             )
 
+            base_x = self.roll_button.x - button_width - button_margin
+
+            self.develop_button = pygame.Rect(
+                base_x,
+                button_y - (button_height + button_margin) * 2,
+                button_width,
+                button_height,
+            )
+
             self.quit_button = pygame.Rect(
-                window_size[0] - (button_width * 2) - (button_margin * 2),
-                button_y,
+                base_x,
+                button_y - (button_height + button_margin),
                 button_width,
                 button_height,
             )
 
             self.pause_button = pygame.Rect(
-                window_size[0] - (button_width * 2) - (button_margin * 2),
-                button_y - button_height - button_margin,
+                base_x,
+                button_y,
                 button_width,
                 button_height,
             )
@@ -386,6 +396,9 @@ class Game:
         self.last_roll = (dice1, dice2)
         self.roll_time = pygame.time.get_ticks()
         current_player = self.logic.players[self.logic.current_player_index]
+        current_player_obj = next(
+            (p for p in self.players if p.name == current_player["name"]), None
+        )
 
         print(f"Current player: {current_player['name']}")
         print(f"Current position: {current_player['position']}")
@@ -425,10 +438,7 @@ class Game:
         self.board.update_board_positions()
         self.board.update_ownership(self.logic.properties)
 
-        current_player_obj = next(
-            (p for p in self.players if p.name == current_player["name"]), None
-        )
-
+        card_type = None
         if position == 21:
             print(f"Player landed on Free Parking space")
             self.board.add_message(f"{current_player['name']} landed on Free Parking")
@@ -440,7 +450,6 @@ class Game:
             pygame.display.flip()
             return
 
-        card_type = None
         if position == 3 or position == 18 or position == 34:
             print(f"Player landed on Pot Luck space {position}")
             card_type = "POT_LUCK"
@@ -575,9 +584,41 @@ class Game:
             self.renderer.draw()
             pygame.display.flip()
 
-        if self.state != "BUY":
-            self.update_current_player()
+        if not current_player_obj.is_ai and self.logic.completed_circuits.get(current_player["name"], 0) >= 1:
+            owned_properties = [
+                prop
+                for prop in self.logic.properties.values()
+                if prop.get("owner") == current_player["name"]
+            ]
+            
+            window_size = self.screen.get_size()
+            button_width = 120
+            button_height = 45
+            button_margin = 20
+            button_y = window_size[1] - button_height - button_margin
+            
+            self.end_turn_button = pygame.Rect(
+                window_size[0] - button_width - button_margin,
+                button_y,
+                button_width,
+                button_height,
+            )
+            
+            self.waiting_for_end_turn = True
+            
+            if owned_properties:
+                self.dev_manager.is_active = True
+                self.board.add_message("Use the Development button to manage your properties")
+                self.board.add_message("Click End Turn when you're ready to end your turn")
+            else:
+                self.board.add_message("Click End Turn to end your turn")
+            
+        if current_player_obj and current_player_obj.is_ai:
+            if self.state != "BUY":
+                self.update_current_player()
+                
 
+        
         self.wait_for_animations()
 
         while self.logic.message_queue:
@@ -588,6 +629,7 @@ class Game:
                 self.board.add_message(message)
 
         print(f"\nFinal state: {self.state}")
+        print(f"Waiting for end turn: {self.waiting_for_end_turn}")
         print("=== End Dice Roll Debug ===\n")
 
         self.renderer.draw()
@@ -1789,6 +1831,9 @@ class Game:
         return False
 
     def update_current_player(self):
+        self.selected_property = None
+        self.development_mode = False
+        
         if self.logic.current_player_index >= len(self.logic.players):
             print("Warning: Current player index out of bounds")
             self.logic.current_player_index = 0
@@ -1797,8 +1842,7 @@ class Game:
             (
                 p
                 for p in self.players
-                if p.name
-                == self.logic.players[self.logic.current_player_index]["name"]
+                if p.name == self.logic.players[self.logic.current_player_index]["name"]
             ),
             None,
         )
@@ -1813,7 +1857,36 @@ class Game:
                     self.dev_manager.activate(self.logic.players[self.logic.current_player_index])
             else:
                 print(f"Current player is human: {current_player.name}")
-                self.development_mode = False
+                owned_properties = [
+                    prop
+                    for prop in self.logic.properties.values()
+                    if prop.get("owner") == current_player.name
+                ]
+                if owned_properties:
+                    print(f"Human player {current_player.name} has properties available for development")
+                    self.development_mode = False 
+                    self.dev_manager.is_active = True  
+
+                    window_size = self.screen.get_size()
+                    button_width = 120
+                    button_height = 45
+                    button_margin = 20
+                    button_y = window_size[1] - button_height - button_margin
+                    
+                    self.complete_button = pygame.Rect(
+                        window_size[0] - button_width - button_margin,
+                        button_y,
+                        button_width,
+                        button_height,
+                    )
+                    
+                    if not current_player.in_jail:
+                        self.notification = "Click on your properties to develop them! Press 'Complete' when finished."
+                        self.notification_time = pygame.time.get_ticks()
+                else:
+                    print(f"Human player {current_player.name} has no properties")
+                    self.development_mode = False
+                    self.dev_manager.is_active = False
 
         for name, emotion_ui in self.emotion_uis.items():
             if not self.current_player_is_ai:
@@ -1834,12 +1907,20 @@ class Game:
                 print(f"AI type: {type(current_player.ai_controller).__name__}")
                 if hasattr(current_player.ai_controller, "mood_modifier"):
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")
+                    
+        if self.state == "DEVELOPMENT":
+            self.state = "ROLL"
 
     def can_develop(self, player):
-        if not player.get("is_ai", False):
-            print(f"Development check skipped for player {player.get('name', 'Unknown')} as logic data lacks is_ai=True.")
-            return False
-        return self.dev_manager.can_develop(player)
+        if player.get("is_ai", False):
+            return self.dev_manager.can_develop_ai(player)
+        else:
+            owned_properties = [
+                prop
+                for prop in self.logic.properties.values()
+                if prop.get("owner") == player.get("name", "")
+            ]
+            return len(owned_properties) > 0
 
     def handle_turn_end(self, force_end=False):
         current_player = self.logic.players[self.logic.current_player_index]

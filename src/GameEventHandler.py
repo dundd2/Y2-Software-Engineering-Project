@@ -42,7 +42,25 @@ class GameEventHandler:
         if self.game.game_over:
             return False
 
-        if self.game.dev_manager.is_active and self.game.state not in ["AUCTION", "BUY"]:
+        if (
+            hasattr(self.game, "complete_button")
+            and self.game.dev_manager.is_active
+            and not self.game.current_player_is_ai
+        ):
+            if self.game.complete_button.collidepoint(pos):
+                print("Complete button clicked - exiting development mode")
+                self.game.dev_manager.is_active = False
+                self.game.development_mode = False
+                self.game.state = "ROLL"
+                self.game.board.add_message(
+                    "Development mode completed. Ready to roll dice."
+                )
+                return False
+
+        if self.game.dev_manager.is_active and self.game.state not in [
+            "AUCTION",
+            "BUY",
+        ]:
             dev_result = self.game.dev_manager.handle_click(pos)
             if dev_result is not None:
                 if isinstance(dev_result, dict) and "winner" in dev_result:
@@ -57,8 +75,16 @@ class GameEventHandler:
                 return False
 
         if self.game.show_popup:
-            if self.game.popup_rect.collidepoint(pos):
-                self.game.show_popup = False
+            if self.game.popup_message:
+                window_size = self.game.screen.get_size()
+                popup_width = int(window_size[0] * 0.4)
+                popup_height = int(window_size[1] * 0.3)
+                popup_x = (window_size[0] - popup_width) // 2
+                popup_y = (window_size[1] - popup_height) // 2
+                popup_rect = pygame.Rect(popup_x, popup_y, popup_width, popup_height)
+                if popup_rect.collidepoint(pos):
+                    self.game.show_popup = False
+                    return False
             return False
 
         if self.game.show_card:
@@ -67,23 +93,48 @@ class GameEventHandler:
             self.game.current_card_player = None
             return False
 
-        any_player_moving = any(player.is_moving for player in self.game.players)
-        if any_player_moving:
-            print("Animations in progress, delaying game state progression")
-            return False
-
-        print(f"\n=== Handle Click Debug ===")
-        print(f"Current state: {self.game.state}")
-
-        if (
-            hasattr(self.game, "auction_just_started")
-            and self.game.auction_just_started
-        ):
-            print("Auction just started - ignoring click to prevent state transition")
-            self.game.auction_just_started = False
-            return False
+        if self.game.development_mode:
+            result = self.game.dev_manager.handle_click(pos)
+            if result is not None:
+                return result
 
         if self.game.state == "ROLL":
+            current_player = self.game.logic.players[
+                self.game.logic.current_player_index
+            ]
+            player_obj = next(
+                (p for p in self.game.players if p.name == current_player["name"]),
+                None,
+            )
+
+            if not player_obj:
+                return False
+
+            if not player_obj.is_ai:
+                if self.game.develop_button.collidepoint(pos):
+                    owned_properties = [
+                        prop
+                        for prop in self.game.logic.properties.values()
+                        if prop.get("owner") == current_player["name"]
+                    ]
+                    if owned_properties:
+                        print(
+                            f"Human player {current_player['name']} clicked development button"
+                        )
+                        self.game.development_mode = True
+                        self.game.dev_manager.activate(current_player)
+                        self.game.board.add_message(
+                            "Development Mode: Click on your properties to manage them"
+                        )
+                        return False
+
+                if self.game.roll_button.collidepoint(pos):
+                    if not any(player.is_moving for player in self.game.players):
+                        self.game.development_mode = False
+                        self.game.dev_manager.deactivate()
+                        self.game_actions.play_turn()
+                        return False
+
             if (
                 not self.game.current_player_is_ai
                 and self.game.game_mode == "abridged"
@@ -240,14 +291,17 @@ class GameEventHandler:
         return False
 
     def handle_key(self, event):
-        if self.game.dev_manager.is_active and self.game.state not in ["AUCTION", "BUY"]:
+        if self.game.dev_manager.is_active and self.game.state not in [
+            "AUCTION",
+            "BUY",
+        ]:
             if (
                 hasattr(self.game.dev_manager, "notification")
                 and self.game.dev_manager.notification
             ):
                 if self.game.dev_manager.notification.handle_key(event):
                     self.game.dev_manager.deactivate()
-                    return False 
+                    return False
             dev_result = self.game.dev_manager.handle_key(event)
             if dev_result is not None:
                 if isinstance(dev_result, dict) and "winner" in dev_result:
@@ -604,7 +658,7 @@ class GameEventHandler:
                 else:
                     property_name = auction_data["property"]["name"]
                     self.game.board.add_message(f"No one bid on {property_name}")
-                
+
                 self.game.logic.current_auction = None
                 print("Cleared game.logic.current_auction")
 
