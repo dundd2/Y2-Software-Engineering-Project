@@ -593,18 +593,6 @@ class Game:
         self.renderer.draw()
         pygame.display.flip()
 
-        self.development_mode = True
-
-        current_player = self.logic.players[self.logic.current_player_index]
-        owned_properties = [
-            p
-            for p in self.logic.properties.values()
-            if p.get("owner") == current_player["name"]
-        ]
-
-        if not owned_properties:
-            self.development_mode = False
-
         self.logic.is_going_to_jail = False
 
         self.renderer.draw()
