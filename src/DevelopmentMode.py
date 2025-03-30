@@ -5,7 +5,6 @@ import pygame
 import math
 import os
 from src.Font_Manager import font_manager
-from src.UI import DevelopmentNotification
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -59,7 +58,6 @@ class DevelopmentMode:
         self.is_active = False
         self.selected_property = None
         self.buttons = {}
-        self.notification = None
         self.last_star_flash_time = 0
         self.show_property_stars = True
 
@@ -67,7 +65,6 @@ class DevelopmentMode:
         if not player.get("is_ai", False):
             print(f"Development mode skipped for human player {player.get('name', 'Unknown')}")
             self.is_active = False
-            self.notification = None
             return False
 
         if self.can_develop(player):
@@ -77,7 +74,6 @@ class DevelopmentMode:
             return True
         else:
             self.is_active = False
-            self.notification = None
             print(f"Development mode NOT activated for AI {player['name']} (cannot develop)")
             return False
 
@@ -85,7 +81,6 @@ class DevelopmentMode:
         print("Development mode DEACTIVATED")
         self.is_active = False
         self.selected_property = None
-        self.notification = None
         self.buttons = {}
         if self.game.state == "DEVELOPMENT":
             self.game.state = "ROLL"
@@ -245,17 +240,6 @@ class DevelopmentMode:
             if ui_rect.collidepoint(pos):
                 return False
 
-        if self.notification:
-            notification_result = self.notification.check_click(pos)
-            if notification_result:
-                print(f"Development notification '{notification_result}' clicked")
-                
-                if notification_result == "endturn":
-                    self.deactivate()
-                    self.game.handle_turn_end(force_end=True)
-                    return True
-                return False 
-
         property_pos_index = self.game.board.property_clicked(pos)
         if property_pos_index:
             pos_str = str(property_pos_index)
@@ -264,7 +248,6 @@ class DevelopmentMode:
                 if prop_data.get("owner") == current_player["name"]:
                     print(f"Selected property for development: {prop_data['name']}")
                     self.selected_property = prop_data
-                    self.notification = None
                     self.game.state = "DEVELOPMENT"
                     return False
                 else:
@@ -286,23 +269,7 @@ class DevelopmentMode:
 
         if event.key == pygame.K_ESCAPE and self.selected_property:
             self.selected_property = None
-
-            if not current_player.get("is_ai", False) and self.can_develop(current_player):
-                self.notification = DevelopmentNotification(
-                    self.screen, current_player["name"], self.font
-                )
             return False
-
-        if self.notification and not self.selected_property:
-            notification_result = self.notification.handle_key(event)
-            if notification_result:
-                print(f"Development notification key result: {notification_result}")
-                
-                if notification_result == "endturn":
-                    self.deactivate()
-                    self.game.handle_turn_end(force_end=True)
-                    return True  
-                return False 
 
         if self.selected_property:
             if event.key == pygame.K_1:

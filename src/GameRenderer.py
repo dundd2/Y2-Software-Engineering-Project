@@ -5,7 +5,7 @@ import pygame
 import math
 import os
 from src.Font_Manager import font_manager
-from src.UI import DevelopmentNotification, AIEmotionUI
+from src.UI import AIEmotionUI
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -758,13 +758,8 @@ class GameRenderer:
                         if p.get("owner") == current_player["name"]
                     ]
                     if owned_properties:
-                        if not hasattr(self.game, 'notification') or not self.game.notification:
-                            self.game.notification = DevelopmentNotification(
-                                self.screen, current_player["name"], self.font
-                            )
-
-                        if self.game.notification:
-                            self.game.notification.draw(mouse_pos)
+                        print(f"AI player {current_player['name']} has properties to develop")
+                        self.game.state = "DEVELOPMENT"
 
         current_time = pygame.time.get_ticks()
         if self.game.dice_animation:

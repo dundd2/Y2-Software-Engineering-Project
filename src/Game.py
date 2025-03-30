@@ -16,7 +16,7 @@ from src.Sound_Manager import sound_manager
 from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 from typing import Optional
 import string
-from src.UI import DevelopmentNotification, AIEmotionUI
+from src.UI import AIEmotionUI
 from src.GameRenderer import GameRenderer
 from src.GameEventHandler import GameEventHandler
 from src.GameActions import GameActions
