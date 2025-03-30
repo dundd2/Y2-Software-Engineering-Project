@@ -629,7 +629,6 @@ class Game:
                 self.board.add_message(message)
 
         print(f"\nFinal state: {self.state}")
-        print(f"Waiting for end turn: {self.waiting_for_end_turn}")
         print("=== End Dice Roll Debug ===\n")
 
         self.renderer.draw()

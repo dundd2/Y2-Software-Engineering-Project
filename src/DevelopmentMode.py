@@ -216,13 +216,14 @@ class DevelopmentMode:
                         if is_mortgaged:
                             self.game.selected_property["is_mortgaged"] = False
 
-                        self.game.board.add_message(
-                            f"{current_player['name']} sold {self.game.selected_property['name']} to the bank for £{sell_property_value}"
-                        )
-                        self.game.board.update_ownership(self.game.logic.properties)
+                        property_name = self.game.selected_property['name']
+                        sell_message = f"{current_player['name']} sold {property_name} to the bank for £{sell_property_value}"
 
                         self.game.selected_property = None
                         self.game.state = "ROLL"
+
+                        self.game.board.add_message(sell_message)
+                        self.game.board.update_ownership(self.game.logic.properties)
 
                         owned_properties = [
                             prop
@@ -231,7 +232,9 @@ class DevelopmentMode:
                         ]
 
                         if not owned_properties:
+                            print("Player sold their last property - deactivating development mode.")
                             self.deactivate()
+
                     else:
                         self.game.board.add_message(
                             "Cannot sell property with buildings. Sell houses/hotel first."
