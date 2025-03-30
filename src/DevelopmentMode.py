@@ -64,21 +64,21 @@ class DevelopmentMode:
         self.show_property_stars = True
 
     def activate(self, player):
+        if not player.get("is_ai", False):
+            print(f"Development mode skipped for human player {player.get('name', 'Unknown')}")
+            self.is_active = False
+            self.notification = None
+            return False
+
         if self.can_develop(player):
             self.is_active = True
             self.selected_property = None
-            if not player.get("is_ai", False):
-                self.notification = DevelopmentNotification(
-                    self.screen, player["name"], self.font
-                )
-            print(f"Development mode ACTIVATED for {player['name']}")
+            print(f"Development mode ACTIVATED for AI {player['name']}")
             return True
         else:
             self.is_active = False
             self.notification = None
-            print(
-                f"Development mode NOT activated for {player['name']} (cannot develop)"
-            )
+            print(f"Development mode NOT activated for AI {player['name']} (cannot develop)")
             return False
 
     def deactivate(self):
@@ -95,10 +95,12 @@ class DevelopmentMode:
             print("Development: Cannot develop - Invalid player data")
             return False
 
+        if not player.get("is_ai", False):
+            print(f"Development: Cannot develop - {player.get('name', 'Unknown')} is not an AI player")
+            return False
+
         if self.game.lap_count.get(player["name"], 0) < 1:
-            print(
-                f"Development: Cannot develop - {player['name']} has not completed a lap."
-            )
+            print(f"Development: Cannot develop - {player['name']} has not completed a lap.")
             return False
 
         owned_properties = [
@@ -114,29 +116,15 @@ class DevelopmentMode:
         for prop in owned_properties:
             can_build_house, _ = self.game.logic.can_build_house(prop, player)
             can_build_hotel, _ = self.game.logic.can_build_hotel(prop, player)
-            can_mortgage = prop.get("houses", 0) == 0 and not prop.get(
-                "is_mortgaged", False
-            )
-            can_unmortgage = prop.get("is_mortgaged", False) and player["money"] >= int(
-                (prop.get("price", 0) // 2) * 1.1
-            )
+            can_mortgage = prop.get("houses", 0) == 0 and not prop.get("is_mortgaged", False)
+            can_unmortgage = prop.get("is_mortgaged", False) and player["money"] >= int((prop.get("price", 0) // 2) * 1.1)
             can_sell = prop.get("houses", 0) > 0
 
-            if (
-                can_build_house
-                or can_build_hotel
-                or can_mortgage
-                or can_unmortgage
-                or can_sell
-            ):
-                print(
-                    f"Development: {player['name']} CAN develop (found developable property: {prop.get('name')})"
-                )
+            if can_build_house or can_build_hotel or can_mortgage or can_unmortgage or can_sell:
+                print(f"Development: {player['name']} CAN develop (found developable property: {prop.get('name')})")
                 return True
 
-        print(
-            f"Development: Cannot develop - {player['name']} owns properties, but none are currently developable/manageable."
-        )
+        print(f"Development: Cannot develop - {player['name']} owns properties, but none are currently developable/manageable.")
         return False
 
     def draw(self, mouse_pos):
@@ -144,19 +132,18 @@ class DevelopmentMode:
             return
 
         current_player = self.game.logic.players[self.game.logic.current_player_index]
-        is_ai = current_player.get("is_ai", False)
+        if not current_player.get("is_ai", False):
+            return
 
-        if self.selected_property and not is_ai:
+        if self.selected_property:
             self._draw_development_ui(self.selected_property, mouse_pos)
-        elif self.notification and not is_ai:
-            self.notification.draw(mouse_pos)
 
     def handle_click(self, pos):
         if not self.is_active:
             return None
 
         current_player = self.game.logic.players[self.game.logic.current_player_index]
-        if current_player.get("is_ai", False):
+        if not current_player.get("is_ai", False):
             return None
 
         if self.selected_property:
@@ -294,7 +281,7 @@ class DevelopmentMode:
             return None
 
         current_player = self.game.logic.players[self.game.logic.current_player_index]
-        if current_player.get("is_ai", False):
+        if not current_player.get("is_ai", False):
             return None
 
         if event.key == pygame.K_ESCAPE and self.selected_property:

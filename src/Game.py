@@ -429,7 +429,7 @@ class Game:
             (p for p in self.players if p.name == current_player["name"]), None
         )
 
-        if position == 20:
+        if position == 21:
             print(f"Player landed on Free Parking space")
             self.board.add_message(f"{current_player['name']} landed on Free Parking")
 
@@ -1802,46 +1802,30 @@ class Game:
 
     def update_current_player(self):
         if self.logic.current_player_index >= len(self.logic.players):
-            print(f"Invalid current player index: {self.logic.current_player_index}")
-            if len(self.logic.players) > 0:
-                self.logic.current_player_index = 0
-            else:
-                print("No players left in the game")
-                return
-
-        current_logic_player = self.logic.players[self.logic.current_player_index]
-
-        if current_logic_player.get("exited", False):
-            print(
-                f"Current player {current_logic_player['name']} has exited, moving to next player"
-            )
-            self.logic.current_player_index = (
-                self.logic.current_player_index + 1
-            ) % len(self.logic.players)
-            return self.update_current_player()
+            print("Warning: Current player index out of bounds")
+            self.logic.current_player_index = 0
 
         current_player = next(
-            (p for p in self.players if p.name == current_logic_player["name"]),
+            (
+                p
+                for p in self.players
+                if p.name
+                == self.logic.players[self.logic.current_player_index]["name"]
+            ),
             None,
         )
 
-        if not current_player or (
-            hasattr(current_player, "voluntary_exit") and current_player.voluntary_exit
-        ):
-            print(
-                f"Player {current_logic_player['name']} has no UI representation or has voluntarily exited"
-            )
-            if not current_logic_player.get("exited", False):
-                print(
-                    f"Marking player {current_logic_player['name']} as exited in game logic"
-                )
-                current_logic_player["exited"] = True
-            self.logic.current_player_index = (
-                self.logic.current_player_index + 1
-            ) % len(self.logic.players)
-            return self.update_current_player()
-
-        self.current_player_is_ai = current_player and current_player.is_ai
+        if current_player:
+            self.current_player_is_ai = current_player.is_ai
+            if current_player.is_ai:
+                print(f"Current player is AI: {current_player.name}")
+                if self.can_develop(self.logic.players[self.logic.current_player_index]):
+                    print("AI player can develop - activating development mode")
+                    self.development_mode = True
+                    self.dev_manager.activate(self.logic.players[self.logic.current_player_index])
+            else:
+                print(f"Current player is human: {current_player.name}")
+                self.development_mode = False
 
         for name, emotion_ui in self.emotion_uis.items():
             if not self.current_player_is_ai:
@@ -1864,6 +1848,9 @@ class Game:
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")
 
     def can_develop(self, player):
+        if not player.get("is_ai", False):
+            print(f"Development mode disabled for human player {player.get('name', 'Unknown')}")
+            return False
         return self.dev_manager.can_develop(player)
 
     def handle_turn_end(self, force_end=False):
@@ -1876,110 +1863,24 @@ class Game:
         print(f"\n=== DEVELOPMENT MODE DEBUG - Turn End ===")
         print(f"Player: {current_player['name']}")
         print(f"Current development_mode: {self.development_mode}")
-        print(f"Lap count: {self.lap_count.get(current_player['name'], 0)}")
         print(f"Current state: {self.state}")
         print(f"Is AI player: {is_ai_player}")
         print(f"Force end: {force_end}")
 
-        owned_properties = [
-            prop
-            for prop in self.logic.properties.values()
-            if prop.get("owner") == current_player["name"]
-        ]
-        print(f"Owned properties: {len(owned_properties)}")
-        for prop in owned_properties:
-            print(f"  - {prop['name']} (Group: {prop.get('group', 'None')})")
-
-        can_develop_properties = self.can_develop(current_player)
-        print(f"Can develop properties: {can_develop_properties}")
-
-        if (
-            is_ai_player
-            and not self.development_mode
-            and self.can_develop(current_player)
-        ):
-            print(
-                f"AI player {current_player['name']} could develop properties but chose not to"
-            )
+        if is_ai_player and not self.development_mode and self.can_develop(current_player):
+            print(f"AI player {current_player['name']} could develop properties but chose not to")
 
         if self.development_mode:
             print(f"Ending development phase for {current_player['name']}")
             self.development_mode = False
             print(f"Development mode set to: {self.development_mode}")
-        elif (
-            not is_ai_player
-            and not self.development_mode
-            and self.can_develop(current_player)
-            and not force_end
-        ):
-            print(
-                f"Human player {current_player['name']} can develop - entering development mode"
-            )
-            self.state = "DEVELOPMENT"
-            self.development_mode = True
-
-            activated = self.dev_manager.activate(current_player)
-
-            if not activated:
-                print(
-                    "WARNING: Development mode state set, but dev_manager failed to activate!"
-                )
-                self.state = "ROLL"
-                self.development_mode = False
-                self.logic.current_player_index = (
-                    self.logic.current_player_index + 1
-                ) % len(self.logic.players)
-                print(
-                    f"Moving to next player due to failed activation, new index: {self.logic.current_player_index}"
-                )
-                self.update_current_player()
-                return
-
-            print(
-                f"Development mode set to: {self.development_mode}, DevManager active: {self.dev_manager.is_active}"
-            )
-
-            print(f"\n=== Properties eligible for development ===")
-            for prop in owned_properties:
-                can_build_house, house_error = self.logic.can_build_house(
-                    prop, current_player
-                )
-                can_build_hotel, hotel_error = self.logic.can_build_hotel(
-                    prop, current_player
-                )
-                print(f"  - {prop['name']} (Houses: {prop.get('houses', 0)})")
-                print(
-                    f"    Can build house: {can_build_house} {'' if can_build_house else '- ' + (house_error or 'Unknown error')}"
-                )
-                print(
-                    f"    Can build hotel: {can_build_hotel} {'' if can_build_hotel else '- ' + (hotel_error or 'Unknown error')}"
-                )
-
-            self.renderer.draw()
-            pygame.display.flip()
-            return
-        else:
-            print(f"No development phase needed for {current_player['name']}")
-            self.development_mode = False
-            print(f"Development mode set to: {self.development_mode}")
-            self.logic.current_player_index = (
-                self.logic.current_player_index + 1
-            ) % len(self.logic.players)
-            print(
-                f"Moving to next player, new index: {self.logic.current_player_index}"
-            )
-            self.update_current_player()
-
+        
         self.state = "ROLL"
-        self.current_property = None
-        self.last_roll = None
-        self.roll_time = 0
-        self.dice_animation = False
-        self.dice_values = None
-
-        self.renderer.draw()
-        pygame.display.flip()
-        print(f"Final state after turn end: {self.state}")
+        self.development_mode = False
+        self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+        print(f"Moving to next player, new index: {self.logic.current_player_index}")
+        self.update_current_player()
+        return
 
     def handle_key(self, event):
         if self.dev_manager.is_active:

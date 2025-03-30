@@ -586,6 +586,9 @@ async def run_game(game, game_settings):
                         game.auction_end_delay = 3000
                         game.auction_completed = True
                         game.board.update_ownership(game.logic.properties)
+                        
+                        game.logic.current_auction = None
+                        logger.info("Explicitly cleared current_auction after setting up auction delay")
 
                 delattr(game, "auction_processing")
 

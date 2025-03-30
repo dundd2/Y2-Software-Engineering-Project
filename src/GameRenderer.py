@@ -374,10 +374,14 @@ class GameRenderer:
 
         if hasattr(self.game, "auction_completed") and self.game.auction_completed:
             current_time = pygame.time.get_ticks()
-            if current_time - self.game.auction_end_time > self.game.auction_end_delay:
+            if current_time - self.game.auction_end_time >= self.game.auction_end_delay:
                 print("Auction delay timer elapsed - changing state to ROLL")
                 self.game.state = "ROLL"
                 self.game.auction_completed = False
+                
+                if hasattr(self.game.logic, "current_auction"):
+                    self.game.logic.current_auction = None
+                    print("Ensuring current_auction is cleared after auction delay")
 
         self.game.board.draw(self.screen)
         self.game.dev_manager._draw_property_stars()
@@ -596,12 +600,11 @@ class GameRenderer:
                 for emotion_ui in self.game.emotion_uis.values():
                     emotion_ui.draw()
 
-                if not self.game.development_mode:
-                    self.draw_button(
-                        self.game.roll_button,
-                        "Roll",
-                        hover=self.game.roll_button.collidepoint(mouse_pos),
-                    )
+                self.draw_button(
+                    self.game.roll_button,
+                    "Roll",
+                    hover=self.game.roll_button.collidepoint(mouse_pos),
+                )
 
                 if self.game.game_mode == "abridged" and self.game.time_limit:
                     pause_hover = self.game.pause_button.collidepoint(mouse_pos)
@@ -714,13 +717,12 @@ class GameRenderer:
                     None,
                 )
 
-                if player_obj and player_obj.is_ai:
-                    print(
-                        f"Auto-closing development UI for AI player {current_player['name']}"
-                    )
+                if not player_obj or not player_obj.is_ai:
+                    print("Development UI skipped for human player")
                     self.game.state = "ROLL"
                     self.game.selected_property = None
                     self.game.development_mode = False
+                    self.game.handle_turn_end(force_end=True)
                 elif current_player.get("in_jail", False):
                     print(
                         f"Player {current_player['name']} is in jail - not showing development UI"
@@ -731,11 +733,7 @@ class GameRenderer:
                 else:
                     self.draw_development_ui(self.game.selected_property)
 
-        if (
-            self.game.development_mode
-            and not any_player_moving
-            and not self.game.dice_animation
-        ):
+        if self.game.development_mode and not any_player_moving and not self.game.dice_animation:
             if self.game.state in ["BUY", "AUCTION"]:
                 return
 
@@ -748,19 +746,25 @@ class GameRenderer:
                 current_player = self.game.logic.players[
                     self.game.logic.current_player_index
                 ]
-                owned_properties = [
-                    p
-                    for p in self.game.logic.properties.values()
-                    if p.get("owner") == current_player["name"]
-                ]
-                if owned_properties:
-                    if not hasattr(self.game, 'notification') or not self.game.notification:
-                        self.game.notification = DevelopmentNotification(
-                            self.screen, current_player["name"], self.font
-                        )
+                player_obj = next(
+                    (p for p in self.game.players if p.name == current_player["name"]),
+                    None,
+                )
+                
+                if player_obj and player_obj.is_ai:
+                    owned_properties = [
+                        p
+                        for p in self.game.logic.properties.values()
+                        if p.get("owner") == current_player["name"]
+                    ]
+                    if owned_properties:
+                        if not hasattr(self.game, 'notification') or not self.game.notification:
+                            self.game.notification = DevelopmentNotification(
+                                self.screen, current_player["name"], self.font
+                            )
 
-                    if self.game.notification:
-                        self.game.notification.draw(mouse_pos)
+                        if self.game.notification:
+                            self.game.notification.draw(mouse_pos)
 
         current_time = pygame.time.get_ticks()
         if self.game.dice_animation:
