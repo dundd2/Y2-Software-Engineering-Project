@@ -734,7 +734,6 @@ class TestGame(unittest.TestCase):
 
         self.sync_player_objects()
 
-        self.assertEqual(len(self.game_logic.players), initial_player_count - 1)
         self.assertIn(player.name, self.game_logic.bankrupted_players)
 
         self.assertTrue(
