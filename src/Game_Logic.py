@@ -1358,26 +1358,38 @@ class GameLogic:
         if not hasattr(self, "_last_build_check_time"):
             self._last_build_check_time = 0
             self._build_check_debug_enabled = False
-        
+
         current_time = pygame.time.get_ticks()
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time > 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time > 1000
+        ):
             self._last_build_check_time = current_time
             print(f"\n=== DEBUG: can_build_house CHECK ===")
             print(f"Property: {property_data.get('name', 'Unknown')}")
             print(f"Player: {player['name'] if player else 'None'}")
             print(f"Property position: {property_data.get('position', 'Unknown')}")
-        
+
         if property_data.get("is_mortgaged", False):
-            if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+            if (
+                self._build_check_debug_enabled
+                and current_time - self._last_build_check_time <= 1000
+            ):
                 print("Cannot build - property is mortgaged")
             return False, "Cannot build on mortgaged property"
 
         color_group = property_data.get("group")
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time <= 1000
+        ):
             print(f"Color group: {color_group}")
 
         if not color_group:
-            if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+            if (
+                self._build_check_debug_enabled
+                and current_time - self._last_build_check_time <= 1000
+            ):
                 print("Cannot build - not a valid property group")
             return False, "Cannot build houses on this type of property"
 
@@ -1385,7 +1397,10 @@ class GameLogic:
             p for p in self.properties.values() if p.get("group") == color_group
         ]
 
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time <= 1000
+        ):
             print(f"Total properties in group: {len(color_group_properties)}")
             for prop in color_group_properties:
                 prop_owner = prop.get("owner", "None")
@@ -1395,35 +1410,55 @@ class GameLogic:
 
         for prop in color_group_properties:
             if prop.get("owner") != player["name"]:
-                if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+                if (
+                    self._build_check_debug_enabled
+                    and current_time - self._last_build_check_time <= 1000
+                ):
                     print(
                         f"Cannot build - {prop.get('name', 'Unknown')} is owned by {prop.get('owner', 'None')}, not {player['name']}"
                     )
                 return False, f"Must own all {color_group} properties to build"
 
         current_houses = property_data.get("houses", 0)
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time <= 1000
+        ):
             print(f"Current houses on property: {current_houses}")
 
         for prop in color_group_properties:
             if prop != property_data:
                 other_houses = prop.get("houses", 0)
-                if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
-                    print(f"  - {prop.get('name', 'Unknown')} has {other_houses} houses")
+                if (
+                    self._build_check_debug_enabled
+                    and current_time - self._last_build_check_time <= 1000
+                ):
+                    print(
+                        f"  - {prop.get('name', 'Unknown')} has {other_houses} houses"
+                    )
 
                 if current_houses + 1 > other_houses + 1:
-                    if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+                    if (
+                        self._build_check_debug_enabled
+                        and current_time - self._last_build_check_time <= 1000
+                    ):
                         print(
                             f"Cannot build - houses must be built evenly. This property would have {current_houses + 1} houses while {prop.get('name', 'Unknown')} has {other_houses}"
                         )
                     return False, "Must build houses evenly across properties"
 
         if current_houses >= 5:
-            if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+            if (
+                self._build_check_debug_enabled
+                and current_time - self._last_build_check_time <= 1000
+            ):
                 print("Cannot build - maximum development reached")
             return False, "Maximum development reached"
 
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time <= 1000
+        ):
             print("Can build house: YES")
         return True, None
 
@@ -1431,18 +1466,26 @@ class GameLogic:
         if not hasattr(self, "_last_build_check_time"):
             self._last_build_check_time = 0
             self._build_check_debug_enabled = False
-            
+
         current_time = pygame.time.get_ticks()
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time > 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time > 1000
+        ):
             self._last_build_check_time = current_time
             print(f"\n=== DEBUG: can_build_hotel CHECK ===")
             print(f"Property: {property_data.get('name', 'Unknown')}")
             print(f"Player: {player['name'] if player else 'None'}")
-            
+
         is_group_complete = self.check_property_group_completion(player["name"])
         if not is_group_complete:
-            if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
-                print("Cannot build hotel - player does not own all properties in the group")
+            if (
+                self._build_check_debug_enabled
+                and current_time - self._last_build_check_time <= 1000
+            ):
+                print(
+                    "Cannot build hotel - player does not own all properties in the group"
+                )
             return False, "You must own all properties in the color group"
 
         color_group = [
@@ -1453,29 +1496,48 @@ class GameLogic:
         ]
 
         current_houses = property_data.get("houses", 0)
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time <= 1000
+        ):
             print(f"Current houses on property: {current_houses}")
-            
+
         if current_houses != 4:
-            if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+            if (
+                self._build_check_debug_enabled
+                and current_time - self._last_build_check_time <= 1000
+            ):
                 print("Cannot build hotel - property must have exactly 4 houses")
             return False, "Must have 4 houses before building a hotel"
 
         for prop in color_group:
             if prop != property_data:
                 other_houses = prop.get("houses", 0)
-                if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
-                    print(f"  - {prop.get('name', 'Unknown')} has {other_houses} houses")
-                    
+                if (
+                    self._build_check_debug_enabled
+                    and current_time - self._last_build_check_time <= 1000
+                ):
+                    print(
+                        f"  - {prop.get('name', 'Unknown')} has {other_houses} houses"
+                    )
+
                 if other_houses < 4:
-                    if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
-                        print(f"Cannot build hotel - all properties must have at least 4 houses")
+                    if (
+                        self._build_check_debug_enabled
+                        and current_time - self._last_build_check_time <= 1000
+                    ):
+                        print(
+                            f"Cannot build hotel - all properties must have at least 4 houses"
+                        )
                     return (
                         False,
                         "All properties in the set must have at least 4 houses before building a hotel",
                     )
 
-        if self._build_check_debug_enabled and current_time - self._last_build_check_time <= 1000:
+        if (
+            self._build_check_debug_enabled
+            and current_time - self._last_build_check_time <= 1000
+        ):
             print("Can build hotel: YES")
         return True, None
 

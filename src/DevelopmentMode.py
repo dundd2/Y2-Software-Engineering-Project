@@ -216,7 +216,7 @@ class DevelopmentMode:
                         if is_mortgaged:
                             self.game.selected_property["is_mortgaged"] = False
 
-                        property_name = self.game.selected_property['name']
+                        property_name = self.game.selected_property["name"]
                         sell_message = f"{current_player['name']} sold {property_name} to the bank for £{sell_property_value}"
 
                         self.game.selected_property = None
@@ -232,7 +232,9 @@ class DevelopmentMode:
                         ]
 
                         if not owned_properties:
-                            print("Player sold their last property - deactivating development mode.")
+                            print(
+                                "Player sold their last property - deactivating development mode."
+                            )
                             self.deactivate()
 
                     else:

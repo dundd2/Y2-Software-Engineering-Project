@@ -584,41 +584,46 @@ class Game:
             self.renderer.draw()
             pygame.display.flip()
 
-        if not current_player_obj.is_ai and self.logic.completed_circuits.get(current_player["name"], 0) >= 1:
+        if (
+            not current_player_obj.is_ai
+            and self.logic.completed_circuits.get(current_player["name"], 0) >= 1
+        ):
             owned_properties = [
                 prop
                 for prop in self.logic.properties.values()
                 if prop.get("owner") == current_player["name"]
             ]
-            
+
             window_size = self.screen.get_size()
             button_width = 120
             button_height = 45
             button_margin = 20
             button_y = window_size[1] - button_height - button_margin
-            
+
             self.end_turn_button = pygame.Rect(
                 window_size[0] - button_width - button_margin,
                 button_y,
                 button_width,
                 button_height,
             )
-            
+
             self.waiting_for_end_turn = True
-            
+
             if owned_properties:
                 self.dev_manager.is_active = True
-                self.board.add_message("Use the Development button to manage your properties")
-                self.board.add_message("Click End Turn when you're ready to end your turn")
+                self.board.add_message(
+                    "Use the Development button to manage your properties"
+                )
+                self.board.add_message(
+                    "Click End Turn when you're ready to end your turn"
+                )
             else:
                 self.board.add_message("Click End Turn to end your turn")
-            
+
         if current_player_obj and current_player_obj.is_ai:
             if self.state != "BUY":
                 self.update_current_player()
-                
 
-        
         self.wait_for_animations()
 
         while self.logic.message_queue:
@@ -1439,7 +1444,9 @@ class Game:
 
     def check_passing_go(self, player, old_position):
         if player.bankrupt or player.voluntary_exit:
-            logging.debug(f"check_passing_go: Player {player.name} is already bankrupt or exited. Skipping GO check.")
+            logging.debug(
+                f"check_passing_go: Player {player.name} is already bankrupt or exited. Skipping GO check."
+            )
             return
 
         new_position = player.position
@@ -1452,12 +1459,18 @@ class Game:
 
                 if player_dict:
                     player_dict["money"] += 200
-                    if hasattr(self.logic, 'bank_money'): 
-                         self.logic.bank_money -= 200
+                    if hasattr(self.logic, "bank_money"):
+                        self.logic.bank_money -= 200
                     else:
-                         logging.warning("Logic object missing 'bank_money' attribute during GO check.")
-                    self.board.add_message(f"{player.name} collected £200 for passing GO")
-                    logging.info(f"{player.name} collected £200 for passing GO. New balance: {player_dict['money']}")
+                        logging.warning(
+                            "Logic object missing 'bank_money' attribute during GO check."
+                        )
+                    self.board.add_message(
+                        f"{player.name} collected £200 for passing GO"
+                    )
+                    logging.info(
+                        f"{player.name} collected £200 for passing GO. New balance: {player_dict['money']}"
+                    )
                     player.money = player_dict["money"]
 
                 else:
@@ -1467,7 +1480,10 @@ class Game:
                     )
 
             except Exception as e:
-                logging.error(f"Error during check_passing_go for player {player.name}: {e}", exc_info=True)
+                logging.error(
+                    f"Error during check_passing_go for player {player.name}: {e}",
+                    exc_info=True,
+                )
 
     def synchronize_player_positions(self):
         try:
@@ -1832,7 +1848,7 @@ class Game:
     def update_current_player(self):
         self.selected_property = None
         self.development_mode = False
-        
+
         if self.logic.current_player_index >= len(self.logic.players):
             print("Warning: Current player index out of bounds")
             self.logic.current_player_index = 0
@@ -1850,10 +1866,14 @@ class Game:
             self.current_player_is_ai = current_player.is_ai
             if current_player.is_ai:
                 print(f"Current player is AI: {current_player.name}")
-                if self.can_develop(self.logic.players[self.logic.current_player_index]):
+                if self.can_develop(
+                    self.logic.players[self.logic.current_player_index]
+                ):
                     print("AI player can develop - activating development mode")
                     self.development_mode = True
-                    self.dev_manager.activate(self.logic.players[self.logic.current_player_index])
+                    self.dev_manager.activate(
+                        self.logic.players[self.logic.current_player_index]
+                    )
             else:
                 print(f"Current player is human: {current_player.name}")
                 owned_properties = [
@@ -1862,23 +1882,25 @@ class Game:
                     if prop.get("owner") == current_player.name
                 ]
                 if owned_properties:
-                    print(f"Human player {current_player.name} has properties available for development")
-                    self.development_mode = False 
-                    self.dev_manager.is_active = True  
+                    print(
+                        f"Human player {current_player.name} has properties available for development"
+                    )
+                    self.development_mode = False
+                    self.dev_manager.is_active = True
 
                     window_size = self.screen.get_size()
                     button_width = 120
                     button_height = 45
                     button_margin = 20
                     button_y = window_size[1] - button_height - button_margin
-                    
+
                     self.complete_button = pygame.Rect(
                         window_size[0] - button_width - button_margin,
                         button_y,
                         button_width,
                         button_height,
                     )
-                    
+
                     if not current_player.in_jail:
                         self.notification = "Click on your properties to develop them! Press 'Complete' when finished."
                         self.notification_time = pygame.time.get_ticks()
@@ -1906,7 +1928,7 @@ class Game:
                 print(f"AI type: {type(current_player.ai_controller).__name__}")
                 if hasattr(current_player.ai_controller, "mood_modifier"):
                     print(f"Current mood: {current_player.ai_controller.mood_modifier}")
-                    
+
         if self.state == "DEVELOPMENT":
             self.state = "ROLL"
 
@@ -1935,17 +1957,25 @@ class Game:
         print(f"Is AI player: {is_ai_player}")
         print(f"Force end: {force_end}")
 
-        if is_ai_player and not self.development_mode and self.can_develop(current_player):
-            print(f"AI player {current_player['name']} could develop properties but chose not to")
+        if (
+            is_ai_player
+            and not self.development_mode
+            and self.can_develop(current_player)
+        ):
+            print(
+                f"AI player {current_player['name']} could develop properties but chose not to"
+            )
 
         if self.development_mode:
             print(f"Ending development phase for {current_player['name']}")
             self.development_mode = False
             print(f"Development mode set to: {self.development_mode}")
-        
+
         self.state = "ROLL"
         self.development_mode = False
-        self.logic.current_player_index = (self.logic.current_player_index + 1) % len(self.logic.players)
+        self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
+            self.logic.players
+        )
         print(f"Moving to next player, new index: {self.logic.current_player_index}")
         self.update_current_player()
         return

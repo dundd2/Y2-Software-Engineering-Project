@@ -635,7 +635,8 @@ class SettingsPage(BasePage):
         )
         info_rect = info_text.get_rect(
             centerx=get_window_size()[0] // 2,
-            top=self.confirm_button.rect.bottom + (40 if self.show_confirmation else 10),
+            top=self.confirm_button.rect.bottom
+            + (40 if self.show_confirmation else 10),
         )
         self.screen.blit(info_text, info_rect)
 

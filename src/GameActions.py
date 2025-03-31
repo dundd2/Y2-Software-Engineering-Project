@@ -221,7 +221,11 @@ class GameActions:
                 sound_manager.play_sound("buy_property")
 
                 if self.game.current_player_is_ai:
-                     pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'action': 'ai_buy_action_complete'}))
+                    pygame.event.post(
+                        pygame.event.Event(
+                            pygame.USEREVENT, {"action": "ai_buy_action_complete"}
+                        )
+                    )
 
                 if (
                     not hasattr(self.game.logic, "current_auction")
