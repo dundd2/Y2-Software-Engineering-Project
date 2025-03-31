@@ -1,0 +1,740 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Flow and Structure &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Module" href="game.html" />
+    <link rel="prev" title="Property Tycoon Game Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Flow and Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#game-architecture">Game Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main-game-flow">Main Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-components">AI Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hard-ai-emotional-system">Hard AI Emotional System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#property-management-system">Property Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-interface-structure">User Interface Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-loading-system">Data Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-relationship-diagram">Class Relationship Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-state-machine">Game State Machine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Flow and Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#game-architecture">Game Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#main-game-flow">Main Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-components">AI Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hard-ai-emotional-system">Hard AI Emotional System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#property-management-system">Property Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-interface-structure">User Interface Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-loading-system">Data Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-relationship-diagram">Class Relationship Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-state-machine">Game State Machine</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Flow and Structure</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/diagrams.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-flow-and-structure">
+<h1>Game Flow and Structure<a class="headerlink" href="#game-flow-and-structure" title="Link to this heading"></a></h1>
+<p>This section provides visual representations of the game’s flow and structure using diagrams.</p>
+<section id="game-architecture">
+<h2>Game Architecture<a class="headerlink" href="#game-architecture" title="Link to this heading"></a></h2>
+<p>The overall architecture of the Property Tycoon game is organized into several interconnected modules:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-36572602bcc8d9baabc357989dba18a3a9804ed9.png" alt="&#64;startuml
+
+package &quot;Core Game Logic&quot; {
+  [Game] as Game
+  [GameLogic] as GameLogic
+  [Board] as Board
+  [Property] as Property
+  [Player] as Player
+  [Cards] as Cards"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>package “User Interface” {</dt><dd><p>[UI] as UI
+[GameRenderer] as GameRenderer
+[FontManager] as FontManager
+[SoundManager] as SoundManager</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>package “Game Control” {</dt><dd><p>[GameActions] as GameActions
+[GameEventHandler] as GameEventHandler
+[DevelopmentMode] as DevelopmentMode</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>package “AI System” {</dt><dd><p>[AI_Player_Logic] as AILogic</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>package “Data Management” {</dt><dd><p>[Loadexcel] as Loadexcel</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Game –&gt; GameLogic : uses
+Game –&gt; Board : contains
+Game –&gt; UI : displays through
+Game –&gt; GameRenderer : renders with
+Game –&gt; GameEventHandler : processes events with
+Game –&gt; GameActions : executes actions through
+Game –&gt; SoundManager : plays sounds with</p>
+<p>GameLogic –&gt; Property : manages
+GameLogic –&gt; Player : controls
+GameLogic –&gt; Cards : uses
+GameLogic –&gt; AILogic : integrates with</p>
+<p>UI –&gt; FontManager : renders text with</p>
+<p>Player –&gt; Property : owns</p>
+<p>DevelopmentMode –&gt; Property : modifies
+DevelopmentMode –&gt; Player : charges</p>
+<p>Loadexcel –&gt; Property : creates
+Loadexcel –&gt; Cards : creates</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="main-game-flow">
+<h2>Main Game Flow<a class="headerlink" href="#main-game-flow" title="Link to this heading"></a></h2>
+<p>The main game flow illustrates the sequence of play in Property Tycoon:</p>
+</section>
+<section id="ai-components">
+<h2>AI Components<a class="headerlink" href="#ai-components" title="Link to this heading"></a></h2>
+<p>The AI system in Property Tycoon includes different levels of AI with distinct behaviors:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “EasyAIPlayer” as EasyAI {</dt><dd><p>-purchase_threshold : float
+-development_threshold : float
++evaluate_property_purchase(property, player)
++decide_jail_strategy(player)
++evaluate_development(player, property)
++decide_auction_bid(property, player, current_bid)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “HardAIPlayer” as HardAI {</dt><dd><p>-mood : String
+-mood_level : float
+-strategic_value_matrix : Dict
+-property_value_calculator : PropertyValueCalculator
+-risk_profile : float
++evaluate_property_purchase(property, player)
++decide_jail_strategy(player)
++evaluate_development(player, property)
++update_mood(game_event)
++calculate_strategic_value(property, player)
++decide_auction_bid(property, player, current_bid)
++adjust_valuation_by_mood(base_value)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “PropertyValueCalculator” as PropCalc {</dt><dd><p>+calculate_immediate_value(property)
++calculate_development_potential(property, player)
++calculate_monopoly_potential(property, player)
++calculate_synergy_value(property, player)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “MoodSystem” as Mood {</dt><dd><p>-current_mood : String
+-mood_factors : Dict
+-mood_transitions : Dict
++update_mood(event, intensity)
++get_current_mood()
++get_mood_modifier(decision_type)
++process_game_events(events)</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>AI_Base &lt;<a href="#id21"><span class="problematic" id="id22">|-- EasyAI
+AI_Base &lt;|</span></a>– HardAI
+HardAI –&gt; PropCalc : uses
+HardAI –&gt; Mood : implements</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="hard-ai-emotional-system">
+<h2>Hard AI Emotional System<a class="headerlink" href="#hard-ai-emotional-system" title="Link to this heading"></a></h2>
+<p>The Hard AI uses an emotional system to make its decisions more human-like and unpredictable:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-041cbfa0490bcc259fcae52ab23f4ba8a487229d.png" alt="&#64;startuml
+
+title Hard AI Emotional System
+
+state &quot;Neutral&quot; as Neutral
+state &quot;Happy&quot; as Happy
+state &quot;Strategic&quot; as Strategic
+state &quot;Angry&quot; as Angry
+state &quot;Desperate&quot; as Desperate
+state &quot;Vengeful&quot; as Vengeful
+
+[*] --&gt; Neutral
+
+Neutral --&gt; Happy : Positive Events\nGood Fortune
+Neutral --&gt; Strategic : Acquiring Properties\nGaining Monopoly
+Neutral --&gt; Angry : Negative Events\nPaying High Rent
+
+Happy --&gt; Neutral : Time Passes\nMild Setbacks
+Happy --&gt; Strategic : Opportunity Arises
+
+Strategic --&gt; Neutral : Plans Disrupted
+Strategic --&gt; Happy : Plan Succeeds
+Strategic --&gt; Vengeful : Direct Competition
+
+Angry --&gt; Neutral : Time Passes\nPositive Events
+Angry --&gt; Desperate : Financial Trouble
+Angry --&gt; Vengeful : Player Causes Problems
+
+Desperate --&gt; Neutral : Financial Recovery
+Desperate --&gt; Angry : Further Setbacks
+
+Vengeful --&gt; Angry : Target Unavailable
+Vengeful --&gt; Neutral : Revenge Satisfied\nTime Passes
+
+note right of Happy
+  Risk tolerance increases
+  Values properties higher
+  More likely to develop
+end note
+
+note right of Strategic
+  Focuses on monopolies
+  Saves money strategically
+  Calculated development
+end note
+
+note right of Angry
+  Less rational decisions
+  More aggressive bidding
+  Less strategic planning
+end note
+
+note right of Desperate
+  Sells/mortgages assets
+  Takes high risks
+  Focuses on survival
+end note
+
+note right of Vengeful
+  Targets specific player
+  Makes spite-based decisions
+  May overpay to block
+end note
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="property-management-system">
+<h2>Property Management System<a class="headerlink" href="#property-management-system" title="Link to this heading"></a></h2>
+<p>The property system handles ownership, development, and rent calculation:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Player” as Player {</dt><dd><p>+name : String
++money : int
++position : int
++properties : List&lt;Property&gt;
++is_ai : boolean
++ai_difficulty : String
++in_jail : boolean
++jail_turns : int
++jail_cards : int
++bankrupt : boolean</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “GameLogic” as GameLogic {</dt><dd><p>+property_groups : Dict
++calculate_rent(property, dice_roll)
++handle_property_landing(player, property)
++process_property_purchase(player, property)
++auction_property(property)
++build_house(property, player)
++build_hotel(property, player)
++mortgage_property(property, player)
++unmortgage_property(property, player)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “DevelopmentMode” as DevMode {</dt><dd><p>+check_even_development(property_group)
++build_house(property, player)
++build_hotel(property, player)
++sell_house(property, player)
++sell_hotel(property, player)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Property “0..*” – “0..1” Player : owned by &gt;
+Player “1” – “0..*” Property : owns &gt;
+GameLogic –&gt; Property : manages
+GameLogic –&gt; Player : updates
+DevMode –&gt; Property : modifies
+DevMode –&gt; Player : charges</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="user-interface-structure">
+<h2>User Interface Structure<a class="headerlink" href="#user-interface-structure" title="Link to this heading"></a></h2>
+<p>The UI system manages all visual elements and user interactions:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “GameRenderer” as Renderer {</dt><dd><p>+render_game_state()
++render_board()
++render_players()
++render_ui()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “FontManager” as FontMgr {</dt><dd><p>+render_text(text, font_name, size, color)
++get_text_dimensions(text, font_name, size)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “SoundManager” as SoundMgr {</dt><dd><p>+play_sound(sound_name)
++play_music(music_name)
++set_sound_volume(volume)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “GameEventHandler” as EventHandler {</dt><dd><p>+process_events()
++handle_mouse_event(event)
++handle_keyboard_event(event)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Button” as Button {</dt><dd><p>+text : String
++action : Function
++draw(screen)
++is_clicked(position)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Dialog” as Dialog {</dt><dd><p>+dialog_type : String
++content : Dict
++draw(screen)
++handle_click(position)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “PlayerInfoPanel” as PlayerPanel {</dt><dd><p>+draw(screen, player)
++update_property_list(properties)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “PropertyCard” as PropCard {</dt><dd><p>+draw(screen, property_data)
++show()
++hide()</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>UI <a href="#id1"><span class="problematic" id="id2">*</span></a>– Button : contains
+UI <a href="#id3"><span class="problematic" id="id4">*</span></a>– Dialog : displays
+UI <a href="#id5"><span class="problematic" id="id6">*</span></a>– PlayerPanel : includes
+UI <a href="#id7"><span class="problematic" id="id8">*</span></a>– PropCard : shows</p>
+<p>UI –&gt; FontMgr : uses
+UI –&gt; SoundMgr : uses
+UI &lt;–&gt; EventHandler : interacts with
+UI &lt;–&gt; Renderer : coordinates with</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="data-loading-system">
+<h2>Data Loading System<a class="headerlink" href="#data-loading-system" title="Link to this heading"></a></h2>
+<p>The Excel data loading system initializes game data from external files:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Property” as Property {</dt><dd><p>+name : String
++position : int
++price : int
++group : String</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Card” as Card {</dt><dd><p>+card_id : int
++type : String
++text : String
++effect_type : String
++effect_value : Any</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “CardDeck” as CardDeck {</dt><dd><p>+deck_type : String
++cards : List&lt;Card&gt;
++draw_card()
++shuffle()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “GameLogic” as GameLogic {</dt><dd><p>+initialize_game_data()
++properties : Dict
++pot_luck_cards : CardDeck
++opportunity_knocks_cards : CardDeck</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Excel File” as ExcelFile {</dt><dd><p>Property Data Sheet
+Pot Luck Cards Sheet
+Opportunity Knocks Cards Sheet</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>GameLogic –&gt; Loadexcel : uses
+Loadexcel ..&gt; ExcelFile : reads from
+Loadexcel ..&gt; Property : creates
+Loadexcel ..&gt; Card : creates
+GameLogic o– Property : contains
+GameLogic o– CardDeck : contains
+CardDeck o– Card : contains</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="class-relationship-diagram">
+<h2>Class Relationship Diagram<a class="headerlink" href="#class-relationship-diagram" title="Link to this heading"></a></h2>
+<p>This diagram shows the relationships between the main classes in the game:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameLogic {</dt><dd><p>+roll_dice()
++move_player()
++handle_property_landing()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Board {</dt><dd><p>+draw()
++get_square_position()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Player {</dt><dd><p>+move()
++pay()
++receive()
++add_property()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Property {</dt><dd><p>+calculate_rent()
++mortgage()
++add_house()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Cards {</dt><dd><p>+draw_card()
++execute_effect()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class UI {</dt><dd><p>+draw_menu()
++draw_game_ui()
++handle_click()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class AI_Player_Logic {</dt><dd><p>+evaluate_property_purchase()
++decide_jail_strategy()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameActions {</dt><dd><p>+execute_action()
++handle_buy_property()
++handle_roll_dice()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class DevelopmentMode {</dt><dd><p>+build_house()
++build_hotel()
++check_even_development()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameEventHandler {</dt><dd><p>+process_events()
++handle_mouse_event()
++handle_keyboard_event()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Loadexcel {</dt><dd><p>+load_property_data()
++load_card_data()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Game <a href="#id9"><span class="problematic" id="id10">*</span></a>– GameLogic
+Game <a href="#id11"><span class="problematic" id="id12">*</span></a>– Board
+Game <a href="#id13"><span class="problematic" id="id14">*</span></a>– UI
+Game <a href="#id15"><span class="problematic" id="id16">*</span></a>– GameActions
+Game <a href="#id17"><span class="problematic" id="id18">*</span></a>– GameEventHandler
+Game <a href="#id19"><span class="problematic" id="id20">*</span></a>– DevelopmentMode</p>
+<p>GameLogic o– Player : manages
+GameLogic o– Property : manages
+GameLogic o– Cards : uses</p>
+<p>Player “1” o– “0..*” Property : owns
+Property “0..*” – “0..1” Player : owned by</p>
+<p>GameActions –&gt; GameLogic : uses
+DevelopmentMode –&gt; Property : modifies</p>
+<p>Player &lt;– AI_Player_Logic : controls if AI</p>
+<p>Loadexcel ..&gt; Property : creates
+Loadexcel ..&gt; Cards : creates</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="game-state-machine">
+<h2>Game State Machine<a class="headerlink" href="#game-state-machine" title="Link to this heading"></a></h2>
+<p>The game uses a state machine to manage different phases of gameplay:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-9e2ea65c1e8b6831b13fda03fd233a6e2e05913e.png" alt="&#64;startuml
+
+title Game State Machine
+
+[*] --&gt; MENU
+
+state MENU {
+  [*] --&gt; MAIN_MENU
+  MAIN_MENU --&gt; PLAYER_SETUP : Start Game
+  PLAYER_SETUP --&gt; RULE_SELECTION : Next
+  RULE_SELECTION --&gt; GAME_SETUP : Start
+  MAIN_MENU --&gt; OPTIONS : Options
+  OPTIONS --&gt; MAIN_MENU : Back
+  MAIN_MENU --&gt; HELP : Help
+  HELP --&gt; MAIN_MENU : Back"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><p>MENU –&gt; PLAYING : Game Start</p>
+<dl>
+<dt>state PLAYING {</dt><dd><p>[*] –&gt; WAITING_FOR_ROLL</p>
+<p>WAITING_FOR_ROLL –&gt; MOVING : Roll Dice
+MOVING –&gt; PROPERTY_DECISION : Land on Unowned Property
+MOVING –&gt; PAY_RENT : Land on Owned Property
+MOVING –&gt; DRAW_CARD : Land on Card Space
+MOVING –&gt; SPECIAL_SQUARE : Land on Special Square</p>
+<p>PROPERTY_DECISION –&gt; WAITING_FOR_NEXT_PLAYER : Buy/Pass
+PAY_RENT –&gt; WAITING_FOR_NEXT_PLAYER
+DRAW_CARD –&gt; CARD_EFFECT
+CARD_EFFECT –&gt; WAITING_FOR_NEXT_PLAYER
+SPECIAL_SQUARE –&gt; SPECIAL_EFFECT
+SPECIAL_EFFECT –&gt; WAITING_FOR_NEXT_PLAYER</p>
+<p>WAITING_FOR_NEXT_PLAYER –&gt; WAITING_FOR_ROLL : Next Player</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>PLAYING –&gt; DEVELOPMENT_MODE : Development Button
+DEVELOPMENT_MODE –&gt; PLAYING : Exit Development</p>
+<p>PLAYING –&gt; AUCTION_MODE : Property Auctioned
+AUCTION_MODE –&gt; PLAYING : Auction Complete</p>
+<p>PLAYING –&gt; TRADE_MODE : Trade Button
+TRADE_MODE –&gt; PLAYING : Trade Complete</p>
+<p>PLAYING –&gt; GAME_OVER : End Condition Met</p>
+<p>GAME_OVER –&gt; MENU : New Game</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Property Tycoon Game Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game.html" class="btn btn-neutral float-right" title="Game Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

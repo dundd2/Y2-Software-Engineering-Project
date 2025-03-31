@@ -1,0 +1,652 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Logic Module" href="game_logic.html" />
+    <link rel="prev" title="Game Flow and Structure" href="diagrams.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-components">Key Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-class-structure">Game Class Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-architecture">Game Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-states">Game States</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-renderer">Game Renderer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-mode">Development Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-integration">AI Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-methods">Key Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.add_message"><code class="docutils literal notranslate"><span class="pre">Game.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.can_develop"><code class="docutils literal notranslate"><span class="pre">Game.can_develop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_and_trigger_ai_turn"><code class="docutils literal notranslate"><span class="pre">Game.check_and_trigger_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_game_over"><code class="docutils literal notranslate"><span class="pre">Game.check_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_one_player_remains"><code class="docutils literal notranslate"><span class="pre">Game.check_one_player_remains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_passing_go"><code class="docutils literal notranslate"><span class="pre">Game.check_passing_go()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.check_time_limit"><code class="docutils literal notranslate"><span class="pre">Game.check_time_limit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.end_abridged_game"><code class="docutils literal notranslate"><span class="pre">Game.end_abridged_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.end_full_game"><code class="docutils literal notranslate"><span class="pre">Game.end_full_game()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.finish_dice_animation"><code class="docutils literal notranslate"><span class="pre">Game.finish_dice_animation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.get_jail_choice"><code class="docutils literal notranslate"><span class="pre">Game.get_jail_choice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_card_action"><code class="docutils literal notranslate"><span class="pre">Game.handle_card_action()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">Game.handle_card_draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_game_over"><code class="docutils literal notranslate"><span class="pre">Game.handle_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_key"><code class="docutils literal notranslate"><span class="pre">Game.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_space"><code class="docutils literal notranslate"><span class="pre">Game.handle_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.handle_turn_end"><code class="docutils literal notranslate"><span class="pre">Game.handle_turn_end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.move_player"><code class="docutils literal notranslate"><span class="pre">Game.move_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_card_popup"><code class="docutils literal notranslate"><span class="pre">Game.show_card_popup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_exit_confirmation"><code class="docutils literal notranslate"><span class="pre">Game.show_exit_confirmation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_rent_popup"><code class="docutils literal notranslate"><span class="pre">Game.show_rent_popup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.show_tax_popup"><code class="docutils literal notranslate"><span class="pre">Game.show_tax_popup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.synchronize_free_parking_pot"><code class="docutils literal notranslate"><span class="pre">Game.synchronize_free_parking_pot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.synchronize_player_money"><code class="docutils literal notranslate"><span class="pre">Game.synchronize_player_money()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.synchronize_player_positions"><code class="docutils literal notranslate"><span class="pre">Game.synchronize_player_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.update_ai_mood"><code class="docutils literal notranslate"><span class="pre">Game.update_ai_mood()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.update_current_player"><code class="docutils literal notranslate"><span class="pre">Game.update_current_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game.Game.wait_for_animations"><code class="docutils literal notranslate"><span class="pre">Game.wait_for_animations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-module">
+<h1>Game Module<a class="headerlink" href="#game-module" title="Link to this heading"></a></h1>
+<p>This module contains the main Game class which orchestrates the game flow and manages the overall game state. It serves as the central controller for the Property Tycoon game, handling everything from game initialization to player turns, property management, and win conditions.</p>
+<section id="key-components">
+<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Game State Management</strong>: Coordination of all game elements and their interactions</p></li>
+<li><p><strong>Game Loop</strong>: Implementation of the main game loop and turn sequence</p></li>
+<li><p><strong>Player Interface</strong>: Connection between player actions and game logic</p></li>
+<li><p><strong>Visual Presentation</strong>: Rendering of game elements and animation management</p></li>
+<li><p><strong>Event Handling</strong>: Processing of user inputs and game events</p></li>
+<li><p><strong>Game Actions</strong>: Implementation of various in-game actions</p></li>
+<li><p><strong>Development Mode</strong>: Special mode for property development</p></li>
+<li><p><strong>Menu Systems</strong>: Game menus and UI navigation</p></li>
+</ul>
+</section>
+<section id="game-class-structure">
+<h2>Game Class Structure<a class="headerlink" href="#game-class-structure" title="Link to this heading"></a></h2>
+<p>The Game class serves as the primary controller for the entire game:</p>
+<hr class="docutils" />
+<blockquote>
+<div><p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="game-architecture">
+<h2>Game Architecture<a class="headerlink" href="#game-architecture" title="Link to this heading"></a></h2>
+<p>The Game module coordinates multiple components in an MVC-like architecture:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameRenderer {</dt><dd><p>+render_board()
++render_players()
++render_ui()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameActions {</dt><dd><p>+execute_action()
++handle_roll_dice()
++handle_buy_property()
++handle_pass()
++handle_end_turn()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameEventHandler {</dt><dd><p>+process_events()
++handle_mouse_click()
++handle_keyboard_input()</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt>package “Logic Modules” {</dt><dd><dl class="simple">
+<dt>class GameLogic {</dt><dd><p>+roll_dice()
++move_player()
++handle_property_landing()</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Board {</dt><dd><p>+get_square_position()
++draw()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Player {</dt><dd><p>+move()
++pay()
++receive()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Property {</dt><dd><p>+calculate_rent()
++mortgage()
++unmortgage()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class EasyAIPlayer {</dt><dd><p>+should_buy_property()
++handle_turn()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class HardAIPlayer {</dt><dd><p>+update_mood()
++get_adjusted_probability()</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt>package “UI Modules” {</dt><dd><dl class="simple">
+<dt>class UI {</dt><dd><p>+draw_menu()
++draw_buttons()
++draw_player_info()</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class DevelopmentMode {</dt><dd><p>+activate()
++process_development()
++deactivate()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class SoundManager {</dt><dd><p>+play_sound()
++play_music()</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>Game <em>– GameRenderer
+Game *– GameActions
+Game *– GameEventHandler
+Game *– GameLogic
+Game *– Board
+Game *– UI
+Game *– DevelopmentMode
+Game *– SoundManager
+Game o– “1..</em>” Player
+Game o– “0..*” Property</p>
+<p>GameLogic –&gt; EasyAIPlayer : uses
+GameLogic –&gt; HardAIPlayer : uses</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="game-states">
+<h2>Game States<a class="headerlink" href="#game-states" title="Link to this heading"></a></h2>
+<p>The Game module implements a state machine to manage different game phases:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-3658325812c455572fcb8636cec835a595c5617a.png" alt="&#64;startuml
+
+[*] --&gt; MENU
+
+state MENU {
+  [*] --&gt; Main_Menu
+  Main_Menu --&gt; Player_Setup : Start Game
+  Player_Setup --&gt; Rule_Selection : Next
+  Rule_Selection --&gt; Game_Setup : Start
+  Main_Menu --&gt; Options : Options
+  Main_Menu --&gt; Help : Help
+  Options --&gt; Main_Menu : Back
+  Help --&gt; Main_Menu : Back"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><p>MENU –&gt; PLAYING : Game Start</p>
+<dl class="simple">
+<dt>state PLAYING {</dt><dd><p>[*] –&gt; Wait_For_Roll
+Wait_For_Roll –&gt; Moving : Roll Dice
+Moving –&gt; Property_Decision : Land on Unowned Property
+Moving –&gt; Pay_Rent : Land on Owned Property
+Moving –&gt; Draw_Card : Land on Card Square
+Moving –&gt; Special_Square : Land on Special Square
+Property_Decision –&gt; Wait_For_Next_Player : Buy/Pass
+Pay_Rent –&gt; Wait_For_Next_Player
+Draw_Card –&gt; Card_Effect
+Card_Effect –&gt; Wait_For_Next_Player
+Special_Square –&gt; Special_Effect
+Special_Effect –&gt; Wait_For_Next_Player
+Wait_For_Next_Player –&gt; Wait_For_Roll : Next Player</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>state “DEVELOPMENT_MODE” as DEV {</dt><dd><p>[*] –&gt; Select_Property
+Select_Property –&gt; Confirm_Development : Property Selected
+Confirm_Development –&gt; Execute_Development : Confirm
+Execute_Development –&gt; Select_Property
+Select_Property –&gt; Exit_Development : Cancel</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>state “AUCTION_MODE” as AUCTION {</dt><dd><p>[*] –&gt; Start_Auction
+Start_Auction –&gt; Player_Bidding : Initialize
+Player_Bidding –&gt; Next_Bidder : Bid/Pass
+Next_Bidder –&gt; Player_Bidding
+Player_Bidding –&gt; Auction_Complete : All Pass/One Remaining
+Auction_Complete –&gt; Award_Property</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>state “TRADE_MODE” as TRADE {</dt><dd><p>[*] –&gt; Select_Player
+Select_Player –&gt; Select_Properties : Player Selected
+Select_Properties –&gt; Adjust_Money : Properties Selected
+Adjust_Money –&gt; Confirm_Trade : Amount Set
+Confirm_Trade –&gt; Execute_Trade : Both Confirm
+Confirm_Trade –&gt; Cancel_Trade : Either Rejects</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>PLAYING –&gt; DEV : Development Button
+DEV –&gt; PLAYING : Complete Development</p>
+<p>PLAYING –&gt; AUCTION : Property Auctioned
+AUCTION –&gt; PLAYING : Auction Complete</p>
+<p>PLAYING –&gt; TRADE : Trade Button
+TRADE –&gt; PLAYING : Trade Complete/Cancelled</p>
+<p>PLAYING –&gt; GAME_OVER : End Condition Met</p>
+<p>GAME_OVER –&gt; MENU : New Game</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="game-renderer">
+<h2>Game Renderer<a class="headerlink" href="#game-renderer" title="Link to this heading"></a></h2>
+<p>The GameRenderer component handles the visual presentation of the game:</p>
+<ul class="simple">
+<li><p><strong>Board Rendering</strong>: Draws the game board with all properties and special squares</p></li>
+<li><p><strong>Player Rendering</strong>: Draws player tokens at their current positions</p></li>
+<li><p><strong>UI Elements</strong>: Renders buttons, menus, and informational displays</p></li>
+<li><p><strong>Animation</strong>: Manages smooth animations for player movement and UI transitions</p></li>
+<li><p><strong>Property Cards</strong>: Displays detailed property information when requested</p></li>
+<li><p><strong>Card Decks</strong>: Shows card drawing animations and card content</p></li>
+<li><p><strong>Development Visualization</strong>: Displays houses and hotels on the board</p></li>
+</ul>
+</section>
+<section id="development-mode">
+<h2>Development Mode<a class="headerlink" href="#development-mode" title="Link to this heading"></a></h2>
+<p>The Game module includes a special development mode for property improvements:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class DevelopmentMode {</dt><dd><p>-active : Boolean
+-current_player : Player
+-available_properties : List
+-selected_property : Property
++activate(player)
++deactivate()
++select_property(property)
++build_house()
++build_hotel()
++sell_house()
++sell_hotel()
++mortgage_property()
++unmortgage_property()
++check_development_rules()
++get_development_cost()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Property {</dt><dd><p>+houses : int
++add_house()
++remove_house()
++add_hotel()
++remove_hotel()
++mortgage()
++unmortgage()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Player {</dt><dd><p>+money : int
++properties : List
++pay()
++receive()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Game <a href="#id1"><span class="problematic" id="id2">*</span></a>– DevelopmentMode
+DevelopmentMode –&gt; Property : manages
+DevelopmentMode –&gt; Player : for</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ai-integration">
+<h2>AI Integration<a class="headerlink" href="#ai-integration" title="Link to this heading"></a></h2>
+<p>The Game class integrates with AI players:</p>
+<ul class="simple">
+<li><p><strong>AI decision making</strong>: Automated handling of AI player turns</p></li>
+<li><p><strong>AI difficulty levels</strong>: Support for easy and hard AI players</p></li>
+<li><p><strong>Emotional system interface</strong>: Visual interface for Hard AI emotional states</p></li>
+<li><p><strong>AI taunt system</strong>: Players can influence AI mood through interaction</p></li>
+<li><p><strong>Automated development</strong>: AI can develop properties during their turn</p></li>
+<li><p><strong>Decision visualization</strong>: Shows AI decisions during their turn</p></li>
+</ul>
+</section>
+<section id="key-methods">
+<h2>Key Methods<a class="headerlink" href="#key-methods" title="Link to this heading"></a></h2>
+<p>The Game class provides several key methods:</p>
+<ul class="simple">
+<li><p><strong>run()</strong>: The main game loop that drives the entire game</p></li>
+<li><p><strong>handle_events()</strong>: Processes user inputs and game events</p></li>
+<li><p><strong>update()</strong>: Updates game state based on logic and user actions</p></li>
+<li><p><strong>render()</strong>: Handles visual presentation of the game</p></li>
+<li><p><strong>setup_game()</strong>: Initializes the game with players and settings</p></li>
+<li><p><strong>process_turn()</strong>: Manages the flow of a player’s turn</p></li>
+<li><p><strong>handle_action()</strong>: Executes specific game actions</p></li>
+<li><p><strong>handle_ai_turn()</strong>: Manages turns for AI-controlled players</p></li>
+<li><p><strong>handle_game_over()</strong>: Processes end-game conditions and displays results</p></li>
+</ul>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-src.Game">
+<dt class="sig sig-object py" id="src.Game.Game">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Game.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">players</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_difficulty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'easy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.add_message">
+<span class="sig-name descname"><span class="pre">add_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.add_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.add_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.can_develop">
+<span class="sig-name descname"><span class="pre">can_develop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.can_develop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.can_develop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_and_trigger_ai_turn">
+<span class="sig-name descname"><span class="pre">check_and_trigger_ai_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursion_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_and_trigger_ai_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_and_trigger_ai_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_game_over">
+<span class="sig-name descname"><span class="pre">check_game_over</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_game_over"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_game_over" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_one_player_remains">
+<span class="sig-name descname"><span class="pre">check_one_player_remains</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_one_player_remains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_one_player_remains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_passing_go">
+<span class="sig-name descname"><span class="pre">check_passing_go</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_passing_go"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_passing_go" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.check_time_limit">
+<span class="sig-name descname"><span class="pre">check_time_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.check_time_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.check_time_limit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.end_abridged_game">
+<span class="sig-name descname"><span class="pre">end_abridged_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.end_abridged_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.end_abridged_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.end_full_game">
+<span class="sig-name descname"><span class="pre">end_full_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.end_full_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.end_full_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.finish_dice_animation">
+<span class="sig-name descname"><span class="pre">finish_dice_animation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.finish_dice_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.finish_dice_animation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.get_jail_choice">
+<span class="sig-name descname"><span class="pre">get_jail_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.get_jail_choice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.get_jail_choice" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_card_action">
+<span class="sig-name descname"><span class="pre">handle_card_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_card_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_card_action" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_card_draw">
+<span class="sig-name descname"><span class="pre">handle_card_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_card_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_card_draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_game_over">
+<span class="sig-name descname"><span class="pre">handle_game_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">winner_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_game_over"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_game_over" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_space">
+<span class="sig-name descname"><span class="pre">handle_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_space" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.handle_turn_end">
+<span class="sig-name descname"><span class="pre">handle_turn_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.handle_turn_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.handle_turn_end" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.move_player">
+<span class="sig-name descname"><span class="pre">move_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spaces</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.move_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.move_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_card_popup">
+<span class="sig-name descname"><span class="pre">show_card_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_card_popup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_card_popup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_exit_confirmation">
+<span class="sig-name descname"><span class="pre">show_exit_confirmation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_exit_confirmation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_exit_confirmation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_rent_popup">
+<span class="sig-name descname"><span class="pre">show_rent_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rent_amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_rent_popup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_rent_popup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.show_tax_popup">
+<span class="sig-name descname"><span class="pre">show_tax_popup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tax_amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.show_tax_popup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.show_tax_popup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.synchronize_free_parking_pot">
+<span class="sig-name descname"><span class="pre">synchronize_free_parking_pot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.synchronize_free_parking_pot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.synchronize_free_parking_pot" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.synchronize_player_money">
+<span class="sig-name descname"><span class="pre">synchronize_player_money</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.synchronize_player_money"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.synchronize_player_money" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.synchronize_player_positions">
+<span class="sig-name descname"><span class="pre">synchronize_player_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.synchronize_player_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.synchronize_player_positions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.update_ai_mood">
+<span class="sig-name descname"><span class="pre">update_ai_mood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_happy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.update_ai_mood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.update_ai_mood" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.update_current_player">
+<span class="sig-name descname"><span class="pre">update_current_player</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.update_current_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.update_current_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game.Game.wait_for_animations">
+<span class="sig-name descname"><span class="pre">wait_for_animations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game.html#Game.wait_for_animations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game.Game.wait_for_animations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="diagrams.html" class="btn btn-neutral float-left" title="Game Flow and Structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_logic.html" class="btn btn-neutral float-right" title="Game Logic Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

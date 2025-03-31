@@ -1,0 +1,701 @@
+Game Flow and Structure
+=======================
+
+This section provides visual representations of the game's flow and structure using diagrams.
+
+Game Architecture
+-----------------
+
+The overall architecture of the Property Tycoon game is organized into several interconnected modules:
+
+.. plantuml::
+
+   @startuml
+   
+   package "Core Game Logic" {
+     [Game] as Game
+     [GameLogic] as GameLogic
+     [Board] as Board
+     [Property] as Property
+     [Player] as Player
+     [Cards] as Cards
+}}}}}}}}}}}}}}}}
+   
+   package "User Interface" {
+     [UI] as UI
+     [GameRenderer] as GameRenderer
+     [FontManager] as FontManager
+     [SoundManager] as SoundManager
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   package "Game Control" {
+     [GameActions] as GameActions
+     [GameEventHandler] as GameEventHandler
+     [DevelopmentMode] as DevelopmentMode
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   package "AI System" {
+     [AI_Player_Logic] as AILogic
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   package "Data Management" {
+     [Loadexcel] as Loadexcel
+}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   Game --> GameLogic : uses
+   Game --> Board : contains
+   Game --> UI : displays through
+   Game --> GameRenderer : renders with
+   Game --> GameEventHandler : processes events with
+   Game --> GameActions : executes actions through
+   Game --> SoundManager : plays sounds with
+   
+   GameLogic --> Property : manages
+   GameLogic --> Player : controls
+   GameLogic --> Cards : uses
+   GameLogic --> AILogic : integrates with
+   
+   UI --> FontManager : renders text with
+   
+   Player --> Property : owns
+   
+   DevelopmentMode --> Property : modifies
+   DevelopmentMode --> Player : charges
+   
+   Loadexcel --> Property : creates
+   Loadexcel --> Cards : creates
+   
+   @enduml
+
+Main Game Flow
+--------------
+
+The main game flow illustrates the sequence of play in Property Tycoon:
+
+.. plantuml::
+
+   @startuml
+   
+   title Property Tycoon Game Flow
+   
+   start
+   
+   :Game Initialization;
+   note right
+     Load assets, create players,
+     initialize board and properties
+   end note
+   
+   :Player Setup;
+   note right
+     Select number of players
+     Choose tokens
+     Configure AI players
+   end note
+   
+   :Game Start;
+   
+   while (Game Not Over?) is (Yes)
+     :Begin Player Turn;
+     
+     if (Player in Jail?) then (Yes)
+       :Handle Jail Turn;
+       if (Can Exit Jail?) then (Yes)
+         :Exit Jail;
+       endif
+     else (No)
+       :Roll Dice;
+       
+       if (Rolled Doubles 3 Times?) then (Yes)
+         :Go to Jail;
+       else (No)
+         :Move Player;
+         
+         :Handle Landing Square;
+         note right
+           Process effects based
+           on the square type
+         end note
+         
+         if (Square Type?) then (Property)
+           if (Property Owned?) then (Yes)
+             :Pay Rent;
+           else (No)
+             :Offer to Buy Property;
+             if (Buy Property?) then (Yes)
+               :Purchase Property;
+             else (No)
+               :Auction Property;
+             endif
+           endif
+         else if (Square Type?) then (Card)
+           :Draw Card;
+           :Apply Card Effect;
+         else if (Square Type?) then (Go To Jail)
+           :Send to Jail;
+         else if (Square Type?) then (Tax)
+           :Pay Tax;
+         else (Other)
+           :Handle Special Square;
+         endif
+         
+         :Property Development Phase;
+         note right
+           Player can build houses,
+           hotels, or mortgage properties
+         end note
+         
+         if (Rolled Doubles?) then (Yes)
+           :Extra Turn;
+           backward:Begin Player Turn;
+         endif
+       endif
+     endif
+     
+     :Check Player Bankruptcy;
+     if (Player Bankrupt?) then (Yes)
+       :Process Bankruptcy;
+     endif
+     
+     :End Turn;
+     
+     :Check Game End Condition;
+     if (End Condition Met?) then (Yes)
+       :Game Over;
+       break
+     endif
+     
+     :Next Player;
+   endwhile
+   
+   :Determine Winner;
+   
+   :Show Game Results;
+   
+   stop
+   
+   @enduml
+
+AI Components
+-------------
+
+The AI system in Property Tycoon includes different levels of AI with distinct behaviors:
+
+.. plantuml::
+
+   @startuml
+   
+   package "AI System" {
+     abstract class "AI_Player_Logic" as AI_Base {
+       +evaluate_property_purchase(property, player)
+       +decide_jail_strategy(player)
+       +evaluate_development(player, property)
+       +decide_auction_bid(property, player, current_bid)
+       +evaluate_trade_offer(offer, player)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "EasyAIPlayer" as EasyAI {
+       -purchase_threshold : float
+       -development_threshold : float
+       +evaluate_property_purchase(property, player)
+       +decide_jail_strategy(player)
+       +evaluate_development(player, property)
+       +decide_auction_bid(property, player, current_bid)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "HardAIPlayer" as HardAI {
+       -mood : String
+       -mood_level : float
+       -strategic_value_matrix : Dict
+       -property_value_calculator : PropertyValueCalculator
+       -risk_profile : float
+       +evaluate_property_purchase(property, player)
+       +decide_jail_strategy(player)
+       +evaluate_development(player, property)
+       +update_mood(game_event)
+       +calculate_strategic_value(property, player)
+       +decide_auction_bid(property, player, current_bid)
+       +adjust_valuation_by_mood(base_value)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "PropertyValueCalculator" as PropCalc {
+       +calculate_immediate_value(property)
+       +calculate_development_potential(property, player)
+       +calculate_monopoly_potential(property, player)
+       +calculate_synergy_value(property, player)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "MoodSystem" as Mood {
+       -current_mood : String
+       -mood_factors : Dict
+       -mood_transitions : Dict
+       +update_mood(event, intensity)
+       +get_current_mood()
+       +get_mood_modifier(decision_type)
+       +process_game_events(events)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   }
+   
+   AI_Base <|-- EasyAI
+   AI_Base <|-- HardAI
+   HardAI --> PropCalc : uses
+   HardAI --> Mood : implements
+   
+   @enduml
+
+Hard AI Emotional System
+------------------------
+
+The Hard AI uses an emotional system to make its decisions more human-like and unpredictable:
+
+.. plantuml::
+
+   @startuml
+   
+   title Hard AI Emotional System
+   
+   state "Neutral" as Neutral
+   state "Happy" as Happy
+   state "Strategic" as Strategic
+   state "Angry" as Angry
+   state "Desperate" as Desperate
+   state "Vengeful" as Vengeful
+   
+   [*] --> Neutral
+   
+   Neutral --> Happy : Positive Events\nGood Fortune
+   Neutral --> Strategic : Acquiring Properties\nGaining Monopoly
+   Neutral --> Angry : Negative Events\nPaying High Rent
+   
+   Happy --> Neutral : Time Passes\nMild Setbacks
+   Happy --> Strategic : Opportunity Arises
+   
+   Strategic --> Neutral : Plans Disrupted
+   Strategic --> Happy : Plan Succeeds
+   Strategic --> Vengeful : Direct Competition
+   
+   Angry --> Neutral : Time Passes\nPositive Events
+   Angry --> Desperate : Financial Trouble
+   Angry --> Vengeful : Player Causes Problems
+   
+   Desperate --> Neutral : Financial Recovery
+   Desperate --> Angry : Further Setbacks
+   
+   Vengeful --> Angry : Target Unavailable
+   Vengeful --> Neutral : Revenge Satisfied\nTime Passes
+   
+   note right of Happy
+     Risk tolerance increases
+     Values properties higher
+     More likely to develop
+   end note
+   
+   note right of Strategic
+     Focuses on monopolies
+     Saves money strategically
+     Calculated development
+   end note
+   
+   note right of Angry
+     Less rational decisions
+     More aggressive bidding
+     Less strategic planning
+   end note
+   
+   note right of Desperate
+     Sells/mortgages assets
+     Takes high risks
+     Focuses on survival
+   end note
+   
+   note right of Vengeful
+     Targets specific player
+     Makes spite-based decisions
+     May overpay to block
+   end note
+   
+   @enduml
+
+Property Management System
+--------------------------
+
+The property system handles ownership, development, and rent calculation:
+
+.. plantuml::
+
+   @startuml
+   
+   title Property Management System
+   
+   class "Property" as Property {
+     +name : String
+     +position : int
+     +price : int
+     +group : String
+     +owner : Player
+     +houses : int
+     +has_hotel : boolean
+     +is_mortgaged : boolean
+     +base_rent : int
+     +rent_1 : int
+     +rent_2 : int
+     +rent_3 : int
+     +rent_4 : int
+     +rent_hotel : int
+     +house_cost : int
+     +hotel_cost : int
+     +mortgage_value : int
+     +is_station : boolean
+     +is_utility : boolean
+}}}}}}}}}}}}}}}}}}}}}
+   
+   class "Player" as Player {
+     +name : String
+     +money : int
+     +position : int
+     +properties : List<Property>
+     +is_ai : boolean
+     +ai_difficulty : String
+     +in_jail : boolean
+     +jail_turns : int
+     +jail_cards : int
+     +bankrupt : boolean
+}}}}}}}}}}}}}}}}}}}
+   
+   class "GameLogic" as GameLogic {
+     +property_groups : Dict
+     +calculate_rent(property, dice_roll)
+     +handle_property_landing(player, property)
+     +process_property_purchase(player, property)
+     +auction_property(property)
+     +build_house(property, player)
+     +build_hotel(property, player)
+     +mortgage_property(property, player)
+     +unmortgage_property(property, player)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class "DevelopmentMode" as DevMode {
+     +check_even_development(property_group)
+     +build_house(property, player)
+     +build_hotel(property, player)
+     +sell_house(property, player)
+     +sell_hotel(property, player)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   Property "0..*" -- "0..1" Player : owned by >
+   Player "1" -- "0..*" Property : owns >
+   GameLogic --> Property : manages
+   GameLogic --> Player : updates
+   DevMode --> Property : modifies
+   DevMode --> Player : charges
+   
+   @enduml
+
+User Interface Structure
+------------------------
+
+The UI system manages all visual elements and user interactions:
+
+.. plantuml::
+
+   @startuml
+   
+   title UI Structure
+   
+   package "User Interface System" {
+     class "UI" as UI {
+       +draw_menu(menu_name)
+       +draw_game_ui(game_state, players, current_player)
+       +handle_click(x, y)
+       +show_dialog(dialog_type, content)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "GameRenderer" as Renderer {
+       +render_game_state()
+       +render_board()
+       +render_players()
+       +render_ui()
+}}}}}}}}}}}}
+     
+     class "FontManager" as FontMgr {
+       +render_text(text, font_name, size, color)
+       +get_text_dimensions(text, font_name, size)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "SoundManager" as SoundMgr {
+       +play_sound(sound_name)
+       +play_music(music_name)
+       +set_sound_volume(volume)
+}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "GameEventHandler" as EventHandler {
+       +process_events()
+       +handle_mouse_event(event)
+       +handle_keyboard_event(event)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "Button" as Button {
+       +text : String
+       +action : Function
+       +draw(screen)
+       +is_clicked(position)
+}}}}}}}}}}}}}}}}}}}}}
+     
+     class "Dialog" as Dialog {
+       +dialog_type : String
+       +content : Dict
+       +draw(screen)
+       +handle_click(position)
+}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "PlayerInfoPanel" as PlayerPanel {
+       +draw(screen, player)
+       +update_property_list(properties)
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     class "PropertyCard" as PropCard {
+       +draw(screen, property_data)
+       +show()
+       +hide()
+}}}}}}}
+   }
+   
+   UI *-- Button : contains
+   UI *-- Dialog : displays
+   UI *-- PlayerPanel : includes
+   UI *-- PropCard : shows
+   
+   UI --> FontMgr : uses
+   UI --> SoundMgr : uses
+   UI <--> EventHandler : interacts with
+   UI <--> Renderer : coordinates with
+   
+   @enduml
+
+Data Loading System
+-------------------
+
+The Excel data loading system initializes game data from external files:
+
+.. plantuml::
+
+   @startuml
+   
+   title Data Loading System
+   
+   class "Loadexcel" as Loadexcel {
+     +load_property_data(file_path)
+     +load_card_data(file_path)
+     +parse_property_row(row_data)
+     +parse_card_row(row_data)
+}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class "Property" as Property {
+     +name : String
+     +position : int
+     +price : int
+     +group : String
+}}}}}}}}}}}}}}}
+   
+   class "Card" as Card {
+     +card_id : int
+     +type : String
+     +text : String
+     +effect_type : String
+     +effect_value : Any
+}}}}}}}}}}}}}}}}}}}
+   
+   class "CardDeck" as CardDeck {
+     +deck_type : String
+     +cards : List<Card>
+     +draw_card()
+     +shuffle()
+}}}}}}}}}}
+   
+   class "GameLogic" as GameLogic {
+     +initialize_game_data()
+     +properties : Dict
+     +pot_luck_cards : CardDeck
+     +opportunity_knocks_cards : CardDeck
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class "Excel File" as ExcelFile {
+     Property Data Sheet
+     Pot Luck Cards Sheet
+     Opportunity Knocks Cards Sheet
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   GameLogic --> Loadexcel : uses
+   Loadexcel ..> ExcelFile : reads from
+   Loadexcel ..> Property : creates
+   Loadexcel ..> Card : creates
+   GameLogic o-- Property : contains
+   GameLogic o-- CardDeck : contains
+   CardDeck o-- Card : contains
+   
+   @enduml
+
+Class Relationship Diagram
+--------------------------
+
+This diagram shows the relationships between the main classes in the game:
+
+.. plantuml::
+
+   @startuml
+   
+   title Property Tycoon Class Relationships
+   
+   class Game {
+     +run()
+     +handle_events()
+     +update()
+     +render()
+}}}}}}}}}
+   
+   class GameLogic {
+     +roll_dice()
+     +move_player()
+     +handle_property_landing()
+}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class Board {
+     +draw()
+     +get_square_position()
+}}}}}}}}}}}}}}}}}}}}}}
+   
+   class Player {
+     +move()
+     +pay()
+     +receive()
+     +add_property()
+}}}}}}}}}}}}}}}
+   
+   class Property {
+     +calculate_rent()
+     +mortgage()
+     +add_house()
+}}}}}}}}}}}}
+   
+   class Cards {
+     +draw_card()
+     +execute_effect()
+}}}}}}}}}}}}}}}}}
+   
+   class UI {
+     +draw_menu()
+     +draw_game_ui()
+     +handle_click()
+}}}}}}}}}}}}}}}
+   
+   class AI_Player_Logic {
+     +evaluate_property_purchase()
+     +decide_jail_strategy()
+}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class GameActions {
+     +execute_action()
+     +handle_buy_property()
+     +handle_roll_dice()
+}}}}}}}}}}}}}}}}}}}
+   
+   class DevelopmentMode {
+     +build_house()
+     +build_hotel()
+     +check_even_development()
+}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class GameEventHandler {
+     +process_events()
+     +handle_mouse_event()
+     +handle_keyboard_event()
+}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   class Loadexcel {
+     +load_property_data()
+     +load_card_data()
+}}}}}}}}}}}}}}}}}
+   
+   Game *-- GameLogic
+   Game *-- Board
+   Game *-- UI
+   Game *-- GameActions
+   Game *-- GameEventHandler
+   Game *-- DevelopmentMode
+   
+   GameLogic o-- Player : manages
+   GameLogic o-- Property : manages
+   GameLogic o-- Cards : uses
+   
+   Player "1" o-- "0..*" Property : owns
+   Property "0..*" -- "0..1" Player : owned by
+   
+   GameActions --> GameLogic : uses
+   DevelopmentMode --> Property : modifies
+   
+   Player <-- AI_Player_Logic : controls if AI
+   
+   Loadexcel ..> Property : creates
+   Loadexcel ..> Cards : creates
+   
+   @enduml
+
+Game State Machine
+------------------
+
+The game uses a state machine to manage different phases of gameplay:
+
+.. plantuml::
+
+   @startuml
+   
+   title Game State Machine
+   
+   [*] --> MENU
+   
+   state MENU {
+     [*] --> MAIN_MENU
+     MAIN_MENU --> PLAYER_SETUP : Start Game
+     PLAYER_SETUP --> RULE_SELECTION : Next
+     RULE_SELECTION --> GAME_SETUP : Start
+     MAIN_MENU --> OPTIONS : Options
+     OPTIONS --> MAIN_MENU : Back
+     MAIN_MENU --> HELP : Help
+     HELP --> MAIN_MENU : Back
+}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   MENU --> PLAYING : Game Start
+   
+   state PLAYING {
+     [*] --> WAITING_FOR_ROLL
+     
+     WAITING_FOR_ROLL --> MOVING : Roll Dice
+     MOVING --> PROPERTY_DECISION : Land on Unowned Property
+     MOVING --> PAY_RENT : Land on Owned Property
+     MOVING --> DRAW_CARD : Land on Card Space
+     MOVING --> SPECIAL_SQUARE : Land on Special Square
+     
+     PROPERTY_DECISION --> WAITING_FOR_NEXT_PLAYER : Buy/Pass
+     PAY_RENT --> WAITING_FOR_NEXT_PLAYER
+     DRAW_CARD --> CARD_EFFECT
+     CARD_EFFECT --> WAITING_FOR_NEXT_PLAYER
+     SPECIAL_SQUARE --> SPECIAL_EFFECT
+     SPECIAL_EFFECT --> WAITING_FOR_NEXT_PLAYER
+     
+     WAITING_FOR_NEXT_PLAYER --> WAITING_FOR_ROLL : Next Player
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   PLAYING --> DEVELOPMENT_MODE : Development Button
+   DEVELOPMENT_MODE --> PLAYING : Exit Development
+   
+   PLAYING --> AUCTION_MODE : Property Auctioned
+   AUCTION_MODE --> PLAYING : Auction Complete
+   
+   PLAYING --> TRADE_MODE : Trade Button
+   TRADE_MODE --> PLAYING : Trade Complete
+   
+   PLAYING --> GAME_OVER : End Condition Met
+   
+   GAME_OVER --> MENU : New Game
+   
+   @enduml

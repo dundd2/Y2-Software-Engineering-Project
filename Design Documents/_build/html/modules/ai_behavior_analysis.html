@@ -1,0 +1,656 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Behavior Analysis &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Cards Module" href="cards.html" />
+    <link rel="prev" title="AI Player Logic Module" href="ai_player_logic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AI Behavior Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ai-decision-patterns">AI Decision Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-auction-behavior">AI Auction Behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-development-strategy">AI Development Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-emergency-cash-management">AI Emergency Cash Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-jail-strategy">AI Jail Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-trade-evaluation-system">AI Trade Evaluation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hard-ai-mood-impact-analysis">Hard AI Mood Impact Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AI Behavior Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/ai_behavior_analysis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ai-behavior-analysis">
+<h1>AI Behavior Analysis<a class="headerlink" href="#ai-behavior-analysis" title="Link to this heading"></a></h1>
+<p>This document provides a detailed analysis of AI player behavior in different game scenarios, explaining the decision-making processes and strategies employed by both Easy and Hard AI players.</p>
+<section id="ai-decision-patterns">
+<h2>AI Decision Patterns<a class="headerlink" href="#ai-decision-patterns" title="Link to this heading"></a></h2>
+<p>AI players follow different decision-making patterns based on their difficulty level and game situation:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-5d83dbcece394e1c010affb7ab6b60ddbaab2e90.png" alt="&#64;startuml
+
+title AI Decision Pattern Analysis
+
+start
+
+:Game Context Evaluation;
+note right
+  AI analyzes:
+  - Current board state
+  - Player positions
+  - Property ownership distribution
+  - Available cash
+end note
+
+:Strategic Goal Selection;
+note right
+  Prioritizes:
+  1. Survival (avoid bankruptcy)
+  2. Complete color groups
+  3. Build developments
+  4. Block opponents
+end note
+
+if (AI Type?) then (Easy AI)
+  :Apply Simple Heuristics;
+  :Use Fixed Thresholds;
+else (Hard AI)
+  :Apply Complex Heuristics;
+  :Use Dynamic Thresholds;
+  :Apply Emotional Adjustments;
+endif
+
+:Execute Decision;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="ai-auction-behavior">
+<h2>AI Auction Behavior<a class="headerlink" href="#ai-auction-behavior" title="Link to this heading"></a></h2>
+<p>The AI bidding strategy in auctions differs significantly between Easy and Hard difficulty levels:</p>
+<blockquote>
+<div><blockquote>
+<div><dl>
+<dt>if (Current Bid &gt; Max Bid?) then (Yes)</dt><dd><p>:Pass;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Place Bid;
+note right</p>
+<blockquote>
+<div><p>bid = current_bid +
+min(50, max(10, headroom * 0.2))</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+</dl>
+<p>endif</p>
+</div></blockquote>
+<dl>
+<dt>else (Hard AI)</dt><dd><p>:Apply Emotional Multiplier;
+note right</p>
+<blockquote>
+<div><p>multiplier = 1.0 + (mood_modifier * 1.5)
+affected_bid = base_bid * multiplier</p>
+</div></blockquote>
+<p>end note</p>
+<dl>
+<dt>if (AI is Angry?) then (Yes)</dt><dd><p>:May Bid Aggressively;
+note right</p>
+<blockquote>
+<div><p>Even if base valuation
+suggests passing</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+<dt>else if (AI is Happy?) then (Yes)</dt><dd><p>:May Be Conservative;
+note right</p>
+<blockquote>
+<div><p>Might pass even on
+valuable properties</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+</dl>
+<p>endif</p>
+<dl class="simple">
+<dt>if (Current Bid &gt; Adjusted Max?) then (Yes)</dt><dd><p>:Pass;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Place Emotionally Adjusted Bid;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+<p>stop</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ai-development-strategy">
+<h2>AI Development Strategy<a class="headerlink" href="#ai-development-strategy" title="Link to this heading"></a></h2>
+<p>Property development decision-making follows a specific process based on available resources and group ownership:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-7386038b8e9a8a83b3258139413ef86e9e03dc29.png" alt="&#64;startuml
+
+title AI Property Development Strategy
+
+start
+
+:Evaluate Financial Position;
+
+if (Money &lt; Development Threshold?) then (Yes)
+  :Skip Development;
+  stop
+endif
+
+:Identify Complete Color Groups;
+
+partition &quot;Development Prioritization&quot; {
+  :Sort Properties by Development ROI;
+  note right
+    ROI = potential_rent_increase / development_cost
+  end note
+
+  :Apply Even Development Strategy;
+  note right
+    Prefer to build houses evenly across
+    properties in a color group
+  end note"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl>
+<dt>if (AI Type?) then (Easy AI)</dt><dd><dl class="simple">
+<dt>if (ROI &gt; Fixed Threshold?) then (Yes)</dt><dd><p>:Approve Development;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Skip Development;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+<dt>else (Hard AI)</dt><dd><p>:Apply Emotional Factor;
+note right</p>
+<blockquote>
+<div><p>Development threshold adjusted by mood:
+* Angry: Lower threshold (more development)
+* Happy: Higher threshold (less development)</p>
+</div></blockquote>
+<p>end note</p>
+<dl>
+<dt>if (Adjusted ROI &gt; Dynamic Threshold?) then (Yes)</dt><dd><p>:Approve Development;</p>
+</dd>
+<dt>else (No)</dt><dd><dl>
+<dt>if (Random &lt; Emotion-based Chance?) then (Yes)</dt><dd><p>:Approve Development Anyway;
+note right</p>
+<blockquote>
+<div><p>More likely if angry</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Skip Development;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+<p>stop</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ai-emergency-cash-management">
+<h2>AI Emergency Cash Management<a class="headerlink" href="#ai-emergency-cash-management" title="Link to this heading"></a></h2>
+<p>When facing financial difficulties, AI players employ different strategies to raise funds:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-9e9df1278b642693bfac41474c830a19d122ebe2.png" alt="&#64;startuml
+
+title AI Emergency Cash Management
+
+start
+
+:Evaluate Cash Shortage;
+note right
+  required_amount - available_cash
+end note
+
+if (Has Sufficient Cash?) then (Yes)
+  :No Action Needed;
+  stop
+endif
+
+partition &quot;Liquidation Priority&quot; {
+  :1. Sell Houses from Non-Strategic Properties;
+  :2. Mortgage Non-Group Properties;
+  :3. Mortgage Properties in Incomplete Groups;
+  :4. Sell Houses from Strategic Properties;
+  :5. Mortgage Properties in Complete Groups;"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl>
+<dt>if (AI Type?) then (Easy AI)</dt><dd><p>:Apply Fixed Liquidation Order;</p>
+</dd>
+<dt>else (Hard AI)</dt><dd><p>:Evaluate Strategic Value of Each Asset;
+note right</p>
+<blockquote>
+<div><p>Considers:
+- Immediate cash gain
+- Long-term revenue loss
+- Strategic position impact</p>
+</div></blockquote>
+<p>end note</p>
+<p>:Apply Emotional Risk Assessment;
+note right</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Angry: May keep high-risk properties</p></li>
+<li><p>Happy: More willing to sacrifice properties</p></li>
+</ul>
+</div></blockquote>
+<p>end note</p>
+</dd>
+</dl>
+<p>endif</p>
+<dl class="simple">
+<dt>if (Can Raise Required Amount?) then (Yes)</dt><dd><p>:Execute Liquidation Plan;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Prepare for Bankruptcy;</p>
+</dd>
+</dl>
+<p>endif</p>
+<p>stop</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ai-jail-strategy">
+<h2>AI Jail Strategy<a class="headerlink" href="#ai-jail-strategy" title="Link to this heading"></a></h2>
+<p>AI decision-making for jail scenarios depends on several factors including financial situation and game state:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-7341221d4d1e0b92aabad18fdc2ad0e24ba14bb4.png" alt="&#64;startuml
+
+title AI Jail Strategy Decision Tree
+
+start
+
+if (Has Get Out of Jail Card?) then (Yes)
+  :Use Card;
+else (No)
+  partition &quot;Evaluate Game Context&quot; {
+    :Assess Financial Position;
+    :Check Dangerous Properties Ahead;
+    :Evaluate Development Opportunities;"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><blockquote>
+<div><dl>
+<dt>if (AI Type?) then (Easy AI)</dt><dd><dl class="simple">
+<dt>if (Money &gt; 250?) then (Yes)</dt><dd><p>:Pay Fine;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Roll for Doubles;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+<dt>else (Hard AI)</dt><dd><p>:Apply Emotional Context;</p>
+<dl>
+<dt>if (AI is Angry?) then (Yes)</dt><dd><dl>
+<dt>if (Random &lt; Adjusted Probability?) then (Yes)</dt><dd><p>:Pay Fine Impulsively;
+note right</p>
+<blockquote>
+<div><p>Even if financially risky</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+<dl>
+<dt>if (Board Analysis?) then (Dangerous Properties Ahead)</dt><dd><p>:Roll for Doubles;
+note right</p>
+<blockquote>
+<div><p>Try to stay in jail to avoid
+expensive properties</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+<dt>else (Safe or Opportunities Ahead)</dt><dd><dl class="simple">
+<dt>if (Money &gt; 200?) then (Yes)</dt><dd><p>:Pay Fine;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Roll for Doubles;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+</div></blockquote>
+<p>endif</p>
+<p>stop</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ai-trade-evaluation-system">
+<h2>AI Trade Evaluation System<a class="headerlink" href="#ai-trade-evaluation-system" title="Link to this heading"></a></h2>
+<p>The AI uses a complex system to evaluate trade offers from other players:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-65bce1d35de5a705a3f76f843b7e7ef149c1013b.png" alt="&#64;startuml
+
+title AI Trade Evaluation System
+
+start
+
+:Receive Trade Offer;
+note right
+  - Properties offered
+  - Properties requested
+  - Cash difference
+end note
+
+partition &quot;Value Calculation&quot; {
+  :Calculate Value of Offered Properties;
+  :Calculate Value of Requested Properties;
+  :Add/Subtract Cash Difference;"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><p>:Apply Strategic Multipliers;
+note right</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Complete color group: 1.5x</p></li>
+<li><p>Almost complete group: 1.3x</p></li>
+<li><p>Station/utility synergy: 1.2x</p></li>
+</ul>
+</div></blockquote>
+<p>end note</p>
+<dl>
+<dt>if (AI Type?) then (Easy AI)</dt><dd><dl>
+<dt>if (Value Difference &gt; 0?) then (Yes)</dt><dd><dl>
+<dt>if (Random &lt; 0.8) then (Yes)</dt><dd><p>:Accept Trade;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Reject Trade;
+note right</p>
+<blockquote>
+<div><p>Adds unpredictability</p>
+</div></blockquote>
+<p>end note</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Reject Trade;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+<dt>else (Hard AI)</dt><dd><p>:Apply Emotional Assessment;
+note right</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Angry: May reject profitable trades</p></li>
+<li><p>Happy: May accept marginally unprofitable trades</p></li>
+</ul>
+</div></blockquote>
+<p>end note</p>
+<dl>
+<dt>if (Adjusted Value Difference &gt; 0?) then (Yes)</dt><dd><p>:Accept Trade;</p>
+</dd>
+<dt>else (No)</dt><dd><dl>
+<dt>if (Almost Balanced &amp; Happy?) then (Yes)</dt><dd><dl class="simple">
+<dt>if (Random &lt; Adjusted Probability) then (Yes)</dt><dd><p>:Accept Slightly Unfavorable Trade;</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Reject Trade;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+<dt>else (No)</dt><dd><p>:Reject Trade;</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+</dd>
+</dl>
+<p>endif</p>
+<p>stop</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="hard-ai-mood-impact-analysis">
+<h2>Hard AI Mood Impact Analysis<a class="headerlink" href="#hard-ai-mood-impact-analysis" title="Link to this heading"></a></h2>
+<p>This diagram provides a detailed analysis of how the Hard AI’s mood impacts various game decisions:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-eaa7f8a1ca21370ec7d912400580c5d4ba94540e.png" alt="&#64;startuml
+
+title Hard AI Mood Impact on Decision Making
+
+skinparam linetype ortho
+
+rectangle &quot;Mood Range&quot; {
+  rectangle &quot;Happy\n(-0.3)&quot; as Happy
+  rectangle &quot;Slightly Happy\n(-0.15)&quot; as SlightlyHappy
+  rectangle &quot;Neutral\n(0.0)&quot; as Neutral
+  rectangle &quot;Slightly Angry\n(+0.15)&quot; as SlightlyAngry
+  rectangle &quot;Angry\n(+0.3)&quot; as Angry
+
+  Happy -[hidden]right- SlightlyHappy
+  SlightlyHappy -[hidden]right- Neutral
+  Neutral -[hidden]right- SlightlyAngry
+  SlightlyAngry -[hidden]right- Angry"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Decision Adjustments” {</dt><dd><dl class="simple">
+<dt>rectangle “Property Valuation” as PropVal {</dt><dd><p>text “Happy: -30% ValuenAngry: +30% Value”</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Auction Bidding” as Auction {</dt><dd><p>text “Happy: -30% Bid CeilingnAngry: +30% Bid Ceiling”</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Development” as Dev {</dt><dd><p>text “Happy: +30% ROI ThresholdnAngry: -30% ROI Threshold”</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Risk Tolerance” as Risk {</dt><dd><p>text “Happy: -30% Risk TakingnAngry: +30% Risk Taking”</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Trade Evaluation” as Trade {</dt><dd><p>text “Happy: +15% Trade AcceptancenAngry: -15% Trade Acceptance”</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>PropVal -[hidden]down- Auction
+Auction -[hidden]down- Dev
+Dev -[hidden]down- Risk
+Risk -[hidden]down- Trade</p>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Behavioral Outcomes” {</dt><dd><dl class="simple">
+<dt>rectangle “Conservative Play” as Conservative {</dt><dd><p>text “- Lower bidsn- Fewer developmentsn- More predictable”</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Balanced Play” as Balanced {</dt><dd><p>text “- Rational decisionsn- Optimal strategyn- Predictable”</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>rectangle “Aggressive Play” as Aggressive {</dt><dd><p>text “- Higher bidsn- More developmentsn- Less predictable”</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Conservative -[hidden]down- Balanced
+Balanced -[hidden]down- Aggressive</p>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Happy –&gt; PropVal
+Happy –&gt; Auction
+Happy –&gt; Dev
+Happy –&gt; Risk
+Happy –&gt; Trade</p>
+<p>Angry –&gt; PropVal
+Angry –&gt; Auction
+Angry –&gt; Dev
+Angry –&gt; Risk
+Angry –&gt; Trade</p>
+<p>Happy –&gt; Conservative
+Neutral –&gt; Balanced
+Angry –&gt; Aggressive</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ai_player_logic.html" class="btn btn-neutral float-left" title="AI Player Logic Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cards.html" class="btn btn-neutral float-right" title="Cards Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

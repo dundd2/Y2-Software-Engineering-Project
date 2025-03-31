@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Player Logic Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AI Behavior Analysis" href="ai_behavior_analysis.html" />
+    <link rel="prev" title="Property Module" href="property.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AI Player Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-player-types">AI Player Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-strategy-components">AI Strategy Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#property-valuation-system">Property Valuation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#easyaiplayer-class">EasyAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hardaiplayer-class">HardAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#decision-making-process">Decision-Making Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#difficulty-adjustment">Difficulty Adjustment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hard-ai-emotion-system">Hard AI Emotion System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-integration-with-player-module">AI Integration with Player Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-property-valuation-logic">AI Property Valuation Logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ai-decision-tree-for-property-purchase">AI Decision Tree for Property Purchase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.can_build_house"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.check_group_ownership"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.check_group_ownership()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.consider_trade_offer"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.consider_trade_offer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.get_development_priority"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_development_priority()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.get_group_properties"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_group_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.get_location_type"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_location_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.get_property_name"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_emergency_cash"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_emergency_cash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_turn"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.handle_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.make_auction_bid"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.make_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_develop_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_develop_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_pay_jail_fine"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_pay_jail_fine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_sell_houses"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_sell_houses()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_unmortgage_property"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_unmortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.EasyAIPlayer.should_use_get_out_of_jail_card"><code class="docutils literal notranslate"><span class="pre">EasyAIPlayer.should_use_get_out_of_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.get_adjusted_probability"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_adjusted_probability()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.get_auction_bid"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.get_property_value"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.handle_jail_strategy"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_jail_strategy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.handle_property_development"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.handle_property_development()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.should_buy_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.should_mortgage_property"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.should_mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Ai_Player_Logic.HardAIPlayer.update_mood"><code class="docutils literal notranslate"><span class="pre">HardAIPlayer.update_mood()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">AI Player Logic Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/ai_player_logic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ai-player-logic-module">
+<h1>AI Player Logic Module<a class="headerlink" href="#ai-player-logic-module" title="Link to this heading"></a></h1>
+<p>This module contains the logic for AI players in the game, implementing different difficulty levels and strategic decision-making processes for computer-controlled players.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Multi-level AI System</strong>: Supports different difficulty levels (Easy and Hard)</p></li>
+<li><p><strong>Sophisticated Decision Making</strong>: AI evaluates complex game states to make strategic choices</p></li>
+<li><p><strong>Property Valuation System</strong>: Dynamic property value assessment for purchases and auctions</p></li>
+<li><p><strong>Strategic Development</strong>: Intelligent house and hotel building strategies</p></li>
+<li><p><strong>Financial Planning</strong>: AI manages its finances to avoid bankruptcy</p></li>
+<li><p><strong>Jail Strategy System</strong>: Decision making for jail scenarios</p></li>
+<li><p><strong>Trade Evaluation</strong>: Assessment of trade proposals from other players</p></li>
+<li><p><strong>Emotion System</strong>: Hard AI implements an emotional state system that affects decision making</p></li>
+</ul>
+</section>
+<section id="ai-player-types">
+<h2>AI Player Types<a class="headerlink" href="#ai-player-types" title="Link to this heading"></a></h2>
+<p>The module implements two main types of AI players:</p>
+<ol class="arabic simple">
+<li><p><strong>EasyAIPlayer</strong>: A more forgiving AI that makes predictable decisions, suitable for casual players</p></li>
+<li><p><strong>HardAIPlayer</strong>: A more challenging AI that makes strategically sound decisions with emotional variability</p></li>
+</ol>
+</section>
+<section id="ai-strategy-components">
+<h2>AI Strategy Components<a class="headerlink" href="#ai-strategy-components" title="Link to this heading"></a></h2>
+<p>Each AI player type implements various strategic components:</p>
+<ul class="simple">
+<li><p><strong>Property Purchasing</strong>: Evaluates whether to buy an unowned property</p></li>
+<li><p><strong>Auction Bidding</strong>: Calculates appropriate bid amounts based on property valuation</p></li>
+<li><p><strong>Property Development</strong>: Decides when to build houses and hotels</p></li>
+<li><p><strong>Mortgage Management</strong>: Strategic decisions about mortgaging and unmortgaging properties</p></li>
+<li><p><strong>Trade Evaluation</strong>: Assesses the value of proposed trades</p></li>
+<li><p><strong>Emergency Cash Management</strong>: Strategies for raising funds when needed</p></li>
+<li><p><strong>Jail Decision-Making</strong>: Choosing between paying a fine, using a card, or rolling for doubles</p></li>
+</ul>
+</section>
+<section id="property-valuation-system">
+<h2>Property Valuation System<a class="headerlink" href="#property-valuation-system" title="Link to this heading"></a></h2>
+<p>The AI uses a sophisticated property valuation system that considers:</p>
+<ul class="simple">
+<li><p><strong>Base Property Value</strong>: The listed price of the property</p></li>
+<li><p><strong>Color Group Completion</strong>: Higher value for properties that complete a color group</p></li>
+<li><p><strong>Existing Ownership</strong>: Value increases for properties in groups where the AI already owns properties</p></li>
+<li><p><strong>Station and Utility Synergy</strong>: Value increases based on how many stations or utilities the AI already owns</p></li>
+<li><p><strong>Strategic Position</strong>: Value adjustments based on board position and landing probability</p></li>
+<li><p><strong>Emotional Bias</strong>: (Hard AI only) Value adjustments based on current emotional state</p></li>
+</ul>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class HardAIPlayer {</dt><dd><p>-difficulty : String
+-mood_modifier : Float
+-easy_ai : EasyAIPlayer
++__init__()
++update_mood(is_happy)
++get_adjusted_probability(base_probability)
++get_property_value(property_data, ai_player, board_properties)
++get_auction_bid(current_minimum, property_data, ai_player, board_properties)
++handle_jail_strategy(ai_player, jail_free_cards)
++should_mortgage_property(ai_player, required_money)
++handle_property_development(ai_player, board_properties)
++should_buy_property(property_data, player_money, owned_properties)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>HardAIPlayer –&gt; EasyAIPlayer : uses</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="easyaiplayer-class">
+<h2>EasyAIPlayer Class<a class="headerlink" href="#easyaiplayer-class" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">EasyAIPlayer</span></code> class implements a more forgiving AI strategy with the following key methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_property_value</span></code>: Calculates the perceived value of a property</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">should_buy_property</span></code>: Determines whether to purchase a property</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make_auction_bid</span></code>: Calculates appropriate auction bid amounts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_jail_strategy</span></code>: Decides how to handle being in jail</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_property_development</span></code>: Evaluates development opportunities</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">handle_emergency_cash</span></code>: Raises funds when needed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">check_group_ownership</span></code>: Checks if a complete color group is owned</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">should_sell_houses</span></code>: Determines when to sell houses to raise funds</p></li>
+</ul>
+</section>
+<section id="hardaiplayer-class">
+<h2>HardAIPlayer Class<a class="headerlink" href="#hardaiplayer-class" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">HardAIPlayer</span></code> class extends the EasyAIPlayer with an emotional intelligence system:</p>
+<ul class="simple">
+<li><p><strong>Emotion System</strong>: Maintains a mood modifier that affects decision making</p></li>
+<li><p><strong>Enhanced Valuation</strong>: Adjusts property valuation based on emotional state</p></li>
+<li><p><strong>Dynamic Bidding</strong>: More aggressive or conservative bidding based on mood</p></li>
+<li><p><strong>Emotional Responses</strong>: Can make “irrational” decisions based on emotion</p></li>
+<li><p><strong>Mood Tracking</strong>: Mood ranges from angry (+0.3) to happy (-0.3)</p></li>
+<li><p><strong>Player Interaction</strong>: Players can influence the AI’s mood through taunting</p></li>
+</ul>
+<p>Key methods include:
+* <code class="docutils literal notranslate"><span class="pre">update_mood</span></code>: Changes the AI’s emotional state
+* <code class="docutils literal notranslate"><span class="pre">get_adjusted_probability</span></code>: Adjusts decision probabilities based on mood
+* <code class="docutils literal notranslate"><span class="pre">get_property_value</span></code>: Overrides basic valuation with emotional factors
+* <code class="docutils literal notranslate"><span class="pre">get_auction_bid</span></code>: Makes emotionally influenced bidding decisions
+* <code class="docutils literal notranslate"><span class="pre">handle_jail_strategy</span></code>: Jail decisions affected by emotional state
+* <code class="docutils literal notranslate"><span class="pre">should_buy_property</span></code>: Purchase decisions with emotional influence</p>
+</section>
+<section id="decision-making-process">
+<h2>Decision-Making Process<a class="headerlink" href="#decision-making-process" title="Link to this heading"></a></h2>
+<p>The AI’s decision-making process involves several steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Situation Assessment</strong>: Analyzing the current game state</p></li>
+<li><p><strong>Option Generation</strong>: Identifying possible actions</p></li>
+<li><p><strong>Option Evaluation</strong>: Calculating the expected value of each action</p></li>
+<li><p><strong>Action Selection</strong>: Choosing the action with the highest expected value</p></li>
+<li><p><strong>Emotional Adjustment</strong>: (Hard AI only) Modifying decisions based on emotional state</p></li>
+</ol>
+<p>For property purchases, the AI considers:
+* Current cash reserves
+* Property’s intrinsic value
+* Potential for completing color groups
+* Expected return on investment
+* Emotional biases (Hard AI)</p>
+<p>For development decisions, the AI evaluates:
+* Cash availability
+* Return on investment for houses/hotels
+* Risk of landing on expensive properties
+* Strategic value of blocking other players
+* Emotional tendencies toward risk (Hard AI)</p>
+</section>
+<section id="difficulty-adjustment">
+<h2>Difficulty Adjustment<a class="headerlink" href="#difficulty-adjustment" title="Link to this heading"></a></h2>
+<p class="plantuml">
+<img src="../_images/plantuml-a6e93cd069d94a22ed6770aa588389e47e3ee173.png" alt="&#64;startuml
+
+title AI Difficulty Adjustment and Decision Flow
+
+start
+
+if (AI Type?) then (Easy AI)
+  :Use Conservative Strategies;
+  :Apply Static Decision Thresholds;
+  :Predictable Decision Making;
+else (Hard AI)
+  :Initialize Emotion System;
+  :Apply Dynamic Decision Thresholds;
+
+  repeat
+    :Update Emotional State;
+    :Adjust Base Probabilities;
+    :Apply Emotional Multipliers;
+
+    if (mood_modifier &gt; 0) then (Angry)
+      :More Aggressive Bidding;
+      :Higher Risk Tolerance;
+      :More Impulsive Decisions;
+    else (Happy)
+      :More Conservative Bidding;
+      :Lower Risk Tolerance;
+      :More Calculated Decisions;
+    endif
+  repeat while (Game Continues)
+endif
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="hard-ai-emotion-system">
+<h2>Hard AI Emotion System<a class="headerlink" href="#hard-ai-emotion-system" title="Link to this heading"></a></h2>
+<p>The Hard AI implements an emotional system that makes its behavior less predictable:</p>
+<ul class="simple">
+<li><p><strong>Mood Modifier</strong>: A value ranging from -0.3 (happy) to +0.3 (angry)</p></li>
+<li><p><strong>Decision Impact</strong>: Emotional state affects bidding, purchases, and strategy</p></li>
+<li><p><strong>Player Interaction</strong>: Human players can taunt the AI to make it happier or angrier</p></li>
+<li><p><strong>Strategy Adjustment</strong>:
+* Happy AI: More conservative, less likely to take risks
+* Angry AI: More aggressive, more likely to make impulsive decisions</p></li>
+</ul>
+<p class="plantuml">
+<img src="../_images/plantuml-be849717e0c06368a04d948d7be84b17874d8d82.png" alt="&#64;startuml
+
+title Hard AI Emotion System
+
+state &quot;Neutral\nMood: 0.0&quot; as Neutral
+state &quot;Slightly Happy\nMood: -0.15&quot; as SlightlyHappy
+state &quot;Happy\nMood: -0.3&quot; as Happy
+state &quot;Slightly Angry\nMood: 0.15&quot; as SlightlyAngry
+state &quot;Angry\nMood: 0.3&quot; as Angry
+
+[*] -&gt; Neutral
+
+Neutral -down-&gt; SlightlyHappy : Player praises
+Neutral -up-&gt; SlightlyAngry : Player taunts
+
+SlightlyHappy -down-&gt; Happy : Player praises
+SlightlyHappy -up-&gt; Neutral : Player taunts
+
+Happy -up-&gt; SlightlyHappy : Player taunts
+
+SlightlyAngry -up-&gt; Angry : Player taunts
+SlightlyAngry -down-&gt; Neutral : Player praises
+
+Angry -down-&gt; SlightlyAngry : Player praises
+
+note right of Happy
+  Decision effects:
+  * Property value adjustments: -30%
+  * Bidding aggression: -30%
+  * Risk tolerance: -30%
+end note
+
+note right of Angry
+  Decision effects:
+  * Property value adjustments: +30%
+  * Bidding aggression: +30%
+  * Risk tolerance: +30%
+end note
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="ai-integration-with-player-module">
+<h2>AI Integration with Player Module<a class="headerlink" href="#ai-integration-with-player-module" title="Link to this heading"></a></h2>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class EasyAIPlayer {</dt><dd><p>+handle_turn()
++handle_jail_strategy()
++should_buy_property()
++…()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class HardAIPlayer {</dt><dd><p>+mood_modifier : Float
++update_mood()
++handle_turn()
++…()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Player “1” <a href="#id1"><span class="problematic" id="id2">*</span></a>– “0..1” EasyAIPlayer : if is_ai=true andnai_difficulty=”easy”
+Player “1” <a href="#id3"><span class="problematic" id="id4">*</span></a>– “0..1” HardAIPlayer : if is_ai=true andnai_difficulty=”hard”</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ai-property-valuation-logic">
+<h2>AI Property Valuation Logic<a class="headerlink" href="#ai-property-valuation-logic" title="Link to this heading"></a></h2>
+<p class="plantuml">
+<img src="../_images/plantuml-3f115e93a08a13213188bb580c52bbcd119b07bf.png" alt="&#64;startuml
+
+title AI Property Valuation Process
+
+start
+
+:Get Base Property Price;
+:Initialize Value Multiplier = 1.0;
+
+if (Same Color Group Check) then (Has Properties)
+  :Calculate Owned in Group;
+  :Calculate Total in Group;
+  :Apply Group Ownership Bonus;
+  note right
+    Bonus = 0.3 * (owned_in_group / total_in_group)
+  end note
+endif
+
+if (Property Type Check) then (Station)
+  :Count Owned Stations;
+  :Apply Station Synergy Bonus;
+  note right
+    Bonus = 0.25 * owned_stations
+  end note
+else if (Property Type Check) then (Utility)
+  :Count Owned Utilities;
+  :Apply Utility Synergy Bonus;
+  note right
+    Bonus = 0.2 * owned_utilities
+  end note
+endif
+
+if (Available Money Check) then (Low Cash)
+  :Apply Cash Shortage Penalty;
+  note right
+    Multiplier reduced if cash &lt; 3x price
+  end note
+endif
+
+if (Is Hard AI?) then (Yes)
+  :Apply Emotional Adjustment;
+  note right
+    Adjustment = base_value * (1 + mood_modifier * 2)
+  end note
+endif
+
+:Calculate Final Property Value;
+note right
+  final_value = base_price * value_multiplier
+end note
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="ai-decision-tree-for-property-purchase">
+<h2>AI Decision Tree for Property Purchase<a class="headerlink" href="#ai-decision-tree-for-property-purchase" title="Link to this heading"></a></h2>
+<p class="plantuml">
+<img src="../_images/plantuml-bd472526b871d1e29eec90576340fcea32fe7982.png" alt="&#64;startuml
+
+title AI Decision Tree for Property Purchase
+
+start
+
+if (Can Afford Property?) then (No)
+  :Decline Purchase;
+  stop
+endif
+
+:Calculate Property Value;
+
+if (Property Value &gt;= Price?) then (Yes)
+  if (Is Hard AI?) then (Yes)
+    if (In Emotional State?) then (Angry)
+      if (Random Check &lt; Adjusted Probability) then (Yes)
+        :Buy Property Even if Value &lt; Price;
+      else (No)
+        :Buy Property;
+      endif
+    else if (In Emotional State?) then (Happy)
+      if (Random Check &lt; Adjusted Probability) then (Yes)
+        :Pass on Property Even if Value &gt; Price;
+      else (No)
+        :Buy Property;
+      endif
+    else (Neutral)
+      :Buy Property;
+    endif
+  else (Easy AI)
+    :Buy Property;
+  endif
+else (No)
+  if (Is Hard AI?) then (Yes)
+    if (In Emotional State?) then (Angry)
+      if (Random Check &lt; Adjusted Probability) then (Yes)
+        :Buy Property Even if Value &lt; Price;
+      else (No)
+        :Pass on Property;
+      endif
+    else (Not Angry)
+      :Pass on Property;
+    endif
+  else (Easy AI)
+    :Pass on Property;
+  endif
+endif
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="id5">
+<h2>Class Documentation<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-src.Ai_Player_Logic">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Ai_Player_Logic.</span></span><span class="sig-name descname"><span class="pre">EasyAIPlayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">difficulty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'easy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.can_build_house">
+<span class="sig-name descname"><span class="pre">can_build_house</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_group_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.can_build_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.can_build_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.check_group_ownership">
+<span class="sig-name descname"><span class="pre">check_group_ownership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.check_group_ownership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.check_group_ownership" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.consider_trade_offer">
+<span class="sig-name descname"><span class="pre">consider_trade_offer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offered_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requested_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cash_difference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.consider_trade_offer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.consider_trade_offer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.get_auction_bid">
+<span class="sig-name descname"><span class="pre">get_auction_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_minimum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.get_auction_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.get_auction_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.get_development_priority">
+<span class="sig-name descname"><span class="pre">get_development_priority</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.get_development_priority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.get_development_priority" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.get_group_properties">
+<span class="sig-name descname"><span class="pre">get_group_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.get_group_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.get_group_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.get_location_type">
+<span class="sig-name descname"><span class="pre">get_location_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.get_location_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.get_location_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.get_property_name">
+<span class="sig-name descname"><span class="pre">get_property_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.get_property_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.get_property_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.get_property_value">
+<span class="sig-name descname"><span class="pre">get_property_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owned_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_money</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.get_property_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.get_property_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.handle_ai_turn">
+<span class="sig-name descname"><span class="pre">handle_ai_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.handle_ai_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_ai_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.handle_emergency_cash">
+<span class="sig-name descname"><span class="pre">handle_emergency_cash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.handle_emergency_cash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_emergency_cash" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.handle_jail_strategy">
+<span class="sig-name descname"><span class="pre">handle_jail_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jail_free_cards</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.handle_jail_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_jail_strategy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.handle_property_development">
+<span class="sig-name descname"><span class="pre">handle_property_development</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.handle_property_development"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_property_development" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.handle_turn">
+<span class="sig-name descname"><span class="pre">handle_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_first_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.handle_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.handle_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.make_auction_bid">
+<span class="sig-name descname"><span class="pre">make_auction_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_bid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owned_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.make_auction_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.make_auction_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_buy_property">
+<span class="sig-name descname"><span class="pre">should_buy_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owned_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_buy_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_buy_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_develop_property">
+<span class="sig-name descname"><span class="pre">should_develop_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owned_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_develop_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_develop_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_mortgage_property">
+<span class="sig-name descname"><span class="pre">should_mortgage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_mortgage_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_mortgage_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_pay_jail_fine">
+<span class="sig-name descname"><span class="pre">should_pay_jail_fine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_pay_jail_fine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_pay_jail_fine" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_sell_houses">
+<span class="sig-name descname"><span class="pre">should_sell_houses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_sell_houses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_sell_houses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_unmortgage_property">
+<span class="sig-name descname"><span class="pre">should_unmortgage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_unmortgage_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_unmortgage_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.EasyAIPlayer.should_use_get_out_of_jail_card">
+<span class="sig-name descname"><span class="pre">should_use_get_out_of_jail_card</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#EasyAIPlayer.should_use_get_out_of_jail_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.EasyAIPlayer.should_use_get_out_of_jail_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Ai_Player_Logic.</span></span><span class="sig-name descname"><span class="pre">HardAIPlayer</span></span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.get_adjusted_probability">
+<span class="sig-name descname"><span class="pre">get_adjusted_probability</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_probability</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.get_adjusted_probability"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.get_adjusted_probability" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.get_auction_bid">
+<span class="sig-name descname"><span class="pre">get_auction_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_minimum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.get_auction_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.get_auction_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.get_property_value">
+<span class="sig-name descname"><span class="pre">get_property_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.get_property_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.get_property_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.handle_jail_strategy">
+<span class="sig-name descname"><span class="pre">handle_jail_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jail_free_cards</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.handle_jail_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.handle_jail_strategy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.handle_property_development">
+<span class="sig-name descname"><span class="pre">handle_property_development</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.handle_property_development"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.handle_property_development" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.should_buy_property">
+<span class="sig-name descname"><span class="pre">should_buy_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_money</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owned_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.should_buy_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.should_buy_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.should_mortgage_property">
+<span class="sig-name descname"><span class="pre">should_mortgage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required_money</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.should_mortgage_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.should_mortgage_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Ai_Player_Logic.HardAIPlayer.update_mood">
+<span class="sig-name descname"><span class="pre">update_mood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_happy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Ai_Player_Logic.html#HardAIPlayer.update_mood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Ai_Player_Logic.HardAIPlayer.update_mood" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="property.html" class="btn btn-neutral float-left" title="Property Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ai_behavior_analysis.html" class="btn btn-neutral float-right" title="AI Behavior Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

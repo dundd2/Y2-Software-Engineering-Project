@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Load Excel Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Actions Module" href="game_actions.html" />
+    <link rel="prev" title="UI Module" href="ui.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Load Excel Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loadexcel-functions">LoadExcel Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#property-data-loading">Property Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#card-data-loading">Card Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-structure">Data Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Loadexcel.load_game_text"><code class="docutils literal notranslate"><span class="pre">load_game_text()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Loadexcel.load_property_data"><code class="docutils literal notranslate"><span class="pre">load_property_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Load Excel Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/loadexcel.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="load-excel-module">
+<h1>Load Excel Module<a class="headerlink" href="#load-excel-module" title="Link to this heading"></a></h1>
+<p>This module contains functions for loading data from Excel files, which serve as the source of property, card, and other game data for the Property Tycoon game.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Data Extraction</strong>: Reading property and card data from Excel spreadsheets</p></li>
+<li><p><strong>Data Transformation</strong>: Converting raw Excel data into usable game objects</p></li>
+<li><p><strong>Property Loading</strong>: Creating Property objects with correct attributes</p></li>
+<li><p><strong>Card Loading</strong>: Creating cards with proper text and effects</p></li>
+<li><p><strong>Error Handling</strong>: Robust error management for file access and data parsing</p></li>
+<li><p><strong>Data Validation</strong>: Verification of loaded data integrity</p></li>
+<li><p><strong>Dynamic Updates</strong>: Support for reloading data during development</p></li>
+</ul>
+</section>
+<section id="loadexcel-functions">
+<h2>LoadExcel Functions<a class="headerlink" href="#loadexcel-functions" title="Link to this heading"></a></h2>
+<p>The module provides several key functions for loading game data:</p>
+<blockquote>
+<div><p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="property-data-loading">
+<h2>Property Data Loading<a class="headerlink" href="#property-data-loading" title="Link to this heading"></a></h2>
+<p>The module loads property data with a specialized process:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-f9e7fdeaf05e69c24fb9582da4ab4454ba26c4f0.png" alt="&#64;startuml
+
+title Property Data Loading Process
+
+start
+
+:Open Excel File;
+
+:Select Properties Worksheet;
+
+:Iterate Through Property Rows;
+
+repeat
+  :Read Property Row;
+
+  :Extract Property Attributes;
+  note right
+    - Name
+    - Position
+    - Price
+    - Group
+    - Rent values
+    - Mortgage value
+    - House/hotel costs
+  end note
+
+  :Validate Property Data;
+
+  :Create Property Object;
+
+  :Add to Property Collection;
+repeat while (More Properties?) is (Yes)
+
+:Return Complete Property Collection;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="card-data-loading">
+<h2>Card Data Loading<a class="headerlink" href="#card-data-loading" title="Link to this heading"></a></h2>
+<p>The module loads card data with the following process:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-4e31c6edc900ee5322eb0367e282c1084622a736.png" alt="&#64;startuml
+
+title Card Data Loading Process
+
+start
+
+:Open Excel File;
+
+:Select Card Worksheets;
+note right
+  Two worksheets:
+  - Pot Luck
+  - Opportunity Knocks
+end note
+
+:Process Pot Luck Cards;
+
+repeat
+  :Read Card Row;
+
+  :Extract Card Text;
+
+  :Parse Card Effect;
+  note right
+    Identify effect type:
+    - Money
+    - Movement
+    - Special
+  end note
+
+  :Create Card Object;
+
+  :Add to Pot Luck Deck;
+repeat while (More Pot Luck Cards?) is (Yes)
+
+:Process Opportunity Knocks Cards;
+
+repeat
+  :Read Card Row;
+
+  :Extract Card Text;
+
+  :Parse Card Effect;
+
+  :Create Card Object;
+
+  :Add to Opportunity Knocks Deck;
+repeat while (More Opportunity Knocks Cards?) is (Yes)
+
+:Return Complete Card Decks;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="data-structure">
+<h2>Data Structure<a class="headerlink" href="#data-structure" title="Link to this heading"></a></h2>
+<p>The module processes data in specific formats:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Property Object” as Property {</dt><dd><p>+name : String
++position : int
++price : int
++group : String
++base_rent : int
++rent_1 : int
++rent_2 : int
++rent_3 : int
++rent_4 : int
++rent_hotel : int
++mortgage_value : int
++house_cost : int
++hotel_cost : int</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Card Excel Data” as CardExcel {</dt><dd><p>+ID : Integer
++Type : String
++Text : String
++Effect : String</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Card Object” as Card {</dt><dd><p>+card_id : int
++type : String
++text : String
++effect_type : String
++effect_value : Any</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>PropertyExcel ..&gt; Property : converted to
+CardExcel ..&gt; Card : converted to</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p>The module implements robust error handling:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-2c06569f472d4aef5dd4148b058d7df10c0351cc.png" alt="&#64;startuml
+
+title Error Handling System
+
+start
+
+:Attempt Data Load;
+
+if (File Access Error?) then (Yes)
+  :Log Error;
+  :Display User-Friendly Message;
+  :Return Default Data;
+elseif (Parse Error?) then (Yes)
+  :Log Row and Error Details;
+  :Skip Problematic Row;
+  :Continue Processing;
+elseif (Validation Error?) then (Yes)
+  :Log Validation Issue;
+  :Apply Data Correction if Possible;
+  :Flag Warning;
+endif
+
+:Return Successfully Loaded Data;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="integration-with-game-module">
+<h2>Integration with Game Module<a class="headerlink" href="#integration-with-game-module" title="Link to this heading"></a></h2>
+<p>The LoadExcel module integrates with other game components:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameLogic {</dt><dd><p>-properties : Dict
+-pot_luck_cards : CardDeck
+-opportunity_knocks_cards : CardDeck
++initialize_game_data()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Property {</dt><dd><p>+name : String
++price : int
++group : String</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Card {</dt><dd><p>+type : String
++text : String
++effect_type : String</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Game {</dt><dd><p>+setup_game()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>LoadExcel ..&gt; Property : creates
+LoadExcel ..&gt; Card : creates
+Game –&gt; LoadExcel : uses
+GameLogic –&gt; LoadExcel : uses</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="py function" id="module-src.Loadexcel">
+<dt class="sig sig-object py" id="src.Loadexcel.load_game_text">
+<span class="sig-prename descclassname"><span class="pre">src.Loadexcel.</span></span><span class="sig-name descname"><span class="pre">load_game_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assets/gamedata/PropertyTycoonCardData.xlsx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Game</span> <span class="pre">Text'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Loadexcel.html#load_game_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Loadexcel.load_game_text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Loadexcel.load_property_data">
+<span class="sig-prename descclassname"><span class="pre">src.Loadexcel.</span></span><span class="sig-name descname"><span class="pre">load_property_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assets/gamedata/PropertyTycoonBoardData.xlsx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Loadexcel.html#load_property_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Loadexcel.load_property_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ui.html" class="btn btn-neutral float-left" title="UI Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_actions.html" class="btn btn-neutral float-right" title="Game Actions Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

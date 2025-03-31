@@ -1,0 +1,926 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.DevelopmentMode &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.DevelopmentMode</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.DevelopmentMode</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon DevelopmentMode.py</span>
+<span class="c1"># It contains the classes for the development mode, such as the development notification, and the development mode.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Font_Manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">font_manager</span>
+
+<span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">LIGHT_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">UI_BG</span> <span class="o">=</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+
+<span class="n">DARK_RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DARK_GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DARK_BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
+<span class="n">GOLD</span> <span class="o">=</span> <span class="p">(</span><span class="mi">218</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">CREAM</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">208</span><span class="p">)</span>
+<span class="n">BURGUNDY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+
+<span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">YELLOW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">ACCENT_COLOR</span> <span class="o">=</span> <span class="n">BURGUNDY</span>
+<span class="n">BUTTON_HOVER</span> <span class="o">=</span> <span class="p">(</span><span class="mi">160</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">ERROR_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+<span class="n">SUCCESS_COLOR</span> <span class="o">=</span> <span class="n">DARK_GREEN</span>
+<span class="n">MODE_COLOR</span> <span class="o">=</span> <span class="n">DARK_BLUE</span>
+<span class="n">TIME_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">HUMAN_COLOR</span> <span class="o">=</span> <span class="n">DARK_GREEN</span>
+<span class="n">AI_COLOR</span> <span class="o">=</span> <span class="n">DARK_RED</span>
+
+<span class="n">GROUP_COLORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Brown&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;Blue&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+    <span class="s2">&quot;Purple&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="s2">&quot;Orange&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;Red&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;Yellow&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">236</span><span class="p">,</span> <span class="mi">93</span><span class="p">),</span>
+    <span class="s2">&quot;Green&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">153</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;Deep blue&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">153</span><span class="p">),</span>
+    <span class="s2">&quot;Stations&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="s2">&quot;Utilities&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="DevelopmentMode">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DevelopmentMode</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">,</span> <span class="n">game_actions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_actions</span> <span class="o">=</span> <span class="n">game_actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">screen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">font</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">small_font</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">small_font</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiny_font</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">tiny_font</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_star_flash_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_property_stars</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="DevelopmentMode.activate">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode.activate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_ai&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_develop_ai</span><span class="p">(</span><span class="n">player</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Development mode ACTIVATED for AI </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Development mode NOT activated for AI </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (cannot develop)&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">owned_properties</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">prop</span>
+                <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">owned_properties</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Development mode ACTIVATED for human player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">lap_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                        <span class="s2">&quot;Development Mode: Click on your properties to manage them&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Development mode NOT activated for human player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (no properties)&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DevelopmentMode.can_develop_ai">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode.can_develop_ai">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_develop_ai</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">player</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Development: Cannot develop - Invalid player data&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">lap_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Development: Cannot develop - </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has not completed a lap.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">owned_properties</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">prop</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">owned_properties</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Development: Cannot develop - </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> owns no properties&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">owned_properties</span><span class="p">:</span>
+            <span class="n">can_build_house</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">can_build_house</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+            <span class="n">can_build_hotel</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">can_build_hotel</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+            <span class="n">can_mortgage</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">can_unmortgage</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">int</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.1</span>
+            <span class="p">)</span>
+            <span class="n">can_sell</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">can_build_house</span>
+                <span class="ow">or</span> <span class="n">can_build_hotel</span>
+                <span class="ow">or</span> <span class="n">can_mortgage</span>
+                <span class="ow">or</span> <span class="n">can_unmortgage</span>
+                <span class="ow">or</span> <span class="n">can_sell</span>
+            <span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Development: </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> CAN develop (found developable property: </span><span class="si">{</span><span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Development: Cannot develop - </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> owns properties, but none are currently developable/manageable.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="DevelopmentMode.deactivate">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode.deactivate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Development mode DEACTIVATED&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;DEVELOPMENT&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span></div>
+
+
+<div class="viewcode-block" id="DevelopmentMode.draw">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode.draw">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouse_pos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_draw_development_ui</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">mouse_pos</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;DEVELOPMENT&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_draw_property_stars</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="DevelopmentMode.handle_click">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode.handle_click">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">current_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">:</span>
+            <span class="n">clicked_action</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">action</span><span class="p">,</span> <span class="n">button_rect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">button_rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+                    <span class="n">clicked_action</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">clicked_action</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Development UI button clicked: </span><span class="si">{</span><span class="n">clicked_action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">clicked_action</span> <span class="o">==</span> <span class="s2">&quot;close&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">clicked_action</span> <span class="o">==</span> <span class="s2">&quot;build_house&quot;</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">build_house</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> built a house on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">clicked_action</span> <span class="o">==</span> <span class="s2">&quot;build_hotel&quot;</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">build_hotel</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> built a hotel on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">clicked_action</span> <span class="o">==</span> <span class="s2">&quot;sell_property&quot;</span><span class="p">:</span>
+                    <span class="n">houses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">houses</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">property_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                        <span class="n">is_mortgaged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span>
+                        <span class="p">)</span>
+                        <span class="n">sell_property_value</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">property_value</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_mortgaged</span> <span class="k">else</span> <span class="n">property_value</span> <span class="o">//</span> <span class="mi">2</span>
+                        <span class="p">)</span>
+
+                        <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sell_property_value</span>
+
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="k">if</span> <span class="n">is_mortgaged</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s2">&quot;is_mortgaged&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+                        <span class="n">property_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="n">sell_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sold </span><span class="si">{</span><span class="n">property_name</span><span class="si">}</span><span class="s2"> to the bank for £</span><span class="si">{</span><span class="n">sell_property_value</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">sell_message</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+
+                        <span class="n">owned_properties</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">prop</span>
+                            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="p">]</span>
+
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">owned_properties</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span>
+                                <span class="s2">&quot;Player sold their last property - deactivating development mode.&quot;</span>
+                            <span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="s2">&quot;Cannot sell property with buildings. Sell houses/hotel first.&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">clicked_action</span> <span class="o">==</span> <span class="s2">&quot;mortgage&quot;</span><span class="p">:</span>
+                    <span class="n">is_mortgaged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">is_mortgaged</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">unmortgage_property</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> unmortgaged </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">mortgage_property</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> mortgaged </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">clicked_action</span> <span class="o">==</span> <span class="s2">&quot;sell&quot;</span><span class="p">:</span>
+                    <span class="n">houses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">houses</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">sell_hotel</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sold a hotel from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">houses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">sell_house</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sold a house from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;No houses/hotels to sell&quot;</span><span class="p">)</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+            <span class="n">card_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.35</span><span class="p">)</span>
+            <span class="n">card_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.62</span><span class="p">)</span>
+            <span class="n">card_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">card_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">card_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">card_height</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">ui_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">card_x</span><span class="p">,</span> <span class="n">card_y</span><span class="p">,</span> <span class="n">card_width</span><span class="p">,</span> <span class="n">card_height</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ui_rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">property_pos_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">property_clicked</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">property_pos_index</span><span class="p">:</span>
+            <span class="n">pos_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">property_pos_index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pos_str</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+                <span class="n">prop_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">pos_str</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">prop_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected property for development: </span><span class="si">{</span><span class="n">prop_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="n">prop_data</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;DEVELOPMENT&quot;</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">owner</span> <span class="o">=</span> <span class="n">prop_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">,</span> <span class="s2">&quot;Bank&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Property </span><span class="si">{</span><span class="n">prop_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is owned by </span><span class="si">{</span><span class="n">owner</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DevelopmentMode.handle_key">
+<a class="viewcode-back" href="../../modules/development_mode.html#src.DevelopmentMode.DevelopmentMode.handle_key">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">current_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">current_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_ai&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_1</span><span class="p">:</span>
+                <span class="n">houses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">houses</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">build_house</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> built a house on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">build_hotel</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> built a hotel on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_2</span><span class="p">:</span>
+                <span class="n">is_mortgaged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_mortgaged</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">unmortgage_property</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> unmortgaged </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">mortgage_property</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> mortgaged </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_3</span><span class="p">:</span>
+                <span class="n">houses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">houses</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">sell_hotel</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sold a hotel from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">houses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">sell_house</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">,</span> <span class="n">current_player</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> sold a house from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;No houses/hotels to sell&quot;</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> put </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> up for auction&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_actions</span><span class="o">.</span><span class="n">start_auction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deactivate</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;AUCTION&quot;</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_property_stars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_star_flash_time</span> <span class="o">&gt;=</span> <span class="mi">500</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_star_flash_time</span> <span class="o">=</span> <span class="n">current_time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_property_stars</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_property_stars</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_property_stars</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">current_player_logic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span>
+        <span class="p">]</span>
+
+        <span class="n">owned_properties</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">prop</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">current_player_logic</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">owned_properties</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;position&quot;</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">:</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])</span>
+                <span class="n">property_center</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_property_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">property_center</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_draw_star</span><span class="p">(</span><span class="n">property_center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">property_center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_star</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">15</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">4</span>
+            <span class="n">point_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">point_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+            <span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">point_x</span><span class="p">,</span> <span class="n">point_y</span><span class="p">))</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="n">YELLOW</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">polygon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="n">BLACK</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_development_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">mouse_pos</span><span class="p">):</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="n">card_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.3</span><span class="p">)</span>
+        <span class="n">card_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">)</span>
+        <span class="n">card_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">card_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">card_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">card_height</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">overlay</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">overlay</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="n">shadow_offset</span> <span class="o">=</span> <span class="mi">6</span>
+        <span class="n">shadow_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">shadow_offset</span><span class="p">,</span> <span class="n">card_y</span> <span class="o">+</span> <span class="n">shadow_offset</span><span class="p">,</span> <span class="n">card_width</span><span class="p">,</span> <span class="n">card_height</span>
+        <span class="p">)</span>
+        <span class="n">shadow</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">card_width</span><span class="p">,</span> <span class="n">card_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">shadow</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">BLACK</span><span class="p">,</span> <span class="mi">140</span><span class="p">),</span> <span class="n">shadow</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(),</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">shadow</span><span class="p">,</span> <span class="n">shadow_rect</span><span class="p">)</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span>
+            <span class="n">WHITE</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">card_x</span><span class="p">,</span> <span class="n">card_y</span><span class="p">,</span> <span class="n">card_width</span><span class="p">,</span> <span class="n">card_height</span><span class="p">),</span>
+            <span class="n">border_radius</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">current_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+
+        <span class="n">header_height</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="k">if</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">):</span>
+            <span class="n">group_color</span> <span class="o">=</span> <span class="n">GROUP_COLORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">],</span> <span class="n">GRAY</span><span class="p">)</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span>
+                <span class="n">group_color</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">card_x</span><span class="p">,</span> <span class="n">card_y</span><span class="p">,</span> <span class="n">card_width</span><span class="p">,</span> <span class="n">header_height</span><span class="p">),</span>
+                <span class="n">border_top_left_radius</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+                <span class="n">border_top_right_radius</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">card_width</span><span class="p">,</span> <span class="n">header_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">header_height</span><span class="p">):</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">128</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span> <span class="o">/</span> <span class="n">header_height</span><span class="p">))</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                    <span class="n">gradient</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="p">(</span><span class="n">card_width</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span><span class="p">,</span> <span class="n">card_y</span><span class="p">))</span>
+
+        <span class="n">close_btn_size</span> <span class="o">=</span> <span class="mi">24</span>
+        <span class="n">close_btn_margin</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">close_btn_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">card_width</span> <span class="o">-</span> <span class="n">close_btn_size</span> <span class="o">-</span> <span class="n">close_btn_margin</span><span class="p">,</span>
+            <span class="n">card_y</span> <span class="o">+</span> <span class="n">close_btn_margin</span><span class="p">,</span>
+            <span class="n">close_btn_size</span><span class="p">,</span>
+            <span class="n">close_btn_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">close_btn_rect</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="n">ERROR_COLOR</span><span class="p">,</span> <span class="n">close_btn_rect</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="n">close_btn_size</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="p">)</span>
+
+        <span class="n">line_color</span> <span class="o">=</span> <span class="n">WHITE</span>
+        <span class="n">line_width</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">close_btn_size</span> <span class="o">//</span> <span class="mi">4</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span>
+            <span class="n">line_color</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">close_btn_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">close_btn_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="n">offset</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">close_btn_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="n">close_btn_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">-</span> <span class="n">offset</span><span class="p">),</span>
+            <span class="n">line_width</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span>
+            <span class="n">line_color</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">close_btn_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">offset</span><span class="p">,</span> <span class="n">close_btn_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="n">offset</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">close_btn_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">close_btn_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">-</span> <span class="n">offset</span><span class="p">),</span>
+            <span class="n">line_width</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">header_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="n">WHITE</span> <span class="k">if</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">ACCENT_COLOR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">header_rect</span> <span class="o">=</span> <span class="n">header_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span>
+            <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">card_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">card_y</span> <span class="o">+</span> <span class="n">header_height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">header_text</span><span class="p">,</span> <span class="n">header_rect</span><span class="p">)</span>
+
+        <span class="n">y_offset</span> <span class="o">=</span> <span class="n">card_y</span> <span class="o">+</span> <span class="n">header_height</span> <span class="o">+</span> <span class="mi">15</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">info_font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">small_font</span>
+        <span class="n">line_height</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">+</span> <span class="mi">5</span>
+
+        <span class="n">info_section_height</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">245</span><span class="p">,</span> <span class="mi">245</span><span class="p">,</span> <span class="mi">245</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">card_width</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">padding</span><span class="p">,</span> <span class="n">info_section_height</span><span class="p">),</span>
+            <span class="n">border_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">y_info</span> <span class="o">=</span> <span class="n">y_offset</span> <span class="o">+</span> <span class="mi">10</span>
+        <span class="n">price_text</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;💰 Price: £</span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">BLACK</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">price_text</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y_info</span><span class="p">))</span>
+
+        <span class="n">houses</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">house_symbol</span> <span class="o">=</span> <span class="s2">&quot;🏠&quot;</span> <span class="k">if</span> <span class="n">houses</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="k">else</span> <span class="s2">&quot;🏨&quot;</span>
+        <span class="n">house_text</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">house_symbol</span><span class="si">}</span><span class="s2"> Buildings: </span><span class="si">{</span><span class="n">houses</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">houses</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Hotel&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="kc">True</span><span class="p">,</span>
+            <span class="n">BLACK</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">house_text</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y_info</span> <span class="o">+</span> <span class="n">line_height</span><span class="p">))</span>
+
+        <span class="n">rent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">calculate_space_rent</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span> <span class="n">current_player</span><span class="p">)</span>
+        <span class="n">rent_text</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;💲 Rent: £</span><span class="si">{</span><span class="n">rent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">DARK_GREEN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">rent_text</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y_info</span> <span class="o">+</span> <span class="n">line_height</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">mortgage_text</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;🏦 Status: MORTGAGED&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ERROR_COLOR</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span>
+                <span class="n">mortgage_text</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y_info</span> <span class="o">+</span> <span class="n">line_height</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mortgage_val</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">mortgage_text</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;🏦 Mortgage: £</span><span class="si">{</span><span class="n">mortgage_val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">GRAY</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span>
+                <span class="n">mortgage_text</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span> <span class="o">+</span> <span class="mi">8</span><span class="p">,</span> <span class="n">y_info</span> <span class="o">+</span> <span class="n">line_height</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">info_section_height</span> <span class="o">+</span> <span class="mi">20</span>
+
+        <span class="n">button_width</span> <span class="o">=</span> <span class="n">card_width</span> <span class="o">-</span> <span class="p">(</span><span class="n">padding</span> <span class="o">*</span> <span class="mf">2.5</span><span class="p">)</span>
+        <span class="n">button_height</span> <span class="o">=</span> <span class="mi">35</span>
+        <span class="n">button_margin</span> <span class="o">=</span> <span class="mi">8</span>
+
+        <span class="n">section_label</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;Development Actions&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">DARK_BLUE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">section_label</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="mi">25</span>
+
+        <span class="n">house_cost</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;house_cost&quot;</span><span class="p">,</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">can_build_house</span><span class="p">,</span> <span class="n">house_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">can_build_house</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">current_player</span>
+        <span class="p">)</span>
+        <span class="n">can_build_hotel</span><span class="p">,</span> <span class="n">hotel_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">can_build_hotel</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">current_player</span>
+        <span class="p">)</span>
+
+        <span class="n">can_build_house_ui</span> <span class="o">=</span> <span class="n">houses</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">can_build_house</span>
+        <span class="n">house_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Add House (£</span><span class="si">{</span><span class="n">house_cost</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">can_build_house_ui</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Cannot Add House&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;build_house&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_button</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;build_house&quot;</span><span class="p">],</span>
+            <span class="n">house_text</span><span class="p">,</span>
+            <span class="n">mouse_pos</span><span class="p">,</span>
+            <span class="n">active</span><span class="o">=</span><span class="n">can_build_house_ui</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">SUCCESS_COLOR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">button_height</span> <span class="o">+</span> <span class="n">button_margin</span>
+
+        <span class="n">can_build_hotel_ui</span> <span class="o">=</span> <span class="n">houses</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">can_build_hotel</span>
+        <span class="n">hotel_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Add Hotel (£</span><span class="si">{</span><span class="n">house_cost</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">can_build_hotel_ui</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Cannot Add Hotel&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;build_hotel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_button</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;build_hotel&quot;</span><span class="p">],</span>
+            <span class="n">hotel_text</span><span class="p">,</span>
+            <span class="n">mouse_pos</span><span class="p">,</span>
+            <span class="n">active</span><span class="o">=</span><span class="n">can_build_hotel_ui</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">SUCCESS_COLOR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">button_height</span> <span class="o">+</span> <span class="n">button_margin</span>
+
+        <span class="n">section_label</span> <span class="o">=</span> <span class="n">info_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;Property Management&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">DARK_BLUE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">section_label</span><span class="p">,</span> <span class="p">(</span><span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="mi">25</span>
+
+        <span class="n">can_sell</span> <span class="o">=</span> <span class="n">houses</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">sell_value</span> <span class="o">=</span> <span class="n">house_cost</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">sell_text</span> <span class="o">=</span> <span class="s2">&quot;No Buildings to Sell&quot;</span>
+        <span class="k">if</span> <span class="n">houses</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">sell_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Sell Hotel (£</span><span class="si">{</span><span class="n">sell_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">elif</span> <span class="n">houses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sell_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Sell House (£</span><span class="si">{</span><span class="n">sell_value</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;sell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_button</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;sell&quot;</span><span class="p">],</span>
+            <span class="n">sell_text</span><span class="p">,</span>
+            <span class="n">mouse_pos</span><span class="p">,</span>
+            <span class="n">active</span><span class="o">=</span><span class="n">can_sell</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">MODE_COLOR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">button_height</span> <span class="o">+</span> <span class="n">button_margin</span>
+
+        <span class="n">property_value</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">is_mortgaged</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_mortgaged&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">can_sell_property</span> <span class="o">=</span> <span class="n">houses</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">sell_property_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">property_value</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_mortgaged</span> <span class="k">else</span> <span class="n">property_value</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="p">)</span>
+
+        <span class="n">sell_property_text</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Sell Property (£</span><span class="si">{</span><span class="n">sell_property_value</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="k">if</span> <span class="n">can_sell_property</span>
+            <span class="k">else</span> <span class="s2">&quot;Remove Buildings First&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;sell_property&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_button</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;sell_property&quot;</span><span class="p">],</span>
+            <span class="n">sell_property_text</span><span class="p">,</span>
+            <span class="n">mouse_pos</span><span class="p">,</span>
+            <span class="n">active</span><span class="o">=</span><span class="n">can_sell_property</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">ERROR_COLOR</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">button_height</span> <span class="o">+</span> <span class="n">button_margin</span>
+
+        <span class="n">mortgage_value</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">is_mortgaged</span><span class="p">:</span>
+            <span class="n">unmortgage_cost</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mortgage_value</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">)</span>
+            <span class="n">can_unmortgage</span> <span class="o">=</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">unmortgage_cost</span>
+            <span class="n">mortgage_text</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Pay Unmortgage (£</span><span class="si">{</span><span class="n">unmortgage_cost</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="k">if</span> <span class="n">can_unmortgage</span>
+                <span class="k">else</span> <span class="s2">&quot;Cannot Unmortgage&quot;</span>
+            <span class="p">)</span>
+            <span class="n">can_mortgage_action</span> <span class="o">=</span> <span class="n">can_unmortgage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">can_mortgage</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">mortgage_text</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Get Mortgage (£</span><span class="si">{</span><span class="n">mortgage_value</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="k">if</span> <span class="n">can_mortgage</span>
+                <span class="k">else</span> <span class="s2">&quot;Sell Buildings First&quot;</span>
+            <span class="p">)</span>
+            <span class="n">can_mortgage_action</span> <span class="o">=</span> <span class="n">can_mortgage</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;mortgage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_button</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;mortgage&quot;</span><span class="p">],</span>
+            <span class="n">mortgage_text</span><span class="p">,</span>
+            <span class="n">mouse_pos</span><span class="p">,</span>
+            <span class="n">active</span><span class="o">=</span><span class="n">can_mortgage_action</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">MODE_COLOR</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;close&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span> <span class="ow">or</span> <span class="n">close_btn_rect</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;close&quot;</span><span class="p">]:</span>
+            <span class="n">y_offset</span> <span class="o">+=</span> <span class="n">button_height</span> <span class="o">+</span> <span class="n">button_margin</span> <span class="o">*</span> <span class="mf">1.5</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;close_bottom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+                <span class="n">card_x</span> <span class="o">+</span> <span class="n">padding</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_draw_button</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">[</span><span class="s2">&quot;close_bottom&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Close Window&quot;</span><span class="p">,</span>
+                <span class="n">mouse_pos</span><span class="p">,</span>
+                <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">ERROR_COLOR</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_button</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">button_rect</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">mouse_pos</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ACCENT_COLOR</span>
+    <span class="p">):</span>
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">button_rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">)</span> <span class="ow">and</span> <span class="n">active</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">active</span><span class="p">:</span>
+            <span class="n">base_color</span> <span class="o">=</span> <span class="n">GRAY</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_color</span> <span class="o">=</span> <span class="n">BUTTON_HOVER</span> <span class="k">if</span> <span class="n">hover</span> <span class="k">else</span> <span class="n">color</span>
+
+        <span class="n">shadow_rect_copy</span> <span class="o">=</span> <span class="n">button_rect</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">shadow_rect_copy</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="n">shadow</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">button_rect</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">shadow</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">BLACK</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="n">shadow</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(),</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">shadow</span><span class="p">,</span> <span class="n">shadow_rect_copy</span><span class="p">)</span>
+
+        <span class="n">button_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">button_rect</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+            <span class="n">button_surface</span><span class="p">,</span> <span class="n">base_color</span><span class="p">,</span> <span class="n">button_surface</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(),</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">button_rect</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">button_rect</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mf">1.2</span><span class="p">)</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">WHITE</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="p">(</span><span class="n">button_rect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+        <span class="n">button_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">gradient</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">special_flags</span><span class="o">=</span><span class="n">pygame</span><span class="o">.</span><span class="n">BLEND_RGBA_ADD</span><span class="p">)</span>
+
+        <span class="n">border_color</span> <span class="o">=</span> <span class="n">GOLD</span> <span class="k">if</span> <span class="n">hover</span> <span class="k">else</span> <span class="n">CREAM</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+            <span class="n">button_surface</span><span class="p">,</span>
+            <span class="n">border_color</span><span class="p">,</span>
+            <span class="n">button_surface</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(),</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">border_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">hover</span><span class="p">:</span>
+            <span class="n">highlight</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">button_rect</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">highlight</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+            <span class="n">button_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">highlight</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">button_surface</span><span class="p">,</span> <span class="n">button_rect</span><span class="p">)</span>
+
+        <span class="n">text_color</span> <span class="o">=</span> <span class="n">CREAM</span> <span class="k">if</span> <span class="n">active</span> <span class="k">else</span> <span class="n">LIGHT_GRAY</span>
+        <span class="n">text_shadow_surf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">small_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">BLACK</span><span class="p">)</span>
+        <span class="n">text_surf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">small_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">text_color</span><span class="p">)</span>
+        <span class="n">text_rect</span> <span class="o">=</span> <span class="n">text_surf</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">button_rect</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">shadow_text_rect</span> <span class="o">=</span> <span class="n">text_rect</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">shadow_text_rect</span><span class="o">.</span><span class="n">topleft</span> <span class="o">=</span> <span class="p">(</span><span class="n">text_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">text_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text_shadow_surf</span><span class="p">,</span> <span class="n">shadow_text_rect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text_surf</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

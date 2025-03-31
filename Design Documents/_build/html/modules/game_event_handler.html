@@ -1,0 +1,587 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Event Handler Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Renderer Module" href="game_renderer.html" />
+    <link rel="prev" title="Game Actions Module" href="game_actions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Event Handler Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gameeventhandler-class">GameEventHandler Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-processing-flow">Event Processing Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#game-state-event-handling">Game State Event Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ui-event-integration">UI Event Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mouse-event-processing">Mouse Event Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keyboard-event-processing">Keyboard Event Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler"><code class="docutils literal notranslate"><span class="pre">GameEventHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_auction_click"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_auction_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_auction_input"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_auction_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_click"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_input"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_key"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_motion()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Event Handler Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game_event_handler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-event-handler-module">
+<h1>Game Event Handler Module<a class="headerlink" href="#game-event-handler-module" title="Link to this heading"></a></h1>
+<p>This module contains the GameEventHandler class that processes and manages user input events, such as mouse clicks and keyboard inputs, in the Property Tycoon game.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Event Processing</strong>: Management of user input events</p></li>
+<li><p><strong>Mouse Handling</strong>: Processing of mouse clicks, movements, and drag operations</p></li>
+<li><p><strong>Keyboard Handling</strong>: Processing of keyboard inputs for shortcuts and navigation</p></li>
+<li><p><strong>UI Event Delegation</strong>: Routing events to appropriate UI components</p></li>
+<li><p><strong>Game State Event Handling</strong>: Processing events based on current game state</p></li>
+<li><p><strong>Dialog Event Processing</strong>: Handling events for dialog interactions</p></li>
+<li><p><strong>Development Mode Events</strong>: Processing events specific to property development</p></li>
+</ul>
+</section>
+<section id="gameeventhandler-class">
+<h2>GameEventHandler Class<a class="headerlink" href="#gameeventhandler-class" title="Link to this heading"></a></h2>
+<p>The GameEventHandler class encapsulates event processing functionality:</p>
+<hr class="docutils" />
+<blockquote>
+<div><p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="event-processing-flow">
+<h2>Event Processing Flow<a class="headerlink" href="#event-processing-flow" title="Link to this heading"></a></h2>
+<p>The module implements a structured event processing flow:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-60b30efa03243f7344c1a0a45a507ae8a8586d7c.png" alt="&#64;startuml
+
+title Event Processing Flow
+
+start
+
+:Receive User Input Event;
+
+if (Event Type?) then (Mouse)
+  if (Mouse Event Type?) then (Click)
+    :Process Mouse Click;
+    if (Game State?) then (Menu)
+      :Handle Menu Click;
+    else if (Game State?) then (Playing)
+      :Handle Game Click;
+      if (Click Target?) then (UI Button)
+        :Process Button Action;
+      else if (Click Target?) then (Game Board)
+        :Handle Board Interaction;
+      else if (Click Target?) then (Player Info)
+        :Show Player Details;
+      else if (Click Target?) then (Property Card)
+        :Process Property Card Action;
+      endif
+    else if (Game State?) then (Development)
+      :Handle Development Click;
+    else if (Game State?) then (Dialog)
+      :Handle Dialog Interaction;
+    endif
+  else if (Mouse Event Type?) then (Movement)
+    :Update Hover States;
+    :Update Cursor;
+  else if (Mouse Event Type?) then (Drag)
+    :Process Drag Operation;
+  endif
+else if (Event Type?) then (Keyboard)
+  if (Game State?) then (Menu)
+    :Handle Menu Navigation;
+  else if (Game State?) then (Playing)
+    :Process Game Keyboard Input;
+    if (Key?) then (Escape)
+      :Show Pause Menu;
+    else if (Key?) then (Space)
+      :Roll Dice / End Turn;
+    else if (Key?) then (D)
+      :Toggle Development Mode;
+    else (Other Keys)
+      :Process Other Shortcuts;
+    endif
+  else if (Game State?) then (Dialog)
+    :Handle Dialog Keyboard Input;
+  endif
+else if (Event Type?) then (Window)
+  if (Window Event?) then (Resize)
+    :Handle Window Resize;
+  else if (Window Event?) then (Close)
+    :Handle Game Exit;
+  else if (Window Event?) then (Focus)
+    :Handle Focus Change;
+  endif
+endif
+
+:Return Event Handling Result;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="game-state-event-handling">
+<h2>Game State Event Handling<a class="headerlink" href="#game-state-event-handling" title="Link to this heading"></a></h2>
+<p>The module handles events differently based on the current game state:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-3a1f135681a03da7d58437fb1168310b7c9c75cb.png" alt="&#64;startuml
+
+title Game State Event Handling
+
+state &quot;MENU State&quot; as MENU {
+  [*] --&gt; Process_Menu_Click
+  Process_Menu_Click --&gt; Handle_Button_Action
+  Handle_Button_Action --&gt; Change_Menu
+  Handle_Button_Action --&gt; Start_Game
+  Handle_Button_Action --&gt; Exit_Game
+  Change_Menu --&gt; [*]
+  Start_Game --&gt; [*]
+  Exit_Game --&gt; [*]"/>
+</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl>
+<dt>state “PLAYING State” as PLAYING {</dt><dd><p>[*] –&gt; Process_Playing_Click
+Process_Playing_Click –&gt; Handle_Action_Button
+Process_Playing_Click –&gt; Handle_Board_Click
+Process_Playing_Click –&gt; Handle_UI_Element</p>
+<p>Handle_Action_Button –&gt; Roll_Dice
+Handle_Action_Button –&gt; Buy_Property
+Handle_Action_Button –&gt; End_Turn
+Handle_Action_Button –&gt; Auction_Bid</p>
+<p>Handle_Board_Click –&gt; Select_Property
+Handle_Board_Click –&gt; Show_Property_Card</p>
+<p>Handle_UI_Element –&gt; Show_Player_Info
+Handle_UI_Element –&gt; Toggle_Development
+Handle_UI_Element –&gt; Initiate_Trade</p>
+<p>Roll_Dice –&gt; [*]
+Buy_Property –&gt; [*]
+End_Turn –&gt; [*]
+Auction_Bid –&gt; [*]
+Select_Property –&gt; [*]
+Show_Property_Card –&gt; [*]
+Show_Player_Info –&gt; [*]
+Toggle_Development –&gt; [*]
+Initiate_Trade –&gt; [*]</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl>
+<dt>state “DEVELOPMENT State” as DEV {</dt><dd><p>[*] –&gt; Process_Development_Click
+Process_Development_Click –&gt; Select_Development_Property
+Process_Development_Click –&gt; Build_House
+Process_Development_Click –&gt; Build_Hotel
+Process_Development_Click –&gt; Sell_House
+Process_Development_Click –&gt; Sell_Hotel
+Process_Development_Click –&gt; Exit_Development_Mode</p>
+<p>Select_Development_Property –&gt; [*]
+Build_House –&gt; [*]
+Build_Hotel –&gt; [*]
+Sell_House –&gt; [*]
+Sell_Hotel –&gt; [*]
+Exit_Development_Mode –&gt; [*]</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>state “DIALOG State” as DIALOG {</dt><dd><p>[*] –&gt; Process_Dialog_Event
+Process_Dialog_Event –&gt; Dialog_Button_Click
+Process_Dialog_Event –&gt; Dialog_Close
+Dialog_Button_Click –&gt; Dialog_Action
+Dialog_Action –&gt; Dialog_Result
+Dialog_Close –&gt; Dialog_Result
+Dialog_Result –&gt; [*]</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="ui-event-integration">
+<h2>UI Event Integration<a class="headerlink" href="#ui-event-integration" title="Link to this heading"></a></h2>
+<p>The GameEventHandler integrates with UI components for event processing:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl>
+<dt>class UI {</dt><dd><p>-buttons : Dict
+-active_dialogs : List
+-hover_element : Any</p>
+<p>+handle_click(position)
++is_point_in_button(position, button)
++get_element_at_position(position)
++handle_button_click(button_name)
++update_hover_states(position)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl>
+<dt>class Game {</dt><dd><p>-event_handler : GameEventHandler
+-ui : UI
+-state : String</p>
+<p>+handle_events()
++handle_action(action_name)
++set_state(new_state)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “UI Elements” as Elements {</dt><dd><p>+Button
++PropertyCard
++PlayerInfoPanel
++Dialog</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>GameEventHandler –&gt; UI : delegates UI events to
+Game <a href="#id1"><span class="problematic" id="id2">*</span></a>– GameEventHandler
+UI <a href="#id3"><span class="problematic" id="id4">*</span></a>– Elements
+GameEventHandler ..&gt; Game : updates game state</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="mouse-event-processing">
+<h2>Mouse Event Processing<a class="headerlink" href="#mouse-event-processing" title="Link to this heading"></a></h2>
+<p>The module handles various types of mouse events:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-7aad28a84922e54aea6a05b07e117ca02a9d4349.png" alt="&#64;startuml
+
+title Mouse Event Processing
+
+start
+
+:Receive Mouse Event;
+
+if (Event Type?) then (Mouse Down)
+  :Record Button State;
+  :Record Mouse Position;
+  :Update UI Pressed States;
+else if (Event Type?) then (Mouse Up)
+  if (Was Mouse Down?) then (Yes)
+    :Calculate Click Position;
+    :Determine Click Target;
+
+    if (Click Target?) then (UI Button)
+      :Handle Button Click;
+      :Execute Button Action;
+    else if (Click Target?) then (Game Board)
+      :Get Property at Position;
+      :Handle Property Interaction;
+    else if (Click Target?) then (Dialog)
+      :Process Dialog Interaction;
+    else if (Click Target?) then (Player Info)
+      :Show Player Details;
+    endif
+  endif
+
+  :Reset Mouse States;
+else if (Event Type?) then (Mouse Motion)
+  :Update UI Hover States;
+  :Update Cursor Appearance;
+
+  if (Dragging?) then (Yes)
+    :Process Drag Operation;
+  endif
+else if (Event Type?) then (Mouse Wheel)
+  :Process Scroll Action;
+
+  if (Scroll Target?) then (Property List)
+    :Scroll Property List;
+  else if (Scroll Target?) then (Card Deck)
+    :Scroll Card Deck;
+  else if (Scroll Target?) then (Dialog Content)
+    :Scroll Dialog Content;
+  endif
+endif
+
+:Return Event Processing Result;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="keyboard-event-processing">
+<h2>Keyboard Event Processing<a class="headerlink" href="#keyboard-event-processing" title="Link to this heading"></a></h2>
+<p>The module processes keyboard inputs for game control:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-57bface9ed35fe2aa42047243507ae77795aa722.png" alt="&#64;startuml
+
+title Keyboard Event Processing
+
+start
+
+:Receive Keyboard Event;
+
+if (Event Type?) then (Key Down)
+  :Record Key State;
+
+  if (Game State?) then (Menu)
+    if (Key?) then (Enter)
+      :Activate Selected Item;
+    else if (Key?) then (Arrow Keys)
+      :Navigate Menu;
+    else if (Key?) then (Escape)
+      :Exit Current Menu;
+    endif
+  else if (Game State?) then (Playing)
+    if (Key?) then (Space)
+      :Roll Dice / End Turn;
+    else if (Key?) then (B)
+      :Buy Property;
+    else if (Key?) then (P)
+      :Pass / Auction;
+    else if (Key?) then (D)
+      :Toggle Development Mode;
+    else if (Key?) then (T)
+      :Initiate Trade;
+    else if (Key?) then (Escape)
+      :Show Pause Menu;
+    endif
+  else if (Game State?) then (Development)
+    if (Key?) then (1-4)
+      :Build House on Selected Property;
+    else if (Key?) then (H)
+      :Build Hotel on Selected Property;
+    else if (Key?) then (S)
+      :Sell House/Hotel;
+    else if (Key?) then (Escape)
+      :Exit Development Mode;
+    endif
+  else if (Game State?) then (Dialog)
+    if (Key?) then (Enter)
+      :Confirm Dialog Action;
+    else if (Key?) then (Escape)
+      :Cancel Dialog Action;
+    endif
+  endif
+else if (Event Type?) then (Key Up)
+  :Update Key State;
+endif
+
+:Return Event Processing Result;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="integration-with-game-module">
+<h2>Integration with Game Module<a class="headerlink" href="#integration-with-game-module" title="Link to this heading"></a></h2>
+<p>The GameEventHandler module integrates with several other components:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Game {</dt><dd><p>-state : String
+-current_player : Player
+-board : Board
+-ui : UI
++handle_events()
++handle_action(action_name)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Board {</dt><dd><p>+get_square_at_coordinates(x, y)
++highlight_property(property_data)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class UI {</dt><dd><p>+handle_click(position)
++update_hover_states(position)
++get_element_at_position(position)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class GameActions {</dt><dd><p>+execute_action(action_name, parameters)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>Game <a href="#id5"><span class="problematic" id="id6">*</span></a>– GameEventHandler
+GameEventHandler –&gt; UI : delegates to
+GameEventHandler –&gt; Board : uses
+GameEventHandler –&gt; GameActions : triggers</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-src.GameEventHandler">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.GameEventHandler.</span></span><span class="sig-name descname"><span class="pre">GameEventHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_auction_click">
+<span class="sig-name descname"><span class="pre">handle_auction_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_auction_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_auction_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_auction_input">
+<span class="sig-name descname"><span class="pre">handle_auction_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_auction_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_auction_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_input">
+<span class="sig-name descname"><span class="pre">handle_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game_actions.html" class="btn btn-neutral float-left" title="Game Actions Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_renderer.html" class="btn btn-neutral float-right" title="Game Renderer Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

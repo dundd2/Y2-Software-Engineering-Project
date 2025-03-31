@@ -1,0 +1,440 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Font Manager Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Sound Manager Module" href="sound_manager.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Font Manager Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fontmanager-class">FontManager Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#font-loading-system">Font Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text-rendering">Text Rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text-wrapping-system">Text Wrapping System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#font-types">Font Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-other-modules">Integration with Other Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Font_Manager.FontManager"><code class="docutils literal notranslate"><span class="pre">FontManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Font_Manager.FontManager.clear_cache"><code class="docutils literal notranslate"><span class="pre">FontManager.clear_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Font_Manager.FontManager.get_font"><code class="docutils literal notranslate"><span class="pre">FontManager.get_font()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Font_Manager.FontManager.get_scaled_size"><code class="docutils literal notranslate"><span class="pre">FontManager.get_scaled_size()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Font_Manager.FontManager.update_font_path"><code class="docutils literal notranslate"><span class="pre">FontManager.update_font_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Font_Manager.FontManager.update_scale_factor"><code class="docutils literal notranslate"><span class="pre">FontManager.update_scale_factor()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Font Manager Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/font_manager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="font-manager-module">
+<h1>Font Manager Module<a class="headerlink" href="#font-manager-module" title="Link to this heading"></a></h1>
+<p>This module contains the FontManager class that manages font loading, caching, and rendering throughout the Property Tycoon game.</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Font Loading</strong>: Loading and caching of game fonts for efficient reuse</p></li>
+<li><p><strong>Text Rendering</strong>: Utilities for rendering text with various styles</p></li>
+<li><p><strong>Font Sizing</strong>: Dynamic font size adjustment based on screen resolution</p></li>
+<li><p><strong>Font Types</strong>: Support for different font styles (regular, bold, italic)</p></li>
+<li><p><strong>Efficient Caching</strong>: Optimization through font caching for performance</p></li>
+<li><p><strong>Text Measurements</strong>: Calculation of text dimensions for UI layout</p></li>
+</ul>
+</section>
+<section id="fontmanager-class">
+<h2>FontManager Class<a class="headerlink" href="#fontmanager-class" title="Link to this heading"></a></h2>
+<p>The FontManager class handles all font-related operations:</p>
+<hr class="docutils" />
+<blockquote>
+<div><p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="font-loading-system">
+<h2>Font Loading System<a class="headerlink" href="#font-loading-system" title="Link to this heading"></a></h2>
+<p>The module implements a font loading system:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-9107f23e15642216dde08d7a5f96333e34cab808.png" alt="&#64;startuml
+
+title Font Loading System
+
+start
+
+:Initialize FontManager;
+
+:Define Font Paths;
+note right
+  Map font names to
+  file paths
+end note
+
+repeat
+  :Load Font Resource;
+
+  if (Font Already Loaded?) then (Yes)
+    :Use Cached Font;
+  else (No)
+    :Load Font from File;
+
+    if (Loading Successful?) then (Yes)
+      :Add Font to Cache;
+    else (No)
+      :Use Fallback Font;
+      note right
+        Default to system font
+        if font file missing
+      end note
+    endif
+  endif
+repeat while (More Fonts?) is (Yes)
+
+:All Fonts Loaded;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="text-rendering">
+<h2>Text Rendering<a class="headerlink" href="#text-rendering" title="Link to this heading"></a></h2>
+<p>The module provides utilities for text rendering:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-b54de96bc1b5f65868fdb7a4a111a67211b99b6f.png" alt="&#64;startuml
+
+title Text Rendering Process
+
+start
+
+:Request Text Rendering;
+
+:Get Font Parameters;
+note right
+  - Font name
+  - Size
+  - Color
+  - Style
+end note
+
+:Generate Cache Key;
+
+if (Text in Cache?) then (Yes)
+  :Retrieve Rendered Surface;
+else (No)
+  :Get Font Object;
+
+  if (Font Available?) then (Yes)
+    :Render Text to Surface;
+    :Store in Cache;
+  else (No)
+    :Use Default Font;
+    :Render Text to Surface;
+    :Store in Cache;
+  endif
+endif
+
+:Return Rendered Text Surface;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="text-wrapping-system">
+<h2>Text Wrapping System<a class="headerlink" href="#text-wrapping-system" title="Link to this heading"></a></h2>
+<p>The module includes functionality for wrapping text:</p>
+<p class="plantuml">
+<img src="../_images/plantuml-40d974ffedc23b08e7467b1632ec1e1177efc7e3.png" alt="&#64;startuml
+
+title Text Wrapping System
+
+start
+
+:Request Text Wrapping;
+
+:Get Font and Size;
+
+:Calculate Text Dimensions;
+
+if (Text Width &gt; Max Width?) then (Yes)
+  :Split Text into Words;
+
+  :Initialize Line Buffer;
+
+  repeat
+    :Add Word to Current Line;
+
+    :Calculate Current Line Width;
+
+    if (Line Width &gt; Max Width?) then (Yes)
+      :Remove Last Word;
+      :Add Line to Result;
+      :Start New Line with Word;
+    endif
+  repeat while (More Words?) is (Yes)
+
+  :Add Final Line to Result;
+
+  :Join Lines with Line Breaks;
+else (No)
+  :Return Original Text;
+endif
+
+:Return Wrapped Text;
+
+stop
+
+&#64;enduml"/>
+</p>
+</section>
+<section id="font-types">
+<h2>Font Types<a class="headerlink" href="#font-types" title="Link to this heading"></a></h2>
+<p>The module supports different font types for various game contexts:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “UI Font” as UIFont {</dt><dd><p>Play-Regular.ttf
+Used for UI elements
+and buttons</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Property Font” as PropFont {</dt><dd><p>Ticketing.ttf
+Used for property cards
+and prices</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class “Body Font” as BodyFont {</dt><dd><p><a href="#id1"><span class="problematic" id="id2">britrdn_</span></a>.ttf
+Used for general text
+and descriptions</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><dl class="simple">
+<dt>class FontManager {</dt><dd><p>+get_font(name, size)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>FontManager –&gt; TitleFont : manages
+FontManager –&gt; UIFont : manages
+FontManager –&gt; PropFont : manages
+FontManager –&gt; BodyFont : manages</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="integration-with-other-modules">
+<h2>Integration with Other Modules<a class="headerlink" href="#integration-with-other-modules" title="Link to this heading"></a></h2>
+<p>The FontManager integrates with several other modules:</p>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class UI {</dt><dd><p>-font_manager : FontManager
++draw_text(text, position, font, color)
++create_button(text, position)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class Game {</dt><dd><p>-font_manager : FontManager
++initialize_resources()</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class PropertyCard {</dt><dd><p>+draw(screen, font_manager)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><dl class="simple">
+<dt>class PlayerInfoPanel {</dt><dd><p>+draw(screen, font_manager)</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<blockquote>
+<div><p>UI –&gt; FontManager : uses
+Game –&gt; FontManager : initializes
+PropertyCard –&gt; FontManager : uses for rendering
+PlayerInfoPanel –&gt; FontManager : uses for rendering</p>
+<p>&#64;enduml</p>
+</div></blockquote>
+</section>
+<section id="performance-optimization">
+<h2>Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h2>
+<p>The module implements several performance optimizations:</p>
+<ul class="simple">
+<li><p><strong>Font Caching</strong>: Fonts are cached by name and size to avoid repeated loading</p></li>
+<li><p><strong>Rendered Text Caching</strong>: Commonly used text renderings are cached</p></li>
+<li><p><strong>Lazy Loading</strong>: Fonts are loaded only when needed</p></li>
+<li><p><strong>Memory Management</strong>: Unused cache items can be cleared to free memory</p></li>
+<li><p><strong>Fallback System</strong>: Default fonts are used when requested fonts are unavailable</p></li>
+</ul>
+</section>
+<section id="class-documentation">
+<h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
+<dl class="py class" id="module-src.Font_Manager">
+<dt class="sig sig-object py" id="src.Font_Manager.FontManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Font_Manager.</span></span><span class="sig-name descname"><span class="pre">FontManager</span></span><a class="reference internal" href="../_modules/src/Font_Manager.html#FontManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Font_Manager.FontManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Font_Manager.FontManager.clear_cache">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Font_Manager.html#FontManager.clear_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Font_Manager.FontManager.clear_cache" title="Link to this definition"></a></dt>
+<dd><p>Clear the font cache</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Font_Manager.FontManager.get_font">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_font</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Font_Manager.html#FontManager.get_font"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Font_Manager.FontManager.get_font" title="Link to this definition"></a></dt>
+<dd><p>Get a font at the specified base size (will be automatically scaled)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Font_Manager.FontManager.get_scaled_size">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_scaled_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Font_Manager.html#FontManager.get_scaled_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Font_Manager.FontManager.get_scaled_size" title="Link to this definition"></a></dt>
+<dd><p>Get a scaled font size based on the current scale factor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Font_Manager.FontManager.update_font_path">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_font_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_font_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Font_Manager.html#FontManager.update_font_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Font_Manager.FontManager.update_font_path" title="Link to this definition"></a></dt>
+<dd><p>Update the current font and clear the cache</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Font_Manager.FontManager.update_scale_factor">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_scale_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Font_Manager.html#FontManager.update_scale_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Font_Manager.FontManager.update_scale_factor" title="Link to this definition"></a></dt>
+<dd><p>Update the text scaling factor based on screen dimensions</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sound_manager.html" class="btn btn-neutral float-left" title="Sound Manager Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

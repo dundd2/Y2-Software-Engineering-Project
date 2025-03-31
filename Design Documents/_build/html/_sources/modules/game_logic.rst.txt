@@ -1,0 +1,272 @@
+Game Logic Module
+=================
+
+This module contains the game logic functions and classes that drive the game mechanics, including the core GameLogic class that manages the rules and flow of the Property Tycoon game.
+
+Key Components
+--------------
+
+* **Core Game Rules**: Implementation of Property Tycoon game rules and mechanics
+* **Turn Management**: Control of player turns and game progression
+* **Property Transactions**: Handling property purchases, rents, and auctions
+* **Development Mechanics**: Management of house and hotel building
+* **Chance Cards**: Implementation of "Opportunity Knocks" and "Pot Luck" card effects
+* **Money Management**: Tracking of player finances and bank transactions
+* **AI Integration**: Interface with AI player decision-making systems
+
+Game Flow
+---------
+
+The game follows a structured flow, managed by the GameLogic class:
+
+.. plantuml::
+
+   @startuml
+   
+   title Property Tycoon Game Flow
+   
+   start
+   
+   :Game Initialization;
+   note right
+     - Load property data
+     - Create players
+     - Set up cards
+     - Initialize bank
+   end note
+   
+   repeat
+     :Start Player Turn;
+     
+     if (Player in Jail?) then (Yes)
+       :Handle Jail Turn;
+       if (Remains in Jail?) then (Yes)
+         :End Turn;
+       else (No)
+         :Allow Normal Turn;
+       endif
+     else (No)
+       :Roll Dice;
+       
+       if (Rolled Doubles?) then (Yes)
+         :Increment Doubles Count;
+         if (Doubles Count = 3?) then (Yes)
+           :Send to Jail;
+           :End Turn;
+         endif
+       else (No)
+         :Reset Doubles Count;
+       endif
+       
+       :Move Player;
+       
+       if (Landed on Property?) then (Yes)
+         if (Property Owned?) then (Yes)
+           if (Owner is Current Player?) then (Yes)
+             :No Action;
+           else (No)
+             :Pay Rent;
+           endif
+         else (No)
+           :Property Purchase Decision;
+           if (Buy?) then (Yes)
+             :Process Purchase;
+           else (No)
+             :Auction Property;
+           endif
+         endif
+       else (No)
+         if (Special Square?) then (Yes)
+           :Process Special Square Effects;
+         endif
+       endif
+       
+       :Development Phase;
+       
+       :Trading Phase;
+     endif
+     
+     :Check for Bankruptcy;
+     if (Player Bankrupt?) then (Yes)
+       :Remove from Game;
+     endif
+     
+     :Move to Next Player;
+   repeat while (Game End Condition Not Met)
+   
+   :Determine Winner;
+   
+   stop
+   
+   @enduml
+
+GameLogic Class
+---------------
+
+The GameLogic class is the central component that manages the game state and rules:
+
+.. plantuml::
+
+   @startuml
+   
+   class GameLogic {
+     -players : List
+     -bank_money : int
+     -free_parking_fund : int
+     -current_player_index : int
+     -properties : Dict
+     -is_going_to_jail : bool
+     -last_dice_roll : tuple
+     -doubles_count : int
+     -message_queue : List
+     -bankrupted_players : List
+     -voluntary_exits : List
+     -jail_free_cards : Dict
+     -completed_circuits : Dict
+     -pot_luck_cards : List
+     -opportunity_knocks_cards : List
+     -ai_difficulty : string
+     -ai_player : EasyAIPlayer/HardAIPlayer
+     
+     +__init__()
+     +add_player(name, token, is_ai, ai_difficulty)
+     +roll_dice()
+     +move_player(player, steps)
+     +handle_property_landing(player, property_data)
+     +handle_special_square(player)
+     +handle_card_square(player, card_type)
+     +handle_jail(player)
+     +handle_go_to_jail(player)
+     +process_ai_property_purchase(player, property_data)
+     +handle_ai_bankruptcy_prevention(player, amount_needed)
+     +handle_buy_decision(player, decision)
+     +pay_rent(player, owner, property_data)
+     +pay_to_bank(player, amount)
+     +pay_to_free_parking(player, amount)
+     +collect_from_bank(player, amount)
+     +build_house(property_data, player)
+     +build_hotel(property_data, player)
+     +mortgage_property(property_data, player)
+     +unmortgage_property(property_data, player)
+     +add_message(message)
+     +get_available_properties_for_development(player)
+     +next_player()
+     +get_player_by_name(name)
+     +is_game_over()
+     +get_winner()
+}}}}}}}}}}}}}
+   
+   @enduml
+
+Special Square Handling
+-----------------------
+
+The GameLogic module includes specialized handling for different square types:
+
+* **Go**: Players collect money when passing or landing on Go
+* **Jail**: Players must decide how to get out of jail (roll doubles, pay fine, or use card)
+* **Free Parking**: Players may collect accumulated funds (depending on game settings)
+* **Go to Jail**: Players are immediately sent to jail
+* **Tax Squares**: Players must pay a tax to the bank
+* **Opportunity Knocks/Pot Luck**: Players draw a card and follow its instructions
+
+Card Implementation
+-------------------
+
+The module implements two decks of cards, each with unique effects:
+
+.. plantuml::
+
+   @startuml
+   
+   title Card System Implementation
+   
+   rectangle "Card System" {
+     rectangle "Pot Luck Cards" {
+       card "Money Gain" as PL_Money_Gain
+       card "Money Loss" as PL_Money_Loss
+       card "Movement" as PL_Movement
+       card "Get Out of Jail Free" as PL_Jail_Free
+       card "Repairs" as PL_Repairs
+       card "Social Interaction" as PL_Social
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     rectangle "Opportunity Knocks Cards" {
+       card "Money Gain" as OK_Money_Gain
+       card "Money Loss" as OK_Money_Loss
+       card "Movement" as OK_Movement
+       card "Get Out of Jail Free" as OK_Jail_Free
+       card "Repairs" as OK_Repairs
+       card "Social Interaction" as OK_Social
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     rectangle "Card Effects" {
+       usecase "Collect Money" as UC_Collect
+       usecase "Pay Money" as UC_Pay
+       usecase "Move to Location" as UC_Move
+       usecase "Go to Jail" as UC_Jail
+       usecase "Pay Per House/Hotel" as UC_Repairs
+       usecase "Birthday Collection" as UC_Birthday
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+     
+     PL_Money_Gain --> UC_Collect
+     PL_Money_Loss --> UC_Pay
+     PL_Movement --> UC_Move
+     PL_Jail_Free --> UC_Jail
+     PL_Repairs --> UC_Repairs
+     PL_Social --> UC_Birthday
+     
+     OK_Money_Gain --> UC_Collect
+     OK_Money_Loss --> UC_Pay
+     OK_Movement --> UC_Move
+     OK_Jail_Free --> UC_Jail
+     OK_Repairs --> UC_Repairs
+     OK_Social --> UC_Birthday
+}}}}}}}}}}}}}}}}}}}}}}}}}
+   
+   @enduml
+
+Trade System
+------------
+
+The GameLogic module includes a trading system for players to exchange properties and money:
+
+* **Property Exchange**: Players can trade properties with each other
+* **Cash Adjustment**: Money can be included in trades to balance the exchange
+* **Trade Negotiation**: Players can propose, accept, or reject trades
+* **AI Trade Evaluation**: AI players evaluate trades based on property values and strategic considerations
+
+AI Player Integration
+---------------------
+
+The GameLogic class integrates with AI player logic:
+
+* **AI Decision Making**: Handles AI player decisions during their turn
+* **Property Purchase Decisions**: AI evaluates whether to buy properties
+* **Auction Bidding**: AI determines appropriate bid amounts
+* **Bankruptcy Prevention**: AI strategizes to avoid bankruptcy
+* **Property Development**: AI decides when to build houses/hotels
+* **Mortgage Management**: AI decides when to mortgage or unmortgage properties
+
+Game State Management
+---------------------
+
+The module maintains the complete game state, tracking:
+
+* **Player Positions**: Current location of each player on the board
+* **Property Ownership**: Which player owns each property
+* **Development Level**: Number of houses or hotels on each property
+* **Financial State**: Amount of money held by each player and the bank
+* **Special Card Ownership**: Which players hold "Get Out of Jail Free" cards
+* **Jail Status**: Which players are in jail and for how many turns
+* **Bankruptcy Status**: Which players have gone bankrupt
+* **Game Messages**: Queue of game events to display to players
+
+Class Documentation
+-----------------
+
+.. automodule:: src.Game_Logic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

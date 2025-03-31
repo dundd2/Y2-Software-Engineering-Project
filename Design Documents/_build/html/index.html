@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Property Tycoon Game Documentation &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d43430bd"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Game Flow and Structure" href="modules/diagrams.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules/diagrams.html">Game Flow and Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/ai_behavior_analysis.html">AI Behavior Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/font_manager.html">Font Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/diagrams.html">Game Flow and Structure</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Property Tycoon Game Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="property-tycoon-game-documentation">
+<h1>Property Tycoon Game Documentation<a class="headerlink" href="#property-tycoon-game-documentation" title="Link to this heading"></a></h1>
+<p>Welcome to the Property Tycoon game documentation! This is a digital implementation of a classic property trading board game developed by Group 5.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<p>To get started with Property Tycoon:</p>
+<ol class="arabic">
+<li><p>Install the required dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</li>
+<li><p>Run the game:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>main.py
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="game-overview">
+<h2>Game Overview<a class="headerlink" href="#game-overview" title="Link to this heading"></a></h2>
+<p>Property Tycoon is a property trading board game where players take turns rolling dice, moving around the board, and acquiring properties. Players can develop their properties with houses and hotels, charge rent to other players, and participate in auctions. The game includes various special squares like “Pot Luck” and “Opportunity Knocks” cards that add unpredictability to gameplay.</p>
+<p>The game features:</p>
+<ul class="simple">
+<li><p>A virtual game board with properties organized into color groups</p></li>
+<li><p>Support for up to 6 players, including AI opponents</p></li>
+<li><p>Multiple AI difficulty levels with distinct behaviors and strategies</p></li>
+<li><p>Property development with houses and hotels</p></li>
+<li><p>Mortgage and auction systems</p></li>
+<li><p>Interactive UI with animations and sound effects</p></li>
+<li><p>Card events with various effects</p></li>
+</ul>
+</section>
+<section id="project-structure">
+<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
+<p>The project is organized into several key modules:</p>
+<ul class="simple">
+<li><p><strong>Game</strong>: The central controller that orchestrates the game flow</p></li>
+<li><p><strong>Game Logic</strong>: Implements the core game rules and mechanics</p></li>
+<li><p><strong>Player</strong>: Manages player attributes, movement, and interactions</p></li>
+<li><p><strong>Property</strong>: Handles property ownership, rent calculation, and development</p></li>
+<li><p><strong>AI Player Logic</strong>: Implements decision-making systems for AI players</p></li>
+<li><p><strong>Board</strong>: Manages the visual representation of the game board</p></li>
+<li><p><strong>Cards</strong>: Implements card effects and deck management</p></li>
+<li><p><strong>UI</strong>: Provides user interface components and visual feedback</p></li>
+<li><p><strong>Load Excel</strong>: Loads game data from Excel spreadsheets</p></li>
+</ul>
+</section>
+<section id="module-documentation">
+<h2>Module Documentation<a class="headerlink" href="#module-documentation" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules/diagrams.html">Game Flow and Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#game-architecture">Game Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#main-game-flow">Main Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#ai-components">AI Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#hard-ai-emotional-system">Hard AI Emotional System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#property-management-system">Property Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#user-interface-structure">User Interface Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#data-loading-system">Data Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#class-relationship-diagram">Class Relationship Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#game-state-machine">Game State Machine</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game.html">Game Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#key-components">Key Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#game-class-structure">Game Class Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#game-architecture">Game Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#game-states">Game States</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#game-renderer">Game Renderer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#development-mode">Development Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#ai-integration">AI Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#key-methods">Key Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_logic.html">Game Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#key-components">Key Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#game-flow">Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#gamelogic-class">GameLogic Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#special-square-handling">Special Square Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#card-implementation">Card Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#trade-system">Trade System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#ai-player-integration">AI Player Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#game-state-management">Game State Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_logic.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/player.html">Player Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-class">Player Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-animation-system">Player Animation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#financial-operations">Financial Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#ai-player-integration">AI Player Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#common-operations">Common Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#player-tokens">Player Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#ai-player-mechanism">AI Player Mechanism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/player.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/board.html">Board Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#board-class">Board Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#board-layout">Board Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#board-coordinates-system">Board Coordinates System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#square-types">Square Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#property-visualization">Property Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#player-token-placement">Player Token Placement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#interaction-with-other-modules">Interaction with Other Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#board-implementation-details">Board Implementation Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/board.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/property.html">Property Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#property-class">Property Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#property-types">Property Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#rent-calculation-system">Rent Calculation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#development-system">Development System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#mortgage-system">Mortgage System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#color-group-management">Color Group Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#property-interaction-with-other-modules">Property Interaction with Other Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/property.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/ai_player_logic.html">AI Player Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-player-types">AI Player Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-strategy-components">AI Strategy Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#property-valuation-system">Property Valuation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#class-documentation">Class Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#easyaiplayer-class">EasyAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#hardaiplayer-class">HardAIPlayer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#decision-making-process">Decision-Making Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#difficulty-adjustment">Difficulty Adjustment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#hard-ai-emotion-system">Hard AI Emotion System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-integration-with-player-module">AI Integration with Player Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-property-valuation-logic">AI Property Valuation Logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#ai-decision-tree-for-property-purchase">AI Decision Tree for Property Purchase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_player_logic.html#id5">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/ai_behavior_analysis.html">AI Behavior Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#ai-decision-patterns">AI Decision Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#ai-auction-behavior">AI Auction Behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#ai-development-strategy">AI Development Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#ai-emergency-cash-management">AI Emergency Cash Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#ai-jail-strategy">AI Jail Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#ai-trade-evaluation-system">AI Trade Evaluation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ai_behavior_analysis.html#hard-ai-mood-impact-analysis">Hard AI Mood Impact Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/cards.html">Cards Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-class">Card Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#carddeck-class">CardDeck Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-types-and-effects">Card Types and Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-effect-execution">Card Effect Execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-factory">Card Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#integration-with-game-logic">Integration with Game Logic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#card-visual-representation">Card Visual Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/cards.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/ui.html">UI Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#ui-class">UI Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#menu-system">Menu System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#button-management">Button Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#player-information-panel">Player Information Panel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#notification-system">Notification System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#property-cards">Property Cards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#dialog-system">Dialog System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#animation-system">Animation System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#responsive-design">Responsive Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/ui.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/loadexcel.html">Load Excel Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#loadexcel-functions">LoadExcel Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#property-data-loading">Property Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#card-data-loading">Card Data Loading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#data-structure">Data Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/loadexcel.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_actions.html">Game Actions Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#gameactions-class">GameActions Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#action-execution-system">Action Execution System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#available-actions">Available Actions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#action-validation">Action Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#roll-dice-action">Roll Dice Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#property-purchase-action">Property Purchase Action</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#action-result-processing">Action Result Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_actions.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_event_handler.html">Game Event Handler Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#gameeventhandler-class">GameEventHandler Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#event-processing-flow">Event Processing Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#game-state-event-handling">Game State Event Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#ui-event-integration">UI Event Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#mouse-event-processing">Mouse Event Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#keyboard-event-processing">Keyboard Event Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_event_handler.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/game_renderer.html">Game Renderer Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#gamerenderer-class">GameRenderer Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#rendering-system">Rendering System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#rendering-flow">Rendering Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#property-rendering">Property Rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#player-rendering">Player Rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#animation-integration">Animation Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#integration-with-game-module">Integration with Game Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#render-states">Render States</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/game_renderer.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/development_mode.html">Development Mode Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#developmentmode-class">DevelopmentMode Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#development-rules">Development Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#development-process">Development Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#even-development-rule">Even Development Rule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#integration-with-other-modules">Integration with Other Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#development-ui">Development UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#key-methods">Key Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/development_mode.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/sound_manager.html">Sound Manager Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#soundmanager-class">SoundManager Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#sound-loading-system">Sound Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#sound-categories">Sound Categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#sound-playback-system">Sound Playback System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#music-system">Music System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#volume-control">Volume Control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#game-integration">Game Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#sound-event-mapping">Sound Event Mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#performance-considerations">Performance Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sound_manager.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/font_manager.html">Font Manager Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#key-features">Key Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#fontmanager-class">FontManager Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#font-loading-system">Font Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#text-rendering">Text Rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#text-wrapping-system">Text Wrapping System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#font-types">Font Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#integration-with-other-modules">Integration with Other Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/font_manager.html#class-documentation">Class Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/diagrams.html">Game Flow and Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#game-architecture">Game Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#main-game-flow">Main Game Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#ai-components">AI Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#hard-ai-emotional-system">Hard AI Emotional System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#property-management-system">Property Management System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#user-interface-structure">User Interface Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#data-loading-system">Data Loading System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#class-relationship-diagram">Class Relationship Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/diagrams.html#game-state-machine">Game State Machine</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="additional-documentation">
+<h2>Additional Documentation<a class="headerlink" href="#additional-documentation" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="team">
+<h2>Team<a class="headerlink" href="#team" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Eric Shi</p></li>
+<li><p>Stuart Baker</p></li>
+<li><p>Lin Moe Hein (kit)</p></li>
+<li><p>Duncan Law</p></li>
+<li><p>Owen Chen</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules/diagrams.html" class="btn btn-neutral float-right" title="Game Flow and Structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

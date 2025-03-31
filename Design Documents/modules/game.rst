@@ -1,0 +1,362 @@
+Game Module
+===========
+
+This module contains the main Game class which orchestrates the game flow and manages the overall game state. It serves as the central controller for the Property Tycoon game, handling everything from game initialization to player turns, property management, and win conditions.
+
+Key Components
+--------------
+
+* **Game State Management**: Coordination of all game elements and their interactions
+* **Game Loop**: Implementation of the main game loop and turn sequence
+* **Player Interface**: Connection between player actions and game logic
+* **Visual Presentation**: Rendering of game elements and animation management
+* **Event Handling**: Processing of user inputs and game events
+* **Game Actions**: Implementation of various in-game actions
+* **Development Mode**: Special mode for property development
+* **Menu Systems**: Game menus and UI navigation
+
+Game Class Structure
+--------------------
+
+The Game class serves as the primary controller for the entire game:
+
+.. plantuml::
+
+   @startuml
+   
+   class Game {
+     -screen : Surface
+     -board : Board
+     -logic : GameLogic
+     -ui : UI
+     -width : int
+     -height : int
+     -clock : Clock
+     -players : List<Player>
+     -current_player : Player
+     -current_player_is_ai : Boolean
+     -state : String
+     -selected_property : Property
+     -development_mode : Boolean
+     -dev_manager : DevelopmentMode
+     -auction_manager : AuctionManager
+     -sound_manager : SoundManager
+     -game_renderer : GameRenderer
+     
+     +__init__(width, height)
+     +run()
+     +handle_events()
+     +update()
+     +render()
+     +setup_game()
+     +start_game()
+     +process_turn()
+     +handle_action(action_name)
+     +update_current_player()
+     +show_property_card(property_data)
+     +can_develop(player)
+     +toggle_development_mode()
+     +handle_development_request(property_data)
+     +handle_auction(property_data)
+     +handle_ai_turn()
+     +handle_game_over()
+}}}}}}}}}}}}}}}}}}}
+   
+   @enduml
+
+Game Architecture
+-----------------
+
+The Game module coordinates multiple components in an MVC-like architecture:
+
+.. plantuml::
+
+   @startuml
+   
+   package "Game Module" {
+     class Game {
+       +run()
+       +handle_events()
+       +update()
+       +render()
+}}}}}}}}}
+     
+     class GameRenderer {
+       +render_board()
+       +render_players()
+       +render_ui()
+}}}}}}}}}}}}
+     
+     class GameActions {
+       +execute_action()
+       +handle_roll_dice()
+       +handle_buy_property()
+       +handle_pass()
+       +handle_end_turn()
+}}}}}}}}}}}}}}}}}}
+     
+     class GameEventHandler {
+       +process_events()
+       +handle_mouse_click()
+       +handle_keyboard_input()
+}}}}
+   }
+   
+   package "Logic Modules" {
+     class GameLogic {
+       +roll_dice()
+       +move_player()
+       +handle_property_landing()
+}}}}}}
+     
+     class Board {
+       +get_square_position()
+       +draw()
+}}}}}}}
+     
+     class Player {
+       +move()
+       +pay()
+       +receive()
+}}}}}}}}}}
+     
+     class Property {
+       +calculate_rent()
+       +mortgage()
+       +unmortgage()
+}}}}}}}}}}}}}
+     
+     class EasyAIPlayer {
+       +should_buy_property()
+       +handle_turn()
+}}}}}}}}}}}}}}
+     
+     class HardAIPlayer {
+       +update_mood()
+       +get_adjusted_probability()
+}}}}}}}
+   }
+   
+   package "UI Modules" {
+     class UI {
+       +draw_menu()
+       +draw_buttons()
+       +draw_player_info()
+}}}}}}}}}}}}}}}}}}}
+     
+     class DevelopmentMode {
+       +activate()
+       +process_development()
+       +deactivate()
+}}}}}}}}}}}}}
+     
+     class SoundManager {
+       +play_sound()
+       +play_music()
+}}}}}}}}}}}}}
+   }
+   
+   Game *-- GameRenderer
+   Game *-- GameActions
+   Game *-- GameEventHandler
+   Game *-- GameLogic
+   Game *-- Board
+   Game *-- UI
+   Game *-- DevelopmentMode
+   Game *-- SoundManager
+   Game o-- "1..*" Player
+   Game o-- "0..*" Property
+   
+   GameLogic --> EasyAIPlayer : uses
+   GameLogic --> HardAIPlayer : uses
+   
+   @enduml
+
+Game States
+-----------
+
+The Game module implements a state machine to manage different game phases:
+
+.. plantuml::
+
+   @startuml
+   
+   [*] --> MENU
+   
+   state MENU {
+     [*] --> Main_Menu
+     Main_Menu --> Player_Setup : Start Game
+     Player_Setup --> Rule_Selection : Next
+     Rule_Selection --> Game_Setup : Start
+     Main_Menu --> Options : Options
+     Main_Menu --> Help : Help
+     Options --> Main_Menu : Back
+     Help --> Main_Menu : Back
+}}}}}
+   
+   MENU --> PLAYING : Game Start
+   
+   state PLAYING {
+     [*] --> Wait_For_Roll
+     Wait_For_Roll --> Moving : Roll Dice
+     Moving --> Property_Decision : Land on Unowned Property
+     Moving --> Pay_Rent : Land on Owned Property
+     Moving --> Draw_Card : Land on Card Square
+     Moving --> Special_Square : Land on Special Square
+     Property_Decision --> Wait_For_Next_Player : Buy/Pass
+     Pay_Rent --> Wait_For_Next_Player
+     Draw_Card --> Card_Effect
+     Card_Effect --> Wait_For_Next_Player
+     Special_Square --> Special_Effect
+     Special_Effect --> Wait_For_Next_Player
+     Wait_For_Next_Player --> Wait_For_Roll : Next Player
+}}}}}}}}}}}}
+   
+   state "DEVELOPMENT_MODE" as DEV {
+     [*] --> Select_Property
+     Select_Property --> Confirm_Development : Property Selected
+     Confirm_Development --> Execute_Development : Confirm
+     Execute_Development --> Select_Property
+     Select_Property --> Exit_Development : Cancel
+}}}}}
+   
+   state "AUCTION_MODE" as AUCTION {
+     [*] --> Start_Auction
+     Start_Auction --> Player_Bidding : Initialize
+     Player_Bidding --> Next_Bidder : Bid/Pass
+     Next_Bidder --> Player_Bidding
+     Player_Bidding --> Auction_Complete : All Pass/One Remaining
+     Auction_Complete --> Award_Property
+}}}}}}}}}}}}}}}
+   
+   state "TRADE_MODE" as TRADE {
+     [*] --> Select_Player
+     Select_Player --> Select_Properties : Player Selected
+     Select_Properties --> Adjust_Money : Properties Selected
+     Adjust_Money --> Confirm_Trade : Amount Set
+     Confirm_Trade --> Execute_Trade : Both Confirm
+     Confirm_Trade --> Cancel_Trade : Either Rejects
+}}}}}}}
+   
+   PLAYING --> DEV : Development Button
+   DEV --> PLAYING : Complete Development
+   
+   PLAYING --> AUCTION : Property Auctioned
+   AUCTION --> PLAYING : Auction Complete
+   
+   PLAYING --> TRADE : Trade Button
+   TRADE --> PLAYING : Trade Complete/Cancelled
+   
+   PLAYING --> GAME_OVER : End Condition Met
+   
+   GAME_OVER --> MENU : New Game
+   
+   @enduml
+
+Game Renderer
+-------------
+
+The GameRenderer component handles the visual presentation of the game:
+
+* **Board Rendering**: Draws the game board with all properties and special squares
+* **Player Rendering**: Draws player tokens at their current positions
+* **UI Elements**: Renders buttons, menus, and informational displays
+* **Animation**: Manages smooth animations for player movement and UI transitions
+* **Property Cards**: Displays detailed property information when requested
+* **Card Decks**: Shows card drawing animations and card content
+* **Development Visualization**: Displays houses and hotels on the board
+
+Development Mode
+----------------
+
+The Game module includes a special development mode for property improvements:
+
+.. plantuml::
+
+   @startuml
+   
+   title Development Mode System
+   
+   class Game {
+     -development_mode : Boolean
+     -dev_manager : DevelopmentMode
+     -selected_property : Property
+     +toggle_development_mode()
+     +handle_development_request()
+}}}}}}}}}
+   
+   class DevelopmentMode {
+     -active : Boolean
+     -current_player : Player
+     -available_properties : List
+     -selected_property : Property
+     +activate(player)
+     +deactivate()
+     +select_property(property)
+     +build_house()
+     +build_hotel()
+     +sell_house()
+     +sell_hotel()
+     +mortgage_property()
+     +unmortgage_property()
+     +check_development_rules()
+     +get_development_cost()
+}}}
+   
+   class Property {
+     +houses : int
+     +add_house()
+     +remove_house()
+     +add_hotel()
+     +remove_hotel()
+     +mortgage()
+     +unmortgage()
+}}}}}}}}}}}}}
+   
+   class Player {
+     +money : int
+     +properties : List
+     +pay()
+     +receive()
+}}}}}}}}}}
+   
+   Game *-- DevelopmentMode
+   DevelopmentMode --> Property : manages
+   DevelopmentMode --> Player : for
+   
+   @enduml
+
+AI Integration
+--------------
+
+The Game class integrates with AI players:
+
+* **AI decision making**: Automated handling of AI player turns
+* **AI difficulty levels**: Support for easy and hard AI players
+* **Emotional system interface**: Visual interface for Hard AI emotional states
+* **AI taunt system**: Players can influence AI mood through interaction
+* **Automated development**: AI can develop properties during their turn
+* **Decision visualization**: Shows AI decisions during their turn
+
+Key Methods
+-----------
+
+The Game class provides several key methods:
+
+* **run()**: The main game loop that drives the entire game
+* **handle_events()**: Processes user inputs and game events
+* **update()**: Updates game state based on logic and user actions
+* **render()**: Handles visual presentation of the game
+* **setup_game()**: Initializes the game with players and settings
+* **process_turn()**: Manages the flow of a player's turn
+* **handle_action()**: Executes specific game actions
+* **handle_ai_turn()**: Manages turns for AI-controlled players
+* **handle_game_over()**: Processes end-game conditions and displays results
+
+Class Documentation
+-----------------
+
+.. automodule:: src.Game
+   :members:
+   :undoc-members:
+   :show-inheritance:
