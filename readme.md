@@ -3,7 +3,7 @@
 This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025. The game is coded in **Python** but compiled to native machine code using **Nuitka** for enhanced performance. The original game is built on the Pygame library, which is a set of Python modules designed for writing video games.
 
 ## Screenshots
-![Game Board](https://github.com/user-attachments/assets/91ac9c4f-1701-4eb3-8e32-b48544d7eff9)
+![Game Play](https://github.com/user-attachments/assets/6d541ff7-3500-43ce-9cea-e7665d0ea895)
 
 ## Group 5 Team Members
 
