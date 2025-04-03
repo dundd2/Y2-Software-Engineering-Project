@@ -11,15 +11,15 @@ import os
 import pygame
 import random
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.Game import Game
+from src.Player import Player
+from src.Game_Logic import pot_luck_cards, opportunity_knocks_cards
+
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["SDL_AUDIODRIVER"] = "dummy"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from src.Game import Game
-from src.Player import Player
-from src.Game_Logic import GameLogic, pot_luck_cards, opportunity_knocks_cards
 
 class TestGame(unittest.TestCase):
     @classmethod
@@ -147,7 +147,6 @@ class TestGame(unittest.TestCase):
     def test_player_movement_after_roll(self):
         player = self.game.players[0]
         initial_position = player.position
-        player_dict = self.get_player_dict(player)
 
         self.game_logic.current_player_index = 0
 
@@ -258,7 +257,6 @@ class TestGame(unittest.TestCase):
     def test_rent_payment(self):
         player1 = self.game.players[0]
         player2 = self.game.players[1]
-        player1_dict = self.get_player_dict(player1)
         player2_dict = self.get_player_dict(player2)
 
         property_position = None
@@ -287,7 +285,6 @@ class TestGame(unittest.TestCase):
     def test_station_rent_calculation(self):
         player1 = self.game.players[0]
         player2 = self.game.players[1]
-        player1_dict = self.get_player_dict(player1)
         player2_dict = self.get_player_dict(player2)
 
         station_positions = []
@@ -324,7 +321,6 @@ class TestGame(unittest.TestCase):
     def test_utility_rent_calculation(self):
         player1 = self.game.players[0]
         player2 = self.game.players[1]
-        player1_dict = self.get_player_dict(player1)
         player2_dict = self.get_player_dict(player2)
 
         utility_positions = []
@@ -457,9 +453,7 @@ class TestGame(unittest.TestCase):
             self.game.get_jail_choice = mock_get_jail_choice
 
         try:
-            success, message = self.game_logic.try_leave_jail(
-                player_dict, 2, 3
-            )
+            success, message = self.game_logic.try_leave_jail(player_dict, 2, 3)
             self.sync_player_objects()
 
             self.assertTrue(success)
@@ -849,7 +843,6 @@ class TestGame(unittest.TestCase):
     def test_mortgaged_property_rent(self):
         player1 = self.game.players[0]
         player2 = self.game.players[1]
-        player1_dict = self.get_player_dict(player1)
         player2_dict = self.get_player_dict(player2)
 
         property_pos = "24"
@@ -925,9 +918,7 @@ class TestGame(unittest.TestCase):
 
             if result == "free_parking":
                 self.assertEqual(player.money, 1500)
-                self.assertEqual(
-                    self.game_logic.free_parking_fund, 0
-                )
+                self.assertEqual(self.game_logic.free_parking_fund, 0)
             else:
                 self.assertEqual(player.money, 1000)
                 self.assertEqual(self.game_logic.free_parking_fund, 500)

@@ -2406,13 +2406,12 @@ class EndGamePage(BasePage):
             print(f"Could not load end game background: {e}")
             self.original_endgame_bg = None
 
-        button_width = 300
         button_height = 60
         self.play_again_button = UIButton(
             pygame.Rect(
-                (get_window_size()[0] - button_width) // 2,
+                (get_window_size()[0] - 300) // 2,
                 get_window_size()[1] - 100,
-                button_width,
+                300,
                 button_height,
             ),
             "Play Again",
@@ -2422,9 +2421,9 @@ class EndGamePage(BasePage):
 
         self.quit_button = UIButton(
             pygame.Rect(
-                (get_window_size()[0] - button_width) // 2,
+                (get_window_size()[0] - 300) // 2,
                 get_window_size()[1] - 180,
-                button_width,
+                300,
                 button_height,
             ),
             "Quit Game",

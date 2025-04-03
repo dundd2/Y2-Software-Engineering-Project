@@ -2006,4 +2006,3 @@ class Game:
         ]:
             print("Animations in progress, ignoring key input")
             return False
-

@@ -10,7 +10,6 @@ import os
 import random
 import logging
 from datetime import datetime
-from src.Board import Board 
 from src.Game import Game
 from src.Player import Player
 from src.GameRenderer import GameRenderer
@@ -243,8 +242,6 @@ async def run_game(game, game_settings):
         if isinstance(handler, logging.FileHandler):
             handler.flush()
 
-    time_warning_active = False
-    warning_flash_rate = 300
     warning_edge_size = 0
     warning_max_edge = 60
     last_warning_update = 0
@@ -290,7 +287,6 @@ async def run_game(game, game_settings):
                 remaining = max(0, game.time_limit - elapsed)
 
                 if remaining <= 30 and not hasattr(game, "time_limit_reached"):
-                    time_warning_active = True
                     game.time_warning_active = True
 
                     if current_time - last_warning_update > 50:
@@ -302,7 +298,6 @@ async def run_game(game, game_settings):
                         )
                         game.warning_border_width = warning_edge_size
                 else:
-                    time_warning_active = False
                     game.time_warning_active = False
                     warning_edge_size = max(0, warning_edge_size - 2)
                     game.warning_border_width = warning_edge_size
@@ -547,7 +542,12 @@ async def run_game(game, game_settings):
                             )
                             game.board.add_message(message)
                             if success:
-                                pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'action': 'ai_auction_action_complete'}))
+                                pygame.event.post(
+                                    pygame.event.Event(
+                                        pygame.USEREVENT,
+                                        {"action": "ai_auction_action_complete"},
+                                    )
+                                )
                         else:
                             logger.debug(f"AI {current_bidder['name']} passes")
                             success, message = game.logic.process_auction_pass(
@@ -555,7 +555,12 @@ async def run_game(game, game_settings):
                             )
                             game.board.add_message(message)
                             if success:
-                                pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'action': 'ai_auction_action_complete'}))
+                                pygame.event.post(
+                                    pygame.event.Event(
+                                        pygame.USEREVENT,
+                                        {"action": "ai_auction_action_complete"},
+                                    )
+                                )
 
                 if (
                     hasattr(game.logic, "current_auction")
@@ -588,9 +593,11 @@ async def run_game(game, game_settings):
                         game.auction_end_delay = 3000
                         game.auction_completed = True
                         game.board.update_ownership(game.logic.properties)
-                        
+
                         game.logic.current_auction = None
-                        logger.info("Explicitly cleared current_auction after setting up auction delay")
+                        logger.info(
+                            "Explicitly cleared current_auction after setting up auction delay"
+                        )
 
                 delattr(game, "auction_processing")
 
