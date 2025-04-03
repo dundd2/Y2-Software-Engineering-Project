@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Load Excel Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sound Manager Module" href="sound_manager.html" />
+    <link rel="prev" title="Development Mode Module" href="development_mode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Load Excel Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.Loadexcel.load_game_text"><code class="docutils literal notranslate"><span class="pre">load_game_text()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.Loadexcel.load_property_data"><code class="docutils literal notranslate"><span class="pre">load_property_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Load Excel Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/loadexcel.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.Loadexcel">
+<span id="load-excel-module"></span><h1>Load Excel Module<a class="headerlink" href="#module-src.Loadexcel" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Loadexcel.load_game_text">
+<span class="sig-prename descclassname"><span class="pre">src.Loadexcel.</span></span><span class="sig-name descname"><span class="pre">load_game_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assets/gamedata/PropertyTycoonCardData.xlsx'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Game</span> <span class="pre">Text'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Loadexcel.html#load_game_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Loadexcel.load_game_text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Loadexcel.load_property_data">
+<span class="sig-prename descclassname"><span class="pre">src.Loadexcel.</span></span><span class="sig-name descname"><span class="pre">load_property_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assets/gamedata/PropertyTycoonBoardData.xlsx'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Loadexcel.html#load_property_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Loadexcel.load_property_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p>The Load Excel module is responsible for extracting game data from Excel spreadsheets (<cite>.xlsx</cite>), validating it, and transforming it into Python data structures (primarily dictionaries) that can be used by the Property Tycoon game. This module serves as a bridge between external data files (like board layout and card text) and the game’s internal representation.</p>
+<p>This module provides functions to:</p>
+<ul class="simple">
+<li><p>Load detailed property information for each board space from <cite>PropertyTycoonBoardData.xlsx</cite>, including name, position, type (property, station, utility, tax, special), price, rent, house costs, group, and actions.</p></li>
+<li><p>Handle potential variations in file paths and data formatting within the Excel file.</p></li>
+<li><p>Load key-value pairs for game text (e.g., Chance/Pot Luck card descriptions) from the <cite>Game Text</cite> sheet in <cite>PropertyTycoonCardData.xlsx</cite>.</p></li>
+</ul>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>Component Diagram</p>
+</div></blockquote>
+<p>This diagram shows how the Load Excel module interacts with external Excel files and provides data to other game components.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-00a2c8101b482fe01f12b05631ddd4bda9e149fc.png" alt="   &#64;startuml
+   package &quot;External Data&quot; {
+       artifact &quot;PropertyTycoonBoardData.xlsx&quot; as BoardDataXlsx
+       artifact &quot;PropertyTycoonCardData.xlsx&quot; as CardDataXlsx
+   }
+
+   package &quot;Game Core&quot; {
+       (Load Excel Module) as LoadExcel
+       (Board Module) as Board
+       (Cards Module) as Cards
+       (Game Module) as Game
+   }
+
+   package &quot;Libraries&quot; {
+       (pandas) as PandasLib
+       (os) as OsLib
+   }
+
+   LoadExcel ..&gt; BoardDataXlsx : Reads
+   LoadExcel ..&gt; CardDataXlsx : Reads
+   LoadExcel ..&gt; PandasLib : Uses
+   LoadExcel ..&gt; OsLib : Uses
+
+   Board ..&gt; LoadExcel : Calls load_property_data() &gt;
+   Cards ..&gt; LoadExcel : Calls load_game_text() &gt; ' Assumed usage
+   Game ..&gt; LoadExcel : Potentially calls &gt; ' e.g., during initialization
+   &#64;enduml
+
+Sequence Diagram: `load_property_data`"/>
+</p>
+<p>Details the steps involved in reading the property data Excel file.</p>
+<p>Shows the simpler process of reading the card/game text sheet.</p>
+<p>Illustrates the structure of the dictionary returned by <cite>load_property_data</cite>. The keys are string representations of the board position numbers.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="development_mode.html" class="btn btn-neutral float-left" title="Development Mode Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sound_manager.html" class="btn btn-neutral float-right" title="Sound Manager Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

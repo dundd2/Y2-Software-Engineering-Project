@@ -37,9 +37,17 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-timestamp = int(time.time())
-plantuml_output_dir = os.path.join(tempfile.gettempdir(), f'sphinx_plantuml_{timestamp}')
+# PlantUML configuration
+plantuml = f'java -jar "{os.path.abspath("plantuml.jar")}"'
+plantuml_output_format = 'png'
+
+# Ensure the output directory exists
+plantuml_output_dir = os.path.join('_build', 'html', '_images')
 os.makedirs(plantuml_output_dir, exist_ok=True)
+
+# Set environment variables for PlantUML
+os.environ['PLANTUML_LIMIT_SIZE'] = '8192'
+os.environ['JAVA_OPTS'] = '-Djava.awt.headless=true -Dfile.encoding=UTF-8'
 
 def safe_cleanup():
     try:
@@ -49,19 +57,6 @@ def safe_cleanup():
     except Exception as e:
         print(f"Warning: Could not clean up {plantuml_output_dir}: {e}")
 atexit.register(safe_cleanup)
-
-plantuml = os.path.abspath('plantuml.jar')
-plantuml_output_format = 'png'
-
-os.environ['PLANTUML_LIMIT_SIZE'] = '8192'
-os.environ['PLANTUML_TEMP_PATH'] = plantuml_output_dir
-
-java_opts = [
-    '-Djava.awt.headless=true',
-    '-Dfile.encoding=UTF-8',
-    f'-Dplantuml.include.path={os.path.abspath(".")}'
-]
-os.environ['JAVA_OPTS'] = ' '.join(java_opts)
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -78,7 +73,7 @@ html_theme_options = {
 }
 
 # -- Extension configuration -------------------------------------------------
-# For including PlantUML diagrams
+
 on_windows = os.name == 'nt'
 
 if on_windows:
@@ -90,7 +85,7 @@ plantuml_output_format = 'png'
 os.environ['PLANTUML_LIMIT_SIZE'] = '8192'  # Increase size limit for large diagrams
 
 # Configure temp directory for PlantUML
-os.environ['PLANTUML_TEMP_PATH'] = plantuml_output_dir
+# os.environ['PLANTUML_TEMP_PATH'] = plantuml_output_dir
 
 graphviz_output_format = 'png'  
 if on_windows:

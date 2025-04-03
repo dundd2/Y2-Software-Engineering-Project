@@ -1,0 +1,486 @@
+Main Module
+===========
+
+The Main module serves as the entry point for the Property Tycoon game application. It initializes the core game environment, manages the main application loop, orchestrates transitions between different game states (like menus, gameplay, and end screens), and handles the overall flow of the application from startup to shutdown.
+
+The Main module is responsible for:
+
+*   Initializing Pygame, sound, fonts, and logging.
+*   Displaying introductory logo screens (`show_company_logo`, `show_logo_screen`).
+*   Managing the main menu and navigation between different UI pages (Settings, How To Play, Start Game configuration) within the main `async def main()` loop.
+*   Gathering game configuration (players, AI settings, game mode) through interaction with UI pages like `StartPage`, `AIDifficultyPage`, and `GameModePage`.
+*   Creating the core `Game` object and `Player` objects via the `create_game` function.
+*   Running the main game loop via the `async def run_game()` function, which utilizes `GameRenderer`, `GameEventHandler`, and `GameActions`.
+*   Handling the end-game sequence via the `async def handle_end_game()` function, displaying results using `EndGamePage`.
+*   Managing window resizing and applying settings via `async def apply_screen_settings()`.
+*   Ensuring safe application shutdown via `safe_exit()`.
+
+.. automodule:: Main
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+High-Level Design
+-----------------
+
+ Use Case Diagram
+
+This diagram illustrates the main interactions a user (or the system itself) has with the application, primarily managed or initiated by the Main module.
+
+.. uml::
+
+   left to right direction
+   actor User
+
+   rectangle "Property Tycoon Application (Main Module)" {
+     User -- (Start Application)
+     User -- (Navigate Menus)
+     (Navigate Menus) ..> (Configure Game Settings) : include
+     (Navigate Menus) ..> (View How To Play) : include
+     (Navigate Menus) ..> (Start New Game) : include
+     (Start New Game) --> (Play Game)
+     (Play Game) --> (View End Game Screen)
+     User -- (Exit Application)
+
+     (Start Application) .> (Initialize Environment) : include
+     note right of (Initialize Environment) : Pygame, Sound, Logging, Fonts
+     (Start Application) .> (Show Logos) : include
+
+     (Configure Game Settings) ..> (Select Players) : include
+     (Configure Game Settings) ..> (Select AI Difficulty) : include
+     (Configure Game Settings) ..> (Select Game Mode) : include
+
+     (Play Game) ..> (Handle Game Events) : include
+     (Play Game) ..> (Render Game State) : include
+     (Play Game) ..> (Execute Game Actions) : include
+     (Play Game) ..> (Check Time Limit) : include
+     (Play Game) ..> (Check Game Over) : include
+
+     (Exit Application) .> (Shutdown Safely) : include
+   }
+
+ Domain Model (Core Entities Managed/Created by Main)
+
+This diagram shows the primary classes instantiated or orchestrated directly by the functions within `Main.py`.
+
+.. uml::
+
+   package "UI Pages" {
+     class BasePage
+     class MainMenuPage
+     class StartPage
+     class GameModePage
+     class SettingsPage
+     class HowToPlayPage
+     class AIDifficultyPage
+     class EndGamePage
+     class CreditsPage
+     class KeyboardShortcutsPage
+     MainMenuPage -up-|> BasePage
+     StartPage -up-|> BasePage
+     GameModePage -up-|> BasePage
+     SettingsPage -up-|> BasePage
+     HowToPlayPage -up-|> BasePage
+     AIDifficultyPage -up-|> BasePage
+     EndGamePage -up-|> BasePage
+     CreditsPage -up-|> BasePage
+     KeyboardShortcutsPage -up-|> BasePage
+     note right of BasePage : Managed by main() loop
+   }
+
+   package "Game Core" {
+     class Game {
+       +players : List<Player>
+       +game_mode : String
+       +time_limit : int
+       +renderer : GameRenderer
+       +state : String
+       +logic : GameLogic
+       +board : Board
+       +check_time_limit()
+       +check_game_over()
+     }
+     class Player {
+       +name : String
+       +money : int
+       +is_ai : bool
+       +position : int
+       +ai_controller : AIPlayerLogic
+     }
+     class GameLogic {
+        +players : List<dict>
+        +properties : dict
+        +play_turn()
+        +handle_buy_decision()
+        +auction_property()
+     }
+     class Board {
+        +draw()
+        +update_board_positions()
+     }
+     class AIPlayerLogic <<interface>>
+     class EasyAIPlayer
+     class HardAIPlayer
+     EasyAIPlayer -up-|> AIPlayerLogic
+     HardAIPlayer -up-|> AIPlayerLogic
+
+     note right of Game : Created by create_game()
+     note right of Player : Created by create_game()
+     note right of GameLogic : Instantiated within Game
+     note right of Board : Instantiated within Game
+   }
+
+   package "Game Services" {
+      class GameRenderer {
+        +draw()
+      }
+      class GameEventHandler {
+         +handle_click()
+         +handle_key()
+         +handle_motion()
+      }
+      class GameActions {
+         +play_turn()
+         +handle_buy_decision()
+         +start_auction()
+         +handle_ai_turn()
+         +end_full_game()
+         +end_abridged_game()
+         +check_one_player_remains()
+      }
+      class Sound_Manager {
+         +play_sound()
+         +play_music()
+         +stop_music()
+      }
+      class Font_Manager {
+         +get_font()
+         +update_scale_factor()
+      }
+      note bottom of GameRenderer : Instantiated in run_game()
+      note bottom of GameEventHandler : Instantiated in run_game()
+      note bottom of GameActions : Instantiated in run_game()
+   }
+
+   package "System" {
+      class PygameDisplay
+      class PygameEvent
+      class Logger
+      class AsyncioLoop
+   }
+
+   ' Relationships driven by Main.py functions
+   (main) ..> MainMenuPage : creates/uses
+   (main) ..> StartPage : creates/uses
+   (main) ..> GameModePage : creates/uses
+   (main) ..> SettingsPage : creates/uses
+   (main) ..> HowToPlayPage : creates/uses
+   (main) ..> AIDifficultyPage : creates/uses
+   (main) ..> KeyboardShortcutsPage : creates/uses
+   (main) ..> (create_game) : calls
+   (main) ..> (run_game) : calls
+   (main) ..> (handle_end_game) : calls
+   (main) ..> Sound_Manager : uses
+   (main) ..> Font_Manager : uses
+   (main) ..> (apply_screen_settings) : calls
+   (main) ..> AsyncioLoop : runs on
+
+   (create_game) ..> Game : creates
+   (create_game) ..> Player : creates
+   (create_game) ..> Sound_Manager : uses
+
+   (run_game) ..> Game : uses
+   (run_game) ..> GameRenderer : creates/uses
+   (run_game) ..> GameEventHandler : creates/uses
+   (run_game) ..> GameActions : creates/uses
+   (run_game) ..> Sound_Manager : uses
+   (run_game) ..> Logger : uses
+   (run_game) ..> PygameEvent : handles
+   (run_game) ..> PygameDisplay : updates
+
+   (handle_end_game) ..> EndGamePage : creates/uses
+   (handle_end_game) ..> CreditsPage : creates/uses
+   (handle_end_game) ..> Sound_Manager : uses
+
+   (apply_screen_settings) ..> PygameDisplay : configures
+   (apply_screen_settings) ..> Font_Manager : uses
+
+   Game "1" *-- "2..*" Player
+   Game o-- GameRenderer
+   Game *-- GameLogic
+   Game *-- Board
+   Player o-- AIPlayerLogic
+
+   (run_game) ..> Game : updates state
+   (run_game) ..> GameRenderer : calls draw()
+   (run_game) ..> GameEventHandler : calls handle_*()
+   (run_game) ..> GameActions : calls handle_ai_turn(), etc.
+
+ Application State Diagram
+
+This diagram shows the high-level states the application transitions through, managed primarily by the `main()` function loop.
+
+.. uml::
+
+    [*] --> Initializing : Application Start
+    Initializing --> ShowingLogos : Initialization Complete
+    ShowingLogos --> MainMenu : Logos Shown
+
+    MainMenu --> MainMenu : Navigate Submenus (Settings, HowToPlay)
+    MainMenu --> ConfiguringGame : Start New Game
+    MainMenu --> [*] : Exit Application
+
+    ConfiguringGame --> ConfiguringGame : Next Step (Players -> AI -> Mode)
+    ConfiguringGame --> MainMenu : Back
+    ConfiguringGame --> Gameplay : Configuration Complete
+
+    Gameplay --> Gameplay : Game Loop Iteration (Events, Render, AI, Time Check)
+    Gameplay --> Paused : Pause Game (Abridged Mode)
+    Paused --> Gameplay : Resume Game
+    Gameplay --> EndGameScreen : Game Over (Win/Time Limit/1 Player Left)
+    Gameplay --> [*] : Exit Application (e.g., via ESC in some contexts or error)
+
+    EndGameScreen --> MainMenu : Play Again
+    EndGameScreen --> EndGameScreen : View Credits
+    EndGameScreen --> [*] : Quit
+
+Detailed Design
+---------------
+
+ Class Interaction Diagram (Main Orchestration)
+
+This diagram shows the key classes and how the functions within `Main.py` orchestrate their creation and interaction. It focuses on the flow controlled by `main()`, `create_game()`, `run_game()`, and `handle_end_game()`.
+
+.. uml::
+
+   class MainPy <<module>> {
+     +apply_screen_settings(resolution)
+     +create_game(player_info, game_settings) : Game
+     +run_game(game, game_settings) : dict
+     +handle_end_game(game_over_data) : bool
+     +show_logo_screen(screen, logo_path)
+     +show_company_logo(screen)
+     +main()
+     +safe_exit()
+   }
+
+   MainPy ..> Game : creates via create_game()
+   MainPy ..> Player : creates via create_game()
+   MainPy ..> GameRenderer : creates via run_game()
+   MainPy ..> GameEventHandler : creates via run_game()
+   MainPy ..> GameActions : creates via run_game()
+   MainPy ..> MainMenuPage : creates via main()
+   MainPy ..> StartPage : creates via main()
+   MainPy ..> GameModePage : creates via main()
+   MainPy ..> SettingsPage : creates via main()
+   MainPy ..> HowToPlayPage : creates via main()
+   MainPy ..> AIDifficultyPage : creates via main()
+   MainPy ..> EndGamePage : creates via handle_end_game()
+   MainPy ..> CreditsPage : creates via handle_end_game()
+   MainPy ..> KeyboardShortcutsPage : creates via main()
+   MainPy ..> Sound_Manager : uses
+   MainPy ..> Font_Manager : uses
+   MainPy ..> Logger : uses
+   MainPy ..> PygameDisplay : uses via apply_screen_settings()
+   MainPy ..> PygameEvent : uses via run_game()
+
+   GameRenderer ..> Game : reads state
+   GameEventHandler ..> Game : reads state
+   GameEventHandler ..> GameActions : calls actions
+   GameActions ..> Game : modifies state
+   GameActions ..> Player : modifies state
+
+   MainMenuPage <|-- UI.BasePage
+   StartPage <|-- UI.BasePage
+   GameModePage <|-- UI.BasePage
+   SettingsPage <|-- UI.BasePage
+   HowToPlayPage <|-- UI.BasePage
+   AIDifficultyPage <|-- UI.BasePage
+   EndGamePage <|-- UI.BasePage
+   CreditsPage <|-- UI.BasePage
+   KeyboardShortcutsPage <|-- UI.BasePage
+
+   UI.BasePage : +draw()
+   UI.BasePage : +handle_click()
+   UI.BasePage : +handle_key()
+   UI.BasePage : +handle_motion()
+
+ Logging Setup Class Diagram
+
+Illustrates the custom `LogRedirector` used to pipe stdout/stderr to the logging framework.
+
+.. uml::
+    :caption: LogRedirector Class for Logging
+
+    class LogRedirector {
+        - file_handler
+        - console_handler
+        - window_log
+        - original_stdout
+        - original_stderr
+        + __init__(base_dir, log_dir_name, log_prefix)
+        + write(text)
+        + flush()
+        + restore_stdout()
+    }
+
+    note left of LogRedirector::__init__
+      Sets up logging to file, console and 
+      redirects stdout/stderr
+    end note
+
+    note right of LogRedirector::write
+      Handles all text written to stdout,
+      splitting it to different handlers
+    end note
+    
+    note right of LogRedirector::flush
+      Ensures all log data is written
+    end note
+    
+    note right of LogRedirector::restore_stdout
+      Restores original stdout/stderr streams
+      during shutdown
+    end note
+
+ Sequence Diagram: Game Initialization
+
+This diagram shows the sequence of calls from starting the application (`main()`) through creating the game instance.
+
+.. uml::
+    :caption: Sequence Diagram: Game Initialization
+
+    actor User
+    participant "main()" as Main
+    participant "LogRedirector" as Log
+    participant "pygame" as Pygame
+    participant "MainMenu" as Menu
+    participant "ConfigScreen" as Config
+    participant "create_game()" as CreateGame
+    participant "Game" as Game
+
+    Main -> Log : Initialize logging
+    Main -> Pygame : init() modules
+    Main -> Pygame : setup display
+    note over Main, Menu: First show the main menu
+    Main -> Menu : create & show
+    User -> Menu : click "New Game"
+    Menu -> Config : transition to
+    
+    loop Configuration Steps
+        User -> Config : select options
+        Config -> Config : validate & store
+    end
+
+    User -> Config : click "Start Game"
+    Config -> CreateGame : call with options
+    CreateGame -> Game : new Game(options)
+    CreateGame -> Game : setup()
+    return configured_game
+    Main -> Main : run_game(configured_game)
+
+ Sequence Diagram: Game Configuration Flow
+
+Details the user interactions within the `main()` loop to configure and start a new game.
+
+.. uml::
+    :caption: Sequence Diagram: Game Configuration Flow
+
+    actor User
+    participant "main()" as Main
+    participant "PlayerConfigPage" as PlayerConfig
+    participant "AIConfigPage" as AIConfig
+    participant "GameModeConfigPage" as ModeConfig
+
+    Main -> PlayerConfig : show
+
+    User -> PlayerConfig : set human player count
+    User -> PlayerConfig : set AI player count
+    User -> PlayerConfig : set player names/tokens
+    User -> PlayerConfig : click "Next"
+
+    alt AI players selected
+        PlayerConfig -> AIConfig : transition
+        User -> AIConfig : select AI difficulties
+        User -> AIConfig : click "Next"
+        AIConfig -> ModeConfig : transition
+    else No AI players
+        PlayerConfig -> ModeConfig : transition
+    end
+
+    User -> ModeConfig : select game mode
+    User -> ModeConfig : set time limit (if applicable)
+    User -> ModeConfig : click "Start Game"
+    ModeConfig -> Main : return all config options
+    
+    note right: Configuration complete, create_game will be called next
+
+ Sequence Diagram: Main Game Loop (Simplified)
+
+This diagram shows a simplified overview of the main `run_game` loop, highlighting event handling, rendering, and AI turn processing.
+
+.. uml::
+    :caption: Sequence Diagram: Main Game Loop (Simplified)
+
+    actor User
+    participant "run_game()" as RunGame
+    participant "pygame.event" as Events
+    participant "Game" as Game
+    participant "GameEventHandler" as Handler
+    participant "GameRenderer" as Renderer
+
+    RunGame -> Game : start_game()
+    
+    loop Until Game Over or Exit
+        RunGame -> Events : get()
+        
+        alt QUIT event
+            RunGame -> RunGame : break loop
+        else KEYDOWN event
+            RunGame -> Handler : handle_key(event, game)
+        else MOUSEBUTTONDOWN event
+            RunGame -> Handler : handle_click(event, game)
+        end
+        
+        RunGame -> Game : update()
+        
+        alt Game State requires AI Action
+            RunGame -> Game : handle_ai_turn()
+        end
+        
+        RunGame -> Renderer : draw(game)
+        RunGame -> Game : is_game_over()
+        
+        alt Game is over
+            RunGame -> RunGame : break loop
+        end
+        
+        RunGame -> Game : check_time_limit()
+        
+        alt Time limit reached
+            RunGame -> RunGame : break loop
+        end
+    end
+    
+    RunGame -> Game : get_winner()
+    RunGame -> RunGame : handle_end_game(winner)
+
+ Sequence Diagram: Safe Shutdown
+
+Illustrates the steps performed when the application exits via `safe_exit()`.
+
+.. uml::
+    :caption: Sequence Diagram: Safe Shutdown
+
+    participant "safe_exit()" as SafeExit
+    participant "LogRedirector" as Log
+    participant "logging" as Logging
+    participant "sys" as Sys
+    participant "pygame" as Pygame
+
+    SafeExit -> Log : restore_stdout()
+    SafeExit -> Logging : getLogger()
+    SafeExit -> Logging : shutdown()
+    note right: Close handlers
+    SafeExit -> Sys : exit(0)
+    SafeExit -> Pygame : quit()

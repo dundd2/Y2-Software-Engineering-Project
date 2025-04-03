@@ -1,0 +1,1271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UI Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Development Mode Module" href="development_mode.html" />
+    <link rel="prev" title="Cards Module" href="cards.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">UI Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-diagram">Use Case Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependency-diagram">Dependency Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-diagrams">Class Diagrams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagrams">Sequence Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-classes-overview">Key Classes Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.UI">API Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.AIDifficultyPage"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIDifficultyPage.draw"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIDifficultyPage.handle_click"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIDifficultyPage.handle_key"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIDifficultyPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">AIDifficultyPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.AIEmotionUI"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIEmotionUI.check_hover"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI.check_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIEmotionUI.draw"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIEmotionUI.handle_click"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIEmotionUI.handle_key"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIEmotionUI.hide"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI.hide()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.AIEmotionUI.show"><code class="docutils literal notranslate"><span class="pre">AIEmotionUI.show()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.BasePage"><code class="docutils literal notranslate"><span class="pre">BasePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.BasePage.draw"><code class="docutils literal notranslate"><span class="pre">BasePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.BasePage.draw_background"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_background()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.BasePage.draw_instructions"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_instructions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.BasePage.draw_title"><code class="docutils literal notranslate"><span class="pre">BasePage.draw_title()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.CreditsPage"><code class="docutils literal notranslate"><span class="pre">CreditsPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.CreditsPage.draw"><code class="docutils literal notranslate"><span class="pre">CreditsPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.CreditsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">CreditsPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.CreditsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">CreditsPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.CreditsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">CreditsPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.EndGamePage"><code class="docutils literal notranslate"><span class="pre">EndGamePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.EndGamePage.draw"><code class="docutils literal notranslate"><span class="pre">EndGamePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.EndGamePage.handle_click"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.EndGamePage.handle_key"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.EndGamePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">EndGamePage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.GameModePage"><code class="docutils literal notranslate"><span class="pre">GameModePage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.GameModePage.draw"><code class="docutils literal notranslate"><span class="pre">GameModePage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.GameModePage.get_game_settings"><code class="docutils literal notranslate"><span class="pre">GameModePage.get_game_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.GameModePage.handle_click"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.GameModePage.handle_key"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.GameModePage.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameModePage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.HowToPlayPage"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.HowToPlayPage.draw"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.HowToPlayPage.handle_click"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.HowToPlayPage.handle_key"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.HowToPlayPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">HowToPlayPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.KeyboardShortcutsPage"><code class="docutils literal notranslate"><span class="pre">KeyboardShortcutsPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.KeyboardShortcutsPage.draw"><code class="docutils literal notranslate"><span class="pre">KeyboardShortcutsPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.KeyboardShortcutsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">KeyboardShortcutsPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.KeyboardShortcutsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">KeyboardShortcutsPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.KeyboardShortcutsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">KeyboardShortcutsPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.MainMenuPage"><code class="docutils literal notranslate"><span class="pre">MainMenuPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.MainMenuPage.draw"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.MainMenuPage.handle_click"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.MainMenuPage.handle_key"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.MainMenuPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">MainMenuPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.PlayerSelectPage"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.PlayerSelectPage.draw"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.PlayerSelectPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.get_player_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.PlayerSelectPage.handle_click"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.PlayerSelectPage.handle_key"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.PlayerSelectPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">PlayerSelectPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.SettingsPage"><code class="docutils literal notranslate"><span class="pre">SettingsPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.SettingsPage.CONFIRMATION_DURATION"><code class="docutils literal notranslate"><span class="pre">SettingsPage.CONFIRMATION_DURATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.SettingsPage.draw"><code class="docutils literal notranslate"><span class="pre">SettingsPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.SettingsPage.get_settings"><code class="docutils literal notranslate"><span class="pre">SettingsPage.get_settings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.SettingsPage.handle_click"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.SettingsPage.handle_key"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.SettingsPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">SettingsPage.handle_motion()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.StartPage"><code class="docutils literal notranslate"><span class="pre">StartPage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.draw"><code class="docutils literal notranslate"><span class="pre">StartPage.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.draw_token_selection"><code class="docutils literal notranslate"><span class="pre">StartPage.draw_token_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.generate_unique_ai_name"><code class="docutils literal notranslate"><span class="pre">StartPage.generate_unique_ai_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.get_player_info"><code class="docutils literal notranslate"><span class="pre">StartPage.get_player_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.handle_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.handle_key"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.handle_motion"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_motion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.handle_token_selection_click"><code class="docutils literal notranslate"><span class="pre">StartPage.handle_token_selection_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.StartPage.update_player_lists"><code class="docutils literal notranslate"><span class="pre">StartPage.update_player_lists()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.UIButton"><code class="docutils literal notranslate"><span class="pre">UIButton</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.UIButton.check_hover"><code class="docutils literal notranslate"><span class="pre">UIButton.check_hover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.UIButton.draw"><code class="docutils literal notranslate"><span class="pre">UIButton.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.UIInput"><code class="docutils literal notranslate"><span class="pre">UIInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.UI.UIInput.draw"><code class="docutils literal notranslate"><span class="pre">UIInput.draw()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#src.UI.get_window_size"><code class="docutils literal notranslate"><span class="pre">get_window_size()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">UI Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/ui.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ui-module">
+<h1>UI Module<a class="headerlink" href="#ui-module" title="Link to this heading"></a></h1>
+<p>The UI Module provides a collection of user interface components and page structures for the Property Tycoon game. It handles rendering visual elements like buttons and input fields, manages different game screens (pages), and processes user interactions (clicks, key presses) related to the UI. It relies heavily on the Pygame library for drawing and event handling, and uses Font_Manager and Sound_Manager for assets.</p>
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="use-case-diagram">
+<h3>Use Case Diagram<a class="headerlink" href="#use-case-diagram" title="Link to this heading"></a></h3>
+<p>This diagram shows the main interactions a user can have with the UI system.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-bc66bcd22271f05c3a26df468d86fc09eaf3d3c6.png" alt="&#64;startuml
+skinparam usecase {
+  BackgroundColor White
+  BorderColor Black
+}
+
+left to right direction
+actor User
+
+rectangle &quot;Property Tycoon UI&quot; {
+  usecase &quot;Start New Game&quot; as Start
+  usecase &quot;View How to Play&quot; as HowTo
+  usecase &quot;View Keyboard Shortcuts&quot; as Shortcuts
+  usecase &quot;Change Settings&quot; as Settings
+  usecase &quot;Setup Players&quot; as Setup
+  usecase &quot;Select Game Mode&quot; as GameMode
+  usecase &quot;Select AI Difficulty&quot; as AIDiff
+  usecase &quot;View Credits&quot; as Credits
+  usecase &quot;Quit Game&quot; as Quit
+  usecase &quot;Interact with AI Mood UI&quot; as AIMood
+
+  User --&gt; Start
+  User --&gt; HowTo
+  User --&gt; Shortcuts
+  User --&gt; Settings
+  User --&gt; Setup
+  User --&gt; GameMode
+  User --&gt; AIDiff
+  User --&gt; Credits
+  User --&gt; Quit
+  User --&gt; AIMood : &lt;&lt;in-game&gt;&gt;
+
+  Start ..&gt; Setup : &lt;&lt;include&gt;&gt;
+  Setup ..&gt; AIDiff : &lt;&lt;include&gt;&gt;
+  Setup ..&gt; GameMode : &lt;&lt;include&gt;&gt;
+  HowTo ..&gt; Shortcuts : &lt;&lt;include&gt;&gt;
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">UI Module Use Cases</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="dependency-diagram">
+<h3>Dependency Diagram<a class="headerlink" href="#dependency-diagram" title="Link to this heading"></a></h3>
+<p>Shows the primary external libraries and internal modules the UI components depend on.</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-84707f3dfa1f9f124cefcaaf156da76f9436aa7e.png" alt="&#64;startuml
+package &quot;UI Module&quot; {
+  (UIButton)
+  (UIInput)
+  (BasePage)
+  (MainMenuPage)
+  (SettingsPage)
+  (StartPage)
+  (HowToPlayPage)
+  (KeyboardShortcutsPage)
+  (GameModePage)
+  (EndGamePage)
+  (CreditsPage)
+  (AIDifficultyPage)
+  (AIEmotionUI)
+}
+
+package &quot;External Libraries&quot; {
+  (pygame)
+  (os)
+  (webbrowser)
+  (random)
+  (sys)
+  (time)
+  (math)
+}
+
+package &quot;Internal Modules&quot; {
+   (Font_Manager)
+   (Sound_Manager)
+   (Game)
+   (AIPlayer)
+}
+
+(UI Module) --&gt; (pygame)
+(UI Module) --&gt; (os)
+(UI Module) --&gt; (webbrowser)
+(UI Module) --&gt; (random)
+(UI Module) --&gt; (sys)
+(UI Module) --&gt; (time)
+(UI Module) --&gt; (math)
+
+(UI Module) --&gt; (Font_Manager)
+(UI Module) --&gt; (Sound_Manager)
+
+(AIEmotionUI) --&gt; (Game)
+(AIEmotionUI) --&gt; (AIPlayer)
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">UI Module Dependencies</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-diagrams">
+<h3>Class Diagrams<a class="headerlink" href="#class-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Core UI Elements</strong></p>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-b4e06b464ca0e52c7002fc511f5d22117fd2363c.png" alt="class UIButton {
+  - rect: pygame.Rect
+  - text: str
+  - font: pygame.font.Font
+  - color: tuple
+  - hover: bool
+  - active: bool
+  - is_selected: bool
+  - image: pygame.Surface
+  - shadow_height: int
+  - border_width: int
+  + draw(screen: pygame.Surface)
+  + check_hover(pos: tuple): bool
+  - _draw_basic_button(screen: pygame.Surface, base_color: tuple)
+}
+
+class UIInput {
+  - rect: pygame.Rect
+  - text: str
+  - font: pygame.font.Font
+  - active_color: tuple
+  - inactive_color: tuple
+  - active: bool
+  - placeholder: str
+  - is_selected: bool
+  - error: bool
+  - background_alpha: int
+  + draw(screen: pygame.Surface)
+}
+
+UIButton ..&gt; pygame.Rect
+UIButton ..&gt; pygame.font.Font
+UIButton ..&gt; pygame.Surface
+UIInput ..&gt; pygame.Rect
+UIInput ..&gt; pygame.font.Font"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Core UI Elements Class Diagram</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Page Hierarchy</strong></p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-017266a3d0deb8dd7d03eabe5da1a64d5a87d0d9.png" alt="abstract class BasePage {
+  # screen: pygame.Surface
+  # logo_image: pygame.Surface
+  # background_image: pygame.Surface
+  # title_font: pygame.font.Font
+  # button_font: pygame.font.Font
+  # version_font: pygame.font.Font
+  # small_font: pygame.font.Font
+  # instructions: list
+  + draw_background()
+  + draw_title()
+  + draw_instructions()
+  + draw()
+  + handle_click(pos: tuple): any &lt;&lt;virtual&gt;&gt;
+  + handle_motion(pos: tuple) &lt;&lt;virtual&gt;&gt;
+  + handle_key(event: pygame.Event): any &lt;&lt;virtual&gt;&gt;
+}
+
+note right of BasePage::handle_click
+  Return value often indicates
+  navigation or action status.
+end note
+
+class MainMenuPage extends BasePage {
+  - start_button: UIButton
+  - how_to_play_button: UIButton
+  - settings_button: UIButton
+  - youtube_logo: pygame.Surface
+  - github_logo: pygame.Surface
+  + draw()
+  + handle_click(pos: tuple): str
+  + handle_motion(pos: tuple)
+  + handle_key(event: pygame.Event): str
+}
+
+class SettingsPage extends BasePage {
+  - resolution_options: list
+  - font_options: list
+  - current_resolution: int
+  - current_font: int
+  - sound_volume: int
+  - music_volume: int
+  - resolution_button: UIButton
+  - font_button: UIButton
+  - sound_volume_button: UIButton
+  - music_volume_button: UIButton
+  - confirm_button: UIButton
+  - back_button: UIButton
+  - test_sound_button: UIButton
+  - test_music_button: UIButton
+  + draw()
+  + handle_click(pos: tuple): any
+  + handle_motion(pos: tuple)
+  + handle_key(event: pygame.Event): any
+  + get_settings(): dict
+}
+
+class StartPage extends BasePage {
+  - human_count: int
+  - ai_count: int
+  - player_names: list
+  - ai_names: list
+  - token_images: list
+  - player_token_indices: list
+  - ai_token_indices: list
+  - name_inputs: list&lt;UIInput&gt;
+  - human_minus_button: UIButton
+  - human_plus_button: UIButton
+  - ai_minus_button: UIButton
+  - ai_plus_button: UIButton
+  - start_button: UIButton
+  - back_button: UIButton
+  - token_selection_active: bool
+  + draw()
+  + draw_token_selection()
+  + handle_click(pos: tuple): any
+  + handle_token_selection_click(pos: tuple): bool
+  + handle_motion(pos: tuple)
+  + handle_key(event: pygame.Event): any
+  + get_player_info(): tuple
+}
+
+class HowToPlayPage extends BasePage {
+  - back_button: UIButton
+  - shortcuts_button: UIButton
+  + draw()
+  + handle_click(pos: tuple): any
+  + handle_motion(pos: tuple)
+  + handle_key(event: pygame.Event): any
+}
+
+class KeyboardShortcutsPage extends BasePage {
+   - back_button: UIButton
+   - shortcuts: list
+   + draw()
+   + handle_click(pos: tuple): any
+   + handle_motion(pos: tuple)
+   + handle_key(event: pygame.Event): any
+}
+
+class GameModePage extends BasePage {
+  - game_mode: str
+  - time_limit: int
+  - custom_time_input: UIInput
+  - mode_button: UIButton
+  - start_button: UIButton
+  - back_button: UIButton
+  + draw()
+  + handle_click(pos: tuple): any
+  + handle_motion(pos: tuple)
+  + handle_key(event: pygame.Event): any
+  + get_game_settings(): dict
+}
+
+class EndGamePage extends BasePage {
+  - winner_name: str
+  - final_assets: dict
+  - bankrupted_players: list
+  - voluntary_exits: list
+  - tied_winners: list
+  - lap_count: dict
+  - credits_button: UIButton
+  - confetti: list
+  + draw()
+  + handle_click(pos: tuple): str
+  + handle_motion(pos: tuple)
+  + handle_key(event: pygame.Event): str
+}
+
+ class CreditsPage extends BasePage {
+   - back_button: UIButton
+   - developers: list
+   + draw()
+   + handle_click(pos: tuple): any
+   + handle_motion(pos: tuple)
+   + handle_key(event: pygame.Event): any
+ }
+
+ class AIDifficultyPage extends BasePage {
+   - easy_button: UIButton
+   - hard_button: UIButton
+   - back_button: UIButton
+   + draw()
+   + handle_click(pos: tuple): str
+   + handle_motion(pos: tuple)
+   + handle_key(event: pygame.Event): str
+ }
+
+ ' PlayerSelectPage also exists but seems less central than StartPage
+ ' class PlayerSelectPage extends BasePage { ... }
+
+ MainMenuPage *-- &quot;many&quot; UIButton
+ SettingsPage *-- &quot;many&quot; UIButton
+ StartPage *-- &quot;many&quot; UIButton
+ StartPage *-- &quot;many&quot; UIInput
+ GameModePage *-- &quot;many&quot; UIButton
+ GameModePage *-- UIInput
+ EndGamePage *-- &quot;many&quot; UIButton
+ HowToPlayPage *-- &quot;many&quot; UIButton
+ KeyboardShortcutsPage *-- &quot;many&quot; UIButton
+ CreditsPage *-- &quot;many&quot; UIButton
+ AIDifficultyPage *-- &quot;many&quot; UIButton
+
+ MainMenuPage ..&gt; webbrowser : uses
+ SettingsPage ..&gt; Sound_Manager : uses
+ StartPage ..&gt; pygame.image : uses
+ EndGamePage ..&gt; random : uses
+ CreditsPage ..&gt; Sound_Manager : uses"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Page Hierarchy Class Diagram</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>AI Emotion UI</strong></p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-b85fa2ef4d1dec8b629c7ca30991c19ac8f116d0.png" alt="class AIEmotionUI {
+  - screen: pygame.Surface
+  - ai_player: AIPlayer ' Assuming AIPlayer class exists
+  - game_instance: Game ' Assuming Game class exists
+  - visible: bool
+  - panel_rect: pygame.Rect
+  - happy_button_rect: pygame.Rect
+  - angry_button_rect: pygame.Rect
+  - happy_image: pygame.Surface
+  - angry_image: pygame.Surface
+  - happy_hover: bool
+  - angry_hover: bool
+  - font: pygame.font.Font
+  - happy_clicks_after_limit: int
+  - angry_clicks_after_limit: int
+  - easter_egg_threshold: int
+  - youtube_url: str
+  - easter_egg_triggered: bool
+  + show()
+  + hide()
+  + draw()
+  + check_hover(pos: tuple): bool
+  + handle_click(pos: tuple): bool
+  + handle_key(event: pygame.Event): bool
+  - _check_easter_egg()
+}
+
+AIEmotionUI ..&gt; Font_Manager : uses
+AIEmotionUI ..&gt; Sound_Manager : uses
+AIEmotionUI ..&gt; webbrowser : uses
+AIEmotionUI ..&gt; &quot;Game&quot; : uses &gt;
+AIEmotionUI ..&gt; &quot;AIPlayer&quot; : uses &gt; ' Or AIController"/>
+</p>
+<figcaption>
+<p><span class="caption-text">AI Emotion UI Class Diagram</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagrams">
+<h3>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Main Menu Navigation</strong></p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-1428b77d802785c70aeddea41991305f1267c9f9.png" alt="actor User
+participant &quot;main_menu:MainMenuPage&quot; as MainMenu
+participant &quot;main_loop&quot; as Loop
+
+User -&gt; MainMenu : click(pos)
+activate MainMenu
+MainMenu -&gt; MainMenu : handle_click(pos)
+alt start_button clicked
+  MainMenu --&gt; Loop : return &quot;start&quot;
+else how_to_play_button clicked
+  MainMenu --&gt; Loop : return &quot;how_to_play&quot;
+else settings_button clicked
+  MainMenu --&gt; Loop : return &quot;settings&quot;
+else social media icon clicked
+  MainMenu -&gt; webbrowser : open(url)
+  MainMenu --&gt; Loop : return None
+else
+  MainMenu --&gt; Loop : return None
+end
+deactivate MainMenu
+
+Loop -&gt; Loop : Change state (e.g., show StartPage)"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Main Menu Navigation</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Changing a Setting</strong></p>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-9874a7db50b172cef96e2264f60219a912794201.png" alt="actor User
+participant &quot;settings_page:SettingsPage&quot; as Settings
+participant &quot;main_loop&quot; as Loop
+participant &quot;font_manager:Font_Manager&quot; as FM
+participant &quot;sound_manager:Sound_Manager&quot; as SM
+
+User -&gt; Settings : click(pos on resolution_button)
+activate Settings
+Settings -&gt; Settings : handle_click(pos)
+Settings -&gt; Settings : current_resolution = (current_resolution + 1) % len(options)
+Settings -&gt; Settings : show_confirmation = True
+Settings --&gt; User : return False (stay on page)
+deactivate Settings
+
+User -&gt; Settings : click(pos on sound_volume_button)
+activate Settings
+Settings -&gt; Settings : handle_click(pos)
+Settings -&gt; Settings : sound_volume = (sound_volume + 10) % 110
+Settings -&gt; SM : set_sound_volume(new_volume)
+Settings -&gt; Settings : show_confirmation = True
+Settings --&gt; User : return False (stay on page)
+deactivate Settings
+
+User -&gt; Settings : click(pos on confirm_button)
+activate Settings
+Settings -&gt; Settings : handle_click(pos)
+opt resolution or font changed
+    Settings -&gt; FM : update_font_path(new_path)
+    note right: Pygame screen resize might also happen here (handled by main loop based on return value)
+    Settings --&gt; Loop : return True (apply changes)
+else
+    Settings --&gt; Loop : return False (no changes to apply)
+end
+deactivate Settings
+
+Loop -&gt; Loop : Handle return value (e.g., recreate screen, change page)"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Changing a Setting</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Player Setup (StartPage)</strong></p>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-3258d0557605455c152de83c13f6d1381a9e5963.png" alt="actor User
+participant &quot;start_page:StartPage&quot; as StartPage
+participant &quot;name_input:UIInput&quot; as Input
+participant &quot;main_loop&quot; as Loop
+
+User -&gt; StartPage : click(pos on human_plus_button)
+activate StartPage
+StartPage -&gt; StartPage : handle_click(pos)
+opt total_players &lt; 5
+    StartPage -&gt; StartPage : human_count += 1
+    StartPage -&gt; StartPage : update_player_lists()
+    StartPage -&gt; StartPage : total_players = human_count + ai_count
+end
+StartPage --&gt; User : return False
+deactivate StartPage
+
+User -&gt; StartPage : click(pos on name_input field)
+activate StartPage
+StartPage -&gt; StartPage : handle_click(pos)
+StartPage -&gt; StartPage : active_input = index
+StartPage --&gt; User : return False
+deactivate StartPage
+
+User -&gt; StartPage : key_press(event='A')
+activate StartPage
+StartPage -&gt; StartPage : handle_key(event)
+opt active_input &gt;= 0 and &lt; human_count
+    StartPage -&gt; StartPage : player_names(active_input) += 'A'
+end
+StartPage --&gt; User : return False
+deactivate StartPage
+
+User -&gt; StartPage : click(pos on token icon)
+activate StartPage
+StartPage -&gt; StartPage : handle_click(pos)
+StartPage -&gt; StartPage : token_selection_active = True
+StartPage -&gt; StartPage : token_selection_for_player = index
+StartPage -&gt; StartPage : token_selection_is_ai = is_ai
+StartPage --&gt; User : return False
+deactivate StartPage
+' (Token selection UI is now drawn)
+
+User -&gt; StartPage : click(pos on start_button)
+activate StartPage
+StartPage -&gt; StartPage : handle_click(pos)
+opt all names valid and player count valid
+    StartPage -&gt; StartPage : get_player_info()
+    StartPage --&gt; Loop : return True (start game)
+else
+    StartPage --&gt; User : return False
+end
+deactivate StartPage"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Player Setup Interaction</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Game Mode Selection</strong></p>
+<figure class="align-default" id="id9">
+<p class="plantuml">
+<img src="../_images/plantuml-8bae3780bd566482934909f212053ba182480de5.png" alt="actor User
+participant &quot;mode_page:GameModePage&quot; as ModePage
+participant &quot;time_input:UIInput&quot; as Input
+participant &quot;main_loop&quot; as Loop
+
+User -&gt; ModePage : click(pos on mode_button)
+activate ModePage
+ModePage -&gt; ModePage : handle_click(pos)
+ModePage -&gt; ModePage : game_mode = &quot;abridged&quot; / &quot;full&quot;
+opt game_mode == &quot;abridged&quot;
+    ModePage -&gt; ModePage : time_limit = default or current input value
+else
+    ModePage -&gt; ModePage : time_limit = None
+end
+ModePage --&gt; User : return False
+deactivate ModePage
+
+User -&gt; ModePage : click(pos on time_input)
+activate ModePage
+ModePage -&gt; ModePage : handle_click(pos)
+opt game_mode == &quot;abridged&quot;
+    ModePage -&gt; Input : active = True
+end
+ModePage --&gt; User : return False
+deactivate ModePage
+
+User -&gt; ModePage : key_press(event='5')
+activate ModePage
+ModePage -&gt; ModePage : handle_key(event)
+opt Input.active == True
+    ModePage -&gt; Input : text += '5'
+end
+ModePage --&gt; User : return False
+deactivate ModePage
+
+User -&gt; ModePage : click(pos on start_button)
+activate ModePage
+ModePage -&gt; ModePage : handle_click(pos)
+opt game_mode == &quot;abridged&quot;
+    ModePage -&gt; ModePage : validate time_input.text
+    alt valid time
+        ModePage -&gt; ModePage : time_limit = parsed_time * 60
+        ModePage -&gt; ModePage : get_game_settings()
+        ModePage --&gt; Loop : return True
+    else invalid time
+        ModePage -&gt; ModePage : input_error = &quot;Error message&quot;
+        ModePage --&gt; User : return False
+    end
+else game_mode == &quot;full&quot;
+    ModePage -&gt; ModePage : get_game_settings()
+    ModePage --&gt; Loop : return True
+end
+deactivate ModePage"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Game Mode Selection</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>AI Mood Interaction</strong></p>
+<figure class="align-default" id="id10">
+<p class="plantuml">
+<img src="../_images/plantuml-97af129bd99aefe3809fa38ac606a153b016a916.png" alt="actor User
+participant &quot;emotion_ui:AIEmotionUI&quot; as EmotionUI
+participant &quot;game:Game&quot; as Game
+participant &quot;sound_manager:Sound_Manager&quot; as SM
+participant &quot;webbrowser&quot; as WB
+
+User -&gt; EmotionUI : click(pos on happy_button)
+activate EmotionUI
+EmotionUI -&gt; EmotionUI : handle_click(pos)
+EmotionUI -&gt; SM : play_sound(&quot;happy_click&quot;)
+EmotionUI -&gt; Game : update_ai_mood(ai_player.name, False)
+EmotionUI -&gt; EmotionUI : check mood limit
+opt mood &gt;= limit
+    EmotionUI -&gt; EmotionUI : happy_clicks_after_limit += 1
+    EmotionUI -&gt; EmotionUI : _check_easter_egg()
+    opt clicks &gt;= threshold and not triggered
+        EmotionUI -&gt; WB : open(youtube_url)
+        EmotionUI -&gt; EmotionUI : easter_egg_triggered = True
+    end
+end
+EmotionUI --&gt; User : return True
+deactivate EmotionUI"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: AI Mood Interaction</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-classes-overview">
+<h2>Key Classes Overview<a class="headerlink" href="#key-classes-overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>UIButton</strong>: A standard clickable button with text or image, hover effects, and active/inactive states.</p></li>
+<li><p><strong>UIInput</strong>: A text input field allowing user text entry, with active/inactive states and placeholder text.</p></li>
+<li><p><strong>BasePage</strong>: The foundation for all game screens, providing common drawing logic (background, title) and defining the interface for handling events.</p></li>
+<li><p><strong>MainMenuPage</strong>: The initial screen with options to start, view instructions, or change settings. Includes social media links.</p></li>
+<li><p><strong>SettingsPage</strong>: Allows modification of screen resolution, font, and sound/music volume. Interacts with <cite>Sound_Manager</cite> and <cite>Font_Manager</cite>.</p></li>
+<li><p><strong>StartPage</strong>: Handles the setup of human and AI players, including name entry and token selection. Manages player counts and associated data.</p></li>
+<li><p><strong>HowToPlayPage</strong>: Displays basic game instructions.</p></li>
+<li><p><strong>KeyboardShortcutsPage</strong>: Displays a list of keyboard shortcuts for game actions.</p></li>
+<li><p><strong>GameModePage</strong>: Allows selection between a full game or an abridged (timed) game, including setting a time limit.</p></li>
+<li><p><strong>EndGamePage</strong>: Shown after the game concludes, displaying the winner, final scores, and options to play again or quit. Includes a confetti effect.</p></li>
+<li><p><strong>CreditsPage</strong>: Displays the list of developers and special thanks.</p></li>
+<li><p><strong>AIDifficultyPage</strong>: Allows the user to select the difficulty level for AI opponents.</p></li>
+<li><p><strong>AIEmotionUI</strong>: An in-game UI element specifically for interacting with an AI player’s mood, featuring visual feedback and an easter egg.</p></li>
+</ul>
+</section>
+<section id="module-src.UI">
+<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-src.UI" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.AIDifficultyPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">AIDifficultyPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIDifficultyPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIDifficultyPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIDifficultyPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIDifficultyPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIDifficultyPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIDifficultyPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIDifficultyPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIDifficultyPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIDifficultyPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIDifficultyPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIDifficultyPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIDifficultyPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIDifficultyPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIDifficultyPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">AIEmotionUI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_instance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI.check_hover">
+<span class="sig-name descname"><span class="pre">check_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI.check_hover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI.check_hover" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI.hide">
+<span class="sig-name descname"><span class="pre">hide</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI.hide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI.hide" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.AIEmotionUI.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#AIEmotionUI.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.AIEmotionUI.show" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.BasePage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">BasePage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#BasePage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.BasePage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.BasePage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#BasePage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.BasePage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.BasePage.draw_background">
+<span class="sig-name descname"><span class="pre">draw_background</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#BasePage.draw_background"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.BasePage.draw_background" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.BasePage.draw_instructions">
+<span class="sig-name descname"><span class="pre">draw_instructions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#BasePage.draw_instructions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.BasePage.draw_instructions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.BasePage.draw_title">
+<span class="sig-name descname"><span class="pre">draw_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#BasePage.draw_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.BasePage.draw_title" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.CreditsPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">CreditsPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#CreditsPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.CreditsPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.CreditsPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#CreditsPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.CreditsPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.CreditsPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#CreditsPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.CreditsPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.CreditsPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#CreditsPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.CreditsPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.CreditsPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#CreditsPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.CreditsPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.EndGamePage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">EndGamePage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">winner_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_assets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bankrupted_players</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voluntary_exits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tied_winners</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lap_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#EndGamePage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.EndGamePage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.EndGamePage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#EndGamePage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.EndGamePage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.EndGamePage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#EndGamePage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.EndGamePage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.EndGamePage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#EndGamePage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.EndGamePage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.EndGamePage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#EndGamePage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.EndGamePage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.GameModePage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">GameModePage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#GameModePage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.GameModePage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.GameModePage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#GameModePage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.GameModePage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.GameModePage.get_game_settings">
+<span class="sig-name descname"><span class="pre">get_game_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#GameModePage.get_game_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.GameModePage.get_game_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.GameModePage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#GameModePage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.GameModePage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.GameModePage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#GameModePage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.GameModePage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.GameModePage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#GameModePage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.GameModePage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.HowToPlayPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">HowToPlayPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#HowToPlayPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.HowToPlayPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.HowToPlayPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#HowToPlayPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.HowToPlayPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.HowToPlayPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#HowToPlayPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.HowToPlayPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.HowToPlayPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#HowToPlayPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.HowToPlayPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.HowToPlayPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#HowToPlayPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.HowToPlayPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.KeyboardShortcutsPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">KeyboardShortcutsPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#KeyboardShortcutsPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.KeyboardShortcutsPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.KeyboardShortcutsPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#KeyboardShortcutsPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.KeyboardShortcutsPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.KeyboardShortcutsPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#KeyboardShortcutsPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.KeyboardShortcutsPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.KeyboardShortcutsPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#KeyboardShortcutsPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.KeyboardShortcutsPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.KeyboardShortcutsPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#KeyboardShortcutsPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.KeyboardShortcutsPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.MainMenuPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">MainMenuPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#MainMenuPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.MainMenuPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.MainMenuPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#MainMenuPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.MainMenuPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.MainMenuPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#MainMenuPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.MainMenuPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.MainMenuPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#MainMenuPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.MainMenuPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.MainMenuPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#MainMenuPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.MainMenuPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.PlayerSelectPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">PlayerSelectPage</span></span><a class="reference internal" href="../_modules/src/UI.html#PlayerSelectPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.PlayerSelectPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.PlayerSelectPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#PlayerSelectPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.PlayerSelectPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.PlayerSelectPage.get_player_info">
+<span class="sig-name descname"><span class="pre">get_player_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#PlayerSelectPage.get_player_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.PlayerSelectPage.get_player_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.PlayerSelectPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#PlayerSelectPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.PlayerSelectPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.PlayerSelectPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#PlayerSelectPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.PlayerSelectPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.PlayerSelectPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#PlayerSelectPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.PlayerSelectPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.SettingsPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">SettingsPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#SettingsPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.SettingsPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.UI.SettingsPage.CONFIRMATION_DURATION">
+<span class="sig-name descname"><span class="pre">CONFIRMATION_DURATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5000</span></em><a class="headerlink" href="#src.UI.SettingsPage.CONFIRMATION_DURATION" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.SettingsPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#SettingsPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.SettingsPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.SettingsPage.get_settings">
+<span class="sig-name descname"><span class="pre">get_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#SettingsPage.get_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.SettingsPage.get_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.SettingsPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#SettingsPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.SettingsPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.SettingsPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#SettingsPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.SettingsPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.SettingsPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#SettingsPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.SettingsPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.StartPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">StartPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.UI.BasePage" title="src.UI.BasePage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePage</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.draw_token_selection">
+<span class="sig-name descname"><span class="pre">draw_token_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.draw_token_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.draw_token_selection" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.generate_unique_ai_name">
+<span class="sig-name descname"><span class="pre">generate_unique_ai_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.generate_unique_ai_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.generate_unique_ai_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.get_player_info">
+<span class="sig-name descname"><span class="pre">get_player_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.get_player_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.get_player_info" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.handle_token_selection_click">
+<span class="sig-name descname"><span class="pre">handle_token_selection_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.handle_token_selection_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.handle_token_selection_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.StartPage.update_player_lists">
+<span class="sig-name descname"><span class="pre">update_player_lists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#StartPage.update_player_lists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.StartPage.update_player_lists" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.UIButton">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">UIButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">0,</span> <span class="pre">32)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#UIButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.UIButton" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.UIButton.check_hover">
+<span class="sig-name descname"><span class="pre">check_hover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#UIButton.check_hover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.UIButton.check_hover" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.UIButton.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#UIButton.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.UIButton.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.UI.UIInput">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">UIInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">0,</span> <span class="pre">32)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inactive_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128,</span> <span class="pre">128)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#UIInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.UIInput" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.UI.UIInput.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#UIInput.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.UIInput.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.UI.get_window_size">
+<span class="sig-prename descclassname"><span class="pre">src.UI.</span></span><span class="sig-name descname"><span class="pre">get_window_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/UI.html#get_window_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.UI.get_window_size" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cards.html" class="btn btn-neutral float-left" title="Cards Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="development_mode.html" class="btn btn-neutral float-right" title="Development Mode Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
