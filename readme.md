@@ -1,6 +1,9 @@
 # Software-Engineering-Project-Property Tycoon
 
-This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025. The game is built on the Pygame library, which is a set of Python modules designed for writing video games.
+This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025. The game is coded in **Python** but compiled to native machine code using **Nuitka** for enhanced performance. The original game is built on the Pygame library, which is a set of Python modules designed for writing video games.
+
+## Screenshots
+![Game Board](https://github.com/user-attachments/assets/91ac9c4f-1701-4eb3-8e32-b48544d7eff9)
 
 ## Group 5 Team Members
 
@@ -15,6 +18,13 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 * **Channel Name:** UOS-Software Engineering Group5 2025
 * **Handle:** [@UOS-G6046-Group5](https://www.youtube.com/@UOS-G6046-Group5)
 * **Channel URL:** [https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
+
+## Technology Stack
+
+- **Programming Language:** Python 3.x
+- **Game Framework:** Pygame
+- **Compiler:** Nuitka (converts Python to C and then compiles to native binary)
+- **Additional Libraries:** pandas, openpyxl for data management
 
 ## Installation Guide for Property Tycoon
 
@@ -31,22 +41,18 @@ To start coding with Pygame and run the game, follow these steps to install all 
 pip install setuptools pygame pandas openpyxl
 ```
 
-Wait for the installation to complete.
-
 ### For Mac Users
 
 1. Open Terminal: Press Command + Space, type `terminal`, and press Enter.
 2. Install required packages: In the Terminal, type:
 
 ```bash
-pip3 install setuptools pygame pandas openpyxl
+pip3 install setuptools pygame pandas openpyxl nuitka
 ```
-
-You might be prompted for your password. Wait for the installation to complete.
 
 ### Alternative Installation Using requirements.txt
 
-install all dependencies directly using the requirements.txt file:
+Install all dependencies directly using the requirements.txt file:
 
 ```bash
 # For Windows
@@ -56,4 +62,7 @@ pip install -r requirements.txt
 pip3 install -r requirements.txt
 ```
 
-Now you are ready to start coding and playing Property Tycoon!
+## License
+
+This project is licensed under the **WTFPL v2**.
+For more information about this license, visit [http://www.wtfpl.net/](http://www.wtfpl.net/).
