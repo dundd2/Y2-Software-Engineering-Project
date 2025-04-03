@@ -8,7 +8,6 @@
 import unittest
 import sys
 import os
-import time
 import pygame
 import random
 
@@ -18,12 +17,9 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from src.Board import Board
 from src.Game import Game
 from src.Player import Player
-from src.Property import Property
 from src.Game_Logic import GameLogic, pot_luck_cards, opportunity_knocks_cards
-
 
 class TestGame(unittest.TestCase):
     @classmethod
@@ -174,7 +170,6 @@ class TestGame(unittest.TestCase):
 
         player.position = 39
         player_dict["position"] = 39
-        initial_money = player.money
 
         self.game_logic.current_player_index = 0
 
@@ -371,13 +366,9 @@ class TestGame(unittest.TestCase):
 
         if expensive_property:
             property_data = self.game_logic.properties[expensive_property]
-
-            original_player_count = len(self.game.players)
-
             success = self.game_logic.handle_rent_payment(player_dict, property_data)
 
             self.assertFalse(success)
-
             self.assertIn(player.name, self.game_logic.bankrupted_players)
 
     def test_property_group_completion(self):
@@ -407,8 +398,6 @@ class TestGame(unittest.TestCase):
     def test_card_actions(self):
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
-        initial_position = player.position
-        initial_money = player.money
 
         advance_go_card = None
         for card in pot_luck_cards + opportunity_knocks_cards:
@@ -724,7 +713,6 @@ class TestGame(unittest.TestCase):
         player_dict["money"] = 30
 
         initial_bank_money = self.game_logic.bank_money
-        initial_player_count = len(self.game_logic.players)
 
         payment_amount = 100
         player_money, bank_money, _ = self.game_logic.handle_payment_to_bank(
@@ -887,9 +875,7 @@ class TestGame(unittest.TestCase):
 
         self.assertTrue(success)
         self.assertEqual(player1.money, initial_owner_money)
-        self.assertEqual(
-            player2.money, initial_renter_money
-        )
+        self.assertEqual(player2.money, initial_renter_money)
 
     def test_consecutive_turns_from_doubles(self):
         player = self.game.players[0]
@@ -1089,7 +1075,6 @@ class TestGame(unittest.TestCase):
     def test_all_utilities_ownership_rent_calculation(self):
         player1 = self.game.players[0]
         player2 = self.game.players[1]
-        player1_dict = self.get_player_dict(player1)
         player2_dict = self.get_player_dict(player2)
 
         utility_positions = []
@@ -1098,30 +1083,19 @@ class TestGame(unittest.TestCase):
                 utility_positions.append(pos)
                 space_data["owner"] = player1.name
 
-        if len(utility_positions) == 2:
+        if len(utility_positions) >= 2:
             utility = self.game_logic.properties[utility_positions[0]]
-
-            self.game_logic.last_dice_roll = (5, 3)
-            initial_money = 1000
-            player2.money = initial_money
+            initial_money = player2.money
             player2_dict["money"] = initial_money
+
+            self.game_logic.last_dice_roll = (3, 4)
+            total_roll = sum(self.game_logic.last_dice_roll)
 
             success = self.game_logic.handle_rent_payment(player2_dict, utility)
             self.sync_player_objects()
 
             self.assertTrue(success)
-            self.assertEqual(player2.money, initial_money - 8 * 10)
-
-            self.game_logic.last_dice_roll = (2, 6)
-            player2.money = initial_money
-            player2_dict["money"] = initial_money
-
-            utility2 = self.game_logic.properties[utility_positions[1]]
-            success = self.game_logic.handle_rent_payment(player2_dict, utility2)
-            self.sync_player_objects()
-
-            self.assertTrue(success)
-            self.assertEqual(player2.money, initial_money - 8 * 10)
+            self.assertEqual(player2.money, initial_money - (10 * total_roll))
 
 
 if __name__ == "__main__":

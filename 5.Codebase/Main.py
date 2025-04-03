@@ -10,7 +10,25 @@ import os
 import random
 import logging
 from datetime import datetime
-
+from src.Board import Board 
+from src.Game import Game
+from src.Player import Player
+from src.GameRenderer import GameRenderer
+from src.GameEventHandler import GameEventHandler
+from src.GameActions import GameActions
+from src.Sound_Manager import sound_manager
+from src.Font_Manager import font_manager
+from src.UI import (
+    MainMenuPage,
+    StartPage,
+    GameModePage,
+    EndGamePage,
+    SettingsPage,
+    HowToPlayPage,
+    AIDifficultyPage,
+    CreditsPage,
+    KeyboardShortcutsPage,
+)
 
 logs_dir = "logs"
 if not os.path.exists(logs_dir):
@@ -86,26 +104,6 @@ file_handler.flush()
 
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-from src.Board import Board
-from src.Game import Game
-from src.Player import Player
-from src.GameRenderer import GameRenderer
-from src.GameEventHandler import GameEventHandler
-from src.GameActions import GameActions
-from src.Sound_Manager import sound_manager
-from src.UI import (
-    MainMenuPage,
-    StartPage,
-    GameModePage,
-    EndGamePage,
-    SettingsPage,
-    HowToPlayPage,
-    AIDifficultyPage,
-    CreditsPage,
-    KeyboardShortcutsPage,
-)
-from src.Font_Manager import font_manager
 
 WINDOW_SIZE = (1280, 720)
 WHITE = (255, 255, 255)

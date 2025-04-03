@@ -3,9 +3,7 @@
 
 import pygame
 import math
-import os
 from src.Font_Manager import font_manager
-from src.UI import AIEmotionUI
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -1368,7 +1366,7 @@ class GameRenderer:
                 self.game.handle_ai_turn(ai_player)
                 pygame.time.delay(500)
 
-        print(f"\n=== Drawing Auction UI ===")
+        print("\n=== Drawing Auction UI ===")
         print(f"Property: {auction_data['property']['name']}")
         print(f"Current bid: £{auction_data['current_bid']}")
         print(f"Minimum bid: £{auction_data['minimum_bid']}")

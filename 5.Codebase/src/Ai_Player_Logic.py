@@ -44,7 +44,7 @@ class EasyAIPlayer:
         return property.houses <= min_houses
 
     def get_property_value(self, property_data, ai_player, board_properties):
-        print("\n=== AI Property Value Calculation Debug ===")
+        print("=== AI Property Value Calculation Debug ===")
         print(
             f"Evaluating property: {property_data.name if hasattr(property_data, 'name') else 'Unknown'}"
         )
@@ -66,7 +66,7 @@ class EasyAIPlayer:
                 for p in board_properties
                 if hasattr(p, "group") and p.group == property_data.group
             )
-            print(f"Color group analysis:")
+            print("Color group analysis:")
             print(f"- Group: {property_data.group}")
             print(f"- Owned in group: {owned_in_group}/{total_in_group}")
 
@@ -81,7 +81,7 @@ class EasyAIPlayer:
             )
             station_bonus = 0.25 * owned_stations
             multiplier += station_bonus
-            print(f"Station analysis:")
+            print("Station analysis:")
             print(f"- Owned stations: {owned_stations}")
             print(f"- Adding station bonus: +{station_bonus:.2f}x")
 
@@ -89,14 +89,14 @@ class EasyAIPlayer:
             owned_utilities = sum(
                 1 for p in board_properties if p.is_utility and p.owner == ai_player
             )
-            print(f"Utility analysis:")
+            print("Utility analysis:")
             print(f"- Owned utilities: {owned_utilities}")
             if owned_utilities > 0:
                 multiplier += 0.5
                 print("- Adding utility bonus: +0.5x")
 
         final_value = base_value * multiplier
-        print(f"Final calculations:")
+        print("Final calculations:")
         print(f"- Total multiplier: {multiplier:.2f}x")
         print(f"- Final perceived value: £{final_value:.2f}")
         return final_value
@@ -571,25 +571,6 @@ class EasyAIPlayer:
         print(f"DEBUG: Development decision: {'Develop' if should_develop else 'Skip'}")
         return should_develop
 
-    def should_mortgage_property(self, property_data, player_money):
-        print("\n=== AI Mortgage Decision Debug ===")
-        print(
-            f"DEBUG: Evaluating mortgage for {property_data.name if hasattr(property_data, 'name') else 'Unknown'}"
-        )
-        print(f"DEBUG: AI money available: £{player_money}")
-
-        if not property_data or not hasattr(property_data, "price"):
-            print("DEBUG: Invalid property data")
-            return False
-
-        mortgage_threshold = self.strategy["easy"]["mortgage_threshold"] * 1500
-        print(f"DEBUG: Mortgage threshold: £{mortgage_threshold}")
-
-        should_mortgage = player_money < mortgage_threshold
-        print(f"DEBUG: Mortgage decision: {'Mortgage' if should_mortgage else 'Keep'}")
-
-        return should_mortgage
-
     def should_unmortgage_property(self, property_data, player_money):
         print("\n=== AI Unmortgage Decision Debug ===")
         print(
@@ -713,9 +694,6 @@ class HardAIPlayer:
             print(f"DEBUG: Chance to bid anyway: {angry_bid_chance}")
 
             if random.random() < angry_bid_chance:
-                perceived_value = self.get_property_value(
-                    property_data, ai_player, board_properties
-                )
                 bid = current_minimum + random.randint(
                     10, 50 + int(100 * max(0, self.mood_modifier))
                 )
@@ -739,11 +717,11 @@ class HardAIPlayer:
 
     def handle_jail_strategy(self, ai_player, jail_free_cards):
         print("\n=== HARD AI Jail Strategy Debug ===")
-        print(f"DEBUG: Hard AI evaluating jail strategy")
+        print("DEBUG: Hard AI evaluating jail strategy")
         print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
 
         if not ai_player.get("in_jail", False):
-            print(f"DEBUG: Not in jail - no action needed")
+            print("DEBUG: Not in jail - no action needed")
             return None
 
         base_strategy = self.easy_ai.handle_jail_strategy(ai_player, jail_free_cards)
@@ -753,7 +731,7 @@ class HardAIPlayer:
             print(f"DEBUG: Chance to pay fine: {pay_chance}")
 
             if random.random() < pay_chance:
-                print(f"DEBUG: Emotion triggered decision to pay fine")
+                print("DEBUG: Emotion triggered decision to pay fine")
                 return "pay_fine"
 
         print(f"DEBUG: Using strategy: {base_strategy}")
@@ -761,7 +739,7 @@ class HardAIPlayer:
 
     def should_mortgage_property(self, ai_player, required_money):
         print("\n=== HARD AI Mortgage Strategy Debug ===")
-        print(f"DEBUG: Hard AI evaluating mortgage strategy")
+        print("DEBUG: Hard AI evaluating mortgage strategy")
         print(f"DEBUG: Required money: £{required_money}")
         print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
 
@@ -769,7 +747,7 @@ class HardAIPlayer:
 
     def handle_property_development(self, ai_player, board_properties):
         print("\n=== HARD AI Development Strategy Debug ===")
-        print(f"DEBUG: Hard AI evaluating development strategy")
+        print("DEBUG: Hard AI evaluating development strategy")
         print(f"DEBUG: Current mood modifier: {self.mood_modifier}")
 
         base_result = self.easy_ai.handle_property_development(
@@ -827,7 +805,7 @@ class HardAIPlayer:
             can_afford = player_money * max_price_ratio >= property_data["price"]
 
             if can_afford and random.random() < buy_chance:
-                print(f"DEBUG: Emotion triggered decision to buy property")
+                print("DEBUG: Emotion triggered decision to buy property")
                 print(f"DEBUG: Max price ratio: {max_price_ratio}")
                 return True
 
@@ -836,7 +814,7 @@ class HardAIPlayer:
             print(f"DEBUG: Amplified chance to pass: {pass_chance}")
 
             if random.random() < pass_chance:
-                print(f"DEBUG: Emotion triggered decision to pass on property")
+                print("DEBUG: Emotion triggered decision to pass on property")
                 return False
 
         print(f"DEBUG: Final decision: {'Buy' if base_decision else 'Pass'}")
