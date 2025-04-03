@@ -3,20 +3,9 @@
 
 import pygame
 import sys
-import os
-import time
 import random
-import math
-from src.Board import Board
-from src.Property import Property
-from src.Game_Logic import GameLogic
-from src.Cards import CardType, CardDeck
-from src.Font_Manager import font_manager
+from src.Cards import CardType
 from src.Sound_Manager import sound_manager
-from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
-from typing import Optional
-import string
-from src.UI import AIEmotionUI
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)

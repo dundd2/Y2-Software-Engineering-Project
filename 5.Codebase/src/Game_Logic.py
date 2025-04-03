@@ -1078,13 +1078,13 @@ class GameLogic:
         round_count = 1
 
         while len(active_players) > 1:
-            print(f"\n=== Auction Round {round_count} ===")
+            print("\n=== Auction Round {round_count} ===")
             print(f"Active players: {[p['name'] for p in active_players]}")
             print(f"Current minimum bid: £{current_minimum}")
 
             round_bids = {}
             for player in active_players[:]:
-                print(f"\nPlayer {player['name']}'s turn")
+                print("\nPlayer {player['name']}'s turn")
                 print(f"Available money: £{player['money']}")
 
                 if player.get("in_jail", False):
@@ -1127,7 +1127,7 @@ class GameLogic:
                     if round_bids.get(p["name"], 0) == highest_bid
                 ]
 
-                print(f"\nRound {round_count} Results:")
+                print("\nRound {round_count} Results:")
                 print(f"Highest bid: £{highest_bid}")
                 print(f"Highest bidders: {[p['name'] for p in highest_bidders]}")
 
@@ -1144,7 +1144,7 @@ class GameLogic:
             final_bid = current_bids.get(winner["name"], current_minimum)
 
         if winner:
-            print(f"\n=== Auction Complete ===")
+            print("\n=== Auction Complete ===")
             print(f"Winner: {winner['name']}")
             print(f"Winning bid: £{final_bid}")
             return winner, final_bid
@@ -1153,7 +1153,7 @@ class GameLogic:
         return None
 
     def get_ai_bid(self, player, current_minimum, property_data):
-        print(f"\n=== AI Bid Evaluation ===")
+        print("\n=== AI Bid Evaluation ===")
         print(f"AI Player: {player['name']}")
         print(f"Property: {property_data['name']}")
         print(f"Current minimum: £{current_minimum}")
@@ -1166,7 +1166,7 @@ class GameLogic:
         base_value = property_data["price"]
         value_multiplier = 1.0
 
-        print(f"Base value assessment:")
+        print("Base value assessment:")
         print(f"- Property price: £{base_value}")
 
         if "group" in property_data:
@@ -1182,7 +1182,7 @@ class GameLogic:
                 if p.get("group") == property_data["group"]
             )
 
-            print(f"Group analysis:")
+            print("Group analysis:")
             print(f"- Group: {property_data['group']}")
             print(f"- Owned in group: {owned_in_group}/{total_in_group}")
 
@@ -1199,7 +1199,7 @@ class GameLogic:
             )
             station_bonus = 0.25 * owned_stations
             value_multiplier += station_bonus
-            print(f"Station analysis:")
+            print("Station analysis:")
             print(f"- Owned stations: {owned_stations}")
             print(f"- Adding station bonus: +{station_bonus:.2f}x")
 
@@ -1210,14 +1210,14 @@ class GameLogic:
                 if p.get("name") in ["Tesla Power Co", "Edison Water"]
                 and p.get("owner") == player["name"]
             )
-            print(f"Utility analysis:")
+            print("Utility analysis:")
             print(f"- Owned utilities: {owned_utilities}")
             if owned_utilities > 0:
                 value_multiplier += 0.5
                 print("- Adding utility bonus: +0.5x")
 
         perceived_value = base_value * value_multiplier
-        print(f"\nValue calculation:")
+        print("\nValue calculation:")
         print(f"- Base value: £{base_value}")
         print(f"- Final multiplier: {value_multiplier:.2f}x")
         print(f"- Perceived value: £{perceived_value}")
@@ -1236,14 +1236,14 @@ class GameLogic:
         bid = current_minimum + random.randint(10, increment)
         bid = min(bid, max_bid)
 
-        print(f"Bid calculation:")
+        print("Bid calculation:")
         print(f"- Bid headroom: £{bid_headroom}")
         print(f"- Chosen increment: £{increment}")
         print(f"- Initial bid: £{bid}")
 
         if bid > perceived_value * 0.8:
             risky_bid_chance = random.random()
-            print(f"\nRisk assessment:")
+            print("\nRisk assessment:")
             print(f"- Bid (£{bid}) is above 80% of perceived value")
             print(f"- Risk check: {risky_bid_chance:.2f} (will pass if < 0.3)")
             if risky_bid_chance < 0.3:
@@ -1527,7 +1527,7 @@ class GameLogic:
                         and current_time - self._last_build_check_time <= 1000
                     ):
                         print(
-                            f"Cannot build hotel - all properties must have at least 4 houses"
+                            "Cannot build hotel - all properties must have at least 4 houses"
                         )
                     return (
                         False,
@@ -1896,7 +1896,6 @@ class GameLogic:
             return "Invalid decision. Must be 'buy' or 'auction'"
 
     def handle_birthday_collection(self, birthday_player):
-
         total_collected = 0
         self.add_message(
             f"\n🎂 {birthday_player['name']}'s Birthday! Each player must pay £10"
@@ -1915,12 +1914,11 @@ class GameLogic:
                 needed_amount = 10 - player["money"]
                 self.add_message(f"{player['name']} needs to raise £{needed_amount}")
 
-                success = self.handle_ai_bankruptcy_prevention(player, needed_amount)
-
-                if player["money"] >= 10:
-                    player["money"] -= 10
-                    total_collected += 10
-                    self.add_message(f"{player['name']} raised funds and paid £10")
+                if self.handle_ai_bankruptcy_prevention(player, needed_amount):
+                    if player["money"] >= 10:
+                        player["money"] -= 10
+                        total_collected += 10
+                        self.add_message(f"{player['name']} raised funds and paid £10")
                 else:
                     self.add_message(f"{player['name']} cannot pay and goes bankrupt")
                     self.handle_bankruptcy(player)
@@ -1936,7 +1934,6 @@ class GameLogic:
         return birthday_player["money"], self.bank_money, self.free_parking_fund
 
     def handle_payment_to_bank(self, player, amount, to_free_parking=False):
-
         self.add_message(f"\n{player['name']} needs to pay £{amount}")
 
         if player["money"] >= amount:
@@ -1951,15 +1948,16 @@ class GameLogic:
             needed_amount = amount - player["money"]
             self.add_message(f"{player['name']} needs to raise £{needed_amount}")
 
-            success = self.handle_ai_bankruptcy_prevention(player, needed_amount)
-
-            if player["money"] >= amount:
-                player["money"] -= amount
-                if to_free_parking:
-                    self.free_parking_fund += amount
-                else:
-                    self.bank_money += amount
-                self.add_message(f"{player['name']} raised funds and paid £{amount}")
+            if self.handle_ai_bankruptcy_prevention(player, needed_amount):
+                if player["money"] >= amount:
+                    player["money"] -= amount
+                    if to_free_parking:
+                        self.free_parking_fund += amount
+                    else:
+                        self.bank_money += amount
+                    self.add_message(
+                        f"{player['name']} raised funds and paid £{amount}"
+                    )
             else:
                 self.add_message(f"{player['name']} cannot pay and goes bankrupt")
                 remaining_money = player["money"]

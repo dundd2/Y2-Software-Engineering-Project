@@ -4,24 +4,15 @@
 import pygame
 import sys
 import os
-import time
 import random
-import math
+import logging
 from src.Board import Board
-from src.Property import Property
 from src.Game_Logic import GameLogic
-from src.Cards import CardType, CardDeck
 from src.Font_Manager import font_manager
 from src.Sound_Manager import sound_manager
-from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
-from typing import Optional
-import string
 from src.UI import AIEmotionUI
-from src.GameRenderer import GameRenderer
-from src.GameEventHandler import GameEventHandler
 from src.GameActions import GameActions
 from src.DevelopmentMode import DevelopmentMode
-import logging
 
 base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(base_path, "assets", "font", "Ticketing.ttf")
@@ -208,7 +199,7 @@ class Game:
             )
             print(f"Time limit in seconds: {self.time_limit}")
         else:
-            print(f"Game initialized in Full mode (no time limit)")
+            print("Game initialized in Full mode (no time limit)")
 
         self.rounds_completed = {player.name: 0 for player in players}
         self.lap_count = {player.name: 0 for player in players}
@@ -245,13 +236,13 @@ class Game:
             self.logic.ai_difficulty = self.ai_difficulty
 
             if self.ai_difficulty == "hard":
-                from src.Ai_Player_Logic import HardAIPlayer
+                from src.Ai_Player_Logic import HardAIPlayer as AiPlayer
 
-                self.logic.ai_player = HardAIPlayer()
+                self.logic.ai_player = AiPlayer()
             else:
-                from src.Ai_Player_Logic import EasyAIPlayer
+                from src.Ai_Player_Logic import EasyAIPlayer as AiPlayer
 
-                self.logic.ai_player = EasyAIPlayer()
+                self.logic.ai_player = AiPlayer()
 
             if not self.logic.game_start():
                 raise RuntimeError("Failed to initialize game data")
@@ -440,7 +431,7 @@ class Game:
 
         card_type = None
         if position == 21:
-            print(f"Player landed on Free Parking space")
+            print("Player landed on Free Parking space")
             self.board.add_message(f"{current_player['name']} landed on Free Parking")
 
             self.game_actions.collect_free_parking(current_player)
@@ -748,7 +739,6 @@ class Game:
         position = str(current_player["position"])
         if position not in self.logic.properties:
             return None, None
-
         space = self.logic.properties[position]
 
         if position == "20":
@@ -2016,3 +2006,4 @@ class Game:
         ]:
             print("Animations in progress, ignoring key input")
             return False
+
