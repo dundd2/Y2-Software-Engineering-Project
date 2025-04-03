@@ -313,7 +313,7 @@ jobs:
           dist-windows/PropertyTycoon-Windows.exe
           dist-macos-dmg/PropertyTycoon-macOS.dmg
           dist-macos-zip/PropertyTycoon-macOS.zip
-          dist-linux-arm64.deb
+          dist-linux-arm64/*.deb
         name: Build-${{ steps.get_version.outputs.version }}
         tag_name: Build-${{ steps.get_version.outputs.version }}
         draft: false

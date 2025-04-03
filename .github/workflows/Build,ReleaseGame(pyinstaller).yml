@@ -32,12 +32,14 @@ jobs:
       working-directory: ${{ github.workspace }}/5.Codebase
       run: |
         pyinstaller --onefile --windowed --name PropertyTycoon --icon "${{ github.workspace }}/5.Codebase/assets/image/icon.ico" --add-data "${{ github.workspace }}/5.Codebase/assets;assets" Main.py
+        cd dist
+        ren PropertyTycoon.exe PropertyTycoon-Windows.exe
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-Windows
-        path: 5.Codebase/dist/PropertyTycoon.exe
+        path: 5.Codebase/dist/PropertyTycoon-Windows.exe
         retention-days: 90
 
   build-macos:
@@ -297,7 +299,7 @@ jobs:
           dist-windows/PropertyTycoon-Windows.exe
           dist-macos-dmg/PropertyTycoon-macOS.dmg
           dist-macos-zip/PropertyTycoon-macOS.zip
-          dist-linux-arm64.deb
+          dist-linux-arm64/*.deb
         name: Build-${{ steps.get_version.outputs.version }}
         tag_name: Build-${{ steps.get_version.outputs.version }}
         draft: false
