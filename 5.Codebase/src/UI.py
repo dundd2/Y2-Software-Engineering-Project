@@ -2,9 +2,6 @@
 # It contains the classes for the UI, such as the buttons, input fields, and other UI elements.
 
 import pygame
-import sys
-import time
-import math
 import random
 from src.Font_Manager import font_manager
 from src.Sound_Manager import sound_manager
@@ -1092,8 +1089,6 @@ class StartPage(BasePage):
 
                 pygame.draw.rect(self.screen, AI_COLOR, token_rect, 2, border_radius=5)
 
-                button_index = self.human_count + i
-                token_button_index = len(self.token_button_rects)
                 self.token_button_rects.append((token_rect, i, True))
 
         can_start = (
@@ -1802,7 +1797,6 @@ class HowToPlayPage(BasePage):
         super().__init__(instructions=instructions)
         self.small_font = font_manager.get_font(24)
 
-        button_width = 300
         button_height = 60
         self.back_button = UIButton(
             pygame.Rect(20, get_window_size()[1] - 80, 200, button_height),
@@ -2006,7 +2000,6 @@ class KeyboardShortcutsPage(BasePage):
 
         y_offset = panel_y + 10
         section_header_font = self.button_font
-        column_width = panel_width // 2 - 20
 
         for i, (key, description) in enumerate(left_column):
             if key == "" and description == "":
