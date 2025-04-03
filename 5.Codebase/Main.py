@@ -816,7 +816,6 @@ async def show_company_logo(screen):
 
 
 async def main():
-    global WINDOW_SIZE
     font_manager.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
 

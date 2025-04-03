@@ -662,7 +662,6 @@ class TestGame(unittest.TestCase):
             drawn_cards = []
 
             def mock_handle_card_draw(player_dict, card_type):
-                nonlocal drawn_cards
                 result, message = original_handle_card_draw(player_dict, card_type)
                 drawn_cards.append({"text": message, "result": result})
                 return result, message

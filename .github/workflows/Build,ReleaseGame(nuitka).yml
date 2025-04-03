@@ -37,7 +37,7 @@ jobs:
         pip install nuitka
         pip install ordered-set
         pip install zstandard
-        pip install -r requirements.txt
+        pip install -r 5.Codebase/requirements.txt
 
     - name: Build executable for Windows
       working-directory: ${{ github.workspace }}/5.Codebase
@@ -71,7 +71,7 @@ jobs:
         pip install ordered-set
         pip install zstandard
         pip install pillow
-        pip install -r requirements.txt
+        pip install -r 5.Codebase/requirements.txt
         brew install ccache
 
     - name: Create icon script
