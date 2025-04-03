@@ -29,15 +29,15 @@ jobs:
         pip install -r requirements.txt
 
     - name: Build executable for Windows
-      working-directory: ${{ github.workspace }}
+      working-directory: ${{ github.workspace }}/5.Codebase
       run: |
-        pyinstaller --onefile --windowed --name PropertyTycoon --icon "${{ github.workspace }}/assets/image/icon.ico" --add-data "${{ github.workspace }}/assets;assets" Main.py
+        pyinstaller --onefile --windowed --name PropertyTycoon --icon "${{ github.workspace }}/5.Codebase/assets/image/icon.ico" --add-data "${{ github.workspace }}/5.Codebase/assets;assets" Main.py
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-Windows
-        path: dist/PropertyTycoon.exe
+        path: 5.Codebase/dist/PropertyTycoon.exe
         retention-days: 90
 
   build-macos:
@@ -61,6 +61,7 @@ jobs:
         brew install create-dmg
 
     - name: Create icon script
+      working-directory: ${{ github.workspace }}/5.Codebase
       run: |
         echo '
         from PIL import Image
@@ -81,12 +82,12 @@ jobs:
         python create_icns.py
 
     - name: Build macOS app
-      working-directory: ${{ github.workspace }}
+      working-directory: ${{ github.workspace }}/5.Codebase
       run: |
         if [ -f "icon.icns" ]; then
-          pyinstaller --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon Main.py
+          pyinstaller --windowed --name PropertyTycoon --icon icon.icns --add-data "${{ github.workspace }}/5.Codebase/assets:assets" --osx-bundle-identifier com.example.propertytycoon Main.py
         else
-          pyinstaller --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/assets:assets" --osx-bundle-identifier com.example.propertytycoon Main.py
+          pyinstaller --windowed --name PropertyTycoon --add-data "${{ github.workspace }}/5.Codebase/assets:assets" --osx-bundle-identifier com.example.propertytycoon Main.py
         fi
 
         chmod -R +x dist/PropertyTycoon.app
@@ -101,21 +102,21 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-macOS-app
-        path: dist/PropertyTycoon.app
+        path: 5.Codebase/dist/PropertyTycoon.app
         retention-days: 90
 
     - name: Upload DMG artifact
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-macOS-dmg
-        path: dist/PropertyTycoon-macOS.dmg
+        path: 5.Codebase/dist/PropertyTycoon-macOS.dmg
         retention-days: 90
 
     - name: Upload ZIP artifact
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-macOS-zip
-        path: dist/PropertyTycoon-macOS.zip
+        path: 5.Codebase/dist/PropertyTycoon-macOS.zip
         retention-days: 90
 
   build-linux-arm64:
@@ -149,6 +150,8 @@ jobs:
             python3-pil.imagetk
         run: |
           export DEBIAN_FRONTEND=noninteractive
+          
+          cd 5.Codebase
           
           python3 -m venv venv
           source venv/bin/activate
@@ -246,7 +249,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-linux-arm64-deb
-        path: "*.deb"
+        path: "5.Codebase/*.deb"
         retention-days: 90
 
   release:
