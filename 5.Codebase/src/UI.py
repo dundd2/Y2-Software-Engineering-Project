@@ -255,13 +255,13 @@ class BasePage:
             self.screen.blit(self.logo_image, logo_rect)
         elif isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage):
             title_shadow = self.title_font.render(
-                "Property Tycoon Alpha 30.03.2025", True, BLACK
+                "Property Tycoon Beta 04.04.2025", True, BLACK
             )
             title_glow = self.title_font.render(
-                "Property Tycoon Alpha 30.03.2025", True, ACCENT_COLOR
+                "Property Tycoon Beta 04.04.2025", True, ACCENT_COLOR
             )
             title_text = self.title_font.render(
-                "Property Tycoon Alpha 30.03.2025", True, WHITE
+                "Property Tycoon Beta 04.04.2025", True, WHITE
             )
             title_rect = title_text.get_rect(centerx=window_size[0] // 2, y=80)
             shadow_rect = title_rect.copy()
@@ -404,7 +404,7 @@ class MainMenuPage(BasePage):
             self.screen.blit(self.github_logo, self.github_rect)
 
         version_text = self.version_font.render(
-            "Build Version: Alpha 30.03.2025", True, ERROR_COLOR
+            "Build Version: Alpha 04.04.2025", True, ERROR_COLOR
         )
         version_rect = version_text.get_rect(
             right=get_window_size()[0] - 20, bottom=get_window_size()[1] - 20
@@ -509,7 +509,8 @@ class SettingsPage(BasePage):
                 button_width,
                 button_height,
             ),
-            f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}",
+            (f"Screen Size: {self.resolution_options[self.current_resolution][0]}"
+             f"x{self.resolution_options[self.current_resolution][1]}"),
             self.button_font,
         )
 
@@ -599,7 +600,10 @@ class SettingsPage(BasePage):
         settings_rect = settings_text.get_rect(centerx=get_window_size()[0] // 2, y=100)
         self.screen.blit(settings_text, settings_rect)
 
-        self.resolution_button.text = f"Screen Size: {self.resolution_options[self.current_resolution][0]}x{self.resolution_options[self.current_resolution][1]}"
+        self.resolution_button.text = (
+            f"Screen Size: {self.resolution_options[self.current_resolution][0]}"
+            f"x{self.resolution_options[self.current_resolution][1]}"
+        )
         self.resolution_button.draw(self.screen)
 
         self.font_button.text = f"Font: {self.font_options[self.current_font][0]}"
@@ -773,7 +777,7 @@ class StartPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
-        pygame.display.set_caption("Property Tycoon Alpha 30.03.2025")
+        pygame.display.set_caption("Property Tycoon Beta 04.04.2025")
         self.title_font = font_manager.get_font(82)
         self.button_font = font_manager.get_font(42)
         self.version_font = font_manager.get_font(28)
@@ -2731,8 +2735,6 @@ class CreditsPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.small_font = font_manager.get_font(24)
-
-        button_width = 300
         button_height = 60
         self.back_button = UIButton(
             pygame.Rect(20, get_window_size()[1] - 80, 200, button_height),

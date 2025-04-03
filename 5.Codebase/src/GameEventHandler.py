@@ -3,7 +3,6 @@
 
 import pygame
 import sys
-from src.Cards import CardType
 from src.Sound_Manager import sound_manager
 
 KEY_ROLL = [pygame.K_SPACE, pygame.K_RETURN]
@@ -165,7 +164,7 @@ class GameEventHandler:
                     and self.game.game_paused
                 ):
                     self.game.board.add_message(
-                        "Game is paused. Click Continue to resume."
+                        "Game is paused. Click Continue to resume"
                     )
                     return False
                 else:
@@ -346,7 +345,7 @@ class GameEventHandler:
                         and self.game.game_paused
                     ):
                         self.game.board.add_message(
-                            "Game is paused. Press P to resume."
+                            "Game is paused. Press P to resume"
                         )
                         return False
                     return self.game_actions.play_turn()
@@ -467,9 +466,12 @@ class GameEventHandler:
         if current_bidder_obj and not current_bidder_obj.is_ai:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    self.game.auction_bid_amount = self.game.auction_bid_amount[:-1]
+                    self.game.auction_bid_amount = (
+                        self.game.auction_bid_amount[:-1]
+                    )
                     print(
-                        f"Backspace pressed - new bid amount: {self.game.auction_bid_amount}"
+                        f"Backspace pressed - new bid amount: "
+                        f"{self.game.auction_bid_amount}"
                     )
 
                 elif event.key in [

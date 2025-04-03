@@ -5,8 +5,8 @@
 import pygame
 import random
 from src.Loadexcel import load_property_data
-from src.Ai_Player_Logic import EasyAIPlayer, HardAIPlayer
 from src.Sound_Manager import sound_manager
+from src.Ai_Player_Logic import EasyAIPlayer
 
 pot_luck_cards = [
     {
@@ -371,8 +371,6 @@ class GameLogic:
         else:
             self.doubles_count = 0
 
-        old_pos = current_player["position"]
-
         new_pos = current_player["position"] + dice1 + dice2
         current_player["position"] = new_pos % 40
 
@@ -632,9 +630,8 @@ class GameLogic:
                 )
 
             if isinstance(action_result, int) and action_result <= 40:
-                old_pos = player["position"]
                 player["position"] = action_result
-                if action_result < old_pos and action_result != 11:
+                if action_result < player["position"] and action_result != 11:
                     player["money"] += 200
                     self.bank_money -= 200
                     self.add_message("Collected £200 for passing GO")
@@ -678,10 +675,10 @@ class GameLogic:
         for group, count in groups.items():
             if group in group_totals and count == group_totals[group]:
                 completed_groups.append(group)
-                self.add_message(f"🎊 MONOPOLY! 🎊")
+                self.add_message("🎊 MONOPOLY! 🎊")
                 self.add_message(f"{player_name} completed the {group} set!")
                 if group not in ["Utilities", "Stations"]:
-                    self.add_message(f"Houses can now be built on these properties!")
+                    self.add_message("Houses can now be built on these properties!")
 
         return len(completed_groups) > 0
 
@@ -1068,9 +1065,9 @@ class GameLogic:
 
     def placeBids(self, player_list, property_data):
         print("\n=== Property Auction Debug ===")
-        print(f"Starting auction for {property_data['name']}")
-        print(f"Property position: {property_data.get('position', 'Unknown')}")
-        print(f"Starting price: £{property_data['price'] // 2}")
+        print("Starting auction for", property_data['name'])
+        print("Property position:", property_data.get('position', 'Unknown'))
+        print("Starting price: £", property_data['price'] // 2)
 
         current_minimum = property_data["price"] // 2
         active_players = player_list[:]
@@ -1078,17 +1075,17 @@ class GameLogic:
         round_count = 1
 
         while len(active_players) > 1:
-            print("\n=== Auction Round {round_count} ===")
-            print(f"Active players: {[p['name'] for p in active_players]}")
-            print(f"Current minimum bid: £{current_minimum}")
+            print("\n=== Auction Round", round_count, "===")
+            print("Active players:", [p['name'] for p in active_players])
+            print("Current minimum bid: £", current_minimum)
 
             round_bids = {}
             for player in active_players[:]:
-                print("\nPlayer {player['name']}'s turn")
-                print(f"Available money: £{player['money']}")
+                print("\nPlayer", player['name'], "'s turn")
+                print("Available money: £", player['money'])
 
                 if player.get("in_jail", False):
-                    print(f"{player['name']} is in jail - skipping")
+                    print(player['name'], "is in jail - skipping")
                     active_players.remove(player)
                     continue
 
@@ -1127,7 +1124,7 @@ class GameLogic:
                     if round_bids.get(p["name"], 0) == highest_bid
                 ]
 
-                print("\nRound {round_count} Results:")
+                print("\nRound Results:")
                 print(f"Highest bid: £{highest_bid}")
                 print(f"Highest bidders: {[p['name'] for p in highest_bidders]}")
 
@@ -1270,7 +1267,7 @@ class GameLogic:
                 return None
             if time.time() - start_time > 30:
                 self.add_message(
-                    f"Timeout: {player['name']} did not respond in time, skipping bid"
+                    "Timeout: Player did not respond in time, skipping bid"
                 )
                 return None
             if response.strip().lower() == "no":
@@ -1282,7 +1279,7 @@ class GameLogic:
                     )
                     if time.time() - start_time > 30:
                         self.add_message(
-                            f"Timeout: {player['name']} took too long to enter bid amount"
+                            "Timeout: Player took too long to enter bid amount"
                         )
                         return None
                     bid = int(bid_input)

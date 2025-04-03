@@ -3,7 +3,6 @@
 
 import pygame
 import math
-from src.Font_Manager import font_manager
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -542,10 +541,8 @@ class GameRenderer:
                     houses = prop.get("houses", 0)
                     if houses > 0:
                         if houses == 5:
-                            indicator_color = RED
                             indicator_text = "H"
                         else:
-                            indicator_color = GREEN
                             indicator_text = str(houses)
 
                         indicator_surface = self.tiny_font.render(

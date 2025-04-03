@@ -11,15 +11,14 @@ import os
 import pygame
 import random
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.Game import Game
-from src.Player import Player
-from src.Game_Logic import pot_luck_cards, opportunity_knocks_cards
-
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["SDL_AUDIODRIVER"] = "dummy"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from src.Game import Game
+from src.Player import Player
+from src.Game_Logic import pot_luck_cards, opportunity_knocks_cards
 
 class TestGame(unittest.TestCase):
     @classmethod
