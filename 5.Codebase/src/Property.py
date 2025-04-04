@@ -16,6 +16,7 @@ class Property:
         self.is_utility = data.get("is_utility", False)
         self.mortgaged = False
 
+    # rent calculation logic
     def calculate_rent(self, dice_roll=None, properties=None):
         if self.mortgaged:
             return 0
@@ -51,6 +52,7 @@ class Property:
                 return self.base_rent * 2
             return self.base_rent
 
+    # monopoly check
     def has_monopoly(self, properties):
         if not self.group or not properties:
             return False
@@ -58,6 +60,7 @@ class Property:
         group_properties = [p for p in properties if p.group == self.group]
         return all(p.owner == self.owner for p in group_properties)
 
+    # house build check
     def can_build_house(self, properties):
         if self.is_station or self.is_utility or self.mortgaged or self.has_hotel:
             return False
@@ -72,6 +75,7 @@ class Property:
         min_houses = min(p.houses for p in group_properties)
         return self.houses <= min_houses
 
+    # hotel build check
     def can_build_hotel(self, properties):
         if self.is_station or self.is_utility or self.mortgaged or self.has_hotel:
             return False
@@ -88,12 +92,14 @@ class Property:
         group_properties = [p for p in properties if p.group == self.group]
         return all(p.houses >= 5 for p in group_properties)
 
+    # build house logic
     def build_house(self):
         if not self.has_hotel:
             self.houses += 1
             return True
         return False
 
+    # build hotel logic
     def build_hotel(self):
         if self.houses >= 5 and not self.has_hotel:
             self.houses = 0
@@ -101,12 +107,14 @@ class Property:
             return True
         return False
 
+    # sell house logic
     def sell_house(self):
         if self.houses > 0:
             self.houses -= 1
             return True
         return False
 
+    # sell hotel logic
     def sell_hotel(self):
         if self.has_hotel:
             self.has_hotel = False
@@ -114,6 +122,7 @@ class Property:
             return True
         return False
 
+    # mortgage logic
     def mortgage(self):
         if not self.mortgaged and self.houses == 0 and not self.has_hotel:
             self.mortgaged = True

@@ -20,6 +20,7 @@ from src.Game import Game
 from src.Player import Player
 from src.Game_Logic import pot_luck_cards, opportunity_knocks_cards
 
+
 class TestGame(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -28,9 +29,11 @@ class TestGame(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        # quit pygame after tests
         pygame.quit()
 
     def setUp(self):
+        # setup before each test
         self._original_flip = pygame.display.flip
         self._original_wait = pygame.time.wait
         pygame.display.flip = lambda: None
@@ -74,12 +77,14 @@ class TestGame(unittest.TestCase):
         pygame.time.wait = self._original_wait
 
     def get_player_dict(self, player):
+        # get player dict by name
         for player_dict in self.player_dicts:
             if player_dict["name"] == player.name:
                 return player_dict
         return None
 
     def sync_player_objects(self):
+        # keep player objects updated
         for player in self.players:
             player_dict = self.get_player_dict(player)
             if player_dict:
@@ -89,6 +94,7 @@ class TestGame(unittest.TestCase):
                 player.jail_turns = player_dict["jail_turns"]
 
     def sync_player_dicts(self):
+        # keep player dicts updated
         for player in self.players:
             player_dict = self.get_player_dict(player)
             if player_dict:
@@ -98,10 +104,12 @@ class TestGame(unittest.TestCase):
                 player_dict["jail_turns"] = player.jail_turns
 
     def test_game_initialization(self):
+        # check game starts ok
         self.assertEqual(len(self.game.players), 2)
         self.assertEqual(self.game.game_mode, "full")
 
     def test_player_attributes(self):
+        # check player details right
         self.assertEqual(self.game.players[0].name, "Duncan")
         self.assertEqual(self.game.players[1].name, "ai-Owen")
         self.assertFalse(self.game.players[0].is_ai)
@@ -110,20 +118,24 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.game.players[1].money, 1500)
 
     def test_abridged_game_mode(self):
+        # check short game mode
         abridged_game = Game(self.players, game_mode="abridged")
         self.assertEqual(abridged_game.game_mode, "abridged")
 
     def test_timed_game(self):
+        # check timed game setup
         timed_game = Game(self.players, game_mode="full", time_limit=1800)
         self.assertEqual(timed_game.time_limit, 1800)
         self.assertTrue(hasattr(timed_game, "start_time"))
 
     def test_free_parking_pot(self):
+        # check free parking money
         self.assertEqual(self.game.free_parking_pot, 0)
         self.game.game_actions.add_to_free_parking(50)
         self.assertEqual(self.game.free_parking_pot, 50)
 
     def test_ai_difficulty(self):
+        # check ai level setting
         easy_game = Game(self.players, ai_difficulty="easy")
         hard_game = Game(self.players, ai_difficulty="hard")
         self.assertEqual(easy_game.ai_difficulty, "easy")
@@ -134,16 +146,19 @@ class TestGame(unittest.TestCase):
         self.assertEqual(len(self.game.board.spaces), 40)
 
     def test_initial_player_positions(self):
+        # check players start at go
         self.assertEqual(self.game.players[0].position, 1)
         self.assertEqual(self.game.players[1].position, 1)
 
     def test_dice_roll(self):
+        # check dice roll works
         dice1, dice2 = self.game_logic.play_turn()
         self.assertTrue(1 <= dice1 <= 6)
         self.assertTrue(1 <= dice2 <= 6)
         self.assertEqual(self.game_logic.last_dice_roll, (dice1, dice2))
 
     def test_player_movement_after_roll(self):
+        # check player moves right
         player = self.game.players[0]
         initial_position = player.position
 
@@ -163,6 +178,7 @@ class TestGame(unittest.TestCase):
             random.randint = original_randint
 
     def test_movement_past_go(self):
+        # check passing go money
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -188,6 +204,7 @@ class TestGame(unittest.TestCase):
             random.randint = original_randint
 
     def test_buy_property(self):
+        # check buying works ok
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -219,6 +236,7 @@ class TestGame(unittest.TestCase):
             )
 
     def test_insufficient_funds_for_property(self):
+        # check cant buy no money
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -254,6 +272,7 @@ class TestGame(unittest.TestCase):
             )
 
     def test_rent_payment(self):
+        # check paying rent works
         player1 = self.game.players[0]
         player2 = self.game.players[1]
         player2_dict = self.get_player_dict(player2)
@@ -282,6 +301,7 @@ class TestGame(unittest.TestCase):
             self.assertEqual(player2.money, initial_renter_money - expected_rent)
 
     def test_station_rent_calculation(self):
+        # check station rent math
         player1 = self.game.players[0]
         player2 = self.game.players[1]
         player2_dict = self.get_player_dict(player2)
@@ -318,6 +338,7 @@ class TestGame(unittest.TestCase):
             self.assertEqual(player2.money, initial_money - 50)
 
     def test_utility_rent_calculation(self):
+        # check utility rent math
         player1 = self.game.players[0]
         player2 = self.game.players[1]
         player2_dict = self.get_player_dict(player2)
@@ -343,6 +364,7 @@ class TestGame(unittest.TestCase):
             self.assertEqual(player2.money, initial_money - 7 * 4)
 
     def test_bankruptcy(self):
+        # check going broke works
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -367,6 +389,7 @@ class TestGame(unittest.TestCase):
             self.assertIn(player.name, self.game_logic.bankrupted_players)
 
     def test_property_group_completion(self):
+        # check getting full set
         player = self.game.players[0]
 
         groups = {}
@@ -391,6 +414,7 @@ class TestGame(unittest.TestCase):
             self.assertTrue(result)
 
     def test_card_actions(self):
+        # check chance cards work
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -415,6 +439,7 @@ class TestGame(unittest.TestCase):
             self.assertEqual(player.position, 1)
 
     def test_jail_mechanics(self):
+        # check getting out jail
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -431,6 +456,7 @@ class TestGame(unittest.TestCase):
         self.assertFalse(player.in_jail)
 
     def test_jail_free_card_use(self):
+        # check using jail card
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -463,6 +489,7 @@ class TestGame(unittest.TestCase):
                 self.game.get_jail_choice = original_get_jail_choice
 
     def test_game_over_detection(self):
+        # check game ends right
         self.game.players = [self.players[0]]
         self.game_logic.players = [self.player_dicts[0]]
 
@@ -472,6 +499,7 @@ class TestGame(unittest.TestCase):
         self.assertIsNotNone(winner)
 
     def test_abridged_game_end_calculation(self):
+        # check short game end
         abridged_game = Game(self.players, game_mode="abridged")
 
         abridged_player_dicts = []
@@ -552,6 +580,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(game.game_mode, "invalid_mode")
 
     def test_build_house_mechanics(self):
+        # check building houses ok
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
         player.money = 5000
@@ -607,6 +636,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(test_property.get("houses", 0), 5)
 
     def test_mortgage_mechanics(self):
+        # check mortgaging works
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
         player.money = 1000
@@ -699,6 +729,7 @@ class TestGame(unittest.TestCase):
             self.game_logic.handle_card_draw = original_handle_card_draw
 
     def test_bankruptcy_from_bank_payment(self):
+        # check broke from bank
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -754,6 +785,7 @@ class TestGame(unittest.TestCase):
         self.assertAlmostEqual(actual_difference, expected_difference, delta=10)
 
     def test_three_doubles_jail(self):
+        # check 3 doubles go jail
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -815,6 +847,7 @@ class TestGame(unittest.TestCase):
             )
 
     def test_landing_on_go_to_jail(self):
+        # check go to jail space
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -840,6 +873,7 @@ class TestGame(unittest.TestCase):
             self.assertEqual(player.money, 1000)
 
     def test_mortgaged_property_rent(self):
+        # check no rent mortgaged
         player1 = self.game.players[0]
         player2 = self.game.players[1]
         player2_dict = self.get_player_dict(player2)
@@ -870,6 +904,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(player2.money, initial_renter_money)
 
     def test_consecutive_turns_from_doubles(self):
+        # check extra turn double
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -895,6 +930,7 @@ class TestGame(unittest.TestCase):
             random.randint = original_randint
 
     def test_landing_on_free_parking(self):
+        # check free parking space
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -923,6 +959,7 @@ class TestGame(unittest.TestCase):
                 self.assertEqual(self.game_logic.free_parking_fund, 500)
 
     def test_uneven_house_development_restrictions(self):
+        # check build houses evenly
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
         player.money = 5000
@@ -957,6 +994,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(test_properties[0].get("houses", 0), 1)
 
     def test_maximum_house_limit(self):
+        # check cant build too many
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
         player.money = 10000
@@ -994,6 +1032,7 @@ class TestGame(unittest.TestCase):
                 self.game_logic.can_build_hotel = original_can_build_hotel
 
     def test_selling_houses_for_bankruptcy_prevention(self):
+        # check sell houses avoid broke
         player = self.game.players[0]
         player_dict = self.get_player_dict(player)
 
@@ -1063,6 +1102,7 @@ class TestGame(unittest.TestCase):
                 )
 
     def test_all_utilities_ownership_rent_calculation(self):
+        # check rent both utilities
         player1 = self.game.players[0]
         player2 = self.game.players[1]
         player2_dict = self.get_player_dict(player2)

@@ -227,7 +227,7 @@ def create_game(player_info, game_settings):
     return game
 
 
-# main game loop 
+# main game loop
 async def run_game(game, game_settings):
     running = True
     game_over_data = None
@@ -322,7 +322,7 @@ async def run_game(game, game_settings):
                 running = False
                 continue
 
-        # handle ai turn timeout
+        # ai turn timeout
         if game.current_player_is_ai and not game.game_paused:
             if current_time - last_ai_progress_time > ai_timeout_duration:
                 logger.warning(
@@ -367,7 +367,7 @@ async def run_game(game, game_settings):
                 pygame.display.flip()
                 continue
 
-        # handle player inputs (mouse clicks, keys)
+        # player inputs (mouse clicks, keys)
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
                 safe_exit()
@@ -474,7 +474,7 @@ async def run_game(game, game_settings):
                 )
                 game.state = "AUCTION"
 
-        # handle ai turn if it's their go
+        # ai turn if it's their go
         if (
             game.state == "ROLL"
             and game.logic.players
@@ -502,7 +502,7 @@ async def run_game(game, game_settings):
                 if game_over_data:
                     running = False
 
-        # handle ai auction bidding/passing
+        # ai auction bidding/passing
         if (
             game.state == "AUCTION"
             and hasattr(game.logic, "current_auction")
@@ -869,7 +869,7 @@ async def main():
         while game_running:
             current_page.draw()
 
-            # handle events for menu navigation
+            # events for menu navigation
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     safe_exit()
@@ -953,9 +953,11 @@ async def main():
                                     game_settings["ai_difficulty"] = ai_difficulty
 
                                 game = create_game(player_info, game_settings)
-                                game_over_data = await run_game(game, game_settings)  # run the game loop
+                                game_over_data = await run_game(
+                                    game, game_settings
+                                )  # run the game loop
 
-                                # handle game ending and potential restart
+                                # game ending and potential restart
                                 if game_over_data:
                                     play_again = await handle_end_game(game_over_data)
                                     if play_again:

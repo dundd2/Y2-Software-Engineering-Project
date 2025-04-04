@@ -308,6 +308,7 @@ class GameRenderer:
                     border_radius=4,
                 )
 
+    # main draw loop
     def draw(self):
         if self.game.game_mode == "abridged" and self.game.check_time_limit():
             return
@@ -1247,6 +1248,7 @@ class GameRenderer:
 
         return lines
 
+    # popup msg
     def draw_popup_message(self):
         window_size = self.screen.get_size()
 
@@ -1319,6 +1321,7 @@ class GameRenderer:
         text_rect = button_text.get_rect(center=button_rect.center)
         self.screen.blit(button_text, text_rect)
 
+    # auction ui
     def draw_auction(self, auction_data):
         if self.game.show_card:
             print("Card is showing - not drawing auction UI")

@@ -69,6 +69,7 @@ class Player:
         self.load_player_image()
         print(f"Player {name} initial position: {self.position}")
 
+    # player image load
     def load_player_image(self):
         try:
             image_path = os.path.join(
@@ -104,6 +105,7 @@ class Player:
             print(f"Could not load player image {self.player_number}: {e}")
             self.create_fallback_token()
 
+    # fallback token gen
     def create_fallback_token(self):
         self.player_image = pygame.Surface((40, 40), pygame.SRCALPHA)
 
@@ -130,6 +132,7 @@ class Player:
 
         print(f"Created enhanced fallback token for player {self.player_number}")
 
+    # animation update logic
     def update_animation(self):
         current_time = pygame.time.get_ticks()
 
@@ -185,6 +188,7 @@ class Player:
     def set_winner(self, winner):
         self.is_winner = winner
 
+    # player draw logic
     def draw_player(self, screen, x, y):
         if not (1 <= self.position <= 40):
             print(
@@ -280,6 +284,7 @@ class Player:
                 self.create_fallback_token()
                 screen.blit(self.player_image, self.rect)
 
+    # player move logic
     def move(self, steps):
         if self.is_moving:
             return
@@ -376,6 +381,7 @@ class Player:
     def is_animation_complete(self):
         return not self.is_moving
 
+    # jail handling logic
     def pay(self, amount):
         if self.money >= amount:
             self.money -= amount
@@ -431,6 +437,7 @@ class Player:
 
         return None
 
+    # property management
     def can_afford(self, amount):
         return self.money >= amount
 
@@ -485,6 +492,7 @@ class Player:
     def can_build_hotels(self):
         return any(p.can_build_hotel(self.properties) for p in self.properties)
 
+    # bankruptcy handling
     def handle_bankruptcy(self, creditor=None):
         self.bankrupt = True
 
@@ -509,6 +517,7 @@ class Player:
             creditor.receive(self.money)
         self.money = 0
 
+    # voluntary exit logic
     def handle_voluntary_exit(self):
         self.voluntary_exit = True
         self.final_assets = self.get_total_assets()

@@ -344,9 +344,7 @@ class GameEventHandler:
                         and self.game.time_limit
                         and self.game.game_paused
                     ):
-                        self.game.board.add_message(
-                            "Game is paused. Press P to resume"
-                        )
+                        self.game.board.add_message("Game is paused. Press P to resume")
                         return False
                     return self.game_actions.play_turn()
                 elif event.key == pygame.K_q:
@@ -466,9 +464,7 @@ class GameEventHandler:
         if current_bidder_obj and not current_bidder_obj.is_ai:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    self.game.auction_bid_amount = (
-                        self.game.auction_bid_amount[:-1]
-                    )
+                    self.game.auction_bid_amount = self.game.auction_bid_amount[:-1]
                     print(
                         f"Backspace pressed - new bid amount: "
                         f"{self.game.auction_bid_amount}"

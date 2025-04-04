@@ -512,8 +512,10 @@ class SettingsPage(BasePage):
                 button_width,
                 button_height,
             ),
-            (f"Screen Size: {self.resolution_options[self.current_resolution][0]}"
-             f"x{self.resolution_options[self.current_resolution][1]}"),
+            (
+                f"Screen Size: {self.resolution_options[self.current_resolution][0]}"
+                f"x{self.resolution_options[self.current_resolution][1]}"
+            ),
             self.button_font,
         )
 
@@ -2125,7 +2127,7 @@ class GameModePage(BasePage):
             pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
                 get_window_size()[1] // 2 + 50,
-                 300,
+                300,
                 60,
             ),
             "30",
@@ -2230,7 +2232,7 @@ class GameModePage(BasePage):
                     )
                     self.screen.blit(time_text, time_rect)
                 except ValueError:
-                    pass # ignore if text isn't a number yet
+                    pass  # ignore if text isn't a number yet
 
         self.start_button.draw(self.screen)
         self.back_button.draw(self.screen)
@@ -2508,7 +2510,7 @@ class EndGamePage(BasePage):
             )
 
     def draw(self):
-        # draw background 
+        # draw background
         window_size = get_window_size()
 
         if hasattr(self, "original_endgame_bg") and self.original_endgame_bg:
@@ -2806,7 +2808,7 @@ class CreditsPage(BasePage):
             "Owen Chen",
         ]
 
-        sound_manager.play_sound("credits") # play credits sound
+        sound_manager.play_sound("credits")  # play credits sound
 
     def draw(self):
         self.draw_background()
@@ -3026,7 +3028,7 @@ class AIDifficultyPage(BasePage):
         return None
 
 
-# ui element for showing/interacting with ai mood 
+# ui element for showing/interacting with ai mood
 class AIEmotionUI:
 
     def __init__(self, screen, ai_player, game_instance):
