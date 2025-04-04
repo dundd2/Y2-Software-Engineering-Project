@@ -1,5 +1,5 @@
 # Property Tycoon Sound_Manager.py
-# It contains the classes for the sound manager, such as the sound volume, the music volume.
+# Contains the classes for the sound manager, such as the sound volume, the music volume.
 
 import pygame
 import os

@@ -1,5 +1,5 @@
 # Property Tycoon Loadexcel.py
-# It contains the classes for loading the property data, the game text, and the card data.
+# Contains the classes for loading the property data, the game text, and the card data.
 
 import pandas as pd
 import os

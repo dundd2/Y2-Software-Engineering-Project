@@ -1,5 +1,5 @@
 # Property Tycoon FontManager.py
-# It contains the classes for the fonts, such as the font path, the font size, and the font cache.
+# Contains the classes for the fonts, such as the font path, the font size, and the font cache.
 
 import pygame
 import os

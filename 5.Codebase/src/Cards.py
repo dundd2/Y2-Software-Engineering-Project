@@ -1,5 +1,5 @@
 # Property Tycoon cards.py
-# It contains the classes for the cards, such as the card type, the card text, and the card action.
+# Contains the classes for the cards, such as the card type, the card text, and the card action.
 
 from enum import Enum
 import random

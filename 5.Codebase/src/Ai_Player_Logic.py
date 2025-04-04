@@ -1,5 +1,5 @@
 # Property Tycoon ai_player_logic.py
-# It contains the classes for the AI players, such as the AI player logic, the AI player strategy, and the AI player actions.
+# Contains the classes for the AI players, such as the AI player logic, the AI player strategy, and the AI player actions.
 
 import random
 from src.Property import Property

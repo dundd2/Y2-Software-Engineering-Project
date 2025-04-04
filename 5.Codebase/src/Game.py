@@ -1,5 +1,5 @@
 # Property Tycoon Game.py
-# It contains the classes for managing the game state, rules, and player interactions
+# Contains the classes for managing the game state, rules, and player interactions
 
 import pygame
 import sys

@@ -1,5 +1,5 @@
 # Property Tycoon ui.py
-# It contains the classes for the UI, such as the buttons, input fields, and other UI elements.
+# Contains the classes for the UI, such as the buttons, input fields, and other UI elements.
 
 import pygame
 import random
@@ -176,6 +176,7 @@ class UIInput:
             pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=5)
 
 
+# base class for all the menu pages
 class BasePage:
     def __init__(self, instructions=None):
         window_size = get_window_size()
@@ -295,6 +296,7 @@ class BasePage:
         pygame.display.flip()
 
 
+# the main menu screen
 class MainMenuPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -471,6 +473,7 @@ class MainMenuPage(BasePage):
         return None
 
 
+# settings page for resolution, font, volume
 class SettingsPage(BasePage):
     CONFIRMATION_DURATION = 5000
 
@@ -773,6 +776,7 @@ class SettingsPage(BasePage):
         }
 
 
+# page for setting up players (human/ai) and names
 class StartPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -793,6 +797,7 @@ class StartPage(BasePage):
         self.ai_names = ["Bot 1"]
         self.ai_name_counter = 1
 
+        # load player token images
         self.token_images = []
         for i in range(1, 7):
             try:
@@ -826,6 +831,7 @@ class StartPage(BasePage):
 
         player_controls_y = input_y_start - 180
 
+        # buttons for adding/removing players
         self.human_minus_button = UIButton(
             pygame.Rect(
                 get_window_size()[0] // 2 - count_x_offset - 100,
@@ -874,6 +880,7 @@ class StartPage(BasePage):
             color=AI_COLOR,
         )
 
+        # input fields for player names
         self.name_inputs = []
         input_spacing = 50
         for i in range(5):
@@ -917,6 +924,7 @@ class StartPage(BasePage):
         return f"Bot {self.ai_name_counter}"
 
     def update_player_lists(self):
+        # make sure ai names and tokens match counts
         while len(self.ai_names) < self.ai_count:
             self.ai_names.append(self.generate_unique_ai_name())
         while len(self.ai_names) > self.ai_count:
@@ -960,6 +968,7 @@ class StartPage(BasePage):
 
         player_controls_y = input_y_start - 120
 
+        # draw player count controls
         human_text = self.button_font.render(
             f"Human Players: {self.human_count}", True, HUMAN_COLOR
         )
@@ -991,6 +1000,7 @@ class StartPage(BasePage):
         self.ai_minus_button.rect.y = button_y
         self.ai_plus_button.rect.y = button_y
 
+        # enable/disable +/- buttons based on limits
         self.human_minus_button.active = self.human_count > 1
         self.human_plus_button.active = self.human_count < 5 and self.total_players < 5
         self.ai_minus_button.active = self.ai_count > 0
@@ -1003,9 +1013,11 @@ class StartPage(BasePage):
 
         input_spacing = 50
 
+        # draw name inputs and token icons
         if self.token_selection_active:
             self.draw_token_selection()
         else:
+            # draw human player inputs
             for i in range(self.human_count):
                 self.name_inputs[i].active = i == self.active_input
                 self.name_inputs[i].text = (
@@ -1044,6 +1056,7 @@ class StartPage(BasePage):
                 else:
                     self.token_button_rects[i] = (token_rect, i, False)
 
+            # draw ai player placeholders
             for i in range(self.ai_count):
                 ai_input_rect = pygame.Rect(
                     (get_window_size()[0] - 300) // 2,
@@ -1095,6 +1108,7 @@ class StartPage(BasePage):
 
                 self.token_button_rects.append((token_rect, i, True))
 
+        # enable start button only if valid setup
         can_start = (
             all(name.strip() for name in self.player_names[: self.human_count])
             and self.total_players >= 2
@@ -1105,6 +1119,7 @@ class StartPage(BasePage):
 
         self.back_button.draw(self.screen)
 
+        # draw control hints
         controls = [
             "Controls:",
             "H/h - Adjust human players",
@@ -1127,6 +1142,7 @@ class StartPage(BasePage):
         pygame.display.flip()
 
     def draw_token_selection(self):
+        # draw the popup for choosing player tokens
         overlay = pygame.Surface(get_window_size(), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 180))
         self.screen.blit(overlay, (0, 0))
@@ -1265,6 +1281,7 @@ class StartPage(BasePage):
         self.close_button_rect = close_button_rect
 
     def handle_click(self, pos):
+        # handle clicks on buttons and inputs
         if self.token_selection_active:
             return self.handle_token_selection_click(pos)
 
@@ -1274,6 +1291,7 @@ class StartPage(BasePage):
         if self.back_button.check_hover(pos):
             return "back"
 
+        # check clicks on +/- buttons
         if self.human_minus_button.check_hover(pos) and self.human_count > 1:
             self.human_count -= 1
             self.active_input = -1
@@ -1312,6 +1330,7 @@ class StartPage(BasePage):
             self.total_players = self.human_count + self.ai_count
             return False
 
+        # check clicks on name input fields
         for i in range(self.human_count):
             rect = pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
@@ -1324,6 +1343,7 @@ class StartPage(BasePage):
                 self.active_input = i
                 return False
 
+        # check clicks on ai name placeholders (no editing here)
         for i in range(self.ai_count):
             ai_input_rect = pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
@@ -1336,6 +1356,7 @@ class StartPage(BasePage):
                 self.active_input = self.human_count + i
                 return False
 
+        # check clicks on token icons to open selection popup
         for rect, player_idx, is_ai in self.token_button_rects:
             if rect.collidepoint(pos):
                 self.token_selection_active = True
@@ -1347,6 +1368,7 @@ class StartPage(BasePage):
         return False
 
     def handle_token_selection_click(self, pos):
+        # handle clicks within the token selection popup
         if hasattr(self, "close_button_rect") and self.close_button_rect.collidepoint(
             pos
         ):
@@ -1426,6 +1448,7 @@ class StartPage(BasePage):
         self.back_button.check_hover(pos)
 
     def handle_key(self, event):
+        # handle keyboard input for navigation and text entry
         if self.token_selection_active:
             if event.key == pygame.K_ESCAPE:
                 self.token_selection_active = False
@@ -1557,6 +1580,7 @@ class StartPage(BasePage):
         return False
 
     def get_player_info(self):
+        # return the final player setup details
         all_names = (
             self.player_names[: self.human_count] + self.ai_names[: self.ai_count]
         )
@@ -1796,6 +1820,7 @@ class PlayerSelectPage(BasePage):
         ]
 
 
+# page showing game instructions
 class HowToPlayPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -1911,6 +1936,7 @@ class HowToPlayPage(BasePage):
         return None
 
 
+# page showing keyboard shortcuts
 class KeyboardShortcutsPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -1924,6 +1950,7 @@ class KeyboardShortcutsPage(BasePage):
             self.button_font,
         )
 
+        # list of shortcuts [key, description]
         self.shortcuts = [
             ["General", ""],
             ["Space/Enter", "Roll dice"],
@@ -2002,6 +2029,7 @@ class KeyboardShortcutsPage(BasePage):
             else:
                 right_column.append(shortcut)
 
+        # draw left column
         y_offset = panel_y + 10
         section_header_font = self.button_font
 
@@ -2029,6 +2057,7 @@ class KeyboardShortcutsPage(BasePage):
 
                 y_offset += 30
 
+        # draw right column
         y_offset = panel_y + 10
         right_x = panel_x + panel_width // 2
 
@@ -2082,6 +2111,7 @@ class KeyboardShortcutsPage(BasePage):
         return None
 
 
+# page for selecting game mode (full/abridged) and time limit
 class GameModePage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -2090,11 +2120,12 @@ class GameModePage(BasePage):
         self.game_mode = "full"
         self.time_limit = None
 
+        # input field for custom time limit
         self.custom_time_input = UIInput(
             pygame.Rect(
                 (get_window_size()[0] - 300) // 2,
                 get_window_size()[1] // 2 + 50,
-                300,
+                 300,
                 60,
             ),
             "30",
@@ -2152,6 +2183,7 @@ class GameModePage(BasePage):
         mode_title_rect = mode_title.get_rect(centerx=get_window_size()[0] // 2, y=100)
         self.screen.blit(mode_title, mode_title_rect)
 
+        # draw mode button
         self.mode_button.rect.y = get_window_size()[1] // 2 - 120
         self.mode_button.text = (
             f"Game Mode: {'Abridged' if self.game_mode == 'abridged' else 'Full Game'}"
@@ -2167,6 +2199,7 @@ class GameModePage(BasePage):
         )
         self.screen.blit(info_text, info_rect)
 
+        # draw time limit input if abridged mode
         if self.game_mode == "abridged":
             label_text = self.small_font.render(self.time_label, True, LIGHT_GRAY)
             label_rect = label_text.get_rect(
@@ -2177,6 +2210,7 @@ class GameModePage(BasePage):
 
             self.custom_time_input.draw(self.screen)
 
+            # show error message if input is bad
             if self.input_error:
                 error_text = self.small_font.render(self.input_error, True, ERROR_COLOR)
                 error_rect = error_text.get_rect(
@@ -2185,6 +2219,7 @@ class GameModePage(BasePage):
                 )
                 self.screen.blit(error_text, error_rect)
             else:
+                # show info about the time limit
                 try:
                     minutes = int(self.custom_time_input.text)
                     time_info = f"Game will end after {minutes} minutes"
@@ -2195,7 +2230,7 @@ class GameModePage(BasePage):
                     )
                     self.screen.blit(time_text, time_rect)
                 except ValueError:
-                    pass
+                    pass # ignore if text isn't a number yet
 
         self.start_button.draw(self.screen)
         self.back_button.draw(self.screen)
@@ -2217,6 +2252,7 @@ class GameModePage(BasePage):
         pygame.display.flip()
 
     def handle_click(self, pos):
+        # handle clicks on mode button, time input, start, back
         if self.mode_button.check_hover(pos):
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
@@ -2274,7 +2310,9 @@ class GameModePage(BasePage):
         self.back_button.check_hover(pos)
 
     def handle_key(self, event):
+        # handle keyboard input for time entry and navigation
         if self.custom_time_input.active and self.game_mode == "abridged":
+            # handle typing in time input field
             if event.key == pygame.K_RETURN:
                 try:
                     minutes = int(self.custom_time_input.text)
@@ -2305,6 +2343,7 @@ class GameModePage(BasePage):
                 return False
             return False
 
+        # handle other keys like mode change, start, back
         if event.key == pygame.K_m:
             self.game_mode = "abridged" if self.game_mode == "full" else "full"
             if self.game_mode == "abridged":
@@ -2348,6 +2387,7 @@ class GameModePage(BasePage):
         return False
 
     def get_game_settings(self):
+        # return the selected game mode and time limit
         settings = {"mode": self.game_mode, "time_limit": None}
 
         if self.game_mode == "abridged":
@@ -2376,6 +2416,7 @@ class GameModePage(BasePage):
         return settings
 
 
+# page shown when the game ends
 class EndGamePage(BasePage):
     def __init__(
         self,
@@ -2402,6 +2443,7 @@ class EndGamePage(BasePage):
         else:
             print("Using existing surface for EndGamePage")
 
+        # load end game background image
         try:
             endgame_bg_path = os.path.join(base_path, "assets/image/EndgamePageBG.jpg")
             self.original_endgame_bg = pygame.image.load(endgame_bg_path)
@@ -2410,6 +2452,7 @@ class EndGamePage(BasePage):
             print(f"Could not load end game background: {e}")
             self.original_endgame_bg = None
 
+        # buttons for play again, quit, credits
         button_height = 60
         self.play_again_button = UIButton(
             pygame.Rect(
@@ -2442,6 +2485,7 @@ class EndGamePage(BasePage):
             color=MODE_COLOR,
         )
 
+        # confetti effect
         self.confetti = []
         for _ in range(100):
             self.confetti.append(
@@ -2464,6 +2508,7 @@ class EndGamePage(BasePage):
             )
 
     def draw(self):
+        # draw background 
         window_size = get_window_size()
 
         if hasattr(self, "original_endgame_bg") and self.original_endgame_bg:
@@ -2494,6 +2539,7 @@ class EndGamePage(BasePage):
         else:
             self.draw_background()
 
+        # draw falling confetti
         for particle in self.confetti:
             particle["y"] += particle["speed"]
             if particle["y"] > get_window_size()[1]:
@@ -2506,6 +2552,7 @@ class EndGamePage(BasePage):
                 (particle["x"], particle["y"], particle["size"], particle["size"]),
             )
 
+        # draw the main results card
         card_width = 900
         card_height = 600
         card_x = (get_window_size()[0] - card_width) // 2
@@ -2522,12 +2569,14 @@ class EndGamePage(BasePage):
             border_radius=15,
         )
 
+        # draw winner text and trophy icon
         winner_text = self.title_font.render("Game Over!", True, ACCENT_COLOR)
         self.screen.blit(
             winner_text,
             (card_x + (card_width - winner_text.get_width()) // 2, card_y + 40),
         )
 
+        # draw trophy
         trophy_size = 60
         trophy_x = card_x + (card_width - trophy_size) // 2
         trophy_y = card_y + 100
@@ -2552,6 +2601,7 @@ class EndGamePage(BasePage):
             self.screen, gold_color, (trophy_x + 45, trophy_y + 10, 15, 20)
         )
 
+        # display winner name(s)
         if self.winner_name == "Tie" and self.tied_winners:
             winner_text = "It's a Tie!"
             winner_name = self.button_font.render(winner_text, True, SUCCESS_COLOR)
@@ -2576,6 +2626,7 @@ class EndGamePage(BasePage):
                 (card_x + (card_width - winner_name.get_width()) // 2, card_y + 180),
             )
 
+        # draw separator line
         pygame.draw.line(
             self.screen,
             LIGHT_GRAY,
@@ -2584,6 +2635,7 @@ class EndGamePage(BasePage):
             2,
         )
 
+        # display final asset values
         y_offset = card_y + 260
         if self.final_assets:
             assets_title = self.button_font.render("Final Assets", True, BLACK)
@@ -2617,6 +2669,7 @@ class EndGamePage(BasePage):
                 )
                 self.screen.blit(player_text, (x_pos, y_pos))
 
+        # display bankrupted players
         if self.bankrupted_players:
             y_offset = (
                 y_offset
@@ -2636,6 +2689,7 @@ class EndGamePage(BasePage):
             self.screen.blit(bankrupt_text, (card_x + 70, y_offset))
             y_offset += 40
 
+        # display players who quit
         if self.voluntary_exits:
             y_offset += 20
             voluntary_title = self.small_font.render(
@@ -2650,6 +2704,7 @@ class EndGamePage(BasePage):
             self.screen.blit(voluntary_text, (card_x + 70, y_offset))
             y_offset += 40
 
+        # display lap counts
         if self.lap_count:
             y_offset += 50
 
@@ -2731,6 +2786,7 @@ class EndGamePage(BasePage):
         return None
 
 
+# page showing game credits
 class CreditsPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -2750,7 +2806,7 @@ class CreditsPage(BasePage):
             "Owen Chen",
         ]
 
-        sound_manager.play_sound("credits")
+        sound_manager.play_sound("credits") # play credits sound
 
     def draw(self):
         self.draw_background()
@@ -2866,6 +2922,7 @@ class CreditsPage(BasePage):
         return None
 
 
+# page for selecting ai difficulty
 class AIDifficultyPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
@@ -2912,6 +2969,7 @@ class AIDifficultyPage(BasePage):
         text_rect = difficulty_text.get_rect(centerx=get_window_size()[0] // 2, y=100)
         self.screen.blit(difficulty_text, text_rect)
 
+        # draw easy/hard buttons and descriptions
         easy_desc = self.small_font.render(
             "AI will make basic decisions", True, LIGHT_GRAY
         )
@@ -2968,6 +3026,7 @@ class AIDifficultyPage(BasePage):
         return None
 
 
+# ui element for showing/interacting with ai mood 
 class AIEmotionUI:
 
     def __init__(self, screen, ai_player, game_instance):
@@ -2998,6 +3057,7 @@ class AIEmotionUI:
             button_size[1],
         )
 
+        # load happy/angry king images
         self.happy_image = None
         self.angry_image = None
         self.happy_hover = False
@@ -3020,6 +3080,7 @@ class AIEmotionUI:
 
         self.font = font_manager.get_font(18)
 
+        # easter egg stuff
         self.happy_clicks_after_limit = 0
         self.angry_clicks_after_limit = 0
         self.easter_egg_threshold = 5
@@ -3084,6 +3145,7 @@ class AIEmotionUI:
         self.screen.blit(self.happy_image, self.happy_button_rect)
         self.screen.blit(self.angry_image, self.angry_button_rect)
 
+        # draw mood value text
         mood_value = getattr(self.ai_player.ai_controller, "mood_modifier", 0)
         mood_text = f"Mood: {mood_value:.2f}"
         mood_color = (
@@ -3097,6 +3159,7 @@ class AIEmotionUI:
         )
         self.screen.blit(mood_surface, mood_rect)
 
+        # show easter egg counter if needed
         total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
         if total_clicks > 0 and total_clicks < self.easter_egg_threshold:
             egg_text = f"{self.easter_egg_threshold - total_clicks} more..."
@@ -3117,7 +3180,7 @@ class AIEmotionUI:
         return self.happy_hover or self.angry_hover
 
     def handle_click(self, pos):
-
+        # handle clicks on happy/angry buttons
         if not self.visible:
             return False
 
@@ -3172,6 +3235,7 @@ class AIEmotionUI:
         return False
 
     def _check_easter_egg(self):
+        # trigger youtube link if clicked enough times at max/min mood
         total_clicks = self.happy_clicks_after_limit + self.angry_clicks_after_limit
 
         if total_clicks >= self.easter_egg_threshold and not self.easter_egg_triggered:

@@ -1,7 +1,7 @@
 # Property Tycoon main.py
 # Created for 2025 UOS Year 2 G6046: Software Engineering Project-Group 5
 # -*- coding: utf-8 -*-
-# It contains the main function for the game.
+# Contains the main function for the game.
 
 import pygame
 import sys
@@ -33,6 +33,7 @@ logs_dir = "logs"
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
+# log file name with timestamp
 log_filename = os.path.join(
     logs_dir, f"game_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 )
@@ -104,7 +105,6 @@ file_handler.flush()
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-WINDOW_SIZE = (1280, 720)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
@@ -114,6 +114,7 @@ GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
 MAGENTA = (255, 0, 255)
 
+# game money stuff
 STARTING_BANK_MONEY = 50000
 STARTING_PLAYER_MONEY = 1500
 JAIL_FINE = 50
@@ -123,6 +124,7 @@ HOTEL_REPLACES_HOUSES = True  # When building a hotel, houses are returned to ba
 
 FPS = 30
 
+# how to play text
 GAME_INSTRUCTIONS = [
     "Use WASD or Arrow keys to move",
     "Press + or - to zoom",
@@ -136,6 +138,7 @@ GAME_INSTRUCTIONS = [
 ]
 
 
+# sets up the screen size
 async def apply_screen_settings(resolution):
     global WINDOW_SIZE
     WINDOW_SIZE = resolution
@@ -162,10 +165,12 @@ async def apply_screen_settings(resolution):
     return screen
 
 
+# checks player can build houses/hotels
 def can_develop(self, player):
     return self.dev_manager.can_develop(player)
 
 
+#  new game instance
 def create_game(player_info, game_settings):
     if not player_info or not game_settings:
         raise ValueError("Missing player info or game settings")
@@ -222,6 +227,7 @@ def create_game(player_info, game_settings):
     return game
 
 
+# main game loop 
 async def run_game(game, game_settings):
     running = True
     game_over_data = None
@@ -261,17 +267,20 @@ async def run_game(game, game_settings):
 
     sound_manager.play_music(loop=-1)
 
+    # main loop starts
     while running:
-        await asyncio.sleep(0)
+        await asyncio.sleep(0)  # let other tasks run
 
         current_time = pygame.time.get_ticks()
 
+        # flush logs sometimes
         if current_time - last_log_flush_time > log_flush_interval:
             last_log_flush_time = current_time
             for handler in logger.handlers:
                 if isinstance(handler, logging.FileHandler):
                     handler.flush()
 
+        # check time limit for abridged mode
         if (
             game_settings["mode"] == "abridged"
             and current_time - last_time_check > 1000
@@ -313,6 +322,7 @@ async def run_game(game, game_settings):
                 running = False
                 continue
 
+        # handle ai turn timeout
         if game.current_player_is_ai and not game.game_paused:
             if current_time - last_ai_progress_time > ai_timeout_duration:
                 logger.warning(
@@ -345,8 +355,10 @@ async def run_game(game, game_settings):
         if not game.current_player_is_ai:
             last_ai_progress_time = current_time
 
+        # draw everything
         renderer.draw()
 
+        # wait for animations if needed
         if hasattr(game, "waiting_for_animation") and game.waiting_for_animation:
             any_moving = any(player.is_moving for player in game.players)
             if not any_moving:
@@ -355,6 +367,7 @@ async def run_game(game, game_settings):
                 pygame.display.flip()
                 continue
 
+        # handle player inputs (mouse clicks, keys)
         for game_event in pygame.event.get():
             if game_event.type == pygame.QUIT:
                 safe_exit()
@@ -400,6 +413,7 @@ async def run_game(game, game_settings):
             elif game_event.type == pygame.MOUSEMOTION:
                 event_handler.handle_motion(game_event.pos)
 
+        # debug logging for game state
         current_time = pygame.time.get_ticks()
         if (
             hasattr(game, "last_debug_time")
@@ -448,6 +462,7 @@ async def run_game(game, game_settings):
                         logger.debug("\n=== Auction State Debug ===")
                         logger.debug("No auction data available")
 
+        # check auction state consistency
         if (
             hasattr(game.logic, "current_auction")
             and game.logic.current_auction
@@ -459,6 +474,7 @@ async def run_game(game, game_settings):
                 )
                 game.state = "AUCTION"
 
+        # handle ai turn if it's their go
         if (
             game.state == "ROLL"
             and game.logic.players
@@ -486,6 +502,7 @@ async def run_game(game, game_settings):
                 if game_over_data:
                     running = False
 
+        # handle ai auction bidding/passing
         if (
             game.state == "AUCTION"
             and hasattr(game.logic, "current_auction")
@@ -601,6 +618,7 @@ async def run_game(game, game_settings):
 
                 delattr(game, "auction_processing")
 
+        # check auction end condition
         any_moving = any(player.is_moving for player in game.players)
         if (
             not any_moving
@@ -615,6 +633,7 @@ async def run_game(game, game_settings):
             game.state = "ROLL"
             game.board.update_ownership(game.logic.properties)
 
+        # more state consistency checks for auction
         if (
             not any_moving
             and game.state == "AUCTION"
@@ -628,6 +647,7 @@ async def run_game(game, game_settings):
             )
             game.state = "ROLL"
 
+        # check if only one player left (game over condition)
         if (
             game_settings["mode"] == "full"
             and game_actions.check_one_player_remains()
@@ -646,14 +666,15 @@ async def run_game(game, game_settings):
             game_over_data = game_actions.end_abridged_game()
             running = False
 
-        pygame.display.flip()
+        pygame.display.flip()  # update the screen
 
-        clock.tick(FPS)
+        clock.tick(FPS)  # limit frame rate
 
     sound_manager.stop_music()
-    return game_over_data
+    return game_over_data  # return winner info etc.
 
 
+# shows the end game screen
 async def handle_end_game(game_over_data):
     logger.info("Entering handle_end_game function")
     logger.debug(f"Game over data: {game_over_data}")
@@ -729,6 +750,7 @@ async def handle_end_game(game_over_data):
                 current_page.handle_motion(end_event.pos)
 
 
+# fades the logo in and out
 async def show_logo_screen(screen, logo_path, scale_factor=0.5):
     try:
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -805,6 +827,7 @@ async def show_logo_screen(screen, logo_path, scale_factor=0.5):
         logger.error(f"Error showing logo screen: {e}")
 
 
+# shows the company and group logos
 async def show_company_logo(screen):
     base_path = os.path.dirname(os.path.abspath(__file__))
     from src.Sound_Manager import sound_manager
@@ -820,6 +843,7 @@ async def show_company_logo(screen):
     sound_manager.play_sound("game_start")
 
 
+# main entry point for the application
 async def main():
     font_manager.update_scale_factor(WINDOW_SIZE[0], WINDOW_SIZE[1])
     screen = await apply_screen_settings(WINDOW_SIZE)
@@ -831,17 +855,21 @@ async def main():
 
     clock = pygame.time.Clock()
 
+    # main menu loop
     while True:
         await asyncio.sleep(0)
+        # setup pages
         current_page = MainMenuPage(instructions=GAME_INSTRUCTIONS)
         player_info = None
         game_settings = None
         ai_difficulty = None
 
         game_running = True
+        # page navigation loop
         while game_running:
             current_page.draw()
 
+            # handle events for menu navigation
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     safe_exit()
@@ -925,8 +953,9 @@ async def main():
                                     game_settings["ai_difficulty"] = ai_difficulty
 
                                 game = create_game(player_info, game_settings)
-                                game_over_data = await run_game(game, game_settings)
+                                game_over_data = await run_game(game, game_settings)  # run the game loop
 
+                                # handle game ending and potential restart
                                 if game_over_data:
                                     play_again = await handle_end_game(game_over_data)
                                     if play_again:
@@ -945,6 +974,7 @@ async def main():
             clock.tick(FPS)
 
 
+# cleans up and exits the game properly
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
 
@@ -963,5 +993,6 @@ def safe_exit(code=0):
     sys.exit(code)
 
 
+# runs the main function when the script is executed
 if __name__ == "__main__":
     asyncio.run(main())

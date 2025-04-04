@@ -1,5 +1,5 @@
 # Property Tycoon Property.py
-# It contains the classes for the properties, such as the rent, the house costs, and the hotel costs.
+# Contains the classes for the properties, such as the rent, the house costs, and the hotel costs.
 
 
 class Property:

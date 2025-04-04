@@ -1,5 +1,5 @@
 # Property Tycoon DevelopmentMode.py
-# It contains the classes for the development mode, such as the development notification, and the development mode.
+# Contains the classes for the development mode, such as the development notification, and the development mode.
 
 import pygame
 import math

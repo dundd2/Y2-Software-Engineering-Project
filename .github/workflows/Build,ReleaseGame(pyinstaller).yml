@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pygame
         pip install pyinstaller
-        pip install -r 5.Codebase/requirements.txt
+        pip install -r 5.Codebase/Requirements.txt
 
     - name: Build executable for Windows
       working-directory: ${{ github.workspace }}/5.Codebase
@@ -59,7 +59,7 @@ jobs:
         pip install pygame
         pip install pyinstaller
         pip install pillow
-        pip install -r 5.Codebase/requirements.txt
+        pip install -r 5.Codebase/Requirements.txt
         brew install create-dmg
 
     - name: Create icon script
@@ -160,7 +160,7 @@ jobs:
           pip install --upgrade pip
           pip install wheel
           pip install pygame pyinstaller pillow
-          pip install -r requirements.txt
+          pip install -r Requirements.txt
 
           pyinstaller --onefile --name PropertyTycoon --add-data "assets:assets" Main.py
 
@@ -246,12 +246,16 @@ jobs:
 
           echo "Package built: ${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.deb"
           ls -l *.deb
+          
+          mv "${PKG_NAME}_${PKG_VERSION}_${PKG_ARCH}.deb" "PropertyTycoon-Linux-ARM64.deb"
+          echo "Renamed package to: PropertyTycoon-Linux-ARM64.deb"
+          ls -l PropertyTycoon-Linux-ARM64.deb
 
     - name: Upload Linux ARM64 .deb artifact
       uses: actions/upload-artifact@v4
       with:
         name: PropertyTycoon-linux-arm64-deb
-        path: "5.Codebase/*.deb"
+        path: "5.Codebase/PropertyTycoon-Linux-ARM64.deb"
         retention-days: 90
 
   release:
@@ -299,7 +303,7 @@ jobs:
           dist-windows/PropertyTycoon-Windows.exe
           dist-macos-dmg/PropertyTycoon-macOS.dmg
           dist-macos-zip/PropertyTycoon-macOS.zip
-          dist-linux-arm64/*.deb
+          dist-linux-arm64/PropertyTycoon-Linux-ARM64.deb
         name: Build-${{ steps.get_version.outputs.version }}
         tag_name: Build-${{ steps.get_version.outputs.version }}
         draft: false

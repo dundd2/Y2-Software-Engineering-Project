@@ -1,5 +1,5 @@
 # Property Tycoon Player.py
-# It contains the classes for the players, such as the money, the properties, and the position.
+# Contains the classes for the players, such as the money, the properties, and the position.
 
 import pygame
 import math
