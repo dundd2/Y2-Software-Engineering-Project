@@ -1,6 +1,6 @@
 # Property Tycoon - Build-17.02.2025V2 Update Log
 
-**Key Changes & New Features:**
+## Changes
 
 * **Auction System Overhaul:**  
   * **New Bidding Logic:**  The way players (both human and AI) bid on properties during auctions is now more dynamic and strategic.

@@ -23,7 +23,7 @@ def load_property_data(filename="assets/gamedata/PropertyTycoonBoardData.xlsx"):
             else:
                 raise FileNotFoundError(f"Neither {file_path} nor {alt_path} exists")
 
-                df = pd.read_excel(file_path, header=3)
+        df = pd.read_excel(file_path, header=3)
         df = df.fillna("")
         print(f"Successfully read Excel file. Found {len(df)} rows")
 

@@ -19,6 +19,14 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 * **Handle:** [@UOS-G6046-Group5](https://www.youtube.com/@UOS-G6046-Group5)
 * **Channel URL:** [https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
 
+## Download the Game
+
+Pre-built versions of Property Tycoon are available on [Releases page](https://github.com/Minosaji/Software-Engineering-Project/releases). 
+### Supported Systems:
+- **Windows:** Download  `PropertyTycoon-Windows.exe` 
+- **macOS:** Download `PropertyTycoon-macOS.dmg` 
+- **Linux ARM64:** Download `PropertyTycoon-Linux-ARM64.deb` 
+
 ## Technology Stack
 
 - **Programming Language:** Python 3.x
