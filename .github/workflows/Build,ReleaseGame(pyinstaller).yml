@@ -1,6 +1,8 @@
 # pyinstaller version, much faster but more laggy to the game
 # pls use the nuutka version if you have time to wait
 # pyinstaller will pack the game in python with all the independent files 
+# Create for Group 5 Software-Engineering-Project-Property Tycoon
+
 name: Build and Release Game (pyinstaller)
 
 on:

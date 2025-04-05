@@ -9,6 +9,7 @@
 # this is better than pyinstaller as it will pack the python script in C code and compile it to a executable file
 # the game will run faster and the file size will be smaller
 #Linux version only support pyinstaller Build
+# Create for Group 5 Software-Engineering-Project-Property Tycoon
 
 name: Build and Release Game (nuitka)
 
