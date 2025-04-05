@@ -61,41 +61,25 @@ class LogRedirector:
         self.logger = logger
         self.level = level
         self.buffer = ""
-        self._writing = False
 
     def write(self, buf):
-        if self._writing:
-            if sys.__stdout__ is not None:
-                try:
-                    sys.__stdout__.write(buf)
-                except (AttributeError, IOError):
-                    pass
-            return
+        for line in buf.rstrip().splitlines():
+            line_stripped = line.strip()
+            if line_stripped and not (line_stripped.startswith("File ") or line_stripped.startswith("Call stack:")):
+                self.logger.log(self.level, line.rstrip())
+        if self.level == logging.ERROR and sys.__stderr__:
+            try:
+                sys.__stderr__.write(buf)
+            except (AttributeError, IOError):
+                pass 
+        elif self.level == logging.INFO and sys.__stdout__:
+            try:
+                sys.__stdout__.write(buf)
+            except (AttributeError, IOError):
+                pass 
 
-        self._writing = True
-        try:
-            for line in buf.rstrip().splitlines():
-                if line.strip():
-                    self.logger.log(self.level, line.rstrip())
-
-            if sys.__stdout__ is not None:
-                try:
-                    sys.__stdout__.write(buf)
-                except (AttributeError, IOError):
-                    pass
-        except Exception as e:
-            if not self._writing:
-                print(f"Error in LogRedirector: {e}", file=sys.__stderr__)
-        finally:
-            self._writing = False
-
-    def flush(self):
-        try:
-            if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
-                sys.__stdout__.flush()
-        except (AttributeError, IOError):
-            pass
-
+    def flush(self):        
+        pass
 
 sys.stdout = LogRedirector(logger, logging.INFO)
 sys.stderr = LogRedirector(logger, logging.ERROR)
