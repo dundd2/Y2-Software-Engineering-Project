@@ -256,13 +256,13 @@ class BasePage:
             self.screen.blit(self.logo_image, logo_rect)
         elif isinstance(self, MainMenuPage) or isinstance(self, HowToPlayPage):
             title_shadow = self.title_font.render(
-                "Property Tycoon Beta 04.04.2025", True, BLACK
+                "Property Tycoon V1.0 09.04.2025", True, BLACK
             )
             title_glow = self.title_font.render(
-                "Property Tycoon Beta 04.04.2025", True, ACCENT_COLOR
+                "Property Tycoon V1.0 09.04.2025", True, ACCENT_COLOR
             )
             title_text = self.title_font.render(
-                "Property Tycoon Beta 04.04.2025", True, WHITE
+                "Property Tycoon V1.0 09.04.2025", True, WHITE
             )
             title_rect = title_text.get_rect(centerx=window_size[0] // 2, y=80)
             shadow_rect = title_rect.copy()
@@ -349,15 +349,23 @@ class MainMenuPage(BasePage):
             self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
             self.github_rect = self.github_logo.get_rect(topleft=(80, 20))
 
+            rtd_path = os.path.join(base_path, "assets/image/read the docs logo.png")
+            self.rtd_logo = pygame.image.load(rtd_path)
+            self.rtd_logo = pygame.transform.scale(self.rtd_logo, (40, 40))
+            self.rtd_rect = self.rtd_logo.get_rect(topleft=(140, 20))
+
             self.github_hover = False
             self.youtube_hover = False
+            self.rtd_hover = False
 
             self.github_url = "https://github.com/Minosaji/Software-Engineering-Project"
             self.youtube_url = "https://www.youtube.com/@UOS-G6046-Group5"
+            self.rtd_url = "https://minosaji.github.io/Software-Engineering-Project/"
         except (pygame.error, FileNotFoundError) as e:
             print(f"Could not load social media logos: {e}")
             self.github_logo = None
             self.youtube_logo = None
+            self.rtd_logo = None
 
     def draw(self):
         self.draw_background()
@@ -405,8 +413,27 @@ class MainMenuPage(BasePage):
                 )
             self.screen.blit(self.github_logo, self.github_rect)
 
+        if hasattr(self, "rtd_logo") and self.rtd_logo:
+            if self.rtd_hover:
+                glow_surface = pygame.Surface(
+                    (self.rtd_rect.width + 10, self.rtd_rect.height + 10),
+                    pygame.SRCALPHA,
+                )
+                pygame.draw.rect(
+                    glow_surface,
+                    (*ACCENT_COLOR, 150),
+                    pygame.Rect(
+                        0, 0, glow_surface.get_width(), glow_surface.get_height()
+                    ),
+                    border_radius=5,
+                )
+                self.screen.blit(
+                    glow_surface, (self.rtd_rect.x - 5, self.rtd_rect.y - 5)
+                )
+            self.screen.blit(self.rtd_logo, self.rtd_rect)
+
         version_text = self.version_font.render(
-            "Build Version: Alpha 04.04.2025", True, ERROR_COLOR
+            "Build Version: V1.0 09.04.2025", True, ERROR_COLOR
         )
         version_rect = version_text.get_rect(
             right=get_window_size()[0] - 20, bottom=get_window_size()[1] - 20
@@ -451,6 +478,12 @@ class MainMenuPage(BasePage):
                 print(f"Opening YouTube URL: {self.youtube_url}")
             except Exception as e:
                 print(f"Error opening YouTube URL: {e}")
+        elif hasattr(self, "rtd_rect") and self.rtd_rect.collidepoint(pos):
+            try:
+                webbrowser.open(self.rtd_url)
+                print(f"Opening Read the Docs URL: {self.rtd_url}")
+            except Exception as e:
+                print(f"Error opening Read the Docs URL: {e}")
         return None
 
     def handle_motion(self, pos):
@@ -462,6 +495,8 @@ class MainMenuPage(BasePage):
             self.github_hover = self.github_rect.collidepoint(pos)
         if hasattr(self, "youtube_rect"):
             self.youtube_hover = self.youtube_rect.collidepoint(pos)
+        if hasattr(self, "rtd_rect"):
+            self.rtd_hover = self.rtd_rect.collidepoint(pos)
 
     def handle_key(self, event):
         if event.key == pygame.K_RETURN:
@@ -783,7 +818,7 @@ class StartPage(BasePage):
     def __init__(self, instructions=None):
         super().__init__(instructions=instructions)
         self.screen = pygame.display.set_mode(get_window_size())
-        pygame.display.set_caption("Property Tycoon Beta 04.04.2025")
+        pygame.display.set_caption("Property Tycoon V1.0 09.04.2025")
         self.title_font = font_manager.get_font(82)
         self.button_font = font_manager.get_font(42)
         self.version_font = font_manager.get_font(28)

@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sound Manager Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Font Manager Module" href="font_manager.html" />
+    <link rel="prev" title="Load Excel Module" href="loadexcel.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sound Manager Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.Sound_Manager.SoundManager"><code class="docutils literal notranslate"><span class="pre">SoundManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.get_missing_files"><code class="docutils literal notranslate"><span class="pre">SoundManager.get_missing_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.load_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.load_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.load_settings"><code class="docutils literal notranslate"><span class="pre">SoundManager.load_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.load_sounds"><code class="docutils literal notranslate"><span class="pre">SoundManager.load_sounds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.pause_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.pause_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.play_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.play_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.play_sound"><code class="docutils literal notranslate"><span class="pre">SoundManager.play_sound()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.save_settings"><code class="docutils literal notranslate"><span class="pre">SoundManager.save_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.set_music_volume"><code class="docutils literal notranslate"><span class="pre">SoundManager.set_music_volume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.set_sound_volume"><code class="docutils literal notranslate"><span class="pre">SoundManager.set_sound_volume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.stop_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.stop_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.unpause_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.unpause_music()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Sound Manager Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/sound_manager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sound-manager-module">
+<h1>Sound Manager Module<a class="headerlink" href="#sound-manager-module" title="Link to this heading"></a></h1>
+<p>This module provides a centralized <cite>SoundManager</cite> class for loading, playing, and managing sound effects and background music in the game. It handles volume control, settings persistence (via <cite>settings.json</cite>), and provides a simple interface for playing various game sounds identified by logical names.</p>
+<p>The Sound Manager is responsible for:</p>
+<ul class="simple">
+<li><p>Initializing the Pygame mixer.</p></li>
+<li><p>Loading sound effect files (<cite>.mp3</cite>) into memory, associated with specific names (e.g., “dice_roll”, “buy_property”).</p></li>
+<li><p>Loading background music files.</p></li>
+<li><p>Playing loaded sound effects on demand.</p></li>
+<li><p>Playing, stopping, pausing, and unpausing background music.</p></li>
+<li><p>Managing separate volume levels for sound effects and music.</p></li>
+<li><p>Loading and saving volume settings to a <cite>settings.json</cite> file.</p></li>
+<li><p>Tracking and reporting any missing sound or music files.</p></li>
+</ul>
+<dl class="py class" id="module-src.Sound_Manager">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Sound_Manager.</span></span><span class="sig-name descname"><span class="pre">SoundManager</span></span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.get_missing_files">
+<span class="sig-name descname"><span class="pre">get_missing_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.get_missing_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.get_missing_files" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.load_music">
+<span class="sig-name descname"><span class="pre">load_music</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">music_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'background_music.mp3'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.load_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.load_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.load_settings">
+<span class="sig-name descname"><span class="pre">load_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.load_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.load_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.load_sounds">
+<span class="sig-name descname"><span class="pre">load_sounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.load_sounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.load_sounds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.pause_music">
+<span class="sig-name descname"><span class="pre">pause_music</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.pause_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.pause_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.play_music">
+<span class="sig-name descname"><span class="pre">play_music</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.play_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.play_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.play_sound">
+<span class="sig-name descname"><span class="pre">play_sound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sound_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.play_sound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.play_sound" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.save_settings">
+<span class="sig-name descname"><span class="pre">save_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.save_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.save_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.set_music_volume">
+<span class="sig-name descname"><span class="pre">set_music_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.set_music_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.set_music_volume" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.set_sound_volume">
+<span class="sig-name descname"><span class="pre">set_sound_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.set_sound_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.set_sound_volume" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.stop_music">
+<span class="sig-name descname"><span class="pre">stop_music</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.stop_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.stop_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.unpause_music">
+<span class="sig-name descname"><span class="pre">unpause_music</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.unpause_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.unpause_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-de0c91781bb11aed16b05d5fe3ddbb9d606ad389.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+class SoundManager {
+    + sound_volume : float
+    + music_volume : float
+    - sounds : Dict&lt;str, pygame.mixer.Sound&gt;
+    - base_path : str
+    - sound_path : str
+    - music_path : str
+    - settings_path : str
+    - missing_files : List&lt;str&gt;
+
+    + __init__(): void
+    + load_settings(): void
+    + save_settings(): void
+    + load_sounds(): bool
+    + load_music(music_file: str = &quot;background_music.mp3&quot;): bool
+    + play_sound(sound_name: str): void
+    + play_music(loop: int = -1): void
+    + stop_music(): void
+    + pause_music(): void
+    + unpause_music(): void
+    + set_sound_volume(volume: float): void
+    + set_music_volume(volume: float): void
+    + get_missing_files(): List&lt;str&gt;
+}
+
+class &quot;pygame.mixer&quot; as PygameMixer {
+    + init(): void
+    + Sound(filepath: str): SoundInstance
+    + music: MusicModule
+}
+
+class &quot;pygame.mixer.Sound&quot; as SoundInstance {
+    + set_volume(volume: float): void
+    + play(): void
+}
+
+class &quot;pygame.mixer.music&quot; as MusicModule {
+    + load(filepath: str): void
+    + set_volume(volume: float): void
+    + play(loop: int): void
+    + stop(): void
+    + pause(): void
+    + unpause(): void
+}
+
+class &quot;json&quot; as JSON {
+    + load(file_handle): dict
+    + dump(data: dict, file_handle): void
+}
+
+class &quot;os&quot; as OS {
+    + path: OsPath
+    + makedirs(path: str, exist_ok: bool): void
+}
+
+class &quot;os.path&quot; as OsPath {
+    + dirname(path: str): str
+    + abspath(path: str): str
+    + join(...): str
+    + exists(path: str): bool
+}
+
+SoundManager ..&gt; PygameMixer : uses &gt;
+SoundManager &quot;1&quot; *--&gt; &quot;0..*&quot; SoundInstance : holds in sounds{} &gt;
+SoundManager ..&gt; MusicModule : uses &gt;
+SoundManager ..&gt; JSON : uses for settings &gt;
+SoundManager ..&gt; OS : uses for paths &gt;
+
+note right of SoundManager : Singleton instance `sound_manager` is created.
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">SoundManager Class Diagram</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-0a99af90cc974f7bfd31c293c798cd2b36e11994.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;SoundManager.__init__&quot; as Init
+participant &quot;pygame.mixer&quot; as Mixer
+participant &quot;os&quot; as OS
+participant &quot;load_settings()&quot; as LoadSettings
+
+Caller -&gt; Init : SoundManager()
+activate Init
+Init -&gt; Mixer : init()
+Init -&gt; Init : Set default volumes (sound=0.7, music=0.5)
+Init -&gt; Init : Initialize sounds = {}
+Init -&gt; OS : path.dirname(...)
+OS --&gt; Init : base_path
+Init -&gt; OS : path.join(base_path, &quot;assets&quot;, &quot;sound&quot;)
+OS --&gt; Init : sound_path
+Init -&gt; OS : path.join(base_path, &quot;assets&quot;, &quot;music&quot;)
+OS --&gt; Init : music_path
+Init -&gt; OS : makedirs(sound_path, exist_ok=True)
+Init -&gt; OS : makedirs(music_path, exist_ok=True)
+Init -&gt; OS : path.join(base_path, &quot;settings.json&quot;)
+OS --&gt; Init : settings_path
+Init -&gt; LoadSettings : load_settings()
+activate LoadSettings
+    LoadSettings -&gt; OS : path.exists(settings_path)
+    OS --&gt; LoadSettings : exists
+    alt exists
+        LoadSettings -&gt; OS : open(settings_path, &quot;r&quot;)
+        OS --&gt; LoadSettings : file_handle
+        LoadSettings -&gt; LoadSettings : json.load(file_handle)
+        LoadSettings -&gt; Init : Update self.sound_volume
+        LoadSettings -&gt; Init : Update self.music_volume
+        LoadSettings -&gt; LoadSettings : close file_handle
+    end
+LoadSettings --&gt; Init
+deactivate LoadSettings
+Init -&gt; Init : Initialize missing_files = []
+Init --&gt; Caller : SoundManager instance
+deactivate Init
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Initialization</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-d9097171b3ecbf6048664c6ce0499af7ed2fa227.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;SoundManager&quot; as SM
+participant &quot;os.path&quot; as OSPath
+participant &quot;pygame.mixer&quot; as Mixer
+participant &quot;Sound&quot; as Sound
+
+Caller -&gt; SM : load_sounds()
+activate SM
+SM -&gt; SM : missing_files = []
+SM -&gt; SM : required_sounds = {&quot;click&quot;: &quot;click.mp3&quot;, etc.}
+
+loop for each sound_name, file_name in required_sounds
+    SM -&gt; OSPath : join(sound_path, file_name)
+    OSPath --&gt; SM : file_path
+    SM -&gt; OSPath : exists(file_path)
+    OSPath --&gt; SM : exists
+
+    alt file exists
+        SM -&gt; Mixer : Sound(file_path)
+        Mixer --&gt; SM : sound_instance
+        SM -&gt; Sound : set_volume(sound_volume)
+        SM -&gt; SM : sounds[sound_name] = sound_instance
+    else
+        SM -&gt; SM : missing_files.append(file_name)
+        SM -&gt; SM : print(&quot;Missing sound file&quot;)
+    end
+end
+
+SM -&gt; SM : Check if missing_files is empty
+SM --&gt; Caller : True if all loaded, False otherwise
+deactivate SM
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Loading Sounds</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-2ae808b20dff44c55590c1c0acc9bd0f8f05a6c5.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;SoundManager&quot; as SM
+participant &quot;os.path&quot; as OSPath
+participant &quot;pygame.mixer.music&quot; as Music
+
+Caller -&gt; SM : load_music(music_file)
+activate SM
+SM -&gt; OSPath : join(music_path, music_file)
+OSPath --&gt; SM : full_music_path
+SM -&gt; OSPath : exists(full_music_path)
+OSPath --&gt; SM : exists
+
+alt file exists
+    SM -&gt; Music : load(full_music_path)
+    SM -&gt; Music : set_volume(music_volume)
+    SM --&gt; Caller : True (Success)
+else
+    SM -&gt; SM : missing_files.append(music_file)
+    SM -&gt; SM : print(&quot;Missing music file&quot;)
+    SM --&gt; Caller : False (Failure)
+end
+deactivate SM
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Loading Music</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-f5ac11dd2f48858069d37b10877b824301142e4e.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;SoundManager&quot; as SM
+participant &quot;Sound&quot; as Sound
+
+Caller -&gt; SM : play_sound(&quot;some_sound&quot;)
+activate SM
+
+alt &quot;some_sound&quot; in sounds dictionary
+    SM -&gt; Sound : Get sounds[&quot;some_sound&quot;]
+    SM -&gt; Sound : play()
+else
+    SM -&gt; SM : print(&quot;Sound not loaded&quot;)
+end
+
+SM --&gt; Caller
+deactivate SM
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Playing a Sound</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-5150c90d0ed95a9ceca0226622515fc59bc1b038.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;SoundManager&quot; as SM
+participant &quot;Sound&quot; as Sound
+participant &quot;save_settings()&quot; as SaveSettings
+
+Caller -&gt; SM : set_sound_volume(new_volume)
+activate SM
+
+SM -&gt; SM : sound_volume = max(0.0, min(1.0, new_volume))
+
+loop for each sound in sounds.values()
+    SM -&gt; Sound : set_volume(sound_volume)
+end
+
+SM -&gt; SaveSettings : save_settings()
+activate SaveSettings
+SaveSettings --&gt; SM
+deactivate SaveSettings
+
+SM --&gt; Caller
+deactivate SM
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Setting Volume</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-2c54d028cffa3b4d1ae83326146b2452145328a5.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;SoundManager.save_settings&quot; as SaveSettings
+participant &quot;os.path&quot; as OSPath
+participant &quot;json&quot; as JSON
+
+Caller -&gt; SaveSettings : save_settings()
+activate SaveSettings
+
+SaveSettings -&gt; SaveSettings : existing_settings = {}
+SaveSettings -&gt; OSPath : exists(settings_path)
+OSPath --&gt; SaveSettings : exists
+
+alt file exists
+    SaveSettings -&gt; SaveSettings : open(settings_path, &quot;r&quot;)
+    SaveSettings -&gt; JSON : load(file_handle)
+    JSON --&gt; SaveSettings : loaded_settings
+    SaveSettings -&gt; SaveSettings : existing_settings = loaded_settings
+    SaveSettings -&gt; SaveSettings : close file_handle
+end
+
+SaveSettings -&gt; SaveSettings : existing_settings[&quot;sound_volume&quot;] = sound_volume
+SaveSettings -&gt; SaveSettings : existing_settings[&quot;music_volume&quot;] = music_volume
+SaveSettings -&gt; SaveSettings : open(settings_path, &quot;w&quot;)
+SaveSettings -&gt; JSON : dump(existing_settings, file_handle)
+SaveSettings -&gt; SaveSettings : close file_handle
+
+SaveSettings --&gt; Caller
+deactivate SaveSettings
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Saving Settings</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="loadexcel.html" class="btn btn-neutral float-left" title="Load Excel Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="font_manager.html" class="btn btn-neutral float-right" title="Font Manager Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

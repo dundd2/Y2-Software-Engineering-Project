@@ -1,0 +1,737 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Event Handler Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Renderer Module" href="game_renderer.html" />
+    <link rel="prev" title="Game Actions Module" href="game_actions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Event Handler Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependency-diagram">Dependency Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simplified-state-handling">Simplified State Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-diagram">Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#activity-diagrams">Activity Diagrams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagrams">Sequence Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-methods-overview">Key Methods Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.GameEventHandler">API Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler"><code class="docutils literal notranslate"><span class="pre">GameEventHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler._process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameEventHandler._process_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_auction_click"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_auction_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_auction_input"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_auction_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_click"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_input"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_key"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_key()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameEventHandler.GameEventHandler.handle_motion"><code class="docutils literal notranslate"><span class="pre">GameEventHandler.handle_motion()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Event Handler Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game_event_handler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-event-handler-module">
+<h1>Game Event Handler Module<a class="headerlink" href="#game-event-handler-module" title="Link to this heading"></a></h1>
+<p>This module defines the <cite>GameEventHandler</cite> class, responsible for capturing and processing all user inputs (keyboard, mouse clicks, mouse movement) during the main game loop. It acts as a central dispatcher, interpreting events based on the current game state and delegating actions to other game components like <cite>GameActions</cite>, <cite>GameLogic</cite>, <cite>DevelopmentManager</cite>, and the main <cite>Game</cite> object.</p>
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="dependency-diagram">
+<h3>Dependency Diagram<a class="headerlink" href="#dependency-diagram" title="Link to this heading"></a></h3>
+<p>Visualizes the primary dependencies of the <cite>GameEventHandler</cite>.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-56062bcdc3aba8c6b2d28fbbfb02a38afe32ad84.png" alt="&#64;startuml
+package &quot;GameEventHandler Module&quot; {
+  [GameEventHandler]
+}
+
+package &quot;Game Core&quot; {
+  [Game]
+  [GameActions]
+  [GameLogic]
+  [DevelopmentManager]
+  [Board]
+  [Renderer]
+  [Player]
+  [AIEmotionUI]
+}
+
+package &quot;Data Structures&quot; {
+  [Cards]
+}
+
+package &quot;Utilities&quot; {
+  [Sound_Manager]
+}
+
+package &quot;External Libraries&quot; {
+  [pygame]
+  [sys]
+}
+
+[GameEventHandler] --&gt; [Game]
+[GameEventHandler] --&gt; [GameActions]
+[GameEventHandler] --&gt; [Cards]
+[GameEventHandler] --&gt; [Sound_Manager]
+[GameEventHandler] --&gt; [pygame]
+[GameEventHandler] --&gt; [sys]
+
+[GameEventHandler] --&gt; [GameLogic]
+[GameEventHandler] --&gt; [DevelopmentManager]
+[GameEventHandler] --&gt; [Board]
+[GameEventHandler] --&gt; [Renderer]
+[GameEventHandler] --&gt; [Player]
+[GameEventHandler] --&gt; [AIEmotionUI]
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">GameEventHandler Dependencies</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="simplified-state-handling">
+<h3>Simplified State Handling<a class="headerlink" href="#simplified-state-handling" title="Link to this heading"></a></h3>
+<p>Shows the main game states the <cite>GameEventHandler</cite> explicitly checks and how input handling differs.</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-ea11e6cb290a4ca186789edd7467d36e30d9b9b5.png" alt="&#64;startuml
+[*] --&gt; IDLE : Game Start
+
+state &quot;Input Handling&quot; as Handling {
+  IDLE : Awaiting Input
+  ROLL : Handle Roll/Quit/Develop/Pause Click/Key
+  BUY : Handle Yes/No Click/Key
+  AUCTION : Handle Bid/Pass Click/Key, Numeric Input
+  DEVELOPMENT : Handle DevManager Click/Key, Complete Button
+  POPUP_SHOWN : Handle Click/Key to dismiss
+  CARD_SHOWN : Handle Click/Key to dismiss
+  GAME_OVER : Input Ignored
+}
+
+IDLE --&gt; Handling : Event Occurs
+Handling --&gt; Handling : Process Event (State may change via GameActions/GameLogic)
+Handling --&gt; GAME_OVER : Game Over Condition Met
+
+note right of Handling
+  The handler reacts differently
+  based on `self.game.state`,
+  `self.game.development_mode`,
+  `self.game.show_popup`, etc.
+  State transitions are often
+  triggered by calls to
+  `self.game_actions`.
+end note
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Simplified State Handling in GameEventHandler</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-diagram">
+<h3>Class Diagram<a class="headerlink" href="#class-diagram" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-7610a6c83d45f48a001ed422b52ecfea15d3bd24.png" alt="&#64;startuml
+class GameEventHandler {
+  - game: Game
+  - game_actions: GameActions
+  + handle_input(): any
+  + handle_click(pos: tuple): any
+  + handle_motion(pos: tuple): bool
+  + handle_key(event: pygame.Event): any
+  # handle_auction_input(event: pygame.Event)
+  # _process_auction_bid(current_bidder: dict)
+  # handle_auction_click(pos: tuple): bool
+}
+
+GameEventHandler o--&gt; Game
+GameEventHandler o--&gt; GameActions
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">GameEventHandler Class Diagram</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="activity-diagrams">
+<h3>Activity Diagrams<a class="headerlink" href="#activity-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Overall Click Handling Flow (`handle_click`)</strong></p>
+<p>Provides a high-level view of the decision-making process within <cite>handle_click</cite>.</p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-a7bace0b1250296be33d1388e29972fb2786869f.png" alt="&#64;startuml
+start
+if (game.game_over) then (yes)
+  stop
+endif
+
+if (DevManager active and Complete button clicked) then (yes)
+  :Deactivate DevManager;
+  :Set state to ROLL;
+  :Add message;
+  stop
+endif
+
+if (DevManager active and state not AUCTION/BUY) then (yes)
+  :dev_result = DevManager.handle_click(pos);
+  if (dev_result indicates game over) then (yes)
+    :return dev_result;
+    stop
+  else (no)
+    note right: Continue processing
+  endif
+endif
+
+if (AI Emotion UI clicked) then (yes)
+  :EmotionUI.handle_click(pos);
+  stop
+endif
+
+if (Popup shown and clicked) then (yes)
+  :game.show_popup = False;
+  stop
+endif
+
+if (Card shown and clicked) then (yes)
+  :game.show_card = False;
+  stop
+endif
+
+if (Development Mode active) then (yes)
+  :dev_result = DevManager.handle_click(pos);
+   if (dev_result is not None) then (yes)
+     :return dev_result;
+     stop
+   else (no)
+     note right: Continue processing
+   endif
+endif
+
+partition &quot;State-Specific Handling&quot; {
+  if (game.state == ROLL) then (yes)
+    if (Human Player) then (yes)
+      if (Develop button clicked) then (yes)
+        :Activate DevManager;
+        stop
+      elseif (Roll button clicked) then (yes)
+        :game_actions.play_turn();
+        stop
+      elseif (Pause button clicked) then (yes)
+        :Toggle Pause;
+        stop
+      elseif (Quit button clicked) then (yes)
+        :Handle Voluntary Exit;
+        note right: May lead to game over
+        stop
+      else (no)
+        note right: No relevant button
+      endif
+    else (AI Player)
+      note right: Click ignored for AI
+    endif
+  elseif (game.state == BUY) then (yes)
+    if (Yes button clicked) then (yes)
+      :game_actions.handle_buy_decision(True);
+      stop
+    elseif (No button clicked) then (yes)
+      :game_actions.handle_buy_decision(False);
+      stop
+    else (no)
+      note right: Click ignored
+    endif
+  elseif (game.state == AUCTION) then (yes)
+    :handle_auction_click(pos);
+    note right: May lead to state change
+    stop
+  else (other state)
+    note right: Click ignored
+  endif
+}
+stop
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Activity Diagram: handle_click Logic Flow</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagrams">
+<h3>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Main Input Loop Dispatch</strong></p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-b9a06e5e5c1fbc4707eb224e1e708005b7b0b1d0.png" alt="&#64;startuml
+participant &quot;pygame_loop&quot; as PyLoop
+participant &quot;handler:GameEventHandler&quot; as Handler
+participant &quot;game:Game&quot; as Game
+participant &quot;game_actions:GameActions&quot; as Actions
+
+PyLoop -&gt; Handler : handle_input()
+activate Handler
+loop for event in pygame.event.get()
+  alt event.type == QUIT
+    Handler -&gt; pygame : quit()
+    Handler -&gt; sys : exit()
+  else event.type == MOUSEBUTTONDOWN
+    Handler -&gt; Handler : handle_click(event.pos)
+    activate Handler
+    Handler --&gt; Handler : result
+    deactivate Handler
+    alt result indicates game over
+      Handler --&gt; PyLoop : return result
+    end
+  else event.type == MOUSEMOTION
+    Handler -&gt; Handler : handle_motion(event.pos)
+    activate Handler
+    Handler --&gt; Handler : return
+    deactivate Handler
+  else event.type == KEYDOWN
+    Handler -&gt; Handler : handle_key(event)
+    activate Handler
+    Handler --&gt; Handler : result
+    deactivate Handler
+    alt result indicates game over
+      Handler --&gt; PyLoop : return result
+    end
+  end
+end
+Handler --&gt; PyLoop : return None
+deactivate Handler
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Input Handling Dispatch</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Click Handling (ROLL State)</strong></p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-d10e850d5b62c96f25b3f292ebe88ada6d5a0d88.png" alt="&#64;startuml
+actor Player
+participant &quot;handler:GameEventHandler&quot; as Handler
+participant &quot;game:Game&quot; as Game
+participant &quot;development:DevelopmentMode&quot; as DevMan
+participant &quot;actions:GameActions&quot; as Actions
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;player:Player&quot; as PlayerUI
+participant &quot;board:GameBoard&quot; as Board
+
+Player -&gt; Handler : handle_click(pos)
+activate Handler
+Handler -&gt; Game : state == &quot;ROLL&quot;
+Handler -&gt; Game : current_player (logic)
+Handler -&gt; Game : player_obj (UI)
+alt player_obj is Human
+  alt pos collides develop_button
+    Handler -&gt; Game : check owned_properties
+    alt owned_properties exist
+      Handler -&gt; Game : development_mode = True
+      Handler -&gt; DevMan : activate(current_player)
+      Handler -&gt; Game : board.add_message(...)
+      Handler --&gt; Handler : return False
+    end
+  else pos collides roll_button
+    Handler -&gt; Game : check not player.is_moving
+    alt not moving
+      Handler -&gt; Game : development_mode = False
+      Handler -&gt; DevMan : deactivate()
+      Handler -&gt; Actions : play_turn()
+      Handler --&gt; Handler : return False
+    end
+  end
+end
+Handler --&gt; Player : return None
+deactivate Handler
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram - Handle Click (Normal Turn)</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Click Handling (BUY State)</strong></p>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-7c15570343d5b22a616ad9381eed1b9f62ebd3ce.png" alt="&#64;startuml
+participant &quot;handler:GameEventHandler&quot; as Handler
+participant &quot;game:Game&quot; as Game
+participant &quot;game_actions:GameActions&quot; as Actions
+participant &quot;renderer:Renderer&quot; as Renderer
+
+Handler -&gt; Handler : handle_click(pos)
+activate Handler
+Handler -&gt; Game : check game.state == &quot;BUY&quot;
+Handler -&gt; Game : check game.current_property is not None
+Handler -&gt; Game : get current_player (logic)
+alt player in jail
+  Handler -&gt; Game : board.add_message(...)
+  Handler -&gt; Game : state = &quot;ROLL&quot;
+  Handler -&gt; Renderer : draw()
+  Handler -&gt; pygame.display : flip()
+  Handler --&gt; Handler : return False
+end
+alt pos collides yes_button
+  Handler -&gt; Actions : handle_buy_decision(True)
+  Handler -&gt; Game : dev_manager.deactivate()
+  Handler -&gt; Renderer : draw()
+  Handler -&gt; pygame.display : flip()
+  Handler --&gt; Handler : return False
+else pos collides no_button
+  Handler -&gt; Actions : handle_buy_decision(False)
+  Handler -&gt; Game : dev_manager.deactivate()
+  Handler -&gt; Renderer : draw()
+  Handler -&gt; pygame.display : flip()
+  Handler --&gt; Handler : return False
+end
+Handler --&gt; Handler : return False
+deactivate Handler
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Click Handling (BUY State)</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Auction Click Handling</strong></p>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-b255d86771bda2ecdb22c06d499d88363cffe0ff.png" alt="&#64;startuml
+participant &quot;handler:GameEventHandler&quot; as Handler
+participant &quot;game:Game&quot; as Game
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;sound_manager:Sound_Manager&quot; as SM
+
+Handler -&gt; Handler : handle_auction_click(pos)
+activate Handler
+Handler -&gt; Logic : get current_auction data
+alt auction invalid or completed
+  Handler -&gt; Game : state = &quot;ROLL&quot;
+  Handler --&gt; Handler : return True
+end
+Handler -&gt; Logic : get current_bidder
+Handler -&gt; Game : find current_bidder_obj (UI)
+alt bidder is AI or exited
+  Handler -&gt; Logic : add bidder to passed_players
+  Handler -&gt; Logic : move_to_next_bidder()
+  Handler --&gt; Handler : return False
+end
+
+alt pos collides bid button
+  Handler -&gt; Handler : _process_auction_bid(current_bidder)
+  activate Handler
+  Handler -&gt; Logic : process_auction_bid(bidder, amount)
+  alt success
+    Handler -&gt; Game : auction_bid_amount = &quot;&quot;
+    Handler -&gt; SM : play_sound(&quot;auction_bid&quot;)
+  end
+  Handler -&gt; Game : board.add_message(message)
+  Handler --&gt; Handler : return
+  deactivate Handler
+else pos collides pass button
+  Handler -&gt; Logic : process_auction_pass(current_bidder)
+  Handler -&gt; Game : board.add_message(message)
+end
+
+Handler -&gt; Logic : check_auction_end()
+alt auction completed
+  Handler -&gt; Logic : get auction winner/property/bid
+  Handler -&gt; Game : board.add_message(winner_message)
+  alt winner exists
+     Handler -&gt; SM : play_sound(&quot;auction_win&quot;)
+  end
+  Handler -&gt; Logic : current_auction = None
+  Handler -&gt; Game : auction_end_time = ticks()
+  Handler -&gt; Game : auction_completed = True
+  Handler -&gt; Game : board.update_ownership(...)
+  Handler --&gt; Handler : return False
+else
+  Handler --&gt; Handler : return False
+end
+deactivate Handler
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Auction Click Handling</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Key Handling (ROLL State)</strong></p>
+<p>Illustrates the primary key presses handled when the game state is <cite>ROLL</cite>.</p>
+<figure class="align-default" id="id9">
+<p class="plantuml">
+<img src="../_images/plantuml-b5574dabf9659956bdba7b65391eb4b5cb94656c.png" alt="&#64;startuml
+participant &quot;handler:GameEventHandler&quot; as Handler
+participant &quot;game:Game&quot; as Game
+participant &quot;game_actions:GameActions&quot; as Actions
+participant &quot;board:Board&quot; as Board
+
+Handler -&gt; Handler : handle_key(event)
+activate Handler
+Handler -&gt; Game : check game.state == &quot;ROLL&quot;
+alt Human Player
+    alt event.key in KEY_ROLL
+        alt Abridged Mode and Paused
+            Handler -&gt; Board : add_message(&quot;Game is paused...&quot;)
+            Handler --&gt; Handler : return False
+        else
+            Handler -&gt; Actions : play_turn()
+            Handler --&gt; Handler : return result
+        end
+    else event.key == K_q
+        Handler -&gt; Actions : show_exit_confirmation()
+        alt confirmed
+            Handler -&gt; Actions : handle_voluntary_exit(...)
+            Handler --&gt; Handler : return result
+        else
+            Handler --&gt; Handler : return False
+        end
+    else event.key == K_p
+        Handler -&gt; Game : toggle game_paused
+        Handler -&gt; Board : add_message(...)
+        Handler --&gt; Handler : return False
+    else event.key == K_t
+        Handler -&gt; Actions : show_time_stats()
+        Handler --&gt; Handler : return False
+    else event.key in Arrow Keys
+        Handler -&gt; Board : update_offset(dx, dy)
+        Handler -&gt; Board : camera.handle_camera_controls(...)
+        Handler --&gt; Handler : return None
+    end
+else AI Player
+    alt event.key in Arrow Keys
+        Handler -&gt; Board : update_offset(dx, dy)
+        Handler -&gt; Board : camera.handle_camera_controls(...)
+        Handler --&gt; Handler : return None
+    end
+end
+Handler --&gt; Handler : return None
+deactivate Handler
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Key Handling (ROLL State)</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Key Handling (AUCTION State)</strong></p>
+<figure class="align-default" id="id10">
+<p class="plantuml">
+<img src="../_images/plantuml-120975e9462001ab6f8f086d5f35f072f4d99b28.png" alt="&#64;startuml
+actor Player
+participant &quot;handler:GameEventHandler&quot; as Handler
+participant &quot;game:Game&quot; as Game
+participant &quot;actions:GameActions&quot; as Actions
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;board:GameBoard&quot; as Board
+participant &quot;sound:Sound_Manager&quot; as SM
+
+Player -&gt; Handler : handle_key(event)
+activate Handler
+Handler -&gt; Game : state == &quot;AUCTION&quot;
+Handler -&gt; Game : current_auction (via logic)
+alt auction exists
+  alt event.key in (0-9)
+    Handler -&gt; Game : auction_bid_amount += key
+    Handler -&gt; Game : renderer.draw()
+  else event.key == RETURN
+    Handler -&gt; Handler : _process_auction_bid()
+    activate Handler
+    Handler -&gt; Logic : process_auction_bid(...)
+    Logic --&gt; Handler : success, message
+    alt success
+      Handler -&gt; SM : play_sound(&quot;auction_bid&quot;)
+    end
+    Handler -&gt; Board : add_message(message)
+    Handler -&gt; Game : renderer.draw()
+    deactivate Handler
+  else event.key == SPACE
+    Handler -&gt; Logic : process_auction_pass()
+    Logic --&gt; Handler : success, message
+    Handler -&gt; Board : add_message(message)
+    Handler -&gt; Game : renderer.draw()
+  end
+end
+Handler --&gt; Player : return None
+deactivate Handler
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram - Handle Auction Input</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-methods-overview">
+<h2>Key Methods Overview<a class="headerlink" href="#key-methods-overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>handle_input()</strong>: The main event loop processor. Iterates through Pygame events and calls specific handlers (<cite>handle_click</cite>, <cite>handle_motion</cite>, <cite>handle_key</cite>) or handles QUIT events directly. Returns game over status if detected.</p></li>
+<li><p><strong>handle_click(pos)</strong>: Processes left mouse clicks. Behavior depends heavily on <cite>game.state</cite> (ROLL, BUY, AUCTION), <cite>game.development_mode</cite>, <cite>game.show_popup</cite>, <cite>game.show_card</cite>, and which UI element (buttons, AI mood UI) is clicked. Delegates actions to <cite>GameActions</cite>, <cite>DevelopmentManager</cite>, or <cite>handle_auction_click</cite>.</p></li>
+<li><p><strong>handle_motion(pos)</strong>: Processes mouse movement, primarily to update hover states for buttons and AI mood UI elements.</p></li>
+<li><p><strong>handle_key(event)</strong>: Processes keyboard presses. Behavior depends on <cite>game.state</cite>, active popups/cards, and development mode. Handles rolling dice, buying/passing, auction input, quitting, pausing, camera movement, and development actions. Delegates actions to <cite>GameActions</cite>, <cite>DevelopmentManager</cite>, or <cite>handle_auction_input</cite>.</p></li>
+<li><p><strong>handle_auction_input(event)</strong>: Specifically handles keyboard input during an auction (numeric keys for bid amount, Enter to submit, Esc to pass, Backspace). Calls <cite>_process_auction_bid</cite>.</p></li>
+<li><p><strong>_process_auction_bid(current_bidder)</strong>: Validates and submits the entered bid amount to <cite>GameLogic</cite>.</p></li>
+<li><p><strong>handle_auction_click(pos)</strong>: Specifically handles mouse clicks during an auction (Bid button, Pass button). Calls <cite>_process_auction_bid</cite> or <cite>GameLogic.process_auction_pass</cite>. Checks for auction completion.</p></li>
+</ul>
+</section>
+<section id="module-src.GameEventHandler">
+<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-src.GameEventHandler" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.GameEventHandler.</span></span><span class="sig-name descname"><span class="pre">GameEventHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler._process_auction_bid">
+<span class="sig-name descname"><span class="pre">_process_auction_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_bidder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler._process_auction_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler._process_auction_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_auction_click">
+<span class="sig-name descname"><span class="pre">handle_auction_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_auction_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_auction_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_auction_input">
+<span class="sig-name descname"><span class="pre">handle_auction_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_auction_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_auction_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_click">
+<span class="sig-name descname"><span class="pre">handle_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_input">
+<span class="sig-name descname"><span class="pre">handle_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_input" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_key">
+<span class="sig-name descname"><span class="pre">handle_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameEventHandler.GameEventHandler.handle_motion">
+<span class="sig-name descname"><span class="pre">handle_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameEventHandler.html#GameEventHandler.handle_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameEventHandler.GameEventHandler.handle_motion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game_actions.html" class="btn btn-neutral float-left" title="Game Actions Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_renderer.html" class="btn btn-neutral float-right" title="Game Renderer Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

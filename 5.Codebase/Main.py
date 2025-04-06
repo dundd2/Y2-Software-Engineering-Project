@@ -35,7 +35,6 @@ logs_dir = "logs"
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
-# log file name with timestamp
 log_filename = os.path.join(
     logs_dir, f"game_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 )
@@ -43,50 +42,49 @@ log_filename = os.path.join(
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
-file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+for handler in logger.handlers[:]:
+    logger.removeHandler(handler)
 
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
 
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+try:
+    file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+except (IOError, PermissionError) as e:
+    print(f"Warning: Could not create log file: {e}")
+    file_handler = None
+
+try:
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+except Exception as e:
+    print(f"Warning: Could not create console handler: {e}")
+    console_handler = None
 
 
-class LogRedirector:
-    def __init__(self, logger, level):
-        self.logger = logger
-        self.level = level
-        self.buffer = ""
+def log_print(*args, level=logging.INFO, **kwargs):
+    message = " ".join(str(arg) for arg in args)
+    logger.log(level, message)
 
-    def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            line_stripped = line.strip()
-            if line_stripped and not (line_stripped.startswith("File ") or line_stripped.startswith("Call stack:")):
-                self.logger.log(self.level, line.rstrip())
-        if self.level == logging.ERROR and sys.__stderr__:
-            try:
-                sys.__stderr__.write(buf)
-            except (AttributeError, IOError):
-                pass 
-        elif self.level == logging.INFO and sys.__stdout__:
-            try:
-                sys.__stdout__.write(buf)
-            except (AttributeError, IOError):
-                pass 
+    if kwargs.get("flush", False):
+        builtin_print(*args, **kwargs)
+    else:
+        builtin_print(*args, **{k: v for k, v in kwargs.items() if k != "flush"})
 
-    def flush(self):        
-        pass
 
-sys.stdout = LogRedirector(logger, logging.INFO)
-sys.stderr = LogRedirector(logger, logging.ERROR)
+builtin_print = print
+
+if __name__ == "__main__":
+    __builtins__.print = log_print
 
 logger.info("=== Game Session Started ===")
 
-file_handler.flush()
+if file_handler:
+    file_handler.flush()
 
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -130,7 +128,7 @@ async def apply_screen_settings(resolution):
     WINDOW_SIZE = resolution
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
 
-    pygame.display.set_caption("Property Tycoon Alpha 04.04.2025")
+    pygame.display.set_caption("Property Tycoon V1.0 09.04.2025")
     try:
         icon_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "assets", "image", "icon.ico"
@@ -528,15 +526,13 @@ async def run_game(game, game_settings):
                         logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
                         logger.debug(f"AI money: £{current_bidder['money']}")
 
-                        ai_decision = random.random() > 0.5
-                        if (
-                            ai_decision
-                            and current_bidder["money"] >= auction_data["minimum_bid"]
-                        ):
-                            bid_amount = min(
-                                current_bidder["money"],
-                                auction_data["minimum_bid"] + random.randint(10, 50),
-                            )
+                        bid_amount = game.logic.get_ai_auction_bid(
+                            current_bidder,
+                            auction_data["property"],
+                            auction_data["current_bid"],
+                        )
+
+                        if bid_amount and bid_amount >= auction_data["minimum_bid"]:
                             logger.debug(
                                 f"AI {current_bidder['name']} bids £{bid_amount}"
                             )
@@ -962,25 +958,30 @@ async def main():
             clock.tick(FPS)
 
 
-# cleans up and exits the game properly
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
 
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    # Restore the original print function
+    __builtins__.print = builtin_print
 
-    for handler in logger.handlers:
-        if isinstance(handler, logging.FileHandler):
+    for handler in logger.handlers[:]:
+        try:
             handler.flush()
+            handler.close()
+        except Exception:
+            pass
+        logger.removeHandler(handler)
 
     logger.info("=== Game Session Ended ===")
 
-    logging.shutdown()
+    try:
+        logging.shutdown()
+    except Exception:
+        pass
 
     pygame.quit()
     sys.exit(code)
 
 
-# runs the main function when the script is executed
 if __name__ == "__main__":
     asyncio.run(main())

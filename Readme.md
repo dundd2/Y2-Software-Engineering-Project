@@ -3,6 +3,7 @@
 This repository contains **Property Tycoon**, a game developed using **Pygame** for Year 2 **G6046: Software Engineering** Assignments between January and April 2025. The game is coded in **Python** but compiled to native machine code using **Nuitka** for enhanced performance. The original game is built on the Pygame library, which is a set of Python modules designed for writing video games.
 
 ## Screenshots
+
 ![Game Play](https://github.com/user-attachments/assets/6d541ff7-3500-43ce-9cea-e7665d0ea895)
 
 ## Group 5 Team Members
@@ -19,20 +20,26 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 * **Handle:** [@UOS-G6046-Group5](https://www.youtube.com/@UOS-G6046-Group5)
 * **Channel URL:** [https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
 
+## Game Design Documentation
+
+The game design documentation is built with Sphinx using a theme provided by Read the Docs. You can view the complete documentation at [https://Minosaji.github.io/Software-Engineering-Project/](https://Minosaji.github.io/Software-Engineering-Project/)
+
 ## Download the Game
 
-Pre-built versions of Property Tycoon are available on [Releases page](https://github.com/Minosaji/Software-Engineering-Project/releases). 
-### Supported Systems:
-- **Windows:** Download  `PropertyTycoon-Windows.exe` 
-- **macOS:** Download `PropertyTycoon-macOS.dmg` 
-- **Linux ARM64:** Download `PropertyTycoon-Linux-ARM64.deb` 
+Pre-built versions of Property Tycoon are available on [Releases page](https://github.com/Minosaji/Software-Engineering-Project/releases).
+
+### Supported Systems
+
+* **Windows:** Download `PropertyTycoon-Windows.exe`
+* **macOS:** Download `PropertyTycoon-macOS.dmg`
+* **Linux ARM64:** Download `PropertyTycoon-Linux-ARM64.deb`
 
 ## Technology Stack
 
-- **Programming Language:** Python 3.x
-- **Game Framework:** Pygame
-- **Compiler:** Nuitka (converts Python to C and then compiles to native binary)
-- **Additional Libraries:** pandas, openpyxl for data management
+* **Programming Language:** Python 3.x
+* **Game Framework:** Pygame
+* **Compiler:** Nuitka (converts Python to C and then compiles to native binary)
+* **Additional Libraries:** pandas, openpyxl for data management
 
 ## Installation Guide for Property Tycoon
 
@@ -55,7 +62,7 @@ pip install setuptools pygame pandas openpyxl
 2. Install required packages: In the Terminal, type:
 
 ```bash
-pip3 install setuptools pygame pandas openpyxl nuitka
+pip3 install setuptools pygame pandas openpyxl
 ```
 
 ### Alternative Installation Using requirements.txt
@@ -72,5 +79,4 @@ pip3 install -r requirements.txt
 
 ## License
 
-This project is licensed under the **WTFPL v2**.
-For more information about this license, visit [http://www.wtfpl.net/](http://www.wtfpl.net/).
+This project is licensed under the MIT License.

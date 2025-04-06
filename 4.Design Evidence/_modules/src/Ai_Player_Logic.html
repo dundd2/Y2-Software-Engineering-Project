@@ -1,0 +1,1034 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.Ai_Player_Logic &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.Ai_Player_Logic</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.Ai_Player_Logic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon ai_player_logic.py</span>
+<span class="c1"># Contains the classes for the AI players, such as the AI player logic, the AI player strategy, and the AI player actions.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Property</span><span class="w"> </span><span class="kn">import</span> <span class="n">Property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Player</span><span class="w"> </span><span class="kn">import</span> <span class="n">Player</span>
+
+
+<div class="viewcode-block" id="EasyAIPlayer">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EasyAIPlayer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">difficulty</span><span class="o">=</span><span class="s2">&quot;easy&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">=</span> <span class="s2">&quot;easy&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;easy&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;max_bid_multiplier&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+                <span class="s2">&quot;development_threshold&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+                <span class="s2">&quot;jail_stay_threshold&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                <span class="s2">&quot;mortgage_threshold&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="EasyAIPlayer.get_group_properties">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.get_group_properties">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_group_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_group</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">prop</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">board_properties</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prop</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="n">color_group</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.check_group_ownership">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.check_group_ownership">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_group_ownership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_group</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">,</span> <span class="n">player_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">color_group</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">group_properties</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="n">color_group</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">player_name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_properties</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.can_build_house">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.can_build_house">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_build_house</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">color_group_properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">property</span><span class="o">.</span><span class="n">houses</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">min_houses</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">houses</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">color_group_properties</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">property</span><span class="o">.</span><span class="n">houses</span> <span class="o">&lt;=</span> <span class="n">min_houses</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== AI Property Value Calculation Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Evaluating property: </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">base_value</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">price</span>
+        <span class="n">multiplier</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Base value: £</span><span class="si">{</span><span class="n">base_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">):</span>
+            <span class="n">owned_in_group</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="n">property_data</span><span class="o">.</span><span class="n">group</span>
+                <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">ai_player</span>
+            <span class="p">)</span>
+            <span class="n">total_in_group</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="n">property_data</span><span class="o">.</span><span class="n">group</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Color group analysis:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Group: </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">group</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Owned in group: </span><span class="si">{</span><span class="n">owned_in_group</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_in_group</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">owned_in_group</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">group_bonus</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="p">(</span><span class="n">owned_in_group</span> <span class="o">/</span> <span class="n">total_in_group</span><span class="p">)</span>
+                <span class="n">multiplier</span> <span class="o">+=</span> <span class="n">group_bonus</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Adding group ownership bonus: +</span><span class="si">{</span><span class="n">group_bonus</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">property_data</span><span class="o">.</span><span class="n">is_station</span><span class="p">:</span>
+            <span class="n">owned_stations</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_station</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">ai_player</span>
+            <span class="p">)</span>
+            <span class="n">station_bonus</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">owned_stations</span>
+            <span class="n">multiplier</span> <span class="o">+=</span> <span class="n">station_bonus</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Station analysis:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Owned stations: </span><span class="si">{</span><span class="n">owned_stations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Adding station bonus: +</span><span class="si">{</span><span class="n">station_bonus</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">property_data</span><span class="o">.</span><span class="n">is_utility</span><span class="p">:</span>
+            <span class="n">owned_utilities</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_utility</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">ai_player</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Utility analysis:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Owned utilities: </span><span class="si">{</span><span class="n">owned_utilities</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">owned_utilities</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">multiplier</span> <span class="o">+=</span> <span class="mf">0.5</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- Adding utility bonus: +0.5x&quot;</span><span class="p">)</span>
+
+        <span class="n">final_value</span> <span class="o">=</span> <span class="n">base_value</span> <span class="o">*</span> <span class="n">multiplier</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final calculations:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Total multiplier: </span><span class="si">{</span><span class="n">multiplier</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Final perceived value: £</span><span class="si">{</span><span class="n">final_value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_value</span>
+
+<div class="viewcode-block" id="EasyAIPlayer.handle_turn">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.handle_turn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_turn</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">current_location</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">,</span> <span class="n">is_first_round</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bought_property&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;built_house&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;paid_rent&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">current_location</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;GO&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">actions</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_location</span><span class="p">,</span> <span class="n">Property</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">current_location</span><span class="o">.</span><span class="n">owner</span> <span class="ow">and</span> <span class="n">current_location</span><span class="o">.</span><span class="n">owner</span> <span class="o">!=</span> <span class="n">ai_player</span><span class="p">:</span>
+                <span class="n">rent</span> <span class="o">=</span> <span class="n">current_location</span><span class="o">.</span><span class="n">calculate_rent</span><span class="p">(</span>
+                    <span class="kc">None</span><span class="p">,</span> <span class="n">current_location</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">properties</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&gt;=</span> <span class="n">rent</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="s2">&quot;paid_rent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">current_location</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="ow">and</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&gt;=</span> <span class="n">current_location</span><span class="o">.</span><span class="n">price</span><span class="p">:</span>
+                    <span class="n">success</span> <span class="o">=</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">buy_property</span><span class="p">(</span><span class="n">current_location</span><span class="p">)</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="s2">&quot;bought_property&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">success</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">success</span>
+                        <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_first_round</span>
+                        <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">current_location</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span>
+                    <span class="p">):</span>
+                        <span class="n">color_group</span> <span class="o">=</span> <span class="n">current_location</span><span class="o">.</span><span class="n">group</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_group_ownership</span><span class="p">(</span>
+                            <span class="n">color_group</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">,</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">name</span>
+                        <span class="p">):</span>
+                            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                                <span class="n">group_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group_properties</span><span class="p">(</span>
+                                    <span class="n">color_group</span><span class="p">,</span> <span class="n">board_properties</span>
+                                <span class="p">)</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_build_house</span><span class="p">(</span>
+                                    <span class="n">current_location</span><span class="p">,</span> <span class="n">group_properties</span>
+                                <span class="p">):</span>
+                                    <span class="n">house_cost</span> <span class="o">=</span> <span class="n">current_location</span><span class="o">.</span><span class="n">price</span> <span class="o">/</span> <span class="mi">2</span>
+                                    <span class="k">if</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&gt;=</span> <span class="n">house_cost</span><span class="p">:</span>
+                                        <span class="n">current_location</span><span class="o">.</span><span class="n">houses</span> <span class="o">+=</span> <span class="mi">1</span>
+                                        <span class="n">ai_player</span><span class="o">.</span><span class="n">pay</span><span class="p">(</span><span class="n">house_cost</span><span class="p">)</span>
+                                        <span class="n">actions</span><span class="p">[</span><span class="s2">&quot;built_house&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="n">current_location</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;JAIL&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">elif</span> <span class="n">current_location</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;FREE PARKING&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">actions</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_use_get_out_of_jail_card">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_use_get_out_of_jail_card">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_use_get_out_of_jail_card</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_pay_jail_fine">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_pay_jail_fine">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_pay_jail_fine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&gt;=</span> <span class="mi">250</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_mortgage_property">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_mortgage_property">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_mortgage_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">required_money</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&gt;=</span> <span class="n">required_money</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">to_mortgage</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">need_amount</span> <span class="o">=</span> <span class="n">required_money</span> <span class="o">-</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span>
+
+        <span class="n">unset_properties</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">prop</span>
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">properties</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_group_ownership</span><span class="p">(</span>
+                <span class="n">prop</span><span class="o">.</span><span class="n">group</span><span class="p">,</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">unset_properties</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">price</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">need_amount</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_mortgaged</span><span class="p">:</span>
+                <span class="n">to_mortgage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                <span class="n">need_amount</span> <span class="o">-=</span> <span class="n">prop</span><span class="o">.</span><span class="n">price</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">need_amount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">set_properties</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">prop</span>
+                <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">properties</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_group_ownership</span><span class="p">(</span>
+                    <span class="n">prop</span><span class="o">.</span><span class="n">group</span><span class="p">,</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">set_properties</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">price</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">need_amount</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_mortgaged</span><span class="p">:</span>
+                    <span class="n">to_mortgage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                    <span class="n">need_amount</span> <span class="o">-=</span> <span class="n">prop</span><span class="o">.</span><span class="n">price</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">to_mortgage</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.handle_ai_turn">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.handle_ai_turn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_ai_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="n">current_location_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location_type</span><span class="p">(</span>
+            <span class="n">ai_player</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">board_properties</span>
+        <span class="p">)</span>
+        <span class="n">property_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_name</span><span class="p">(</span><span class="n">ai_player</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_location_type</span> <span class="o">==</span> <span class="s2">&quot;Go&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="n">current_location_type</span> <span class="o">==</span> <span class="s2">&quot;property&quot;</span><span class="p">:</span>
+            <span class="n">property_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">property_name</span><span class="p">),</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">property_data</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">property_data</span><span class="o">.</span><span class="n">owner</span> <span class="ow">and</span> <span class="n">property_data</span><span class="o">.</span><span class="n">owner</span> <span class="o">!=</span> <span class="n">ai_player</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">property_data</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="ow">and</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&gt;=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">price</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="n">current_location_type</span> <span class="o">==</span> <span class="s2">&quot;lucky_area&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="n">current_location_type</span> <span class="o">==</span> <span class="s2">&quot;jail&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.get_location_type">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.get_location_type">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_location_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="n">property_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">position</span> <span class="o">==</span> <span class="n">position</span><span class="p">),</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">property_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">position</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Go&quot;</span>
+            <span class="k">elif</span> <span class="n">position</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;jail&quot;</span>
+            <span class="k">elif</span> <span class="n">position</span> <span class="o">==</span> <span class="mi">21</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;free_parking&quot;</span>
+            <span class="k">elif</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">34</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="s2">&quot;lucky_area&quot;</span>
+            <span class="k">elif</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">37</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="s2">&quot;lucky_area&quot;</span>
+            <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;property&quot;</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.get_property_name">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.get_property_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="n">property_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">position</span> <span class="o">==</span> <span class="n">position</span><span class="p">),</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">property_data</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">property_data</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.get_auction_bid">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.get_auction_bid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_auction_bid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current_minimum</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;last_bid_property&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_property</span> <span class="o">!=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_amount</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_property</span> <span class="o">=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_amount</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_property</span> <span class="o">=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Auction Bid Logic Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI Player: </span><span class="si">{</span><span class="n">ai_player</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current minimum bid: £</span><span class="si">{</span><span class="n">current_minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available money: £</span><span class="si">{</span><span class="n">ai_player</span><span class="o">.</span><span class="n">money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Previous bid on this property: £</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">last_bid_amount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">&lt;</span> <span class="n">current_minimum</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DECISION: Cannot bid - insufficient funds&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">perceived_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span>
+        <span class="p">)</span>
+        <span class="n">max_bid</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span><span class="p">,</span>
+            <span class="n">perceived_value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">[</span><span class="s2">&quot;easy&quot;</span><span class="p">][</span><span class="s2">&quot;max_bid_multiplier&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_amount</span> <span class="o">&gt;=</span> <span class="n">max_bid</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DECISION: Already reached maximum desired bid&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Bid limit calculation:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Perceived value: £</span><span class="si">{</span><span class="n">perceived_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;- Easy difficulty multiplier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">[</span><span class="s1">&#39;easy&#39;</span><span class="p">][</span><span class="s1">&#39;max_bid_multiplier&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">x&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Maximum possible bid: £</span><span class="si">{</span><span class="n">max_bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_bid</span> <span class="o">&lt;=</span> <span class="n">current_minimum</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DECISION: Cannot bid - maximum possible bid is below minimum&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">bid_headroom</span> <span class="o">=</span> <span class="n">max_bid</span> <span class="o">-</span> <span class="n">current_minimum</span>
+        <span class="n">increment</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">bid_headroom</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Bid increment analysis:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Bid headroom: £</span><span class="si">{</span><span class="n">bid_headroom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Calculated increment: £</span><span class="si">{</span><span class="n">increment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+        <span class="n">bid</span> <span class="o">=</span> <span class="n">current_minimum</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">increment</span><span class="p">)</span>
+        <span class="n">bid</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span> <span class="n">max_bid</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Initial bid calculation: £</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bid</span> <span class="o">&gt;</span> <span class="n">perceived_value</span> <span class="o">*</span> <span class="mf">0.6</span><span class="p">:</span>
+            <span class="n">risky_bid_chance</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Risk assessment:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;- Bid (£</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">) is above 60% of perceived value (£</span><span class="si">{</span><span class="n">perceived_value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.6</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;- Random chance to pass: </span><span class="si">{</span><span class="n">risky_bid_chance</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (will pass if &lt; 0.3)&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">risky_bid_chance</span> <span class="o">&lt;</span> <span class="mf">0.3</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DECISION: Passing due to risk assessment&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_bid_amount</span> <span class="o">=</span> <span class="n">bid</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FINAL DECISION: Bidding £</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bid</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.handle_jail_strategy">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.handle_jail_strategy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_jail_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">jail_free_cards</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_jail&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">jail_free_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;use_card&quot;</span>
+
+        <span class="k">if</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">250</span><span class="p">:</span>
+            <span class="n">total_property_value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">total_property_value</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;pay_fine&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;roll_doubles&quot;</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.handle_property_development">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.handle_property_development">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_property_development</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">board_properties</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;group&quot;</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">:</span>
+                <span class="n">groups</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">color_group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">group_properties</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">p</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">color_group</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+
+            <span class="n">total_in_group</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">color_group</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">group_properties</span><span class="p">)</span> <span class="o">==</span> <span class="n">total_in_group</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">group_properties</span><span class="p">:</span>
+                    <span class="n">current_houses</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">current_houses</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="n">min_houses</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;houses&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_properties</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">current_houses</span> <span class="o">&lt;=</span> <span class="n">min_houses</span><span class="p">:</span>
+                            <span class="n">house_cost</span> <span class="o">=</span> <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+                            <span class="k">if</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">house_cost</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">:</span>
+                                <span class="k">return</span> <span class="n">prop</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.handle_emergency_cash">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.handle_emergency_cash">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_emergency_cash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">required_amount</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">required_amount</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">properties_to_mortgage</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">board_properties</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_mortgaged&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_group_ownership</span><span class="p">(</span>
+                    <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">),</span> <span class="n">board_properties</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">properties_to_mortgage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+
+        <span class="n">properties_to_mortgage</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">])</span>
+
+        <span class="n">potential_cash</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">final_properties</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties_to_mortgage</span><span class="p">:</span>
+            <span class="n">potential_cash</span> <span class="o">+=</span> <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">final_properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">potential_cash</span> <span class="o">&gt;=</span> <span class="n">required_amount</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">final_properties</span> <span class="k">if</span> <span class="n">potential_cash</span> <span class="o">&gt;=</span> <span class="n">required_amount</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.consider_trade_offer">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.consider_trade_offer">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consider_trade_offer</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ai_player</span><span class="p">,</span>
+        <span class="n">offered_properties</span><span class="p">,</span>
+        <span class="n">requested_properties</span><span class="p">,</span>
+        <span class="n">cash_difference</span><span class="p">,</span>
+        <span class="n">board_properties</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">offered_value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">offered_properties</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">offered_properties</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">):</span>
+                <span class="n">owned_in_group</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                    <span class="mi">1</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span>
+                    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">total_in_group</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                    <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">board_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">owned_in_group</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">total_in_group</span><span class="p">:</span>
+                    <span class="n">offered_value</span> <span class="o">+=</span> <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+
+        <span class="n">requested_value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">requested_properties</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">requested_properties</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_group_ownership</span><span class="p">(</span>
+                    <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">),</span> <span class="n">board_properties</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="p">):</span>
+                    <span class="n">requested_value</span> <span class="o">*=</span> <span class="mf">1.5</span>
+
+        <span class="n">total_value_difference</span> <span class="o">=</span> <span class="p">(</span><span class="n">offered_value</span> <span class="o">+</span> <span class="n">cash_difference</span><span class="p">)</span> <span class="o">-</span> <span class="n">requested_value</span>
+
+        <span class="k">return</span> <span class="n">total_value_difference</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.8</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.get_property_value">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.get_property_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">owned_properties</span><span class="p">,</span> <span class="n">total_money</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Property Valuation Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Evaluating value of </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">base_value</span> <span class="o">=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+        <span class="n">value_multiplier</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="s2">&quot;group&quot;</span> <span class="ow">in</span> <span class="n">property_data</span><span class="p">:</span>
+            <span class="n">owned_in_group</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">owned_properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">total_in_group</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group_size&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Color group: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Owned in group: </span><span class="si">{</span><span class="n">owned_in_group</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_in_group</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">owned_in_group</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">value_multiplier</span> <span class="o">+=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="p">(</span><span class="n">owned_in_group</span> <span class="o">/</span> <span class="n">total_in_group</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;DEBUG: Group ownership bonus applied: </span><span class="si">{</span><span class="mf">0.3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">owned_in_group</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_in_group</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;Station&quot;</span> <span class="ow">in</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+            <span class="n">owned_stations</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">owned_properties</span> <span class="k">if</span> <span class="s2">&quot;Station&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">value_multiplier</span> <span class="o">+=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">owned_stations</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Owned stations: </span><span class="si">{</span><span class="n">owned_stations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Station bonus applied: </span><span class="si">{</span><span class="mf">0.25</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">owned_stations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Tesla Power Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Edison Water&quot;</span><span class="p">]:</span>
+            <span class="n">owned_utilities</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">owned_properties</span>
+                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Tesla Power Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Edison Water&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">owned_utilities</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">value_multiplier</span> <span class="o">+=</span> <span class="mf">0.5</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Utility bonus applied: 0.5&quot;</span><span class="p">)</span>
+
+        <span class="n">value_multiplier</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">[</span><span class="s2">&quot;easy&quot;</span><span class="p">][</span><span class="s2">&quot;max_bid_multiplier&quot;</span><span class="p">]</span>
+        <span class="n">final_value</span> <span class="o">=</span> <span class="n">base_value</span> <span class="o">*</span> <span class="n">value_multiplier</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Base value: £</span><span class="si">{</span><span class="n">base_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Final multiplier: </span><span class="si">{</span><span class="n">value_multiplier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Final calculated value: £</span><span class="si">{</span><span class="n">final_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_value</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_buy_property">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_buy_property">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_buy_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">player_money</span><span class="p">,</span> <span class="n">owned_properties</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Purchase Decision Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Evaluating purchase of </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Property price: £</span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI money available: £</span><span class="si">{</span><span class="n">player_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Currently owned properties: </span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">owned_properties</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">player_money</span> <span class="o">&lt;</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: AI cannot afford property&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">property_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">owned_properties</span><span class="p">,</span> <span class="n">player_money</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Calculated property value: £</span><span class="si">{</span><span class="n">property_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Decision: </span><span class="si">{</span><span class="s1">&#39;Buy&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">property_value</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Pass&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">player_money</span> <span class="o">&gt;=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="n">property_value</span> <span class="o">&gt;=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.make_auction_bid">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.make_auction_bid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_auction_bid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">current_bid</span><span class="p">,</span> <span class="n">player_money</span><span class="p">,</span> <span class="n">owned_properties</span>
+    <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Auction Bid Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI evaluating bid for </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current bid: £</span><span class="si">{</span><span class="n">current_bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI money available: £</span><span class="si">{</span><span class="n">player_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">player_money</span> <span class="o">&lt;=</span> <span class="n">current_bid</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: AI cannot afford current bid&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">property_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">owned_properties</span><span class="p">,</span> <span class="n">player_money</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Calculated property value: £</span><span class="si">{</span><span class="n">property_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">max_bid</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">player_money</span> <span class="o">*</span> <span class="mf">0.7</span><span class="p">,</span> <span class="n">property_value</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Maximum bid calculated: £</span><span class="si">{</span><span class="n">max_bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_bid</span> <span class="o">&gt;=</span> <span class="n">max_bid</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Maximum bid too low - passing&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">bid_increment</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">final_bid</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">current_bid</span> <span class="o">+</span> <span class="n">bid_increment</span><span class="p">,</span> <span class="n">max_bid</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Final bid decision: £</span><span class="si">{</span><span class="n">final_bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_bid</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_develop_property">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_develop_property">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_develop_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">player_money</span><span class="p">,</span> <span class="n">owned_properties</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Development Decision Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Evaluating development for </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI money available: £</span><span class="si">{</span><span class="n">player_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">property_data</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Invalid property data&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">development_cost</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">price</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Development cost: £</span><span class="si">{</span><span class="n">development_cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">development_cost</span> <span class="o">&gt;=</span> <span class="n">player_money</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Development cost too high relative to available funds&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">money_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">[</span><span class="s2">&quot;easy&quot;</span><span class="p">][</span><span class="s2">&quot;development_threshold&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">player_money</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Money threshold for development: £</span><span class="si">{</span><span class="n">money_threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">potential_rent</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">calculate_rent</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Potential rent after development: £</span><span class="si">{</span><span class="n">potential_rent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">should_develop</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">development_cost</span> <span class="o">&lt;=</span> <span class="n">money_threshold</span>
+            <span class="ow">and</span> <span class="n">potential_rent</span> <span class="o">&gt;=</span> <span class="n">development_cost</span> <span class="o">*</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Development decision: </span><span class="si">{</span><span class="s1">&#39;Develop&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">should_develop</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Skip&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">should_develop</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_unmortgage_property">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_unmortgage_property">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_unmortgage_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">player_money</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Unmortgage Decision Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Evaluating unmortgage for </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI money available: £</span><span class="si">{</span><span class="n">player_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">property_data</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Invalid property data&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">unmortgage_cost</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">price</span> <span class="o">*</span> <span class="mf">0.55</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Unmortgage cost: £</span><span class="si">{</span><span class="n">unmortgage_cost</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">money_threshold</span> <span class="o">=</span> <span class="n">player_money</span> <span class="o">*</span> <span class="mf">0.3</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Money threshold for unmortgage: £</span><span class="si">{</span><span class="n">money_threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">should_unmortgage</span> <span class="o">=</span> <span class="n">unmortgage_cost</span> <span class="o">&lt;</span> <span class="n">money_threshold</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Unmortgage decision: </span><span class="si">{</span><span class="s1">&#39;Unmortgage&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">should_unmortgage</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Keep mortgaged&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">should_unmortgage</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.should_sell_houses">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.should_sell_houses">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_sell_houses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">player_money</span><span class="p">,</span> <span class="n">target_amount</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI House Selling Decision Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Evaluating house selling for </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI money available: £</span><span class="si">{</span><span class="n">player_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Target amount needed: £</span><span class="si">{</span><span class="n">target_amount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">property_data</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span> <span class="s2">&quot;houses&quot;</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">property_data</span><span class="o">.</span><span class="n">houses</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: No houses to sell&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current houses on property: </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">houses</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">sell_threshold</span> <span class="o">=</span> <span class="n">target_amount</span> <span class="o">*</span> <span class="mf">1.2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Sell threshold: £</span><span class="si">{</span><span class="n">sell_threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">should_sell</span> <span class="o">=</span> <span class="n">player_money</span> <span class="o">&lt;</span> <span class="n">sell_threshold</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: House selling decision: </span><span class="si">{</span><span class="s1">&#39;Sell&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">should_sell</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Keep&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">should_sell</span></div>
+
+
+<div class="viewcode-block" id="EasyAIPlayer.get_development_priority">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.EasyAIPlayer.get_development_priority">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_development_priority</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+        <span class="n">priorities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">):</span>
+                <span class="n">rent_to_cost_ratio</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;house_rents&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;house_cost&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">group_completion</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="n">priority_score</span> <span class="o">=</span> <span class="n">rent_to_cost_ratio</span> <span class="o">*</span> <span class="n">group_completion</span>
+                <span class="n">priorities</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prop</span><span class="p">,</span> <span class="n">priority_score</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">priorities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="HardAIPlayer">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HardAIPlayer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">=</span> <span class="s2">&quot;hard&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span> <span class="o">=</span> <span class="n">EasyAIPlayer</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HardAIPlayer initialized with emotion system&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HardAIPlayer.update_mood">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.update_mood">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_mood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_happy</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">is_happy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI is happier! Mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI is angrier! Mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.get_adjusted_probability">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.get_adjusted_probability">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_adjusted_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_probability</span><span class="p">):</span>
+        <span class="c1"># Amplified mood effect on probability adjustments (1.5x more impact)</span>
+        <span class="n">adjusted</span> <span class="o">=</span> <span class="n">base_probability</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">adjusted</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.get_property_value">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.get_property_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_property_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HARD AI Property Value Calculation Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Hard AI evaluating property: </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">base_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span>
+        <span class="p">)</span>
+
+        <span class="n">mood_multiplier</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">final_value</span> <span class="o">=</span> <span class="n">base_value</span> <span class="o">*</span> <span class="n">mood_multiplier</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Base value: £</span><span class="si">{</span><span class="n">base_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Amplified mood multiplier: </span><span class="si">{</span><span class="n">mood_multiplier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Final value: £</span><span class="si">{</span><span class="n">final_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_value</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.get_auction_bid">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.get_auction_bid">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_auction_bid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">current_minimum</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span>
+    <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HARD AI Auction Bid Logic Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DEBUG: Hard AI evaluating bid for: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span><span class="w"> </span><span class="nb">dict</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s1">&#39;name&#39;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">property_data</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Unknown&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current minimum bid: £</span><span class="si">{</span><span class="n">current_minimum</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">base_bid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">get_auction_bid</span><span class="p">(</span>
+            <span class="n">current_minimum</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">base_bid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">angry_bid_chance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjusted_probability</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Chance to bid anyway: </span><span class="si">{</span><span class="n">angry_bid_chance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">angry_bid_chance</span><span class="p">:</span>
+                <span class="n">bid</span> <span class="o">=</span> <span class="n">current_minimum</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                    <span class="mi">10</span><span class="p">,</span> <span class="mi">50</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="p">))</span>
+                <span class="p">)</span>
+                <span class="n">bid</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="n">bid</span><span class="p">,</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.7</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">))</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Emotion triggered bid: £</span><span class="si">{</span><span class="n">bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">bid</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">mood_multiplier</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">)</span>
+        <span class="n">final_bid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">base_bid</span> <span class="o">*</span> <span class="n">mood_multiplier</span><span class="p">)</span>
+
+        <span class="n">max_percentage</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">final_bid</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">final_bid</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ai_player</span><span class="o">.</span><span class="n">money</span> <span class="o">*</span> <span class="n">max_percentage</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Base bid: £</span><span class="si">{</span><span class="n">base_bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Amplified mood multiplier: </span><span class="si">{</span><span class="n">mood_multiplier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Final bid: £</span><span class="si">{</span><span class="n">final_bid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_bid</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.handle_jail_strategy">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.handle_jail_strategy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_jail_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">jail_free_cards</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HARD AI Jail Strategy Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Hard AI evaluating jail strategy&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_jail&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Not in jail - no action needed&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">base_strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">handle_jail_strategy</span><span class="p">(</span><span class="n">ai_player</span><span class="p">,</span> <span class="n">jail_free_cards</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">base_strategy</span> <span class="o">==</span> <span class="s2">&quot;roll_doubles&quot;</span> <span class="ow">and</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">pay_chance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjusted_probability</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Chance to pay fine: </span><span class="si">{</span><span class="n">pay_chance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">pay_chance</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Emotion triggered decision to pay fine&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">&quot;pay_fine&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Using strategy: </span><span class="si">{</span><span class="n">base_strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_strategy</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.should_mortgage_property">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.should_mortgage_property">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_mortgage_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">required_money</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HARD AI Mortgage Strategy Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Hard AI evaluating mortgage strategy&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Required money: £</span><span class="si">{</span><span class="n">required_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">should_mortgage_property</span><span class="p">(</span><span class="n">ai_player</span><span class="p">,</span> <span class="n">required_money</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.handle_property_development">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.handle_property_development">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_property_development</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HARD AI Development Strategy Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Hard AI evaluating development strategy&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">base_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">handle_property_development</span><span class="p">(</span>
+            <span class="n">ai_player</span><span class="p">,</span> <span class="n">board_properties</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base_result</span><span class="p">:</span>
+            <span class="n">money_threshold</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">money_threshold</span><span class="p">:</span>
+                <span class="n">develop_chance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjusted_probability</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">develop_chance</span><span class="p">:</span>
+                    <span class="n">player_properties</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">prop_key</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">board_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                            <span class="ow">and</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="p">):</span>
+                            <span class="n">player_properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prop</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                            <span class="n">player_properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">player_properties</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span>
+                            <span class="n">prop</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span>
+                        <span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">check_group_ownership</span><span class="p">(</span>
+                            <span class="n">prop</span><span class="o">.</span><span class="n">group</span><span class="p">,</span> <span class="n">board_properties</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="p">):</span>
+                            <span class="n">money_reserve</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span>
+                            <span class="n">house_cost</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">price</span> <span class="o">/</span> <span class="mi">2</span>
+                            <span class="n">money_after_purchase</span> <span class="o">=</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">house_cost</span>
+                            <span class="n">minimum_reserve</span> <span class="o">=</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">money_reserve</span>
+
+                            <span class="k">if</span> <span class="n">money_after_purchase</span> <span class="o">&gt;=</span> <span class="n">minimum_reserve</span><span class="p">:</span>
+                                <span class="k">return</span> <span class="n">prop</span>
+
+        <span class="k">return</span> <span class="n">base_result</span></div>
+
+
+<div class="viewcode-block" id="HardAIPlayer.should_buy_property">
+<a class="viewcode-back" href="../../modules/ai_player_logic.html#src.Ai_Player_Logic.HardAIPlayer.should_buy_property">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_buy_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span> <span class="n">player_money</span><span class="p">,</span> <span class="n">owned_properties</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== HARD AI Purchase Decision Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Hard AI evaluating purchase of </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Property price: £</span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: AI money available: £</span><span class="si">{</span><span class="n">player_money</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Current mood modifier: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">base_decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">easy_ai</span><span class="o">.</span><span class="n">should_buy_property</span><span class="p">(</span>
+            <span class="n">property_data</span><span class="p">,</span> <span class="n">player_money</span><span class="p">,</span> <span class="n">owned_properties</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base_decision</span> <span class="ow">and</span> <span class="n">player_money</span> <span class="o">&gt;=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]:</span>
+            <span class="n">buy_chance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adjusted_probability</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Chance to buy anyway: </span><span class="si">{</span><span class="n">buy_chance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">max_price_ratio</span> <span class="o">=</span> <span class="mf">0.7</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">0.2</span><span class="p">)</span>
+            <span class="n">can_afford</span> <span class="o">=</span> <span class="n">player_money</span> <span class="o">*</span> <span class="n">max_price_ratio</span> <span class="o">&gt;=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">can_afford</span> <span class="ow">and</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">buy_chance</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Emotion triggered decision to buy property&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Max price ratio: </span><span class="si">{</span><span class="n">max_price_ratio</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="n">base_decision</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pass_chance</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">mood_modifier</span> <span class="o">*</span> <span class="mf">1.5</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Amplified chance to pass: </span><span class="si">{</span><span class="n">pass_chance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">pass_chance</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEBUG: Emotion triggered decision to pass on property&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG: Final decision: </span><span class="si">{</span><span class="s1">&#39;Buy&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">base_decision</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Pass&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_decision</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

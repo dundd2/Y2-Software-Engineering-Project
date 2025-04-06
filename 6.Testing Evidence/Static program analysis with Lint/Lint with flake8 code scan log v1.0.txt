@@ -1,0 +1,135 @@
+Lint with flake8 code scan log:
+Run # stop the build if there are Python syntax errors or undefined names
+0
+./Main.py:10:1: F401 'random' imported but unused
+./Main.py:181:67: E203 whitespace before ':'
+./Main.py:215:1: C901 'run_game' is too complex (65)
+./Main.py:415:38: F541 f-string is missing placeholders
+./Main.py:480:128: E501 line too long (131 > 127 characters)
+./Main.py:523:38: F541 f-string is missing placeholders
+./Main.py:660:1: C901 'handle_end_game' is too complex (18)
+./Main.py:829:1: C901 'main' is too complex (30)
+./Unit Test/test_game.py:19:1: E402 module level import not at top of file
+./Unit Test/test_game.py:20:1: E402 module level import not at top of file
+./Unit Test/test_game.py:21:1: E402 module level import not at top of file
+./Unit Test/test_game.py:556:9: F841 local variable 'player1_dict' is assigned to but never used
+./src/Ai_Player_Logic.py:6:1: F401 'src.Player.Player' imported but unused
+./src/Ai_Player_Logic.py:104:5: C901 'EasyAIPlayer.handle_turn' is too complex (14)
+./src/Ai_Player_Logic.py:291:15: F541 f-string is missing placeholders
+./src/Ai_Player_Logic.py:304:15: F541 f-string is missing placeholders
+./src/Ai_Player_Logic.py:316:19: F541 f-string is missing placeholders
+./src/Ai_Player_Logic.py:438:5: F811 redefinition of unused 'get_property_value' from line 46
+./src/Ai_Player_Logic.py:475:23: F541 f-string is missing placeholders
+./src/Ai_Player_Logic.py:683:128: E501 line too long (151 > 127 characters)
+./src/Board.py:6:1: F401 'math' imported but unused
+./src/Board.py:8:1: F401 'src.Property.Property' imported but unused
+./src/Board.py:9:1: F401 'typing.Optional' imported but unused
+./src/Board.py:9:1: F401 'typing.List' imported but unused
+./src/Board.py:192:128: E501 line too long (144 > 127 characters)
+./src/Board.py:310:5: C901 'Board.draw' is too complex (11)
+./src/Board.py:390:21: F841 local variable 'is_corner' is assigned to but never used
+./src/DevelopmentMode.py:6:1: F401 'os' imported but unused
+./src/DevelopmentMode.py:7:1: F401 'src.Font_Manager.font_manager' imported but unused
+./src/DevelopmentMode.py:164:5: C901 'DevelopmentMode.handle_click' is too complex (30)
+./src/DevelopmentMode.py:321:5: C901 'DevelopmentMode.handle_key' is too complex (22)
+./src/DevelopmentMode.py:609:70: F541 f-string is missing placeholders
+./src/DevelopmentMode.py:626:70: F541 f-string is missing placeholders
+./src/Game.py:64:5: C901 'Game.__init__' is too complex (20)
+./src/Game.py:378:5: C901 'Game.finish_dice_animation' is too complex (29)
+./src/Game.py:638:5: C901 'Game.check_game_over' is too complex (16)
+./src/Game.py:640:9: F841 local variable 'end_game_data' is assigned to but never used
+./src/Game.py:745:19: F541 f-string is missing placeholders
+./src/Game.py:797:19: F541 f-string is missing placeholders
+./src/Game.py:818:5: C901 'Game.get_jail_choice' is too complex (30)
+./src/Game.py:1069:19: F541 f-string is missing placeholders
+./src/Game.py:1096:5: C901 'Game.check_time_limit' is too complex (30)
+./src/Game.py:1150:40: F541 f-string is missing placeholders
+./src/Game.py:1354:5: C901 'Game.move_player' is too complex (14)
+./src/Game.py:1358:128: E501 line too long (133 > 127 characters)
+./src/Game.py:1424:15: F541 f-string is missing placeholders
+./src/Game.py:1478:5: C901 'Game.synchronize_player_positions' is too complex (20)
+./src/Game.py:1549:5: C901 'Game.show_exit_confirmation' is too complex (14)
+./src/Game.py:1608:17: F841 local variable 'screen_backup' is assigned to but never used
+./src/Game.py:1697:5: C901 'Game.check_and_trigger_ai_turn' is too complex (17)
+./src/Game.py:1724:128: E501 line too long (191 > 127 characters)
+./src/Game.py:1838:5: C901 'Game.update_current_player' is too complex (13)
+./src/Game.py:1943:15: F541 f-string is missing placeholders
+./src/Game.py:1973:5: C901 'Game.handle_key' is too complex (11)
+./src/GameActions.py:37:5: C901 'GameActions.play_turn' is too complex (22)
+./src/GameActions.py:123:128: E501 line too long (139 > 127 characters)
+./src/GameActions.py:136:128: E501 line too long (147 > 127 characters)
+./src/GameActions.py:196:128: E501 line too long (131 > 127 characters)
+./src/GameActions.py:202:128: E501 line too long (139 > 127 characters)
+./src/GameActions.py:332:5: C901 'GameActions.handle_jail_turn' is too complex (17)
+./src/GameActions.py:361:23: F541 f-string is missing placeholders
+./src/GameActions.py:411:23: F541 f-string is missing placeholders
+./src/GameActions.py:428:23: F541 f-string is missing placeholders
+./src/GameActions.py:498:5: C901 'GameActions.handle_voluntary_exit' is too complex (11)
+./src/GameActions.py:499:15: F541 f-string is missing placeholders
+./src/GameActions.py:601:5: C901 'GameActions.calculate_player_assets' is too complex (12)
+./src/GameActions.py:641:5: C901 'GameActions.handle_ai_turn' is too complex (31)
+./src/GameActions.py:678:9: F841 local variable 'e' is assigned to but never used
+./src/GameActions.py:703:23: F541 f-string is missing placeholders
+./src/GameActions.py:767:23: F541 f-string is missing placeholders
+./src/GameEventHandler.py:18:5: C901 'GameEventHandler.handle_input' is too complex (11)
+./src/GameEventHandler.py:26:31: E712 comparison to True should be 'if cond is True:' or 'if cond:'
+./src/GameEventHandler.py:34:27: E712 comparison to True should be 'if cond is True:' or 'if cond:'
+./src/GameEventHandler.py:40:5: C901 'GameEventHandler.handle_click' is too complex (39)
+./src/GameEventHandler.py:67:33: E712 comparison to True should be 'if cond is True:' or 'if cond:'
+./src/GameEventHandler.py:248:31: E712 comparison to True should be 'if cond is True:' or 'if cond:'
+./src/GameEventHandler.py:292:5: C901 'GameEventHandler.handle_key' is too complex (32)
+./src/GameEventHandler.py:308:33: E712 comparison to True should be 'if cond is True:' or 'if cond:'
+./src/GameEventHandler.py:335:15: F541 f-string is missing placeholders
+./src/GameEventHandler.py:420:5: C901 'GameEventHandler.handle_auction_input' is too complex (16)
+./src/GameEventHandler.py:443:128: E501 line too long (143 > 127 characters)
+./src/GameEventHandler.py:498:27: F541 f-string is missing placeholders
+./src/GameEventHandler.py:527:5: C901 'GameEventHandler.handle_auction_click' is too complex (21)
+./src/GameRenderer.py:312:5: C901 'GameRenderer.draw' is too complex (64)
+./src/GameRenderer.py:1325:5: C901 'GameRenderer.draw_auction' is too complex (16)
+./src/GameRenderer.py:1599:9: F841 local variable 'window_size' is assigned to but never used
+./src/Game_Logic.py:336:5: C901 'GameLogic.play_turn' is too complex (12)
+./src/Game_Logic.py:402:5: C901 'GameLogic.handle_space' is too complex (14)
+./src/Game_Logic.py:720:30: F541 f-string is missing placeholders
+./src/Game_Logic.py:721:19: F541 f-string is missing placeholders
+./src/Game_Logic.py:809:128: E501 line too long (136 > 127 characters)
+./src/Game_Logic.py:905:5: C901 'GameLogic.move_to_next_bidder' is too complex (11)
+./src/Game_Logic.py:910:15: F541 f-string is missing placeholders
+./src/Game_Logic.py:928:128: E501 line too long (144 > 127 characters)
+./src/Game_Logic.py:936:128: E501 line too long (131 > 127 characters)
+./src/Game_Logic.py:979:15: F541 f-string is missing placeholders
+./src/Game_Logic.py:1066:5: C901 'GameLogic.placeBids' is too complex (12)
+./src/Game_Logic.py:1253:5: C901 'GameLogic.get_human_bid' is too complex (12)
+./src/Game_Logic.py:1291:42: F541 f-string is missing placeholders
+./src/Game_Logic.py:1354:5: C901 'GameLogic.can_build_house' is too complex (22)
+./src/Game_Logic.py:1365:19: F541 f-string is missing placeholders
+./src/Game_Logic.py:1415:128: E501 line too long (133 > 127 characters)
+./src/Game_Logic.py:1443:128: E501 line too long (182 > 127 characters)
+./src/Game_Logic.py:1462:5: C901 'GameLogic.can_build_hotel' is too complex (14)
+./src/Game_Logic.py:1473:19: F541 f-string is missing placeholders
+./src/Game_Logic.py:1665:30: F541 f-string is missing placeholders
+./src/Game_Logic.py:1672:30: F541 f-string is missing placeholders
+./src/Game_Logic.py:1697:5: C901 'GameLogic.handle_ai_turn' is too complex (14)
+./src/Game_Logic.py:1776:19: F541 f-string is missing placeholders
+./src/Loadexcel.py:8:1: C901 'load_property_data' is too complex (20)
+./src/Player.py:363:128: E501 line too long (132 > 127 characters)
+./src/Player.py:373:128: E501 line too long (130 > 127 characters)
+./src/UI.py:462:5: C901 'MainMenuPage.handle_click' is too complex (13)
+./src/UI.py:705:5: C901 'SettingsPage.handle_click' is too complex (11)
+./src/UI.py:963:5: C901 'StartPage.update_player_lists' is too complex (11)
+./src/UI.py:1320:5: C901 'StartPage.handle_click' is too complex (15)
+./src/UI.py:1407:5: C901 'StartPage.handle_token_selection_click' is too complex (13)
+./src/UI.py:1487:5: C901 'StartPage.handle_key' is too complex (38)
+./src/UI.py:1790:5: C901 'PlayerSelectPage.handle_key' is too complex (21)
+./src/UI.py:2291:5: C901 'GameModePage.handle_click' is too complex (14)
+./src/UI.py:2349:5: C901 'GameModePage.handle_key' is too complex (23)
+./src/UI.py:2547:5: C901 'EndGamePage.draw' is too complex (19)
+49    C901 'run_game' is too complex (65)
+1     E203 whitespace before ':'
+3     E402 module level import not at top of file
+17    E501 line too long (131 > 127 characters)
+5     E712 comparison to True should be 'if cond is True:' or 'if cond:'
+8     F401 'random' imported but unused
+32    F541 f-string is missing placeholders
+1     F811 redefinition of unused 'get_property_value' from line 46
+6     F841 local variable 'player1_dict' is assigned to but never used
+122

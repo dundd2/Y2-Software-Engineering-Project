@@ -71,7 +71,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
-        pygame.display.set_caption("Property Tycoon Beta 04.04.2025")
+        pygame.display.set_caption("Property Tycoon V1.0 09.04.2025")
 
         self.renderer = None
         self.game_actions = GameActions(self)
@@ -1963,11 +1963,11 @@ class Game:
 
         self.state = "ROLL"
         self.development_mode = False
-        self.logic.current_player_index = (self.logic.current_player_index + 1) % len(
-            self.logic.players
-        )
-        print(f"Moving to next player, new index: {self.logic.current_player_index}")
-        self.update_current_player()
+        next_player_data = self.logic.advance_to_next_player()
+        if next_player_data:
+            self.update_current_player()
+        else:
+            pass
         return
 
     def handle_key(self, event):

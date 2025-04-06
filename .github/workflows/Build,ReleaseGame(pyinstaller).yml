@@ -268,7 +268,7 @@ jobs:
       id: get_version
       shell: bash
       run: |
-        VERSION=$(date +'%d.%m.20%y-%H%M%S')
+        VERSION="V1.0(Pyinstaller)"
         echo "version=${VERSION}" >> $GITHUB_ENV
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
