@@ -70,16 +70,18 @@ class LogRedirector:
                 or line_stripped.startswith("Call stack:")
             ):
                 self.logger.log(self.level, line.rstrip())
-        if self.level == logging.ERROR and sys.__stderr__:
-            try:
-                sys.__stderr__.write(buf)
-            except (AttributeError, IOError):
-                pass
-        elif self.level == logging.INFO and sys.__stdout__:
-            try:
-                sys.__stdout__.write(buf)
-            except (AttributeError, IOError):
-                pass
+        if self.level == logging.ERROR:
+            if hasattr(sys, '__stderr__') and sys.__stderr__ is not None:
+                try:
+                    sys.__stderr__.write(buf)
+                except (AttributeError, IOError):
+                    pass
+        elif self.level == logging.INFO:
+            if hasattr(sys, '__stdout__') and sys.__stdout__ is not None:
+                try:
+                    sys.__stdout__.write(buf)
+                except (AttributeError, IOError):
+                    pass
 
     def flush(self):
         pass
