@@ -721,21 +721,6 @@ class GameLogic:
             print(f"Error: Cannot auction non-purchasable property")
             return "auction_completed"
 
-        if hasattr(self, "game") and self.game:
-            if hasattr(self.game, "show_popup"):
-                 print("Hiding generic popup before auction...")
-                 self.game.show_popup = False
-                 if hasattr(self.game, "popup_message"):
-                    self.game.popup_message = None
-            else:
-                 print("Warning: Game object does not have show_popup attribute.")
-            if hasattr(self.game, "show_card"):
-                print("Hiding card specifically before auction...")
-                self.game.show_card = False
-            else:
-                print("Warning: Game object does not have show_card attribute.")
-
-
         eligible_players = [
             p
             for p in self.players

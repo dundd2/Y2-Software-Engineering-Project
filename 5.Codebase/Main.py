@@ -31,13 +31,11 @@ from src.UI import (
 
 WINDOW_SIZE = (1280, 720)
 
-original_stdout = sys.stdout
-original_stderr = sys.stderr
-
 logs_dir = "logs"
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
+# log file name with timestamp
 log_filename = os.path.join(
     logs_dir, f"game_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 )
@@ -47,7 +45,7 @@ logger.setLevel(logging.DEBUG)
 
 file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler(stream=original_stderr)
+console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -63,24 +61,40 @@ class LogRedirector:
         self.logger = logger
         self.level = level
         self.buffer = ""
-        self._redirecting = False
+        self._writing = False
 
     def write(self, buf):
-        if not self._redirecting:
-            try:
-                self._redirecting = True
-                for line in buf.rstrip().splitlines():
-                    line_stripped = line.strip()
-                    if line_stripped and not (
-                        line_stripped.startswith("File ")
-                        or line_stripped.startswith("Call stack:")
-                    ):
-                        self.logger.log(self.level, line.rstrip())
-            finally:
-                self._redirecting = False
+        if self._writing:
+            if sys.__stdout__ is not None:
+                try:
+                    sys.__stdout__.write(buf)
+                except (AttributeError, IOError):
+                    pass
+            return
+
+        self._writing = True
+        try:
+            for line in buf.rstrip().splitlines():
+                if line.strip():
+                    self.logger.log(self.level, line.rstrip())
+
+            if sys.__stdout__ is not None:
+                try:
+                    sys.__stdout__.write(buf)
+                except (AttributeError, IOError):
+                    pass
+        except Exception as e:
+            if not self._writing:
+                print(f"Error in LogRedirector: {e}", file=sys.__stderr__)
+        finally:
+            self._writing = False
 
     def flush(self):
-        pass
+        try:
+            if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
+                sys.__stdout__.flush()
+        except (AttributeError, IOError):
+            pass
 
 
 sys.stdout = LogRedirector(logger, logging.INFO)
@@ -968,8 +982,8 @@ async def main():
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
 
-    sys.stdout = original_stdout
-    sys.stderr = original_stderr
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
 
     for handler in logger.handlers:
         if isinstance(handler, logging.FileHandler):
