@@ -35,7 +35,6 @@ logs_dir = "logs"
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
-# log file name with timestamp
 log_filename = os.path.join(
     logs_dir, f"game_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 )
@@ -43,18 +42,39 @@ log_filename = os.path.join(
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
-file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+for handler in logger.handlers[:]:
+    logger.removeHandler(handler)
+
+try:
+    file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
+    file_handler.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+except (IOError, PermissionError) as e:
+    print(f"Warning: Could not create log file: {e}")
+    file_handler = None
+
+try:
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    logger.addHandler(console_handler)
+except Exception as e:
+    print(f"Warning: Could not create console handler: {e}")
+    console_handler = None
 
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
+if file_handler:
+    file_handler.setFormatter(formatter)
+if console_handler:
+    console_handler.setFormatter(formatter)
 
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
+def handle_logging_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    
+    print("Uncaught exception:", exc_type, exc_value)
 
+sys.excepthook = handle_logging_exception
 
 class LogRedirector:
     def __init__(self, logger, level):
@@ -65,44 +85,63 @@ class LogRedirector:
 
     def write(self, buf):
         if self._writing:
-            if sys.__stdout__ is not None:
-                try:
-                    sys.__stdout__.write(buf)
-                except (AttributeError, IOError):
-                    pass
             return
 
         self._writing = True
         try:
             for line in buf.rstrip().splitlines():
                 if line.strip():
-                    self.logger.log(self.level, line.rstrip())
+                    if file_handler:
+                        file_handler.emit(
+                            logging.LogRecord(
+                                name=self.logger.name,
+                                level=self.level,
+                                pathname="",
+                                lineno=0,
+                                msg=line.rstrip(),
+                                args=(),
+                                exc_info=None
+                            )
+                        )
 
-            if sys.__stdout__ is not None:
+            if sys.__stdout__ is not None and self.level == logging.INFO:
                 try:
                     sys.__stdout__.write(buf)
                 except (AttributeError, IOError):
                     pass
+            elif sys.__stderr__ is not None and self.level == logging.ERROR:
+                try:
+                    sys.__stderr__.write(buf)
+                except (AttributeError, IOError):
+                    pass
         except Exception as e:
             if not self._writing:
-                print(f"Error in LogRedirector: {e}", file=sys.__stderr__)
+                if sys.__stderr__ is not None:
+                    try:
+                        print(f"Error in LogRedirector: {e}", file=sys.__stderr__)
+                    except (AttributeError, IOError):
+                        pass
         finally:
             self._writing = False
 
     def flush(self):
         try:
-            if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
+            if hasattr(sys, "__stdout__") and sys.__stdout__ is not None and self.level == logging.INFO:
                 sys.__stdout__.flush()
+            elif hasattr(sys, "__stderr__") and sys.__stderr__ is not None and self.level == logging.ERROR:
+                sys.__stderr__.flush()
         except (AttributeError, IOError):
             pass
 
-
-sys.stdout = LogRedirector(logger, logging.INFO)
-sys.stderr = LogRedirector(logger, logging.ERROR)
+if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
+    sys.stdout = LogRedirector(logger, logging.INFO)
+if hasattr(sys, "__stderr__") and sys.__stderr__ is not None:
+    sys.stderr = LogRedirector(logger, logging.ERROR)
 
 logger.info("=== Game Session Started ===")
 
-file_handler.flush()
+if file_handler:
+    file_handler.flush()
 
 pygame.init()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -519,106 +558,104 @@ async def run_game(game, game_settings):
                 and not hasattr(game, "auction_processing")
             ):
                 game.auction_processing = True
-                try:
-                    current_bidder_index = auction_data["current_bidder_index"]
+                current_bidder_index = auction_data["current_bidder_index"]
 
-                    if current_bidder_index < len(auction_data["active_players"]):
-                        current_bidder = auction_data["active_players"][
-                            current_bidder_index
-                        ]
+                if current_bidder_index < len(auction_data["active_players"]):
+                    current_bidder = auction_data["active_players"][
+                        current_bidder_index
+                    ]
 
-                        bidder_obj = None
-                        for player in game.players:
-                            if player.name == current_bidder["name"]:
-                                bidder_obj = player
-                                break
-
-                        if (
-                            bidder_obj
-                            and bidder_obj.is_ai
-                            and current_bidder["name"]
-                            not in auction_data.get("passed_players", set())
-                        ):
-                            logger.debug(f"\n=== AI Auction Turn in Main Loop ===")
-                            logger.debug(f"AI Player: {current_bidder['name']}")
-                            logger.debug(f"Current bid: £{auction_data['current_bid']}")
-                            logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
-                            logger.debug(f"AI money: £{current_bidder['money']}")
-
-                            bid_decision = game.logic.get_ai_auction_bid(
-                                current_bidder,
-                                auction_data["property"],
-                                auction_data["current_bid"],
-                            )
-
-                            if (
-                                bid_decision is not None
-                                and bid_decision >= auction_data["minimum_bid"]
-                                and current_bidder["money"] >= bid_decision
-                            ):
-                                bid_amount = bid_decision
-                                logger.debug(
-                                    f"AI {current_bidder['name']} bids £{bid_amount}"
-                                )
-                                success, message = game.logic.process_auction_bid(
-                                    current_bidder, bid_amount
-                                )
-                                game.board.add_message(message)
-
-                            else:
-                                logger.debug(f"AI {current_bidder['name']} passes")
-                                success, message = game.logic.process_auction_pass(
-                                    current_bidder
-                                )
-                                game.board.add_message(message)
+                    bidder_obj = None
+                    for player in game.players:
+                        if player.name == current_bidder["name"]:
+                            bidder_obj = player
+                            break
 
                     if (
-                        hasattr(game.logic, "current_auction")
-                        and game.logic.current_auction
+                        bidder_obj
+                        and bidder_obj.is_ai
+                        and current_bidder["name"]
+                        not in auction_data.get("passed_players", set())
                     ):
-                        result_message = game.logic.check_auction_end()
-                        if result_message == "auction_completed":
-                            logger.info(
-                                "Auction completed in main loop - setting up delay"
+                        logger.debug(f"\n=== AI Auction Turn in Main Loop ===")
+                        logger.debug(f"AI Player: {current_bidder['name']}")
+                        logger.debug(f"Current bid: £{auction_data['current_bid']}")
+                        logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
+                        logger.debug(f"AI money: £{current_bidder['money']}")
+
+                        bid_amount = game.logic.get_ai_auction_bid(
+                            current_bidder,
+                            auction_data["property"],
+                            auction_data["current_bid"]
+                        )
+                        
+                        if bid_amount and bid_amount >= auction_data["minimum_bid"]:
+                            logger.debug(
+                                f"AI {current_bidder['name']} bids £{bid_amount}"
                             )
-
-                            if (
-                                hasattr(game.logic, "current_auction")
-                                and game.logic.current_auction is not None
-                            ):
-                                if game.logic.current_auction.get("highest_bidder"):
-                                    winner = game.logic.current_auction[
-                                        "highest_bidder"
-                                    ]
-                                    property_name = game.logic.current_auction[
-                                        "property"
-                                    ]["name"]
-                                    bid_amount = game.logic.current_auction[
-                                        "current_bid"
-                                    ]
-                                    game.board.add_message(
-                                        f"{winner['name']} won {property_name} for £{bid_amount}"
-                                    )
-                                else:
-                                    property_name = game.logic.current_auction[
-                                        "property"
-                                    ]["name"]
-                                    game.board.add_message(
-                                        f"No one bid on {property_name}"
-                                    )
-
-                            game.auction_end_time = pygame.time.get_ticks()
-                            game.auction_end_delay = 3000
-                            game.auction_completed = True
-                            game.board.update_ownership(game.logic.properties)
-
-                            game.logic.current_auction = None
-                            logger.info(
-                                "Explicitly cleared current_auction after setting up auction delay"
+                            success, message = game.logic.process_auction_bid(
+                                current_bidder, bid_amount
                             )
-                finally:
-                    if hasattr(game, "auction_processing"):
-                        delattr(game, "auction_processing")
+                            game.board.add_message(message)
+                            if success:
+                                pygame.event.post(
+                                    pygame.event.Event(
+                                        pygame.USEREVENT,
+                                        {"action": "ai_auction_action_complete"},
+                                    )
+                                )
+                        else:
+                            logger.debug(f"AI {current_bidder['name']} passes")
+                            success, message = game.logic.process_auction_pass(
+                                current_bidder
+                            )
+                            game.board.add_message(message)
+                            if success:
+                                pygame.event.post(
+                                    pygame.event.Event(
+                                        pygame.USEREVENT,
+                                        {"action": "ai_auction_action_complete"},
+                                    )
+                                )
+
+                if (
+                    hasattr(game.logic, "current_auction")
+                    and game.logic.current_auction
+                ):
+                    result_message = game.logic.check_auction_end()
+                    if result_message == "auction_completed":
+                        logger.info("Auction completed in main loop - setting up delay")
+
+                        if (
+                            hasattr(game.logic, "current_auction")
+                            and game.logic.current_auction is not None
+                        ):
+                            if game.logic.current_auction.get("highest_bidder"):
+                                winner = game.logic.current_auction["highest_bidder"]
+                                property_name = game.logic.current_auction["property"][
+                                    "name"
+                                ]
+                                bid_amount = game.logic.current_auction["current_bid"]
+                                game.board.add_message(
+                                    f"{winner['name']} won {property_name} for £{bid_amount}"
+                                )
+                            else:
+                                property_name = game.logic.current_auction["property"][
+                                    "name"
+                                ]
+                                game.board.add_message(f"No one bid on {property_name}")
+
+                        game.auction_end_time = pygame.time.get_ticks()
+                        game.auction_end_delay = 3000
+                        game.auction_completed = True
+                        game.board.update_ownership(game.logic.properties)
+
+                        game.logic.current_auction = None
+                        logger.info(
+                            "Explicitly cleared current_auction after setting up auction delay"
+                        )
+
+                delattr(game, "auction_processing")
 
         # check auction end condition
         any_moving = any(player.is_moving for player in game.players)
@@ -978,25 +1015,32 @@ async def main():
             clock.tick(FPS)
 
 
-# cleans up and exits the game properly
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
 
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
-
-    for handler in logger.handlers:
+    if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
+        sys.stdout = sys.__stdout__
+    if hasattr(sys, "__stderr__") and sys.__stderr__ is not None:
+        sys.stderr = sys.__stderr__
+    
+    for handler in logger.handlers[:]:
         if isinstance(handler, logging.FileHandler):
-            handler.flush()
+            try:
+                handler.flush()
+                handler.close()
+            except Exception:
+                pass
+            logger.removeHandler(handler)
 
     logger.info("=== Game Session Ended ===")
 
-    logging.shutdown()
+    try:
+        logging.shutdown()
+    except Exception:
+        pass
 
     pygame.quit()
     sys.exit(code)
 
-
-# runs the main function when the script is executed
 if __name__ == "__main__":
     asyncio.run(main())
