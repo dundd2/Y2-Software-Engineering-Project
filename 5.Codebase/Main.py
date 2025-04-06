@@ -31,11 +31,13 @@ from src.UI import (
 
 WINDOW_SIZE = (1280, 720)
 
+original_stdout = sys.stdout
+original_stderr = sys.stderr
+
 logs_dir = "logs"
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
-# log file name with timestamp
 log_filename = os.path.join(
     logs_dir, f"game_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 )
@@ -45,7 +47,7 @@ logger.setLevel(logging.DEBUG)
 
 file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler()
+console_handler = logging.StreamHandler(stream=original_stderr)
 console_handler.setLevel(logging.INFO)
 
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
@@ -70,18 +72,6 @@ class LogRedirector:
                 or line_stripped.startswith("Call stack:")
             ):
                 self.logger.log(self.level, line.rstrip())
-        if self.level == logging.ERROR:
-            if hasattr(sys, '__stderr__') and sys.__stderr__ is not None:
-                try:
-                    sys.__stderr__.write(buf)
-                except (AttributeError, IOError):
-                    pass
-        elif self.level == logging.INFO:
-            if hasattr(sys, '__stdout__') and sys.__stdout__ is not None:
-                try:
-                    sys.__stdout__.write(buf)
-                except (AttributeError, IOError):
-                    pass
 
     def flush(self):
         pass
@@ -972,8 +962,8 @@ async def main():
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
 
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    sys.stdout = original_stdout
+    sys.stderr = original_stderr
 
     for handler in logger.handlers:
         if isinstance(handler, logging.FileHandler):
