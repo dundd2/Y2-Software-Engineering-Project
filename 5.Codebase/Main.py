@@ -65,21 +65,25 @@ class LogRedirector:
     def write(self, buf):
         for line in buf.rstrip().splitlines():
             line_stripped = line.strip()
-            if line_stripped and not (line_stripped.startswith("File ") or line_stripped.startswith("Call stack:")):
+            if line_stripped and not (
+                line_stripped.startswith("File ")
+                or line_stripped.startswith("Call stack:")
+            ):
                 self.logger.log(self.level, line.rstrip())
         if self.level == logging.ERROR and sys.__stderr__:
             try:
                 sys.__stderr__.write(buf)
             except (AttributeError, IOError):
-                pass 
+                pass
         elif self.level == logging.INFO and sys.__stdout__:
             try:
                 sys.__stdout__.write(buf)
             except (AttributeError, IOError):
-                pass 
+                pass
 
-    def flush(self):        
+    def flush(self):
         pass
+
 
 sys.stdout = LogRedirector(logger, logging.INFO)
 sys.stderr = LogRedirector(logger, logging.ERROR)
