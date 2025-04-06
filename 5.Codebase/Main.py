@@ -519,106 +519,106 @@ async def run_game(game, game_settings):
                 and not hasattr(game, "auction_processing")
             ):
                 game.auction_processing = True
-                current_bidder_index = auction_data["current_bidder_index"]
+                try:
+                    current_bidder_index = auction_data["current_bidder_index"]
 
-                if current_bidder_index < len(auction_data["active_players"]):
-                    current_bidder = auction_data["active_players"][
-                        current_bidder_index
-                    ]
+                    if current_bidder_index < len(auction_data["active_players"]):
+                        current_bidder = auction_data["active_players"][
+                            current_bidder_index
+                        ]
 
-                    bidder_obj = None
-                    for player in game.players:
-                        if player.name == current_bidder["name"]:
-                            bidder_obj = player
-                            break
+                        bidder_obj = None
+                        for player in game.players:
+                            if player.name == current_bidder["name"]:
+                                bidder_obj = player
+                                break
+
+                        if (
+                            bidder_obj
+                            and bidder_obj.is_ai
+                            and current_bidder["name"]
+                            not in auction_data.get("passed_players", set())
+                        ):
+                            logger.debug(f"\n=== AI Auction Turn in Main Loop ===")
+                            logger.debug(f"AI Player: {current_bidder['name']}")
+                            logger.debug(f"Current bid: £{auction_data['current_bid']}")
+                            logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
+                            logger.debug(f"AI money: £{current_bidder['money']}")
+
+                            bid_decision = game.logic.get_ai_auction_bid(
+                                current_bidder,
+                                auction_data["property"],
+                                auction_data["current_bid"],
+                            )
+
+                            if (
+                                bid_decision is not None
+                                and bid_decision >= auction_data["minimum_bid"]
+                                and current_bidder["money"] >= bid_decision
+                            ):
+                                bid_amount = bid_decision
+                                logger.debug(
+                                    f"AI {current_bidder['name']} bids £{bid_amount}"
+                                )
+                                success, message = game.logic.process_auction_bid(
+                                    current_bidder, bid_amount
+                                )
+                                game.board.add_message(message)
+
+                            else:
+                                logger.debug(f"AI {current_bidder['name']} passes")
+                                success, message = game.logic.process_auction_pass(
+                                    current_bidder
+                                )
+                                game.board.add_message(message)
 
                     if (
-                        bidder_obj
-                        and bidder_obj.is_ai
-                        and current_bidder["name"]
-                        not in auction_data.get("passed_players", set())
+                        hasattr(game.logic, "current_auction")
+                        and game.logic.current_auction
                     ):
-                        logger.debug(f"\n=== AI Auction Turn in Main Loop ===")
-                        logger.debug(f"AI Player: {current_bidder['name']}")
-                        logger.debug(f"Current bid: £{auction_data['current_bid']}")
-                        logger.debug(f"Minimum bid: £{auction_data['minimum_bid']}")
-                        logger.debug(f"AI money: £{current_bidder['money']}")
+                        result_message = game.logic.check_auction_end()
+                        if result_message == "auction_completed":
+                            logger.info(
+                                "Auction completed in main loop - setting up delay"
+                            )
 
-                        ai_decision = random.random() > 0.5
-                        if (
-                            ai_decision
-                            and current_bidder["money"] >= auction_data["minimum_bid"]
-                        ):
-                            bid_amount = min(
-                                current_bidder["money"],
-                                auction_data["minimum_bid"] + random.randint(10, 50),
-                            )
-                            logger.debug(
-                                f"AI {current_bidder['name']} bids £{bid_amount}"
-                            )
-                            success, message = game.logic.process_auction_bid(
-                                current_bidder, bid_amount
-                            )
-                            game.board.add_message(message)
-                            if success:
-                                pygame.event.post(
-                                    pygame.event.Event(
-                                        pygame.USEREVENT,
-                                        {"action": "ai_auction_action_complete"},
+                            if (
+                                hasattr(game.logic, "current_auction")
+                                and game.logic.current_auction is not None
+                            ):
+                                if game.logic.current_auction.get("highest_bidder"):
+                                    winner = game.logic.current_auction[
+                                        "highest_bidder"
+                                    ]
+                                    property_name = game.logic.current_auction[
+                                        "property"
+                                    ]["name"]
+                                    bid_amount = game.logic.current_auction[
+                                        "current_bid"
+                                    ]
+                                    game.board.add_message(
+                                        f"{winner['name']} won {property_name} for £{bid_amount}"
                                     )
-                                )
-                        else:
-                            logger.debug(f"AI {current_bidder['name']} passes")
-                            success, message = game.logic.process_auction_pass(
-                                current_bidder
-                            )
-                            game.board.add_message(message)
-                            if success:
-                                pygame.event.post(
-                                    pygame.event.Event(
-                                        pygame.USEREVENT,
-                                        {"action": "ai_auction_action_complete"},
+                                else:
+                                    property_name = game.logic.current_auction[
+                                        "property"
+                                    ]["name"]
+                                    game.board.add_message(
+                                        f"No one bid on {property_name}"
                                     )
-                                )
 
-                if (
-                    hasattr(game.logic, "current_auction")
-                    and game.logic.current_auction
-                ):
-                    result_message = game.logic.check_auction_end()
-                    if result_message == "auction_completed":
-                        logger.info("Auction completed in main loop - setting up delay")
+                            game.auction_end_time = pygame.time.get_ticks()
+                            game.auction_end_delay = 3000
+                            game.auction_completed = True
+                            game.board.update_ownership(game.logic.properties)
 
-                        if (
-                            hasattr(game.logic, "current_auction")
-                            and game.logic.current_auction is not None
-                        ):
-                            if game.logic.current_auction.get("highest_bidder"):
-                                winner = game.logic.current_auction["highest_bidder"]
-                                property_name = game.logic.current_auction["property"][
-                                    "name"
-                                ]
-                                bid_amount = game.logic.current_auction["current_bid"]
-                                game.board.add_message(
-                                    f"{winner['name']} won {property_name} for £{bid_amount}"
-                                )
-                            else:
-                                property_name = game.logic.current_auction["property"][
-                                    "name"
-                                ]
-                                game.board.add_message(f"No one bid on {property_name}")
-
-                        game.auction_end_time = pygame.time.get_ticks()
-                        game.auction_end_delay = 3000
-                        game.auction_completed = True
-                        game.board.update_ownership(game.logic.properties)
-
-                        game.logic.current_auction = None
-                        logger.info(
-                            "Explicitly cleared current_auction after setting up auction delay"
-                        )
-
-                delattr(game, "auction_processing")
+                            game.logic.current_auction = None
+                            logger.info(
+                                "Explicitly cleared current_auction after setting up auction delay"
+                            )
+                finally:
+                    if hasattr(game, "auction_processing"):
+                        delattr(game, "auction_processing")
 
         # check auction end condition
         any_moving = any(player.is_moving for player in game.players)
