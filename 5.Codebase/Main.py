@@ -63,15 +63,21 @@ class LogRedirector:
         self.logger = logger
         self.level = level
         self.buffer = ""
+        self._redirecting = False
 
     def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            line_stripped = line.strip()
-            if line_stripped and not (
-                line_stripped.startswith("File ")
-                or line_stripped.startswith("Call stack:")
-            ):
-                self.logger.log(self.level, line.rstrip())
+        if not self._redirecting:
+            try:
+                self._redirecting = True
+                for line in buf.rstrip().splitlines():
+                    line_stripped = line.strip()
+                    if line_stripped and not (
+                        line_stripped.startswith("File ")
+                        or line_stripped.startswith("Call stack:")
+                    ):
+                        self.logger.log(self.level, line.rstrip())
+            finally:
+                self._redirecting = False
 
     def flush(self):
         pass
