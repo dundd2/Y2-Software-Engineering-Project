@@ -1065,9 +1065,9 @@ class GameLogic:
 
     def placeBids(self, player_list, property_data):
         print("\n=== Property Auction Debug ===")
-        print("Starting auction for", property_data['name'])
-        print("Property position:", property_data.get('position', 'Unknown'))
-        print("Starting price: £", property_data['price'] // 2)
+        print("Starting auction for", property_data["name"])
+        print("Property position:", property_data.get("position", "Unknown"))
+        print("Starting price: £", property_data["price"] // 2)
 
         current_minimum = property_data["price"] // 2
         active_players = player_list[:]
@@ -1076,16 +1076,16 @@ class GameLogic:
 
         while len(active_players) > 1:
             print("\n=== Auction Round", round_count, "===")
-            print("Active players:", [p['name'] for p in active_players])
+            print("Active players:", [p["name"] for p in active_players])
             print("Current minimum bid: £", current_minimum)
 
             round_bids = {}
             for player in active_players[:]:
-                print("\nPlayer", player['name'], "'s turn")
-                print("Available money: £", player['money'])
+                print("\nPlayer", player["name"], "'s turn")
+                print("Available money: £", player["money"])
 
                 if player.get("in_jail", False):
-                    print(player['name'], "is in jail - skipping")
+                    print(player["name"], "is in jail - skipping")
                     active_players.remove(player)
                     continue
 

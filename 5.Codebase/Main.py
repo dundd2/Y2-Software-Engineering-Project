@@ -65,14 +65,16 @@ except Exception as e:
     print(f"Warning: Could not create console handler: {e}")
     console_handler = None
 
+
 def log_print(*args, level=logging.INFO, **kwargs):
     message = " ".join(str(arg) for arg in args)
     logger.log(level, message)
-    
-    if kwargs.get('flush', False):
+
+    if kwargs.get("flush", False):
         builtin_print(*args, **kwargs)
     else:
-        builtin_print(*args, **{k:v for k,v in kwargs.items() if k != 'flush'})
+        builtin_print(*args, **{k: v for k, v in kwargs.items() if k != "flush"})
+
 
 builtin_print = print
 
@@ -527,9 +529,9 @@ async def run_game(game, game_settings):
                         bid_amount = game.logic.get_ai_auction_bid(
                             current_bidder,
                             auction_data["property"],
-                            auction_data["current_bid"]
+                            auction_data["current_bid"],
                         )
-                        
+
                         if bid_amount and bid_amount >= auction_data["minimum_bid"]:
                             logger.debug(
                                 f"AI {current_bidder['name']} bids £{bid_amount}"
@@ -958,10 +960,10 @@ async def main():
 
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
-    
+
     # Restore the original print function
     __builtins__.print = builtin_print
-    
+
     for handler in logger.handlers[:]:
         try:
             handler.flush()
