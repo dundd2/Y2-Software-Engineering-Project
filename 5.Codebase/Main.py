@@ -45,9 +45,12 @@ logger.setLevel(logging.DEBUG)
 for handler in logger.handlers[:]:
     logger.removeHandler(handler)
 
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
 try:
     file_handler = logging.FileHandler(log_filename, mode="w", encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 except (IOError, PermissionError) as e:
     print(f"Warning: Could not create log file: {e}")
@@ -56,87 +59,25 @@ except (IOError, PermissionError) as e:
 try:
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 except Exception as e:
     print(f"Warning: Could not create console handler: {e}")
     console_handler = None
 
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-if file_handler:
-    file_handler.setFormatter(formatter)
-if console_handler:
-    console_handler.setFormatter(formatter)
-
-def handle_logging_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
+def log_print(*args, level=logging.INFO, **kwargs):
+    message = " ".join(str(arg) for arg in args)
+    logger.log(level, message)
     
-    print("Uncaught exception:", exc_type, exc_value)
+    if kwargs.get('flush', False):
+        builtin_print(*args, **kwargs)
+    else:
+        builtin_print(*args, **{k:v for k,v in kwargs.items() if k != 'flush'})
 
-sys.excepthook = handle_logging_exception
+builtin_print = print
 
-class LogRedirector:
-    def __init__(self, logger, level):
-        self.logger = logger
-        self.level = level
-        self.buffer = ""
-        self._writing = False
-
-    def write(self, buf):
-        if self._writing:
-            return
-
-        self._writing = True
-        try:
-            for line in buf.rstrip().splitlines():
-                if line.strip():
-                    if file_handler:
-                        file_handler.emit(
-                            logging.LogRecord(
-                                name=self.logger.name,
-                                level=self.level,
-                                pathname="",
-                                lineno=0,
-                                msg=line.rstrip(),
-                                args=(),
-                                exc_info=None
-                            )
-                        )
-
-            if sys.__stdout__ is not None and self.level == logging.INFO:
-                try:
-                    sys.__stdout__.write(buf)
-                except (AttributeError, IOError):
-                    pass
-            elif sys.__stderr__ is not None and self.level == logging.ERROR:
-                try:
-                    sys.__stderr__.write(buf)
-                except (AttributeError, IOError):
-                    pass
-        except Exception as e:
-            if not self._writing:
-                if sys.__stderr__ is not None:
-                    try:
-                        print(f"Error in LogRedirector: {e}", file=sys.__stderr__)
-                    except (AttributeError, IOError):
-                        pass
-        finally:
-            self._writing = False
-
-    def flush(self):
-        try:
-            if hasattr(sys, "__stdout__") and sys.__stdout__ is not None and self.level == logging.INFO:
-                sys.__stdout__.flush()
-            elif hasattr(sys, "__stderr__") and sys.__stderr__ is not None and self.level == logging.ERROR:
-                sys.__stderr__.flush()
-        except (AttributeError, IOError):
-            pass
-
-if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
-    sys.stdout = LogRedirector(logger, logging.INFO)
-if hasattr(sys, "__stderr__") and sys.__stderr__ is not None:
-    sys.stderr = LogRedirector(logger, logging.ERROR)
+if __name__ == "__main__":
+    __builtins__.print = log_print
 
 logger.info("=== Game Session Started ===")
 
@@ -1017,20 +958,17 @@ async def main():
 
 def safe_exit(code=0):
     logger.info("Game is shutting down...")
-
-    if hasattr(sys, "__stdout__") and sys.__stdout__ is not None:
-        sys.stdout = sys.__stdout__
-    if hasattr(sys, "__stderr__") and sys.__stderr__ is not None:
-        sys.stderr = sys.__stderr__
+    
+    # Restore the original print function
+    __builtins__.print = builtin_print
     
     for handler in logger.handlers[:]:
-        if isinstance(handler, logging.FileHandler):
-            try:
-                handler.flush()
-                handler.close()
-            except Exception:
-                pass
-            logger.removeHandler(handler)
+        try:
+            handler.flush()
+            handler.close()
+        except Exception:
+            pass
+        logger.removeHandler(handler)
 
     logger.info("=== Game Session Ended ===")
 
@@ -1041,6 +979,7 @@ def safe_exit(code=0):
 
     pygame.quit()
     sys.exit(code)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
