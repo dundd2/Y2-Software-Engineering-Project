@@ -20,6 +20,10 @@ This repository contains **Property Tycoon**, a game developed using **Pygame** 
 * **Handle:** [@UOS-G6046-Group5](https://www.youtube.com/@UOS-G6046-Group5)
 * **Channel URL:** [https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng](https://www.youtube.com/channel/UCfA_oAs-qoOGMWJ_UueYHng)
 
+## Game Design Documentation
+
+The game design documentation is built with Sphinx using a theme provided by Read the Docs. You can view the complete documentation at [https://Minosaji.github.io/Software-Engineering-Project/](https://Minosaji.github.io/Software-Engineering-Project/)
+
 ## Download the Game
 
 Pre-built versions of Property Tycoon are available on [Releases page](https://github.com/Minosaji/Software-Engineering-Project/releases).
