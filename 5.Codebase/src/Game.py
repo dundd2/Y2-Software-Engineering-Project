@@ -71,7 +71,7 @@ class Game:
         self.screen = pygame.display.get_surface()
         if not self.screen:
             self.screen = pygame.display.set_mode((info.current_w, info.current_h))
-        pygame.display.set_caption("Property Tycoon Beta 04.04.2025")
+        pygame.display.set_caption("Property Tycoon V1.0 09.04.2025")
 
         self.renderer = None
         self.game_actions = GameActions(self)

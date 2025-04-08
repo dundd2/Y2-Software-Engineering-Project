@@ -128,7 +128,7 @@ async def apply_screen_settings(resolution):
     WINDOW_SIZE = resolution
     screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
 
-    pygame.display.set_caption("Property Tycoon Alpha 04.04.2025")
+    pygame.display.set_caption("Property Tycoon V1.0 09.04.2025")
     try:
         icon_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), "assets", "image", "icon.ico"
