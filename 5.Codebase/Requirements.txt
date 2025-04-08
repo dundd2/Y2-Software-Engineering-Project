@@ -1,4 +1,0 @@
-setuptools
-pygame
-pandas
-openpyxl
