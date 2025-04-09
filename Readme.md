@@ -62,7 +62,7 @@ pip install setuptools pygame pandas openpyxl
 2. Install required packages: In the Terminal, type:
 
 ```bash
-pip3 install setuptools pygame pandas openpyxl nuitka
+pip3 install setuptools pygame pandas openpyxl
 ```
 
 ### Alternative Installation Using requirements.txt
