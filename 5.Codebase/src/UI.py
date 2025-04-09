@@ -348,7 +348,7 @@ class MainMenuPage(BasePage):
             self.github_logo = pygame.image.load(github_path)
             self.github_logo = pygame.transform.scale(self.github_logo, (40, 40))
             self.github_rect = self.github_logo.get_rect(topleft=(80, 20))
-            
+
             rtd_path = os.path.join(base_path, "assets/image/read the docs logo.png")
             self.rtd_logo = pygame.image.load(rtd_path)
             self.rtd_logo = pygame.transform.scale(self.rtd_logo, (40, 40))
