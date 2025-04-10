@@ -7,18 +7,6 @@
           "organization": "PyCQA",
           "rules": [
             {
-              "id": "B110",
-              "name": "try_except_pass",
-              "properties": {
-                "tags": [
-                  "security",
-                  "external/cwe/cwe-703"
-                ],
-                "precision": "high"
-              },
-              "helpUri": "https://bandit.readthedocs.io/en/1.8.3/plugins/b110_try_except_pass.html"
-            },
-            {
               "id": "B311",
               "name": "blacklist",
               "properties": {
@@ -29,6 +17,18 @@
                 "precision": "high"
               },
               "helpUri": "https://bandit.readthedocs.io/en/1.8.3/blacklists/blacklist_calls.html#b311-random"
+            },
+            {
+              "id": "B110",
+              "name": "try_except_pass",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-703"
+                ],
+                "precision": "high"
+              },
+              "helpUri": "https://bandit.readthedocs.io/en/1.8.3/plugins/b110_try_except_pass.html"
             }
           ],
           "version": "1.8.3",
@@ -38,26 +38,52 @@
       "invocations": [
         {
           "executionSuccessful": true,
-          "endTimeUtc": "2025-04-07T07:37:06Z"
+          "endTimeUtc": "2025-04-10T02:00:44Z"
         }
       ],
       "properties": {
         "metrics": {
           "_totals": {
-            "loc": 13240,
+            "loc": 13589,
             "nosec": 0,
             "skipped_tests": 0,
             "SEVERITY.UNDEFINED": 0,
             "CONFIDENCE.UNDEFINED": 0,
-            "SEVERITY.LOW": 30,
+            "SEVERITY.LOW": 33,
             "CONFIDENCE.LOW": 0,
             "SEVERITY.MEDIUM": 0,
             "CONFIDENCE.MEDIUM": 0,
             "SEVERITY.HIGH": 0,
-            "CONFIDENCE.HIGH": 30
+            "CONFIDENCE.HIGH": 33
+          },
+          "./1.Planning Documents/Basic Game flow flowchart.png in python.py": {
+            "loc": 258,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 3,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 3
+          },
+          "./4.Design Evidence/Sphinx Sorce Code/conf.py": {
+            "loc": 57,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "SEVERITY.LOW": 0,
+            "SEVERITY.MEDIUM": 0,
+            "SEVERITY.HIGH": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "CONFIDENCE.LOW": 0,
+            "CONFIDENCE.MEDIUM": 0,
+            "CONFIDENCE.HIGH": 0
           },
           "./5.Codebase/Main.py": {
-            "loc": 784,
+            "loc": 785,
             "nosec": 0,
             "skipped_tests": 0,
             "SEVERITY.UNDEFINED": 0,
@@ -265,7 +291,7 @@
             "CONFIDENCE.HIGH": 0
           },
           "./5.Codebase/src/UI.py": {
-            "loc": 2740,
+            "loc": 2773,
             "nosec": 0,
             "skipped_tests": 0,
             "SEVERITY.UNDEFINED": 0,
@@ -295,6 +321,117 @@
       "results": [
         {
           "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    dice1 = random.randint(1, 6)\n"
+                  },
+                  "endColumn": 33,
+                  "endLine": 37,
+                  "startColumn": 13,
+                  "startLine": 37
+                },
+                "artifactLocation": {
+                  "uri": "1.Planning%20Documents/Basic%20Game%20flow%20flowchart.png%20in%20python.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "    # base on eric's flowchart: let player rolling the dices\n    dice1 = random.randint(1, 6)\n    dice2 = random.randint(1, 6)\n"
+                  },
+                  "endLine": 38,
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    dice2 = random.randint(1, 6)\n"
+                  },
+                  "endColumn": 33,
+                  "endLine": 38,
+                  "startColumn": 13,
+                  "startLine": 38
+                },
+                "artifactLocation": {
+                  "uri": "1.Planning%20Documents/Basic%20Game%20flow%20flowchart.png%20in%20python.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "    dice1 = random.randint(1, 6)\n    dice2 = random.randint(1, 6)\n    dice_sum = dice1 + dice2\n"
+                  },
+                  "endLine": 39,
+                  "startLine": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    card = random.choice(cards)\n"
+                  },
+                  "endColumn": 32,
+                  "endLine": 210,
+                  "startColumn": 12,
+                  "startLine": 210
+                },
+                "artifactLocation": {
+                  "uri": "1.Planning%20Documents/Basic%20Game%20flow%20flowchart.png%20in%20python.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "\n    card = random.choice(cards)\n    print(f\"Lucky card: {card['text']}\")\n"
+                  },
+                  "endLine": 211,
+                  "startLine": 209
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B311",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
             "text": "Try, Except, Pass detected."
           },
           "level": "note",
@@ -306,9 +443,9 @@
                     "text": "        except Exception:\n"
                   },
                   "endColumn": 17,
-                  "endLine": 967,
+                  "endLine": 972,
                   "startColumn": 9,
-                  "startLine": 966
+                  "startLine": 971
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/Main.py"
@@ -317,8 +454,8 @@
                   "snippet": {
                     "text": "            handler.close()\n        except Exception:\n            pass\n        logger.removeHandler(handler)\n"
                   },
-                  "endLine": 968,
-                  "startLine": 965
+                  "endLine": 973,
+                  "startLine": 970
                 }
               }
             }
@@ -328,7 +465,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B110",
-          "ruleIndex": 0
+          "ruleIndex": 1
         },
         {
           "message": {
@@ -343,9 +480,9 @@
                     "text": "    except Exception:\n"
                   },
                   "endColumn": 13,
-                  "endLine": 975,
+                  "endLine": 980,
                   "startColumn": 5,
-                  "startLine": 974
+                  "startLine": 979
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/Main.py"
@@ -354,8 +491,8 @@
                   "snippet": {
                     "text": "        logging.shutdown()\n    except Exception:\n        pass\n\n"
                   },
-                  "endLine": 976,
-                  "startLine": 973
+                  "endLine": 981,
+                  "startLine": 978
                 }
               }
             }
@@ -365,7 +502,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B110",
-          "ruleIndex": 0
+          "ruleIndex": 1
         },
         {
           "message": {
@@ -402,7 +539,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -439,7 +576,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -476,7 +613,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -513,7 +650,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -550,7 +687,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -587,7 +724,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -624,7 +761,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -661,7 +798,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -698,7 +835,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -735,7 +872,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -772,7 +909,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -809,7 +946,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -846,7 +983,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -883,7 +1020,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -920,7 +1057,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -957,7 +1094,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -994,7 +1131,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1031,7 +1168,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1068,7 +1205,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1105,7 +1242,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1142,7 +1279,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1157,9 +1294,9 @@
                     "text": "                    \"x\": random.randint(0, get_window_size()[0]),\n"
                   },
                   "endColumn": 65,
-                  "endLine": 2495,
+                  "endLine": 2530,
                   "startColumn": 26,
-                  "startLine": 2495
+                  "startLine": 2530
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1168,8 +1305,8 @@
                   "snippet": {
                     "text": "                {\n                    \"x\": random.randint(0, get_window_size()[0]),\n                    \"y\": random.randint(-100, 0),\n"
                   },
-                  "endLine": 2496,
-                  "startLine": 2494
+                  "endLine": 2531,
+                  "startLine": 2529
                 }
               }
             }
@@ -1179,7 +1316,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1194,9 +1331,9 @@
                     "text": "                    \"y\": random.randint(-100, 0),\n"
                   },
                   "endColumn": 49,
-                  "endLine": 2496,
+                  "endLine": 2531,
                   "startColumn": 26,
-                  "startLine": 2496
+                  "startLine": 2531
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1205,8 +1342,8 @@
                   "snippet": {
                     "text": "                    \"x\": random.randint(0, get_window_size()[0]),\n                    \"y\": random.randint(-100, 0),\n                    \"speed\": random.uniform(1, 3),\n"
                   },
-                  "endLine": 2497,
-                  "startLine": 2495
+                  "endLine": 2532,
+                  "startLine": 2530
                 }
               }
             }
@@ -1216,7 +1353,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1231,9 +1368,9 @@
                     "text": "                    \"speed\": random.uniform(1, 3),\n"
                   },
                   "endColumn": 50,
-                  "endLine": 2497,
+                  "endLine": 2532,
                   "startColumn": 30,
-                  "startLine": 2497
+                  "startLine": 2532
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1242,8 +1379,8 @@
                   "snippet": {
                     "text": "                    \"y\": random.randint(-100, 0),\n                    \"speed\": random.uniform(1, 3),\n                    \"size\": random.randint(5, 15),\n"
                   },
-                  "endLine": 2498,
-                  "startLine": 2496
+                  "endLine": 2533,
+                  "startLine": 2531
                 }
               }
             }
@@ -1253,7 +1390,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1268,9 +1405,9 @@
                     "text": "                    \"size\": random.randint(5, 15),\n"
                   },
                   "endColumn": 50,
-                  "endLine": 2498,
+                  "endLine": 2533,
                   "startColumn": 29,
-                  "startLine": 2498
+                  "startLine": 2533
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1279,8 +1416,8 @@
                   "snippet": {
                     "text": "                    \"speed\": random.uniform(1, 3),\n                    \"size\": random.randint(5, 15),\n                    \"color\": random.choice(\n"
                   },
-                  "endLine": 2499,
-                  "startLine": 2497
+                  "endLine": 2534,
+                  "startLine": 2532
                 }
               }
             }
@@ -1290,7 +1427,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1305,9 +1442,9 @@
                     "text": "                    \"color\": random.choice(\n"
                   },
                   "endColumn": 22,
-                  "endLine": 2500,
+                  "endLine": 2535,
                   "startColumn": 30,
-                  "startLine": 2499
+                  "startLine": 2534
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1316,8 +1453,8 @@
                   "snippet": {
                     "text": "                    \"size\": random.randint(5, 15),\n                    \"color\": random.choice(\n                        [\n                            (255, 223, 0),\n                            (255, 0, 0),\n                            (0, 255, 0),\n                            (0, 0, 255),\n                            (255, 0, 255),\n                            (0, 255, 255),\n                        ]\n                    ),\n                }\n"
                   },
-                  "endLine": 2509,
-                  "startLine": 2498
+                  "endLine": 2544,
+                  "startLine": 2533
                 }
               }
             }
@@ -1327,7 +1464,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1342,9 +1479,9 @@
                     "text": "                particle[\"y\"] = random.randint(-100, 0)\n"
                   },
                   "endColumn": 56,
-                  "endLine": 2548,
+                  "endLine": 2583,
                   "startColumn": 33,
-                  "startLine": 2548
+                  "startLine": 2583
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1353,8 +1490,8 @@
                   "snippet": {
                     "text": "            if particle[\"y\"] > get_window_size()[1]:\n                particle[\"y\"] = random.randint(-100, 0)\n                particle[\"x\"] = random.randint(0, get_window_size()[0])\n"
                   },
-                  "endLine": 2549,
-                  "startLine": 2547
+                  "endLine": 2584,
+                  "startLine": 2582
                 }
               }
             }
@@ -1364,7 +1501,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         },
         {
           "message": {
@@ -1379,9 +1516,9 @@
                     "text": "                particle[\"x\"] = random.randint(0, get_window_size()[0])\n"
                   },
                   "endColumn": 72,
-                  "endLine": 2549,
+                  "endLine": 2584,
                   "startColumn": 33,
-                  "startLine": 2549
+                  "startLine": 2584
                 },
                 "artifactLocation": {
                   "uri": "5.Codebase/src/UI.py"
@@ -1390,8 +1527,8 @@
                   "snippet": {
                     "text": "                particle[\"y\"] = random.randint(-100, 0)\n                particle[\"x\"] = random.randint(0, get_window_size()[0])\n\n"
                   },
-                  "endLine": 2550,
-                  "startLine": 2548
+                  "endLine": 2585,
+                  "startLine": 2583
                 }
               }
             }
@@ -1401,7 +1538,7 @@
             "issue_severity": "LOW"
           },
           "ruleId": "B311",
-          "ruleIndex": 1
+          "ruleIndex": 0
         }
       ]
     }

@@ -2,21 +2,13 @@ Lint with flake8 code scan log:
 Run # stop the build if there are Python syntax errors or undefined names
 0
 ./Main.py:10:1: F401 'random' imported but unused
-./Main.py:68:1: E302 expected 2 blank lines, found 1
-./Main.py:71:1: W293 blank line contains whitespace
-./Main.py:75:34: E231 missing whitespace after ':'
-./Main.py:75:42: E231 missing whitespace after ','
-./Main.py:77:1: E305 expected 2 blank lines after class or function definition, found 1
-./Main.py:179:67: E203 whitespace before ':'
-./Main.py:213:1: C901 'run_game' is too complex (65)
-./Main.py:413:38: F541 f-string is missing placeholders
-./Main.py:478:128: E501 line too long (131 > 127 characters)
-./Main.py:521:38: F541 f-string is missing placeholders
-./Main.py:532:1: W293 blank line contains whitespace
-./Main.py:658:1: C901 'handle_end_game' is too complex (18)
-./Main.py:827:1: C901 'main' is too complex (30)
-./Main.py:961:1: W293 blank line contains whitespace
-./Main.py:964:1: W293 blank line contains whitespace
+./Main.py:181:67: E203 whitespace before ':'
+./Main.py:215:1: C901 'run_game' is too complex (65)
+./Main.py:415:38: F541 f-string is missing placeholders
+./Main.py:480:128: E501 line too long (131 > 127 characters)
+./Main.py:523:38: F541 f-string is missing placeholders
+./Main.py:660:1: C901 'handle_end_game' is too complex (18)
+./Main.py:829:1: C901 'main' is too complex (30)
 ./Unit Test/test_game.py:19:1: E402 module level import not at top of file
 ./Unit Test/test_game.py:20:1: E402 module level import not at top of file
 ./Unit Test/test_game.py:21:1: E402 module level import not at top of file
@@ -121,20 +113,18 @@ Run # stop the build if there are Python syntax errors or undefined names
 ./src/Loadexcel.py:8:1: C901 'load_property_data' is too complex (20)
 ./src/Player.py:363:128: E501 line too long (132 > 127 characters)
 ./src/Player.py:373:128: E501 line too long (130 > 127 characters)
-./src/UI.py:670:5: C901 'SettingsPage.handle_click' is too complex (11)
-./src/UI.py:928:5: C901 'StartPage.update_player_lists' is too complex (11)
-./src/UI.py:1285:5: C901 'StartPage.handle_click' is too complex (15)
-./src/UI.py:1372:5: C901 'StartPage.handle_token_selection_click' is too complex (13)
-./src/UI.py:1452:5: C901 'StartPage.handle_key' is too complex (38)
-./src/UI.py:1755:5: C901 'PlayerSelectPage.handle_key' is too complex (21)
-./src/UI.py:2256:5: C901 'GameModePage.handle_click' is too complex (14)
-./src/UI.py:2314:5: C901 'GameModePage.handle_key' is too complex (23)
-./src/UI.py:2512:5: C901 'EndGamePage.draw' is too complex (19)
-48    C901 'run_game' is too complex (65)
+./src/UI.py:462:5: C901 'MainMenuPage.handle_click' is too complex (13)
+./src/UI.py:705:5: C901 'SettingsPage.handle_click' is too complex (11)
+./src/UI.py:963:5: C901 'StartPage.update_player_lists' is too complex (11)
+./src/UI.py:1320:5: C901 'StartPage.handle_click' is too complex (15)
+./src/UI.py:1407:5: C901 'StartPage.handle_token_selection_click' is too complex (13)
+./src/UI.py:1487:5: C901 'StartPage.handle_key' is too complex (38)
+./src/UI.py:1790:5: C901 'PlayerSelectPage.handle_key' is too complex (21)
+./src/UI.py:2291:5: C901 'GameModePage.handle_click' is too complex (14)
+./src/UI.py:2349:5: C901 'GameModePage.handle_key' is too complex (23)
+./src/UI.py:2547:5: C901 'EndGamePage.draw' is too complex (19)
+49    C901 'run_game' is too complex (65)
 1     E203 whitespace before ':'
-2     E231 missing whitespace after ':'
-1     E302 expected 2 blank lines, found 1
-1     E305 expected 2 blank lines after class or function definition, found 1
 3     E402 module level import not at top of file
 17    E501 line too long (131 > 127 characters)
 5     E712 comparison to True should be 'if cond is True:' or 'if cond:'
@@ -142,5 +132,4 @@ Run # stop the build if there are Python syntax errors or undefined names
 32    F541 f-string is missing placeholders
 1     F811 redefinition of unused 'get_property_value' from line 46
 6     F841 local variable 'player1_dict' is assigned to but never used
-4     W293 blank line contains whitespace
-129
+122
