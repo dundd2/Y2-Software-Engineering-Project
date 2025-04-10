@@ -279,7 +279,7 @@ jobs:
       id: get_version
       shell: bash
       run: |
-        VERSION="V1.0"
+        VERSION="V1.0(Nuitka)"
         echo "version=${VERSION}" >> $GITHUB_ENV
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
