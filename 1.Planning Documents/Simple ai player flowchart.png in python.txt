@@ -1,0 +1,161 @@
+# This is a demo planning Python script based on Eric's Property_Tycoon easy ai player flowchart
+# a coded version of the easy ai player flowchart
+
+    # --- Start of flowchart logic ---
+
+    # --- stop on the "Go" or cross "Go" ---
+    if current_location_type == "Go":
+        print ("stop on the \"Go\" or cross \"Go\"")
+        # AI get $200
+        print ("AI get $200")
+        ai_money += 200
+        print(f"AI Money: ${ai_money}")
+        return ai_money # End turn for this location type
+
+    # --- stop on the property area ---
+    elif current_location_type == "property":
+        property_name = get_property_name() 
+        print ("stop on the property area")
+
+        # did AI stop on other player property?
+        if property_details[property_name]["owner"] is not None and property_details[property_name]["owner"] != "AI":
+            print ("did AI stop on other player property?")
+            # automatic paying rent
+            rent_amount = calculate_rent(property_name, property_details)
+            print ("automatic paying rent")
+
+            if ai_money < rent_amount: # Check for insufficient funds before paying
+                mortgage_property(ai_money, rent_amount, player_properties, property_details) # Mortgage properties if needed
+                if ai_money < rent_amount: # Still insufficient funds after mortgage, handle bankruptcy or other game logic
+                    print("AI bankrupt or cannot pay rent even after mortgage (Implementation needed)")
+                    return ai_money # End turn due to inability to pay rent after mortgage
+            ai_money -= rent_amount
+            print(f"AI paid ${rent_amount} rent. AI Money: ${ai_money}")
+
+        else: # No rent to pay, decide to buy
+            # want to buy? (random)
+            buy_probability = 0.7 # Example probability
+            if random.random() < buy_probability:
+                print ("want to buy? (random) - Yes")
+                # buy the property
+                property_cost = property_details[property_name]["cost"]
+                if ai_money >= property_cost:
+                    print ("buy the property")
+                    ai_money -= property_cost
+                    property_details[property_name]["owner"] = "AI"
+                    player_properties[property_name] = {"houses": 0, "hotel": False} # Initialize property in AI's portfolio
+                    print(f"AI bought {property_name}. AI Money: ${ai_money}")
+
+                    # did AI complete the first rounds
+                    if completed_rounds:
+                        print ("did AI complete the first rounds - Yes")
+                        # did AI have a group of color properties
+                        color_group = property_details[property_name]["group"]
+                        if check_group_ownership(color_group, property_details):
+                            print ("did AI have a group of color properties - Yes")
+                            # build a house? (random)
+                            build_house_probability = 0.5 # Example probability, can be adjusted
+                            if random.random() < build_house_probability:
+                                print ("build a house? (random) - Yes")
+                                # buy houses
+                                house_cost = property_cost / 2 # Example house cost, adjust as needed
+                                if ai_money >= house_cost:
+                                    print ("buy houses")
+                                    # Check house building constraints (max houses, hotels, quantity difference) - basic check for now
+                                    properties_in_group = get_group_properties(color_group, property_details)
+                                    can_build_house = True
+                                    for prop_name in properties_in_group:
+                                        if property_details[prop_name]["owner"] == "AI": # Check only AI owned properties in the group
+                                            if property_details[prop_name]["hotel"]: # Cannot build houses if hotel is present
+                                                can_build_house = False
+                                                break
+                                            if property_details[prop_name]["houses"] >= 4: # Cannot build more than 4 houses before hotel
+                                                can_build_house = False
+                                                break
+                                            # Basic quantity difference check - needs more sophisticated logic for even distribution
+                                            if property_details[prop_name]["houses"] > property_details[property_name]["houses"] + 1:
+                                                can_build_house = False
+                                                break
+                                            if property_details[property_name]["houses"] > property_details[prop_name]["houses"] + 1:
+                                                can_build_house = False
+                                                break
+
+
+                                    if can_build_house:
+                                        ai_money -= house_cost
+                                        property_details[property_name]["houses"] += 1
+                                        player_properties[property_name]["houses"] += 1 # Update AI property tracking
+                                        print(f"AI built a house on {property_name}. AI Money: ${ai_money}")
+                                    else:
+                                        # can't build houses and hotel (due to constraints or random no)
+                                        print ("can't build houses and hotel - constraints not met or random no")
+                                        print ("end") # End of build path
+                                else:
+                                    # can't build houses and hotel (insufficient funds)
+                                    print ("can't build houses and hotel - insufficient funds")
+                                    print ("end") # End of build path
+
+                            else:
+                                # build a house? (random) - No
+                                print ("build a house? (random) - No")
+                                print ("end") # End of build path
+
+                        else:
+                            # did AI have a group of color properties - No
+                            print ("did AI have a group of color properties - No")
+                            print ("end") # End of build path
+                    else:
+                        # did AI complete the first rounds - No
+                        print ("did AI complete the first rounds - No")
+                        print ("end") # End of build path
+
+                else:
+                    # no buying (insufficient funds)
+                    print ("no buying - insufficient funds")
+                    print ("end") # End of buy path
+            else:
+                # want to buy? (random) - No
+                print ("want to buy? (random) - No")
+                # no buying
+                print ("no buying")
+                print ("end") # End of buy path
+        return ai_money # End turn for property area
+
+    # --- stop on the lucky area/ treasure area ---
+    elif current_location_type == "lucky_area":
+        print ("stop on the lucky area/ treasure area")
+        # complete the card mission
+        print ("complete the card mission - Implementation needed for card effects")
+        return ai_money # End turn for lucky/treasure area (card effects to be implemented)
+
+    # --- stop on the "Go Jail" ---
+    elif current_location_type == "go_jail":
+        print ("stop on the \"Go Jail\"")
+        # move to jail
+        print ("move to jail - Implementation needed for jail logic")
+        return ai_money # End turn for go to jail (jail logic to be implemented)
+
+    # --- stop on the "just visiting" ---
+    elif current_location_type == "just_visiting":
+        print ("stop on the \"just visiting\"")
+        # end
+        print ("end")
+        return ai_money # End turn for just visiting
+
+    # --- stop on the "free parking" ---
+    elif current_location_type == "free_parking":
+        print ("stop on the \"free parking\"")
+        # all fines or jail release fees will be accumulated towards the free parking space -  Implementation needed for free parking pot accumulation
+        print ("all fines or jail release fees will be accumulated towards the free parking space - Implementation needed")
+        # give money to the AI
+        free_parking_money = get_free_parking_money() # Assume function to get money from free parking pot
+        print ("give money to the AI - Implementation needed for free parking pot distribution")
+        ai_money += free_parking_money
+        print(f"AI received ${free_parking_money} from free parking. AI Money: ${ai_money}")
+        return ai_money # End turn for free parking
+
+    else:
+        print ("Landed on unknown location type - End turn") # Fallback for unknown location types
+        return ai_money # End turn for unknown location
+
+    # --- End of flowchart logic ---

@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.Sound_Manager &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.Sound_Manager</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.Sound_Manager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon Sound_Manager.py</span>
+<span class="c1"># Contains the classes for the sound manager, such as the sound volume, the music volume.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+
+<div class="viewcode-block" id="SoundManager">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SoundManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sound_volume</span> <span class="o">=</span> <span class="mf">0.7</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">music_volume</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sounds</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sound_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;assets&quot;</span><span class="p">,</span> <span class="s2">&quot;sound&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">music_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;assets&quot;</span><span class="p">,</span> <span class="s2">&quot;music&quot;</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sound_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">music_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;settings.json&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_settings</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="SoundManager.load_settings">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.load_settings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s2">&quot;sound_volume&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">sound_volume</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;sound_volume&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">&quot;music_volume&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">music_volume</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;music_volume&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading sound settings: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.save_settings">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.save_settings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">existing_settings</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">existing_settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+            <span class="n">existing_settings</span><span class="p">[</span><span class="s2">&quot;sound_volume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sound_volume</span>
+            <span class="n">existing_settings</span><span class="p">[</span><span class="s2">&quot;music_volume&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">music_volume</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">existing_settings</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving sound settings: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.load_sounds">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.load_sounds">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_sounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">required_sounds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;dice_roll&quot;</span><span class="p">:</span> <span class="s2">&quot;dice_roll.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;buy_property&quot;</span><span class="p">:</span> <span class="s2">&quot;buy_property.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;collect_money&quot;</span><span class="p">:</span> <span class="s2">&quot;collect_money.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pay_money&quot;</span><span class="p">:</span> <span class="s2">&quot;pay_money.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;jail&quot;</span><span class="p">:</span> <span class="s2">&quot;jail.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;build_house&quot;</span><span class="p">:</span> <span class="s2">&quot;build_house.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;menu_click&quot;</span><span class="p">:</span> <span class="s2">&quot;menu_click.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;game_start&quot;</span><span class="p">:</span> <span class="s2">&quot;game_start.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;game_over&quot;</span><span class="p">:</span> <span class="s2">&quot;game_over.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;card_draw&quot;</span><span class="p">:</span> <span class="s2">&quot;card_draw.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;happy_click&quot;</span><span class="p">:</span> <span class="s2">&quot;happy_click.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;angry_click&quot;</span><span class="p">:</span> <span class="s2">&quot;angry_click.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;countdown&quot;</span><span class="p">:</span> <span class="s2">&quot;countdown.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;credits&quot;</span><span class="p">:</span> <span class="s2">&quot;credits.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;watson_games&quot;</span><span class="p">:</span> <span class="s2">&quot;watson_games.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;group_present&quot;</span><span class="p">:</span> <span class="s2">&quot;group_present.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;auction_bid&quot;</span><span class="p">:</span> <span class="s2">&quot;auction_bid.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;auction_win&quot;</span><span class="p">:</span> <span class="s2">&quot;auction_win.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bankruptcy&quot;</span><span class="p">:</span> <span class="s2">&quot;bankruptcy.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;roll_doubles&quot;</span><span class="p">:</span> <span class="s2">&quot;roll_doubles.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;land_free_parking&quot;</span><span class="p">:</span> <span class="s2">&quot;free_parking.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;auction_start&quot;</span><span class="p">:</span> <span class="s2">&quot;auction_start.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mortgage&quot;</span><span class="p">:</span> <span class="s2">&quot;mortgage.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unmortgage&quot;</span><span class="p">:</span> <span class="s2">&quot;unmortgage.mp3&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;player_exit&quot;</span><span class="p">:</span> <span class="s2">&quot;player_exit.mp3&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">sound_name</span><span class="p">,</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">required_sounds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sound_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sounds</span><span class="p">[</span><span class="n">sound_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">Sound</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sounds</span><span class="p">[</span><span class="n">sound_name</span><span class="p">]</span><span class="o">.</span><span class="n">set_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sound_volume</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading sound </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing sound file: </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.load_music">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.load_music">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_music</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_file</span><span class="o">=</span><span class="s2">&quot;background_music.mp3&quot;</span><span class="p">):</span>
+        <span class="n">music_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">music_path</span><span class="p">,</span> <span class="n">music_file</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">music_path</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">music_path</span><span class="p">)</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">set_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">music_volume</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading music </span><span class="si">{</span><span class="n">music_file</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">music_file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing music file: </span><span class="si">{</span><span class="n">music_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">music_file</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.play_sound">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.play_sound">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">play_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sound_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sound_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sounds</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sounds</span><span class="p">[</span><span class="n">sound_name</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sound &#39;</span><span class="si">{</span><span class="n">sound_name</span><span class="si">}</span><span class="s2">&#39; not loaded&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.play_music">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.play_music">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">play_music</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error playing music: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.stop_music">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.stop_music">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_music</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.pause_music">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.pause_music">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pause_music</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.unpause_music">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.unpause_music">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpause_music</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">unpause</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.set_sound_volume">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.set_sound_volume">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_sound_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sound_volume</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">volume</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">sound</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sounds</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">sound</span><span class="o">.</span><span class="n">set_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sound_volume</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_settings</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.set_music_volume">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.set_music_volume">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_music_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">volume</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">music_volume</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">volume</span><span class="p">))</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">music</span><span class="o">.</span><span class="n">set_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">music_volume</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_settings</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SoundManager.get_missing_files">
+<a class="viewcode-back" href="../../modules/sound_manager.html#src.Sound_Manager.SoundManager.get_missing_files">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_missing_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">missing_files</span></div>
+</div>
+
+
+
+<span class="n">sound_manager</span> <span class="o">=</span> <span class="n">SoundManager</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Development Mode Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Load Excel Module" href="loadexcel.html" />
+    <link rel="prev" title="UI Module" href="ui.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development Mode Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-diagram">Use Case Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-diagram">State Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-diagram">Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#activity-diagram-handling-clicks">Activity Diagram: Handling Clicks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagrams">Sequence Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-classes-overview">Key Classes Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Development Mode Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/development_mode.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="development-mode-module">
+<h1>Development Mode Module<a class="headerlink" href="#development-mode-module" title="Link to this heading"></a></h1>
+<p>This module defines the <cite>DevelopmentMode</cite> class, responsible for handling the game state where a player can manage their owned properties. This includes building houses/hotels, selling buildings, mortgaging/unmortgaging properties, and selling properties back to the bank. It provides both visual feedback on the board (highlighting developable properties) and a dedicated UI panel when a specific property is selected.</p>
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="use-case-diagram">
+<h3>Use Case Diagram<a class="headerlink" href="#use-case-diagram" title="Link to this heading"></a></h3>
+<p>Illustrates the primary actions a player can perform when development mode is active.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-5b7dff53d71d64225a8df3335ec4d4103333482c.png" alt="&#64;startuml
+left to right direction
+actor Player
+
+rectangle &quot;Development Mode&quot; {
+  usecase &quot;Activate Development Mode&quot; as ADM
+  usecase &quot;Select Owned Property&quot; as SOP
+  usecase &quot;View Property Details &amp; Actions&quot; as View
+  usecase &quot;Build House/Hotel&quot; as Build
+  usecase &quot;Sell House/Hotel&quot; as Sell
+  usecase &quot;Mortgage/Unmortgage Property&quot; as Mortgage
+  usecase &quot;Sell Property to Bank&quot; as SellBank
+  usecase &quot;Close Property View&quot; as Close
+  usecase &quot;Deactivate Development Mode&quot; as DDM
+
+  Player -- ADM
+  Player -- SOP
+  SOP --&gt; View
+  View --&gt; Build
+  View --&gt; Sell
+  View --&gt; Mortgage
+  View --&gt; SellBank
+  View --&gt; Close
+  Player -- DDM
+
+  note right of ADM
+    Requires player to have
+    completed at least one lap
+    and own developable properties.
+    Can be activated for Human or AI.
+  end note
+
+  note right of Build
+    Requires owning full color set,
+    sufficient funds, and adhering
+    to building limits/rules.
+  end note
+}
+&#64;enduml"/>
+</p>
+</section>
+<section id="state-diagram">
+<h3>State Diagram<a class="headerlink" href="#state-diagram" title="Link to this heading"></a></h3>
+<p>Shows the states related to the <cite>DevelopmentMode</cite> being active and whether a property UI is displayed. Note that this also influences the main <cite>Game.state</cite>.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-7acd7985b7199085d6a15127f39d4e2e2cef5609.png" alt="&#64;startuml
+[*] --&gt; Inactive : Initial State
+
+state Active {
+  [*] --&gt; BrowsingProperties : Mode Activated
+  BrowsingProperties : Player can click owned properties\nDraws flashing stars
+  BrowsingProperties --&gt; PropertySelected : Player clicks own property
+  PropertySelected : Displays Development UI Panel\nHandles UI button clicks/keys
+  PropertySelected --&gt; BrowsingProperties : Player clicks &quot;Close&quot; button or outside UI
+  PropertySelected --&gt; BrowsingProperties : Action performed (e.g., build, mortgage)
+  PropertySelected --&gt; Inactive : Player sells last property
+  BrowsingProperties --&gt; Inactive : Player ends turn / Mode deactivated externally
+}
+
+Active --&gt; Inactive : Deactivate called / Player turn ends
+
+note right of Active
+ When Active, the main Game state
+ is typically &quot;DEVELOPMENT&quot;.
+end note
+&#64;enduml"/>
+</p>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-diagram">
+<h3>Class Diagram<a class="headerlink" href="#class-diagram" title="Link to this heading"></a></h3>
+<p>Details the <cite>DevelopmentMode</cite> class and its primary interactions.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-9c0727e3b7932d7b83a53f5d78ef0d431443d382.png" alt="&#64;startuml
+class DevelopmentMode {
+  - game: Game
+  - game_actions: GameActions
+  - screen: pygame.Surface
+  - font: pygame.font.Font
+  - small_font: pygame.font.Font
+  - tiny_font: pygame.font.Font
+  - is_active: bool
+  - buttons: dict(str, pygame.Rect)
+  - last_star_flash_time: int
+  - show_property_stars: bool
+  + activate(player: dict): bool
+  + can_develop_ai(player: dict): bool
+  + deactivate()
+  + draw(mouse_pos: tuple)
+  + handle_click(pos: tuple): any
+  + handle_key(event: pygame.Event): any
+  - _draw_property_stars()
+  - _draw_star(x: int, y: int)
+  - _draw_development_ui(property_data: dict, mouse_pos: tuple)
+  - _draw_button(button_rect: pygame.Rect, text: str, mouse_pos: tuple, active: bool, color: tuple)
+}
+
+note right of DevelopmentMode::handle_key
+  Keyboard shortcuts (1-4, ESC)
+  only apply to human players
+  when a property UI is open.
+end note
+
+DevelopmentMode ..&gt; &quot;1&quot; Game : uses
+DevelopmentMode ..&gt; &quot;1&quot; GameActions : uses
+DevelopmentMode ..&gt; GameLogic : uses
+DevelopmentMode ..&gt; GameBoard : uses
+DevelopmentMode ..&gt; pygame : uses
+DevelopmentMode ..&gt; math : uses
+
+note &quot;Implied classes/data structures used&quot; as N3
+class Game {
+  + screen: pygame.Surface
+  + font: pygame.font.Font
+  + small_font: pygame.font.Font
+  + tiny_font: pygame.font.Font
+  + logic: GameLogic
+  + board: GameBoard
+  + selected_property: dict
+  + state: str
+  + lap_count: dict
+}
+class GameActions {
+  + start_auction(property: dict)
+}
+class GameLogic {
+  + properties: dict(str, dict)
+  + players: list(dict)
+  + current_player_index: int
+  + can_build_house(prop: dict, player: dict): tuple(bool, str)
+  + can_build_hotel(prop: dict, player: dict): tuple(bool, str)
+  + build_house(prop: dict, player: dict): bool
+  + build_hotel(prop: dict, player: dict): bool
+  + sell_house(prop: dict, player: dict): bool
+  + sell_hotel(prop: dict, player: dict): bool
+  + mortgage_property(prop: dict, player: dict): bool
+  + unmortgage_property(prop: dict, player: dict): bool
+  + calculate_space_rent(prop: dict, player: dict): int
+}
+note &quot;Property data stored as dict(str, dict)&quot; as N1
+GameLogic::properties .. N1
+
+note &quot;Player data stored as list(dict)&quot; as N2
+GameLogic::players .. N2
+class GameBoard {
+  + add_message(msg: str)
+  + update_ownership(properties: dict)
+  + property_clicked(pos: tuple): int
+  + get_property_position(index: int): tuple(int, int)
+}
+&#64;enduml"/>
+</p>
+</section>
+<section id="activity-diagram-handling-clicks">
+<h3>Activity Diagram: Handling Clicks<a class="headerlink" href="#activity-diagram-handling-clicks" title="Link to this heading"></a></h3>
+<p>Shows the logical flow within the <cite>handle_click</cite> method.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-378306f9bb53f6f5b0855866b3edd98f16106a07.png" alt="&#64;startuml
+start
+if (is_active?) then (yes)
+  if (game.selected_property is set?) then (yes)
+    :Check if click hit any UI button;
+    if (UI button clicked?) then (yes)
+      :Get clicked_action;
+      if (action == &quot;close&quot;?) then (yes)
+        :game.selected_property = None;
+        stop
+      else (no)
+        :Perform action (build, sell, mortgage);
+        :Update GameLogic state;
+        :Update GameBoard visuals/messages;
+        if (Player sold last property?) then (yes)
+          :deactivate();
+        endif
+        stop
+      endif
+    else (no)
+      :Check if click is inside UI panel area;
+      if (Click inside UI panel?) then (yes)
+        :Ignore click (stay in UI);
+        stop
+      else (no)
+        note right: Click outside UI, treat as property click below
+      endif
+    endif
+  else (no)
+    note right: No property selected, check board click
+  endif
+  :property_pos_index = board.property_clicked(pos);
+  if (property_pos_index exists?) then (yes)
+    :prop_data = logic.properties(index);
+    if (prop_data.owner == current_player?) then (yes)
+      :game.selected_property = prop_data;
+      stop
+    else (no)
+      :Ignore click (not player's property);
+      stop
+    endif
+  else (no)
+    :Ignore click (not on property);
+    stop
+  endif
+else (no)
+  :Ignore click (mode not active);
+  stop
+endif
+&#64;enduml"/>
+</p>
+</section>
+<section id="sequence-diagrams">
+<h3>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Activating Development and Selecting a Property (Human Player)</strong></p>
+<p>Shows how a human player enters development mode and selects a property.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-1fd27b0610b9e6beb2c642415fc1723b0cdb8a8c.png" alt="actor Player
+participant &quot;dev_mode:DevelopmentMode&quot; as DevMode
+participant &quot;game:Game&quot; as Game
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;board:GameBoard&quot; as Board
+
+activate DevMode
+note over DevMode: Assume activation check passed (lap count &gt;= 1, owns properties)
+DevMode -&gt; Game : selected_property = None
+Game --&gt; DevMode
+DevMode -&gt; Game : board.add_message(&quot;Click a property to develop&quot;)
+Game --&gt; DevMode
+
+Player -&gt; DevMode : handle_click(pos)
+DevMode -&gt; Board : property_clicked(pos)
+Board --&gt; DevMode : space_index or None
+opt space_index is not None
+     DevMode -&gt; Logic : properties(index)
+     Logic --&gt; DevMode : prop_data
+     alt prop_data.owner == current_player
+       DevMode -&gt; Game : selected_property = prop_data
+       Game --&gt; DevMode
+       DevMode -&gt; Game : state = &quot;DEVELOPMENT&quot;
+       Game --&gt; DevMode
+     else
+       DevMode -&gt; Board : add_message(&quot;Owned by {owner}&quot;)
+       Board --&gt; DevMode
+     end
+end
+DevMode --&gt; Player : return False
+deactivate DevMode"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Activate and Select Property</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Performing an Action (e.g., Build House via UI)</strong></p>
+<p>Illustrates the process when a player clicks a button in the development UI.</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-ef9a553c8250ce0e6d734754a2d0a44e578a116b.png" alt="actor Player
+participant &quot;dev_mode:DevelopmentMode&quot; as DevMode
+participant &quot;game:Game&quot; as Game
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;board:GameBoard&quot; as Board
+participant &quot;sound_manager:Sound_Manager&quot; as SM
+
+note over Player, SM: Precondition: Development mode active, property selected
+Player -&gt; DevMode : handle_click(pos_on_build_house_button)
+activate DevMode
+DevMode -&gt; Logic : can_build_house(selected_property, current_player)
+Logic --&gt; DevMode : can_build, reason
+alt can_build
+  DevMode -&gt; Logic : build_house(selected_property, current_player)
+  Logic --&gt; DevMode : success
+  opt success
+    DevMode -&gt; SM : play_sound(&quot;build&quot;)
+    SM --&gt; DevMode
+    DevMode -&gt; Board : add_message(&quot;Built house on {property}&quot;)
+    Board --&gt; DevMode
+  end
+else cannot build
+  DevMode -&gt; Board : add_message(reason)
+  Board --&gt; DevMode
+end
+DevMode -&gt; Board : update_ownership(logic.properties)
+Board --&gt; DevMode
+DevMode --&gt; Player : return False
+deactivate DevMode"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Build House Action (UI Click)</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Checking if AI Can Develop</strong></p>
+<p>Shows the sequence for the <cite>can_develop_ai</cite> check.</p>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-40d8391e2cea5fcdb2e4ae548033615f177d1d21.png" alt="participant &quot;Caller&quot; as Caller
+participant &quot;DevMode&quot; as DevMode
+participant &quot;Game&quot; as Game
+participant &quot;Logic&quot; as Logic
+
+Caller -&gt; DevMode : can_develop_ai(player_dict)
+activate DevMode
+
+DevMode -&gt; Game : get lap_count(player_name)
+Game --&gt; DevMode : lap_count
+
+alt lap_count &lt; 1
+    DevMode --&gt; Caller : return False
+else has completed lap
+    DevMode -&gt; Logic : get properties
+    Logic --&gt; DevMode : all_properties
+
+    DevMode -&gt; DevMode : Filter owned_properties
+
+    alt no owned properties
+        DevMode --&gt; Caller : return False
+    else has properties
+        loop for each property
+            DevMode -&gt; Logic : can_build_house(prop, player)
+            Logic --&gt; DevMode : can_build_house result
+
+            DevMode -&gt; Logic : can_build_hotel(prop, player)
+            Logic --&gt; DevMode : can_build_hotel result
+
+            DevMode -&gt; DevMode : Check other conditions
+
+            alt can perform any action
+                DevMode --&gt; Caller : return True
+                break
+            end
+        end
+
+        DevMode --&gt; Caller : return False
+    end
+end
+
+deactivate DevMode"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: can_develop_ai Check</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Mortgage/Unmortgage Action (UI Click)</strong></p>
+<p>Illustrates handling the mortgage button click in the UI.</p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-33bd56ef9a0fff3b3a6041a3414e2f27269d208c.png" alt="actor Player
+participant &quot;DevMode&quot; as DevMode
+participant &quot;Game&quot; as Game
+participant &quot;Logic&quot; as Logic
+participant &quot;Board&quot; as Board
+
+Player -&gt; DevMode : handle_click(pos)
+activate DevMode
+
+DevMode -&gt; DevMode : Check button collision
+
+alt mortgage button clicked
+    DevMode -&gt; Game : get is_mortgaged
+    Game --&gt; DevMode : mortgage status
+
+    alt property is mortgaged
+        DevMode -&gt; Logic : unmortgage_property(prop, player)
+        Logic --&gt; DevMode : result
+
+        alt successful
+            DevMode -&gt; Board : add_message(&quot;Unmortgaged&quot;)
+        end
+    else not mortgaged
+        DevMode -&gt; Logic : mortgage_property(prop, player)
+        Logic --&gt; DevMode : result
+
+        alt successful
+            DevMode -&gt; Board : add_message(&quot;Mortgaged&quot;)
+        end
+    end
+
+    alt action successful
+        DevMode -&gt; Board : update_ownership()
+    end
+end
+
+DevMode --&gt; Player : return False
+deactivate DevMode"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Mortgage/Unmortgage Action</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-classes-overview">
+<h2>Key Classes Overview<a class="headerlink" href="#key-classes-overview" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p><strong>DevelopmentMode</strong>: Orchestrates the development phase. It activates/deactivates the mode, handles player input (clicks on board/UI, keyboard shortcuts for humans), draws visual cues (stars on properties) and the detailed property management UI panel. It relies heavily on <cite>GameLogic</cite> to validate actions and update game state, and on <cite>GameBoard</cite> for visual updates and user messages. It interacts with the main <cite>Game</cite> object to access shared resources and state like the selected property.</p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ui.html" class="btn btn-neutral float-left" title="UI Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="loadexcel.html" class="btn btn-neutral float-right" title="Load Excel Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

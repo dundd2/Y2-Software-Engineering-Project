@@ -1,0 +1,963 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Board Module" href="board.html" />
+    <link rel="prev" title="Game Renderer Module" href="game_renderer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Player Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.Player.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.add_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.add_jail_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.add_property"><code class="docutils literal notranslate"><span class="pre">Player.add_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.buy_property"><code class="docutils literal notranslate"><span class="pre">Player.buy_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.can_afford"><code class="docutils literal notranslate"><span class="pre">Player.can_afford()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.can_build_hotels"><code class="docutils literal notranslate"><span class="pre">Player.can_build_hotels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.can_build_houses"><code class="docutils literal notranslate"><span class="pre">Player.can_build_houses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.create_fallback_token"><code class="docutils literal notranslate"><span class="pre">Player.create_fallback_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.draw_player"><code class="docutils literal notranslate"><span class="pre">Player.draw_player()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.generate_move_path"><code class="docutils literal notranslate"><span class="pre">Player.generate_move_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.get_mortgageable_properties"><code class="docutils literal notranslate"><span class="pre">Player.get_mortgageable_properties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.get_properties_with_hotels"><code class="docutils literal notranslate"><span class="pre">Player.get_properties_with_hotels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.get_properties_with_houses"><code class="docutils literal notranslate"><span class="pre">Player.get_properties_with_houses()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.get_total_assets"><code class="docutils literal notranslate"><span class="pre">Player.get_total_assets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.get_total_offset"><code class="docutils literal notranslate"><span class="pre">Player.get_total_offset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.get_unmortgageable_properties"><code class="docutils literal notranslate"><span class="pre">Player.get_unmortgageable_properties()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">Player.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.handle_jail_turn"><code class="docutils literal notranslate"><span class="pre">Player.handle_jail_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.handle_voluntary_exit"><code class="docutils literal notranslate"><span class="pre">Player.handle_voluntary_exit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.is_animation_complete"><code class="docutils literal notranslate"><span class="pre">Player.is_animation_complete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.load_player_image"><code class="docutils literal notranslate"><span class="pre">Player.load_player_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.move"><code class="docutils literal notranslate"><span class="pre">Player.move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.pay"><code class="docutils literal notranslate"><span class="pre">Player.pay()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.receive"><code class="docutils literal notranslate"><span class="pre">Player.receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.remove_property"><code class="docutils literal notranslate"><span class="pre">Player.remove_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.set_active"><code class="docutils literal notranslate"><span class="pre">Player.set_active()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.set_winner"><code class="docutils literal notranslate"><span class="pre">Player.set_winner()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.start_move"><code class="docutils literal notranslate"><span class="pre">Player.start_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.update_animation"><code class="docutils literal notranslate"><span class="pre">Player.update_animation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Player.Player.use_jail_card"><code class="docutils literal notranslate"><span class="pre">Player.use_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#player-class-diagram">Player Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#player-state-diagram">Player State Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#player-initialization">Player Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#player-movement">Player Movement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#property-purchase">Property Purchase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jail-turn-handling">Jail Turn Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asset-calculation">Asset Calculation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#player-drawing">Player Drawing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bankruptcy-handling">Bankruptcy Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ai-player-turn">AI Player Turn</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Player Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/player.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="player-module">
+<h1>Player Module<a class="headerlink" href="#player-module" title="Link to this heading"></a></h1>
+<p>This module defines the <cite>Player</cite> class, representing a participant in the game. It stores player-specific data like name, money, position, owned properties, and status (e.g., in jail, bankrupt). It also handles player movement animation, visual representation, and interactions related to property ownership and finances. For AI players, it holds a reference to an AI controller.</p>
+<p>The Player module provides:</p>
+<ul class="simple">
+<li><p>Representation of a player’s state (money, properties, position, jail status, etc.).</p></li>
+<li><p>Methods for financial transactions (<cite>pay</cite>, <cite>receive</cite>, <cite>can_afford</cite>).</p></li>
+<li><p>Methods for property management (<cite>buy_property</cite>, <cite>add_property</cite>, <cite>remove_property</cite>, asset calculation).</p></li>
+<li><p>Methods for handling jail status (<cite>add_jail_card</cite>, <cite>use_jail_card</cite>, <cite>handle_jail_turn</cite>).</p></li>
+<li><p>Logic for player movement on the board, including animation (<cite>move</cite>, <cite>start_move</cite>, <cite>update_animation</cite>, <cite>generate_move_path</cite>).</p></li>
+<li><p>Visual drawing logic (<cite>draw_player</cite>, <cite>load_player_image</cite>, <cite>create_fallback_token</cite>).</p></li>
+<li><p>Handling of game-ending states like bankruptcy and voluntary exit (<cite>handle_bankruptcy</cite>, <cite>handle_voluntary_exit</cite>).</p></li>
+<li><p>Integration with AI controllers for AI players.</p></li>
+</ul>
+<dl class="py class" id="module-src.Player">
+<dt class="sig sig-object py" id="src.Player.Player">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Player.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_ai</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ai_difficulty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'easy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.add_jail_card">
+<span class="sig-name descname"><span class="pre">add_jail_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.add_jail_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.add_jail_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.add_property">
+<span class="sig-name descname"><span class="pre">add_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.add_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.add_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.buy_property">
+<span class="sig-name descname"><span class="pre">buy_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.buy_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.buy_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.can_afford">
+<span class="sig-name descname"><span class="pre">can_afford</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.can_afford"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.can_afford" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.can_build_hotels">
+<span class="sig-name descname"><span class="pre">can_build_hotels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.can_build_hotels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.can_build_hotels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.can_build_houses">
+<span class="sig-name descname"><span class="pre">can_build_houses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.can_build_houses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.can_build_houses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.create_fallback_token">
+<span class="sig-name descname"><span class="pre">create_fallback_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.create_fallback_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.create_fallback_token" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.draw_player">
+<span class="sig-name descname"><span class="pre">draw_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.draw_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.draw_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.generate_move_path">
+<span class="sig-name descname"><span class="pre">generate_move_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.generate_move_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.generate_move_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.get_mortgageable_properties">
+<span class="sig-name descname"><span class="pre">get_mortgageable_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.get_mortgageable_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.get_mortgageable_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.get_properties_with_hotels">
+<span class="sig-name descname"><span class="pre">get_properties_with_hotels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.get_properties_with_hotels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.get_properties_with_hotels" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.get_properties_with_houses">
+<span class="sig-name descname"><span class="pre">get_properties_with_houses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.get_properties_with_houses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.get_properties_with_houses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.get_total_assets">
+<span class="sig-name descname"><span class="pre">get_total_assets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.get_total_assets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.get_total_assets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.get_total_offset">
+<span class="sig-name descname"><span class="pre">get_total_offset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.get_total_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.get_total_offset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.get_unmortgageable_properties">
+<span class="sig-name descname"><span class="pre">get_unmortgageable_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.get_unmortgageable_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.get_unmortgageable_properties" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.handle_bankruptcy">
+<span class="sig-name descname"><span class="pre">handle_bankruptcy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">creditor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.handle_bankruptcy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.handle_bankruptcy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.handle_jail_turn">
+<span class="sig-name descname"><span class="pre">handle_jail_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.handle_jail_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.handle_jail_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.handle_voluntary_exit">
+<span class="sig-name descname"><span class="pre">handle_voluntary_exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.handle_voluntary_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.handle_voluntary_exit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.is_animation_complete">
+<span class="sig-name descname"><span class="pre">is_animation_complete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.is_animation_complete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.is_animation_complete" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.load_player_image">
+<span class="sig-name descname"><span class="pre">load_player_image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.load_player_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.load_player_image" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.move" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.pay">
+<span class="sig-name descname"><span class="pre">pay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.pay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.pay" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.receive">
+<span class="sig-name descname"><span class="pre">receive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.receive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.receive" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.remove_property">
+<span class="sig-name descname"><span class="pre">remove_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.remove_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.remove_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.set_active">
+<span class="sig-name descname"><span class="pre">set_active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.set_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.set_active" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.set_winner">
+<span class="sig-name descname"><span class="pre">set_winner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">winner</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.set_winner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.set_winner" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.start_move">
+<span class="sig-name descname"><span class="pre">start_move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.start_move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.start_move" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.update_animation">
+<span class="sig-name descname"><span class="pre">update_animation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.update_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.update_animation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Player.Player.use_jail_card">
+<span class="sig-name descname"><span class="pre">use_jail_card</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Player.html#Player.use_jail_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Player.Player.use_jail_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="player-class-diagram">
+<h3>Player Class Diagram<a class="headerlink" href="#player-class-diagram" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-88914c1fe005f6e49bd37881d0028ef4e57abdaf.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+class Player {
+    + name : str
+    + player_number : int
+    + is_ai : bool
+    + ai_difficulty : str
+    + position : int
+    + money : int
+    + properties : List
+    + in_jail : bool
+    + jail_turns : int
+    + jail_cards : List
+    + bankrupt : bool
+    + voluntary_exit : bool
+    + is_moving : bool
+    + player_image : Surface
+    - ai_controller : AIPlayer
+
+    + __init__(name: str, player_number: int, is_ai: bool, ai_difficulty: str): void
+    + load_player_image(): Surface
+    + create_fallback_token(): Surface
+    + update_animation(): void
+    + draw_player(screen: Surface, x: int, y: int): void
+    + move(steps: int): void
+    + pay(amount: int): bool
+    + receive(amount: int): void
+    + buy_property(property: Property): bool
+    + add_jail_card(card_type: str): void
+    + use_jail_card(): str
+    + handle_jail_turn(): str
+    + add_property(property: Property): void
+    + remove_property(property: Property): void
+    + get_total_assets(): int
+    + handle_bankruptcy(creditor: Player): void
+    + handle_voluntary_exit(): void
+}
+
+class Property {
+    + name : str
+    + price : int
+    + owner : Player
+    + mortgaged : bool
+    + houses : int
+    + has_hotel : bool
+
+    + get_mortgage_value(): int
+    + get_unmortgage_cost(): int
+}
+
+class AIPlayer {
+    + decide_action(): str
+}
+
+class EasyAIPlayer {
+}
+
+class HardAIPlayer {
+}
+
+class Font_Manager {
+    + get_font(size: int): Font
+}
+
+Player *-- Property : owns
+Player ..&gt; Font_Manager : uses
+Player ..&gt; Property : interacts with
+Player o-- AIPlayer : controls
+
+EasyAIPlayer --|&gt; AIPlayer
+HardAIPlayer --|&gt; AIPlayer
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Player Class Diagram</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="player-state-diagram">
+<h3>Player State Diagram<a class="headerlink" href="#player-state-diagram" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-83102a3a6e00e42c83dcb025a81298d94ab94676.png" alt="&#64;startuml
+skinparam state {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+[*] --&gt; Active
+
+state Active {
+    [*] --&gt; Idle
+    Idle --&gt; Moving : move() called
+    Moving --&gt; Idle : Animation Complete
+    Idle --&gt; InJail : Sent to Jail
+    Idle --&gt; Deciding : AI Turn
+    Deciding --&gt; Idle : Action Taken
+    Idle --&gt; Bankrupt : Cannot Pay
+    Idle --&gt; Exited : Chooses to Exit
+    Idle --&gt; Winner : Game Ends
+}
+
+Active --&gt; InJail : Sent to Jail
+InJail --&gt; Active : Pays/Uses Card/Rolls Doubles
+InJail --&gt; Bankrupt : Cannot Pay Fine
+
+Active --&gt; Bankrupt : handle_bankruptcy()
+Bankrupt --&gt; [*]
+
+Active --&gt; Exited : handle_voluntary_exit()
+Exited --&gt; [*]
+
+Active --&gt; Winner : Declared Winner
+Winner --&gt; [*]
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Player State Diagram</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="player-initialization">
+<h3>Player Initialization<a class="headerlink" href="#player-initialization" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-818eaaa320372dffa0c9041c9d2a9e23dbee98ff.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller &lt;&lt;e.g., create_game&gt;&gt;
+participant &quot;Player.__init__&quot; as Init
+participant &quot;pygame&quot; as Pygame
+participant &quot;os&quot; as OS
+participant &quot;AIController&quot; as AIC &lt;&lt;Easy/HardAIPlayer&gt;&gt;
+
+Caller -&gt; Init : Player(name, num, is_ai, difficulty)
+activate Init
+Init -&gt; Init : Set basic attributes (name, num, money, pos, etc.)
+Init -&gt; Pygame : Rect(0, 0, 40, 40)
+Pygame --&gt; Init : rect instance
+Init -&gt; Init : Set color based on is_ai
+alt is_ai
+    Init -&gt; Init : Import AI classes
+    alt ai_difficulty == &quot;hard&quot;
+        Init -&gt; AIC : HardAIPlayer()
+        AIC --&gt; Init : ai_controller instance
+    else
+        Init -&gt; AIC : EasyAIPlayer()
+        AIC --&gt; Init : ai_controller instance
+    end
+end
+Init -&gt; Init : load_player_image()
+activate Init #darkred
+    Init -&gt; OS : path.join(...) ' Construct image path
+    OS --&gt; Init : image_path
+    Init -&gt; OS : path.exists(image_path)
+    OS --&gt; Init : exists
+    alt exists
+        Init -&gt; Pygame : image.load(image_path)
+        Pygame --&gt; Init : image_surface
+        Init -&gt; Pygame : transform.scale(image_surface, (40,40))
+        Pygame --&gt; Init : scaled_image
+        Init -&gt; Init : self.player_image = scaled_image
+    else Not Found
+        Init -&gt; Init : create_fallback_token()
+         activate Init #darkblue
+            Init -&gt; Pygame : Surface((40,40), SRCALPHA)
+            Pygame --&gt; Init : surface
+            Init -&gt; Pygame : draw.circle(...)
+            Init -&gt; Font_Manager : get_font(28)
+            Font_Manager --&gt; Init : font
+            Init -&gt; font : render(...)
+            font --&gt; Init : text_surface
+            Init -&gt; surface : blit(...)
+            Init -&gt; Init : self.player_image = surface
+         deactivate Init
+    end
+deactivate Init
+Init --&gt; Caller : Player instance
+deactivate Init
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Player Initialization</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="player-movement">
+<h3>Player Movement<a class="headerlink" href="#player-movement" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-1ed18a2e1dba598fd7ed7e7d9af1f0d8200c9d3d.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;GameLogic&quot; as Logic
+participant &quot;Player&quot; as P
+participant &quot;update_animation()&quot; as UpdateAnim &lt;&lt;method&gt;&gt;
+participant &quot;pygame&quot; as Pygame
+
+Logic -&gt; P : move(steps)
+activate P
+P -&gt; P : generate_move_path(steps)
+P -&gt; P : is_moving = True
+P -&gt; P : move_progress = 0.0
+P -&gt; Pygame : time.get_ticks()
+Pygame --&gt; P : current_time
+P -&gt; P : animation_time = current_time
+deactivate P
+
+loop Animation Loop (e.g., in run_game)
+    Logic -&gt; P : update_animation()
+    activate P
+    P -&gt; Pygame : time.get_ticks()
+    Pygame --&gt; P : current_time
+    P -&gt; P : Update move_progress based on speed
+    alt move_progress &gt; 1.0
+        P -&gt; P : position = move_path(current_path_index)
+        P -&gt; P : current_path_index += 1
+        alt current_path_index &gt;= len(move_path)
+            P -&gt; P : is_moving = False
+            P -&gt; P : position = move_target_position
+        end
+    end
+    P --&gt; Logic
+    deactivate P
+end
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Player Movement</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="property-purchase">
+<h3>Property Purchase<a class="headerlink" href="#property-purchase" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-7eecac88a10204a95e44ec0e0c10bc07ff4d0cee.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;GameLogic&quot; as Logic
+participant &quot;Player&quot; as P
+participant &quot;Property&quot; as Prop
+
+Logic -&gt; P : buy_property(Prop)
+activate P
+P -&gt; Prop : Get price
+Prop --&gt; P : price
+alt money &gt;= price
+    P -&gt; P : money -= price
+    P -&gt; P : properties.append(Prop)
+    P -&gt; Prop : owner = self
+    Prop --&gt; P
+    P --&gt; Logic : True (Success)
+else money &lt; price
+    P --&gt; Logic : False (Failure)
+end
+deactivate P
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Buying a Property</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="jail-turn-handling">
+<h3>Jail Turn Handling<a class="headerlink" href="#jail-turn-handling" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-ed786f97ba108de19b2c38ce33e98b14a8ddd223.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;GameLogic&quot; as Logic
+participant &quot;Player&quot; as P
+participant &quot;random&quot; as Random
+
+Logic -&gt; P : handle_jail_turn()
+activate P
+opt not self.in_jail
+    P --&gt; Logic : False (Not in jail)
+    deactivate P
+    return
+end
+
+alt is_ai
+    opt jail_cards exist
+        P -&gt; Random : random()
+        Random --&gt; P : value (0.0 to 1.0)
+        alt value &lt; 0.7
+            P -&gt; P : use_jail_card()
+            activate P #DarkCyan
+                P -&gt; P : card_type = jail_cards.pop()
+                P -&gt; P : in_jail = False
+                P -&gt; P : jail_turns = 0
+                P --&gt; P : card_type
+            deactivate P
+            P --&gt; Logic : card_type (Used card)
+            deactivate P
+            return
+        end
+    end
+    opt money &gt;= 50
+         P -&gt; Random : random()
+         Random --&gt; P : value (0.0 to 1.0)
+         alt value &lt; 0.5
+            P -&gt; P : pay(50)
+            activate P #DarkOrange
+                P -&gt; P : money -= 50
+                P --&gt; P : True
+            deactivate P
+            P -&gt; P : in_jail = False
+            P -&gt; P : jail_turns = 0
+            P --&gt; Logic : None (Paid fine)
+            deactivate P
+            return
+         end
+    end
+end
+
+P -&gt; P : jail_turns += 1
+alt jail_turns &gt;= 3
+    opt money &gt;= 50
+        P -&gt; P : pay(50)
+         activate P #DarkOrange
+            P -&gt; P : money -= 50
+            P --&gt; P : True
+         deactivate P
+    end
+    P -&gt; P : in_jail = False
+    P -&gt; P : jail_turns = 0
+end
+
+P --&gt; Logic : None (Stayed in jail or paid on 3rd turn)
+deactivate P
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Jail Turn Handling</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="asset-calculation">
+<h3>Asset Calculation<a class="headerlink" href="#asset-calculation" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-e6d53ceaa5b89e353d01b25be8cb79197fe0157e.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;Caller&quot; as Caller
+participant &quot;Player&quot; as P
+participant &quot;Property&quot; as Prop
+
+Caller -&gt; P : get_total_assets()
+activate P
+P -&gt; P : total = self.money
+loop for prop in self.properties
+    P -&gt; Prop : Get mortgaged status
+    Prop --&gt; P : is_mortgaged
+    alt not is_mortgaged
+        P -&gt; Prop : Get price
+        Prop --&gt; P : price
+        P -&gt; P : total += price
+    else is_mortgaged
+        P -&gt; Prop : Get price
+        Prop --&gt; P : price
+        P -&gt; P : total += price / 2
+    end
+
+    P -&gt; Prop : Get houses count
+    Prop --&gt; P : num_houses
+    alt num_houses &gt; 0
+        P -&gt; Prop : get_house_sale_value()
+        Prop --&gt; P : house_value
+        P -&gt; P : total += house_value * num_houses
+    end
+
+    P -&gt; Prop : Get hotel status
+    Prop --&gt; P : has_hotel
+    alt has_hotel
+        P -&gt; Prop : get_hotel_sale_value()
+        Prop --&gt; P : hotel_value
+        P -&gt; P : total += hotel_value
+    end
+end loop
+P --&gt; Caller : total
+deactivate P
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Total Asset Calculation</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="player-drawing">
+<h3>Player Drawing<a class="headerlink" href="#player-drawing" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-4ab41ef95595edb0715e295709ec6bb7f731911c.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;GameRenderer&quot; as Renderer
+participant &quot;Player&quot; as P
+participant &quot;pygame&quot; as Pygame
+participant &quot;Font_Manager&quot; as FM
+participant &quot;Screen&quot; as ScreenSurface
+
+Renderer -&gt; P : draw_player(ScreenSurface, x, y)
+activate P
+P -&gt; Pygame : time.get_ticks()
+Pygame --&gt; P : current_time
+P -&gt; P : Calculate animation_offset (e.g., based on time)
+P -&gt; P : rect.x = x
+P -&gt; P : rect.y = y - animation_offset
+
+alt voluntary_exit
+    P -&gt; FM : get_font(12)
+    FM --&gt; P : font
+    P -&gt; font : render(&quot;EXITED&quot;, ...)
+    font --&gt; P : text_surface
+    P -&gt; ScreenSurface : blit(text_surface, ...)
+    P -&gt; Pygame : Surface(...) ' Create glow surface
+    Pygame --&gt; P : glow_surface
+    P -&gt; Pygame : draw.circle(...) ' Draw glow effect
+    P -&gt; ScreenSurface : blit(glow_surface, ...)
+    P -&gt; P : Get player_image
+    alt player_image exists
+        P -&gt; player_image : copy()
+        player_image --&gt; P : image_copy
+        P -&gt; image_copy : set_alpha(128)
+        P -&gt; ScreenSurface : blit(image_copy, rect)
+    else No player_image
+        P -&gt; P : create_fallback_token()
+         activate P #DarkGreen
+         ' ... fallback creation ...
+         deactivate P
+        P -&gt; player_image : copy()
+        player_image --&gt; P : image_copy
+        P -&gt; image_copy : set_alpha(128)
+        P -&gt; ScreenSurface : blit(image_copy, rect)
+    end
+else bankrupt
+    P -&gt; FM : get_font(12)
+    FM --&gt; P : font
+    P -&gt; font : render(&quot;BANKRUPT&quot;, ...)
+    font --&gt; P : text_surface
+    P -&gt; ScreenSurface : blit(text_surface, ...)
+    P -&gt; P : Get player_image
+    alt player_image exists
+        P -&gt; player_image : copy()
+        player_image --&gt; P : image_copy
+        P -&gt; image_copy : set_alpha(128)
+        P -&gt; ScreenSurface : blit(image_copy, rect)
+    else No player_image
+        P -&gt; P : create_fallback_token()
+         activate P #DarkGreen
+         ' ... fallback creation ...
+         deactivate P
+        P -&gt; player_image : copy()
+        player_image --&gt; P : image_copy
+        P -&gt; image_copy : set_alpha(128)
+        P -&gt; ScreenSurface : blit(image_copy, rect)
+    end
+else Active Player
+    P -&gt; P : Get player_image
+    alt player_image exists
+        P -&gt; ScreenSurface : blit(player_image, rect)
+    else No player_image
+        P -&gt; P : create_fallback_token()
+         activate P #DarkGreen
+         ' ... fallback creation ...
+         deactivate P
+        P -&gt; ScreenSurface : blit(player_image, rect)
+    end
+end
+P --&gt; Renderer
+deactivate P
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Player Drawing</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="bankruptcy-handling">
+<h3>Bankruptcy Handling<a class="headerlink" href="#bankruptcy-handling" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id9">
+<p class="plantuml">
+<img src="../_images/plantuml-c52ac5810890bd2958933b5f623de00c7aac2446.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;GameLogic&quot; as Logic
+participant &quot;BankruptPlayer&quot; as BP &lt;&lt;Player&gt;&gt;
+participant &quot;Creditor&quot; as CP &lt;&lt;Player&gt;&gt;
+participant &quot;Property&quot; as Prop
+
+Logic -&gt; BP : handle_bankruptcy(Creditor)
+activate BP
+BP -&gt; BP : bankrupt = True
+
+loop for each prop in properties(:)
+    alt Creditor exists
+        BP -&gt; BP : remove_property(prop)
+        BP -&gt; CP : add_property(prop)
+        activate CP
+        CP -&gt; Prop : Get mortgage status
+        Prop --&gt; CP : is_mortgaged
+        alt is_mortgaged
+            CP -&gt; Prop : get_unmortgage_cost()
+            Prop --&gt; CP : cost
+            CP -&gt; Prop : get_mortgage_value()
+            Prop --&gt; CP : value
+            CP -&gt; CP : unmortgage_fee = cost - value
+            alt can_afford(unmortgage_fee)
+                CP -&gt; CP : pay(unmortgage_fee)
+                CP -&gt; Prop : unmortgage()
+                Prop --&gt; CP
+            end
+        end
+        CP --&gt; BP
+        deactivate CP
+    else No Creditor (Bank)
+        BP -&gt; BP : remove_property(prop)
+        BP -&gt; Prop : owner = None
+        BP -&gt; Prop : mortgaged = False
+        BP -&gt; Prop : houses = 0
+        BP -&gt; Prop : has_hotel = False
+        Prop --&gt; BP
+    end
+end loop
+
+alt Creditor exists and BP.money &gt; 0
+    BP -&gt; CP : receive(BP.money)
+    activate CP
+    CP --&gt; BP
+    deactivate CP
+end
+BP -&gt; BP : money = 0
+BP --&gt; Logic
+deactivate BP
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Handling Bankruptcy</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="ai-player-turn">
+<h3>AI Player Turn<a class="headerlink" href="#ai-player-turn" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id10">
+<p class="plantuml">
+<img src="../_images/plantuml-6277de9b4d3b1e60860855558e7f1f160400e6c2.png" alt="&#64;startuml
+participant &quot;GameLogic&quot; as Logic
+participant &quot;AIPlayer&quot; as AIP &lt;&lt;Player&gt;&gt;
+participant &quot;AIController&quot; as AIC &lt;&lt;AIPlayer&gt;&gt;
+
+Logic -&gt; AIP : It's your turn (trigger AI logic)
+activate AIP
+alt is_ai == True
+    AIP -&gt; AIC : decide_action(game_state) ' Example call
+    activate AIC
+    ' ... AI Controller performs calculations ...
+    AIC --&gt; AIP : chosen_action (e.g., &quot;roll&quot;, &quot;buy&quot;, &quot;build&quot;)
+    deactivate AIC
+    AIP -&gt; Logic : Perform chosen_action
+    Logic --&gt; AIP
+end
+deactivate AIP
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: AI Player Turn (Conceptual)</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game_renderer.html" class="btn btn-neutral float-left" title="Game Renderer Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="board.html" class="btn btn-neutral float-right" title="Board Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.Cards &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.Cards</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.Cards</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon cards.py</span>
+<span class="c1"># Contains the classes for the cards, such as the card type, the card text, and the card action.</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Game_Logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">pot_luck_cards</span><span class="p">,</span> <span class="n">opportunity_knocks_cards</span>
+
+
+<div class="viewcode-block" id="CardType">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CardType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">POT_LUCK</span> <span class="o">=</span> <span class="s2">&quot;pot luck&quot;</span>
+    <span class="n">OPPORTUNITY_KNOCKS</span> <span class="o">=</span> <span class="s2">&quot;opportunity knocks&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Card">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.Card">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Card</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">card_type</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">card_type</span> <span class="o">=</span> <span class="n">card_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requires_input</span> <span class="o">=</span> <span class="s2">&quot;take opportunity knocks&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_special</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">keyword</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;jail free&quot;</span><span class="p">,</span> <span class="s2">&quot;advance to&quot;</span><span class="p">,</span> <span class="s2">&quot;go back&quot;</span><span class="p">,</span> <span class="s2">&quot;collect&quot;</span><span class="p">,</span> <span class="s2">&quot;pay&quot;</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CardDeck">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CardDeck</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card_type</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">card_type</span> <span class="o">=</span> <span class="n">card_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_deck</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_drawn_card</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="CardDeck.initialize_deck">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.initialize_deck">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_deck</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">card_type</span> <span class="o">==</span> <span class="n">CardType</span><span class="o">.</span><span class="n">POT_LUCK</span><span class="p">:</span>
+            <span class="n">card_data</span> <span class="o">=</span> <span class="n">pot_luck_cards</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">card_data</span> <span class="o">=</span> <span class="n">opportunity_knocks_cards</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">card_info</span> <span class="ow">in</span> <span class="n">card_data</span><span class="p">:</span>
+            <span class="n">card</span> <span class="o">=</span> <span class="n">Card</span><span class="p">(</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">card_info</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span>
+                <span class="n">action</span><span class="o">=</span><span class="n">card_info</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">],</span>
+                <span class="n">card_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">card_type</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CardDeck.draw_card">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.draw_card">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_card</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_drawn_card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_drawn_card</span></div>
+
+
+<div class="viewcode-block" id="CardDeck.return_card">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.return_card">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">return_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">to_bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">to_bottom</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">card</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CardDeck.return_jail_card">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.return_jail_card">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">return_jail_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card_type</span><span class="p">):</span>
+        <span class="n">jail_card</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">card</span>
+                <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span>
+                <span class="k">if</span> <span class="s2">&quot;jail free&quot;</span> <span class="ow">in</span> <span class="n">card</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">jail_card</span><span class="p">:</span>
+            <span class="n">jail_card</span> <span class="o">=</span> <span class="n">Card</span><span class="p">(</span>
+                <span class="nb">next</span><span class="p">(</span>
+                    <span class="n">c</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="n">pot_luck_cards</span>
+                        <span class="k">if</span> <span class="n">card_type</span> <span class="o">==</span> <span class="n">CardType</span><span class="o">.</span><span class="n">POT_LUCK</span>
+                        <span class="k">else</span> <span class="n">opportunity_knocks_cards</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="s2">&quot;jail free&quot;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="p">),</span>
+                <span class="n">card_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_card</span><span class="p">(</span><span class="n">jail_card</span><span class="p">,</span> <span class="n">to_bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CardDeck.peek_top_card">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.peek_top_card">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">peek_top_card</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CardDeck.get_remaining_count">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.get_remaining_count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_remaining_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CardDeck.get_discard_count">
+<a class="viewcode-back" href="../../modules/cards.html#src.Cards.CardDeck.get_discard_count">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_discard_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_pile</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

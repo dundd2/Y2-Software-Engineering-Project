@@ -1,0 +1,842 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Renderer Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Player Module" href="player.html" />
+    <link rel="prev" title="Game Event Handler Module" href="game_event_handler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Renderer Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-diagram-what-it-renders">Use Case Diagram (What it Renders)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependency-diagram">Dependency Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simplified-state-based-rendering-logic">Simplified State-Based Rendering Logic</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-diagram">Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#activity-diagram-drawing-dice">Activity Diagram: Drawing Dice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagrams">Sequence Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-classes-overview">Key Classes Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.GameRenderer">API Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.GameRenderer.GameRenderer"><code class="docutils literal notranslate"><span class="pre">GameRenderer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_auction"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_button"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_button()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_buy_options"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_buy_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_card_alert"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_card_alert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_development_ui"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_development_ui()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_dice"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_dice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_free_parking_pot"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_free_parking_pot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_jail_options"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_jail_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_notification"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_notification()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_popup_message"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_popup_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_property_card"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_property_card()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_property_tooltip"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_property_tooltip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.draw_time_remaining"><code class="docutils literal notranslate"><span class="pre">GameRenderer.draw_time_remaining()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.handle_development_click"><code class="docutils literal notranslate"><span class="pre">GameRenderer.handle_development_click()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.GameRenderer.GameRenderer.wrap_text"><code class="docutils literal notranslate"><span class="pre">GameRenderer.wrap_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Renderer Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game_renderer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-renderer-module">
+<h1>Game Renderer Module<a class="headerlink" href="#game-renderer-module" title="Link to this heading"></a></h1>
+<p>The Game Renderer module is the primary engine for visualizing the Property Tycoon game during active play. It acts as an interface between the game’s internal state (managed by <cite>Game</cite>, <cite>GameLogic</cite>, <cite>Board</cite>, <cite>Player</cite>, etc.) and the visual output presented to the user via the Pygame display surface. Its core responsibility is to accurately and efficiently draw all necessary game elements frame by frame, including static components like the board, dynamic elements like player tokens and dice, and context-sensitive UI panels for actions like buying, auctioning, or managing properties.</p>
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="use-case-diagram-what-it-renders">
+<h3>Use Case Diagram (What it Renders)<a class="headerlink" href="#use-case-diagram-what-it-renders" title="Link to this heading"></a></h3>
+<p>This diagram outlines the key visual components and information that the <cite>GameRenderer</cite> is tasked with displaying during a typical game session. The “Game Loop” represents the main process invoking the renderer.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-80cd35dd78e4673baeada61e16bdbbd68c9d1e45.png" alt="&#64;startuml
+actor &quot;Game Loop&quot; as GameLoop
+rectangle &quot;Game Rendering&quot; {
+  GameLoop -- (Render Game Board)
+  GameLoop -- (Render Player Info Panel)
+  GameLoop -- (Render Player Tokens/Animations)
+  GameLoop -- (Render Dice)
+  GameLoop -- (Render Property Cards/Tooltips)
+  GameLoop -- (Render Action Buttons) : e.g., Roll, Buy, Pass, Bid
+  GameLoop -- (Render Notifications/Popups)
+  GameLoop -- (Render Auction UI)
+  GameLoop -- (Render Jail Options UI)
+  GameLoop -- (Render Development UI)
+  GameLoop -- (Render Time Remaining/Warnings)
+  GameLoop -- (Render Free Parking Pot)
+  GameLoop -- (Render AI Emotion UI)
+  (Render Game Board) ..&gt; (Render Property Stars) : include
+  (Render Player Info Panel) ..&gt; (Render Player Money) : include
+  (Render Player Info Panel) ..&gt; (Render Owned Properties) : include
+  (Render Player Info Panel) ..&gt; (Render Player Status) : e.g., Jail, Bankrupt
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Game Renderer Responsibilities</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="dependency-diagram">
+<h3>Dependency Diagram<a class="headerlink" href="#dependency-diagram" title="Link to this heading"></a></h3>
+<p>This diagram illustrates the main modules and libraries that the <cite>GameRenderer</cite> relies upon to function. It highlights its central role in accessing game state and utilizing utility modules for presentation.</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-5c3d06b11575180939223f4ca79141b48577ace9.png" alt="&#64;startuml
+skinparam package {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+package &quot;Game Renderer Module&quot; {
+  [GameRenderer]
+}
+
+package &quot;Game Core&quot; {
+  [Game]
+  [GameActions]
+  [GameLogic]
+  [Board]
+  [Player]
+  [DevelopmentManager]
+}
+
+package &quot;UI Module&quot; {
+  [AIEmotionUI]
+}
+
+package &quot;Utility Modules&quot; {
+  [Font_Manager]
+}
+
+package &quot;External Libraries&quot; {
+  [pygame]
+  [math]
+  [os]
+}
+
+[GameRenderer] --&gt; [Game]
+[GameRenderer] --&gt; [GameActions]
+[GameRenderer] --&gt; [GameLogic]
+[GameRenderer] --&gt; [Board]
+[GameRenderer] --&gt; [Player]
+[GameRenderer] --&gt; [DevelopmentManager]
+[GameRenderer] --&gt; [AIEmotionUI]
+[GameRenderer] --&gt; [Font_Manager]
+[GameRenderer] --&gt; [pygame]
+[GameRenderer] --&gt; [math]
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Game Renderer Dependencies</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="simplified-state-based-rendering-logic">
+<h3>Simplified State-Based Rendering Logic<a class="headerlink" href="#simplified-state-based-rendering-logic" title="Link to this heading"></a></h3>
+<p>The main <cite>draw()</cite> method adapts its output based significantly on the current <cite>game.state</cite>. This state diagram shows the primary rendering paths determined by the game state.</p>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-1c866850eeb4e006b9689b7bcdf45726bd5d9e08.png" alt="&#64;startuml
+skinparam state {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+[*] --&gt; Idle
+Idle --&gt; DrawingBase : Frame Start
+DrawingBase --&gt; DrawingPlayerInfo
+DrawingPlayerInfo --&gt; DrawingCommonUI
+
+DrawingCommonUI --&gt; CheckState
+
+CheckState --&gt; DrawRollState : state == &quot;ROLL&quot;
+CheckState --&gt; DrawBuyState : state == &quot;BUY&quot;
+CheckState --&gt; DrawAuctionState : state == &quot;AUCTION&quot;
+CheckState --&gt; DrawDevelopmentState : state == &quot;DEVELOPMENT&quot;
+CheckState --&gt; DrawOtherState : else
+
+DrawRollState --&gt; DrawingDice
+DrawBuyState --&gt; DrawingDice
+DrawAuctionState --&gt; DrawingDice
+DrawDevelopmentState --&gt; DrawingDice
+DrawOtherState --&gt; DrawingDice
+
+DrawingDice --&gt; DrawingOverlays
+DrawingOverlays --&gt; DrawingFinalFlip
+DrawingFinalFlip --&gt; [*]
+
+state DrawingBase {
+    [*] --&gt; RenderBackground
+    RenderBackground --&gt; RenderBoard
+    RenderBoard --&gt; RenderPlayerAnimations
+    RenderPlayerAnimations --&gt; [*]
+}
+
+state DrawingPlayerInfo {
+    [*] --&gt; RenderPlayerStatusPanel
+    RenderPlayerStatusPanel --&gt; RenderPropertyTooltips
+    RenderPropertyTooltips --&gt; [*]
+}
+
+state DrawingCommonUI {
+    [*] --&gt; RenderTimeRemaining
+    RenderTimeRemaining --&gt; RenderFreeParkingPot
+    RenderFreeParkingPot --&gt; RenderAIEmotionUI
+    RenderAIEmotionUI --&gt; [*]
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">State Diagram: GameRenderer Draw Logic by Game State</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-diagram">
+<h3>Class Diagram<a class="headerlink" href="#class-diagram" title="Link to this heading"></a></h3>
+<p>This diagram details the structure of the <cite>GameRenderer</cite> class itself, showing its attributes (dependencies and fonts) and its public methods responsible for drawing specific elements.</p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-5691654046895b3c0233e9e3ded8a1c209f81c32.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+class GameRenderer {
+  - game: Game
+  - game_actions: GameActions
+  - screen: pygame.Surface
+  - font: pygame.font.Font
+  - small_font: pygame.font.Font
+  - tiny_font: pygame.font.Font
+  - button_font: pygame.font.Font
+  - message_font: pygame.font.Font
+  + draw_button(button: pygame.Rect, text: str, hover: bool, active: bool): void
+  + draw_time_remaining(): void
+  + draw(): void
+  + draw_dice(dice1: int, dice2: int, is_rolling: bool): void
+  + draw_property_card(property_data: dict): void
+  + draw_buy_options(mouse_pos: tuple): void
+  + draw_property_tooltip(property_data: dict, mouse_pos: tuple): void
+  + draw_notification(): void
+  + draw_card_alert(card: dict, player: dict): void
+  + wrap_text(text: str, max_width: int): list&lt;str&gt;
+  + draw_popup_message(): void
+  + draw_auction(auction_data: dict): void
+  + draw_jail_options(player: dict): void
+  + draw_free_parking_pot(): void
+  + draw_development_ui(property_data: dict): void
+  + handle_development_click(pos: tuple, property_data: dict): any
+}
+
+note right of GameRenderer::draw
+  Main rendering loop called each frame.
+  Delegates to other draw methods based on game state.
+end note
+
+GameRenderer ..&gt; Game : uses &gt;
+GameRenderer ..&gt; GameActions : uses &gt;
+GameRenderer ..&gt; Font_Manager : uses &gt;
+GameRenderer ..&gt; &quot;pygame.Surface&quot; : uses &gt;
+GameRenderer ..&gt; &quot;pygame.Rect&quot; : uses &gt;
+GameRenderer ..&gt; &quot;pygame.font.Font&quot; : uses &gt;
+GameRenderer ..&gt; AIEmotionUI : uses &gt;
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">GameRenderer Class Diagram</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="activity-diagram-drawing-dice">
+<h3>Activity Diagram: Drawing Dice<a class="headerlink" href="#activity-diagram-drawing-dice" title="Link to this heading"></a></h3>
+<p>This diagram details the logic within the <cite>draw_dice</cite> method, including handling the rolling animation state and the special effect for doubles.</p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-c293dc6a49e7aa383dd9d6feceedc95aa22bb060.png" alt="&#64;startuml
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+start
+:Get window size;
+:Calculate dice size and position;
+:Draw Dice 1 Shadow;
+:Draw Dice 1 Background;
+if (Value 1 in dice_images?) then (yes)
+  :Load and scale image 1;
+  :Blit image 1;
+else (no)
+  :Render text value 1;
+  :Blit text value 1;
+endif
+:Draw Dice 1 Border (color based on is_rolling);
+
+:Draw Dice 2 Shadow;
+:Draw Dice 2 Background;
+ if (Value 2 in dice_images?) then (yes)
+  :Load and scale image 2;
+  :Blit image 2;
+else (no)
+  :Render text value 2;
+  :Blit text value 2;
+endif
+:Draw Dice 2 Border (color based on is_rolling);
+
+if (is_rolling == false AND dice1 == dice2?) then (yes)
+  :Get current time;
+  :Calculate sparkle positions and colors based on time;
+  :Draw multiple sparkle effects around dice;
+endif
+stop
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Activity Diagram: draw_dice Method</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagrams">
+<h3>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Main Draw Sequence</strong></p>
+<p>Illustrates the high-level flow of execution when the main <cite>GameRenderer.draw()</cite> method is invoked by the game loop.</p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-3fb327a479438f4915c103d32a6f802e70aa3fec.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;main_loop&quot; as Loop
+participant &quot;renderer:GameRenderer&quot; as Renderer
+participant &quot;game:Game&quot; as Game
+participant &quot;board:Board&quot; as Board
+participant &quot;dev_manager:DevelopmentManager&quot; as DevMan
+participant &quot;emotion_ui:AIEmotionUI&quot; as EmotionUI
+participant &quot;player:Player&quot; as Player
+
+Loop -&gt; Renderer : draw()
+activate Renderer
+Renderer -&gt; Game : check_time_limit()
+Renderer -&gt; Renderer : screen.fill() / draw gradient
+Renderer -&gt; Board : draw(screen)
+Renderer -&gt; Game : dev_manager.is_active
+opt dev_manager is active
+  Renderer -&gt; DevMan : draw(mouse_pos)
+  opt complete_button exists and player not AI
+    Renderer -&gt; Renderer : draw_button(complete_button, ...)
+  end
+end
+
+Renderer -&gt; Game : emotion_uis.values()
+loop for each emotion_ui
+  Renderer -&gt; EmotionUI : draw()
+end
+
+Renderer -&gt; Game : synchronize_player_positions()
+Renderer -&gt; Game : synchronize_player_money()
+Renderer -&gt; Game : synchronize_free_parking_pot()
+
+Renderer -&gt; Game : players
+loop for each player
+  Renderer -&gt; Player : update_animation()
+end
+
+Renderer -&gt; Board : draw(screen)
+Renderer -&gt; DevMan : _draw_property_stars()
+
+Renderer -&gt; Renderer : draw Player Info Panel
+Renderer -&gt; Renderer : draw_time_remaining()
+Renderer -&gt; Renderer : draw_free_parking_pot()
+Renderer -&gt; Renderer : draw_notification()
+
+Renderer -&gt; Game : state
+alt game.state == &quot;ROLL&quot;
+  Renderer -&gt; Renderer : draw_button(roll_button, ...)
+  opt can_develop
+     Renderer -&gt; Renderer : draw_button(develop_button, ...)
+  end
+  opt abridged mode
+     Renderer -&gt; Renderer : draw_button(pause_button, ...)
+  end
+  opt human players remain
+     Renderer -&gt; Renderer : draw_button(quit_button, ...)
+  end
+  opt AI turn
+     Renderer -&gt; Game : check_and_trigger_ai_turn()
+  end
+else game.state == &quot;BUY&quot;
+  Renderer -&gt; Renderer : draw_property_card(...)
+  Renderer -&gt; Renderer : draw_buy_options(...)
+else game.state == &quot;AUCTION&quot;
+  Renderer -&gt; Renderer : draw_auction(...)
+  Renderer -&gt; Game : logic.check_auction_end()
+  opt auction ended
+     Renderer -&gt; Game : handle_auction_end()
+  end
+else game.state == &quot;DEVELOPMENT&quot;
+  Renderer -&gt; Renderer : draw_development_ui(...)
+end
+
+opt game.dice_animation or recent roll
+  Renderer -&gt; Renderer : draw_dice(...)
+end
+
+opt game.show_card
+  Renderer -&gt; Renderer : draw_card_alert(...)
+end
+
+Renderer -&gt; Board : camera.handle_camera_controls(...)
+Renderer -&gt; Board : update_board_positions()
+
+Renderer -&gt; Game : check_game_over()
+opt game over
+  Renderer -&gt; Game : handle_game_over(...)
+end
+
+opt game.show_popup
+  Renderer -&gt; Renderer : draw_popup_message()
+end
+
+Renderer -&gt; pygame.display : flip()
+Renderer --&gt; Loop
+deactivate Renderer
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Main Draw Call</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Drawing Time Remaining with Warning</strong></p>
+<p>Shows the specific logic executed within the <cite>draw_time_remaining</cite> method, particularly when the game timer is low, triggering visual warnings.</p>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-eb265340929165a6403f380d880a7050f572f936.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;renderer:GameRenderer&quot; as Renderer
+participant &quot;game:Game&quot; as Game
+participant &quot;pygame.time&quot; as Time
+participant &quot;math&quot; as Math
+
+Renderer -&gt; Renderer : draw_time_remaining()
+activate Renderer
+Renderer -&gt; Game : game_mode, time_limit
+opt game_mode == &quot;abridged&quot; and time_limit exists
+  Renderer -&gt; Time : get_ticks()
+  Renderer -&gt; Game : start_time, total_pause_time, game_paused, pause_start_time
+  Renderer -&gt; Renderer : calculate remaining time
+  opt remaining &lt;= 30
+    Renderer -&gt; Math : sin(...) # for flashing
+    Renderer -&gt; Renderer : calculate warning intensity, border width, color
+    Renderer -&gt; Renderer : draw warning border/overlay
+  end
+  opt time_limit_reached
+    Renderer -&gt; Renderer : draw &quot;Finishing Lap&quot; banner
+  end
+  opt remaining &lt;= time_warning_start
+     Renderer -&gt; Math : sin(...) # for flashing
+     Renderer -&gt; Renderer : draw faint warning overlay
+     opt remaining is 60, 30, or 10
+         Renderer -&gt; Game : add_message(...)
+     end
+  end
+  Renderer -&gt; Renderer : draw Time Panel (lap, time, progress bar)
+end
+Renderer --&gt; Renderer : return
+deactivate Renderer
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Drawing Time Warning</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Drawing Auction UI</strong></p>
+<p>Details the steps for rendering the auction interface when the game is in the “AUCTION” state.</p>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-0732241504d4481c75dc09fb240be1a76aa45d7d.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;renderer:GameRenderer&quot; as Renderer
+participant &quot;game:Game&quot; as Game
+
+Renderer -&gt; Renderer : draw_auction(auction_data)
+activate Renderer
+Renderer -&gt; Game : show_card
+opt card is showing
+    Renderer --&gt; Renderer : return (don't draw auction)
+end
+Renderer -&gt; Renderer : Validate auction_data keys
+opt missing keys or invalid property
+    Renderer -&gt; Game : state = &quot;ROLL&quot;
+    Renderer --&gt; Renderer : return
+end
+
+Renderer -&gt; Renderer : Draw overlay background
+Renderer -&gt; Renderer : Draw auction panel base (with shadow)
+Renderer -&gt; Renderer : Draw header (Current Bidder, Time Remaining)
+Renderer -&gt; Renderer : Draw Title (&quot;AUCTION&quot;, Property Name)
+Renderer -&gt; Renderer : Draw Info (Current Bid, Minimum Bid)
+opt highest_bidder exists
+    Renderer -&gt; Renderer : Draw Highest Bidder info
+end
+
+Renderer -&gt; Renderer : Get current bidder data
+opt bidder is human and can bid
+    Renderer -&gt; Renderer : Draw bid input field (auction_input)
+    Renderer -&gt; Renderer : Draw &quot;Bid&quot; button (using draw_button)
+    Renderer -&gt; Renderer : Draw &quot;Pass&quot; button (using draw_button)
+end
+
+opt passed_players exist
+    Renderer -&gt; Renderer : Draw list of passed players
+end
+
+Renderer --&gt; Renderer : return
+deactivate Renderer
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Drawing Auction UI</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Drawing Jail Options</strong></p>
+<p>Shows the process for displaying the available actions to a player currently in jail.</p>
+<figure class="align-default" id="id9">
+<p class="plantuml">
+<img src="../_images/plantuml-95697571ec00082a591421c16041b3dcaac60c89.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;renderer:GameRenderer&quot; as Renderer
+participant &quot;player:dict&quot; as PlayerData
+
+Renderer -&gt; Renderer : draw_jail_options(player_data)
+activate Renderer
+opt player_data(&quot;in_jail&quot;) == False
+    Renderer --&gt; Renderer : return
+end
+
+Renderer -&gt; Renderer : Draw overlay background
+Renderer -&gt; Renderer : Draw jail options panel base (with shadow)
+Renderer -&gt; Renderer : Draw Title (&quot;Jail Options&quot;)
+
+Renderer -&gt; PlayerData : get(&quot;jail_card&quot;)
+opt has jail card
+    Renderer -&gt; Renderer : draw_button(&quot;Use Get Out of Jail Free Card&quot;, ...)
+end
+Renderer -&gt; PlayerData : get(&quot;money&quot;)
+opt money &gt;= 50
+    Renderer -&gt; Renderer : draw_button(&quot;Pay £50 Fine&quot;, ...)
+end
+Renderer -&gt; Renderer : draw_button(&quot;Roll for Doubles&quot;, ...)
+
+Renderer -&gt; PlayerData : get(&quot;jail_turns&quot;)
+Renderer -&gt; Renderer : Draw Turns in Jail text
+
+Renderer --&gt; Renderer : return
+deactivate Renderer
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Drawing Jail Options</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Drawing Notification/Popup</strong></p>
+<p>Illustrates how temporary messages (notifications or popups) are displayed over the main game view.</p>
+<figure class="align-default" id="id10">
+<p class="plantuml">
+<img src="../_images/plantuml-bee95c856d8d510e7d2d379876747591ea7eb942.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;renderer:GameRenderer&quot; as Renderer
+participant &quot;game:Game&quot; as Game
+participant &quot;pygame.time&quot; as Time
+
+alt Notification
+    Renderer -&gt; Game : notification, notification_time
+    opt notification exists
+        Renderer -&gt; Time : get_ticks()
+        opt time &lt; notification_time + DURATION
+            Renderer -&gt; Renderer : Draw notification background (top center)
+            Renderer -&gt; Renderer : Draw notification text
+        else
+            Renderer -&gt; Game : notification = None
+        end
+    end
+else Popup
+    Renderer -&gt; Game : show_popup, popup_title, popup_message
+    opt show_popup == True
+        Renderer -&gt; Renderer : Draw overlay background
+        Renderer -&gt; Renderer : Draw popup panel background
+        opt popup_title exists
+            Renderer -&gt; Renderer : Draw popup title
+        end
+        opt popup_message exists
+            Renderer -&gt; Renderer : wrap_text(popup_message, ...)
+            loop for each line
+                Renderer -&gt; Renderer : Draw message line
+            end
+        end
+        Renderer -&gt; Renderer : Draw &quot;OK&quot; button
+    end
+end
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Drawing Notification/Popup</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-classes-overview">
+<h2>Key Classes Overview<a class="headerlink" href="#key-classes-overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>GameRenderer</strong>: The central class orchestrating the drawing process. It holds references to the game state (<cite>Game</cite>, <cite>GameActions</cite>), the display surface (<cite>screen</cite>), and various fonts (<cite>Font_Manager</cite>). It contains numerous <cite>draw_</cite> methods, each responsible for rendering a specific visual component (e.g., <cite>draw_dice</cite>, <cite>draw_player_info_panel</cite> implicitly, <cite>draw_auction</cite>, <cite>draw_property_card</cite>). The main <cite>draw()</cite> method acts as the primary entry point, called each frame, which then delegates rendering tasks to the appropriate sub-methods based on the current <cite>game.state</cite> and other conditions.</p></li>
+</ul>
+</section>
+<section id="module-src.GameRenderer">
+<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-src.GameRenderer" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.GameRenderer.</span></span><span class="sig-name descname"><span class="pre">GameRenderer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_actions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_auction">
+<span class="sig-name descname"><span class="pre">draw_auction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auction_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_auction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_auction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_button">
+<span class="sig-name descname"><span class="pre">draw_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_button"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_button" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_buy_options">
+<span class="sig-name descname"><span class="pre">draw_buy_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouse_pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_buy_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_buy_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_card_alert">
+<span class="sig-name descname"><span class="pre">draw_card_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_card_alert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_card_alert" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_development_ui">
+<span class="sig-name descname"><span class="pre">draw_development_ui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_development_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_development_ui" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_dice">
+<span class="sig-name descname"><span class="pre">draw_dice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dice1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dice2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_rolling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_dice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_dice" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_free_parking_pot">
+<span class="sig-name descname"><span class="pre">draw_free_parking_pot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_free_parking_pot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_free_parking_pot" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_jail_options">
+<span class="sig-name descname"><span class="pre">draw_jail_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_jail_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_jail_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_notification">
+<span class="sig-name descname"><span class="pre">draw_notification</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_notification"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_notification" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_popup_message">
+<span class="sig-name descname"><span class="pre">draw_popup_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_popup_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_popup_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_property_card">
+<span class="sig-name descname"><span class="pre">draw_property_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_property_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_property_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_property_tooltip">
+<span class="sig-name descname"><span class="pre">draw_property_tooltip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mouse_pos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_property_tooltip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_property_tooltip" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.draw_time_remaining">
+<span class="sig-name descname"><span class="pre">draw_time_remaining</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.draw_time_remaining"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.draw_time_remaining" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.handle_development_click">
+<span class="sig-name descname"><span class="pre">handle_development_click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.handle_development_click"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.handle_development_click" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.GameRenderer.GameRenderer.wrap_text">
+<span class="sig-name descname"><span class="pre">wrap_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_width</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/GameRenderer.html#GameRenderer.wrap_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.GameRenderer.GameRenderer.wrap_text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game_event_handler.html" class="btn btn-neutral float-left" title="Game Event Handler Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="player.html" class="btn btn-neutral float-right" title="Player Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

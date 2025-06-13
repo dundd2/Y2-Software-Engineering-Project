@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.Property &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.Property</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.Property</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon Property.py</span>
+<span class="c1"># Contains the classes for the properties, such as the rent, the house costs, and the hotel costs.</span>
+
+
+<div class="viewcode-block" id="Property">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Property</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rent&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;house_costs&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_station</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_station&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_utility</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_utility&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># rent calculation logic</span>
+<div class="viewcode-block" id="Property.calculate_rent">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.calculate_rent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_rent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dice_roll</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_station</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">properties</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span>
+            <span class="n">station_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_station</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">station_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_utility</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">properties</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dice_roll</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="n">utility_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="mi">1</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_utility</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span>
+            <span class="p">)</span>
+            <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">10</span> <span class="k">if</span> <span class="n">utility_count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">4</span>
+            <span class="k">return</span> <span class="n">dice_roll</span> <span class="o">*</span> <span class="n">multiplier</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span> <span class="o">*</span> <span class="mi">5</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">house_index</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">[</span><span class="n">house_index</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span>
+                    <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_monopoly</span><span class="p">(</span><span class="n">properties</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_rent</span></div>
+
+
+    <span class="c1"># monopoly check</span>
+<div class="viewcode-block" id="Property.has_monopoly">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.has_monopoly">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_monopoly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">group_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">owner</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_properties</span><span class="p">)</span></div>
+
+
+    <span class="c1"># house build check</span>
+<div class="viewcode-block" id="Property.can_build_house">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.can_build_house">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_build_house</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_station</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_utility</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_monopoly</span><span class="p">(</span><span class="n">properties</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">group_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">]</span>
+        <span class="n">min_houses</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">houses</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_properties</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">&lt;=</span> <span class="n">min_houses</span></div>
+
+
+    <span class="c1"># hotel build check</span>
+<div class="viewcode-block" id="Property.can_build_hotel">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.can_build_hotel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_build_hotel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_station</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_utility</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_monopoly</span><span class="p">(</span><span class="n">properties</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">group_properties</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">properties</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">houses</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_properties</span><span class="p">)</span></div>
+
+
+    <span class="c1"># build house logic</span>
+<div class="viewcode-block" id="Property.build_house">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.build_house">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_house</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># build hotel logic</span>
+<div class="viewcode-block" id="Property.build_hotel">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.build_hotel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_hotel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># sell house logic</span>
+<div class="viewcode-block" id="Property.sell_house">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.sell_house">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sell_house</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># sell hotel logic</span>
+<div class="viewcode-block" id="Property.sell_hotel">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.sell_hotel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sell_hotel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">=</span> <span class="mi">5</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># mortgage logic</span>
+<div class="viewcode-block" id="Property.mortgage">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.mortgage">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mortgage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">houses</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_hotel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Property.unmortgage">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.unmortgage">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unmortgage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mortgaged</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Property.get_mortgage_value">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.get_mortgage_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_mortgage_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">//</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Property.get_unmortgage_cost">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.get_unmortgage_cost">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_unmortgage_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_mortgage_value</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Property.get_house_sale_value">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.get_house_sale_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_house_sale_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">house_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">house_cost</span> <span class="o">//</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Property.get_hotel_sale_value">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.get_hotel_sale_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_hotel_sale_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">hotel_purchase_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">house_costs</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">hotel_purchase_price</span> <span class="o">//</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Property.charge_rent">
+<a class="viewcode-back" href="../../modules/property.html#src.Property.Property.charge_rent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">charge_rent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">dice_roll</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">!=</span> <span class="n">player</span><span class="p">:</span>
+            <span class="n">rent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_rent</span><span class="p">(</span><span class="n">dice_roll</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> landed on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, paying £</span><span class="si">{</span><span class="n">rent</span><span class="si">}</span><span class="s2"> rent to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">player</span><span class="o">.</span><span class="n">pay</span><span class="p">(</span><span class="n">rent</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">receive</span><span class="p">(</span><span class="n">rent</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">rent</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

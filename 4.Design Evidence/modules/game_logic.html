@@ -1,0 +1,1135 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Logic Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Actions Module" href="game_actions.html" />
+    <link rel="prev" title="Game Module" href="game.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Logic Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-and-data-structures">Class and Data Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-classes-data-overview">Key Classes/Data Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.Game_Logic">API Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Game_Logic.GameLogic"><code class="docutils literal notranslate"><span class="pre">GameLogic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.BANK_LIMIT"><code class="docutils literal notranslate"><span class="pre">GameLogic.BANK_LIMIT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.GAME_TOKENS"><code class="docutils literal notranslate"><span class="pre">GameLogic.GAME_TOKENS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.MAX_HOTELS_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOTELS_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.MAX_HOUSES_PER_PROPERTY"><code class="docutils literal notranslate"><span class="pre">GameLogic.MAX_HOUSES_PER_PROPERTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.add_message"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_message()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.add_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.add_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.advance_to_next_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.advance_to_next_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.auction_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.auction_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.buy_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.buy_property_after_auction"><code class="docutils literal notranslate"><span class="pre">GameLogic.buy_property_after_auction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.calculate_house_difference"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_house_difference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.calculate_repair_cost"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_repair_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.calculate_space_rent"><code class="docutils literal notranslate"><span class="pre">GameLogic.calculate_space_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.can_build_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.check_auction_end"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_auction_end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.check_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.check_property_group_completion"><code class="docutils literal notranslate"><span class="pre">GameLogic.check_property_group_completion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.game_start"><code class="docutils literal notranslate"><span class="pre">GameLogic.game_start()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.get_ai_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.get_ai_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_ai_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.get_human_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_human_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.get_winner"><code class="docutils literal notranslate"><span class="pre">GameLogic.get_winner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_ai_bankruptcy_prevention"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_bankruptcy_prevention()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_ai_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_ai_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_bankruptcy"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_bankruptcy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_birthday_collection"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_birthday_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_buy_decision"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_buy_decision()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_card_draw"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_card_draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_jail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_payment_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_payment_to_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_rent_payment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_rent_payment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_repair_assessment"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_repair_assessment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.handle_space"><code class="docutils literal notranslate"><span class="pre">GameLogic.handle_space()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.is_game_over"><code class="docutils literal notranslate"><span class="pre">GameLogic.is_game_over()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.mortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.mortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.move_to_next_bidder"><code class="docutils literal notranslate"><span class="pre">GameLogic.move_to_next_bidder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.pay_from_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_from_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.pay_to_bank"><code class="docutils literal notranslate"><span class="pre">GameLogic.pay_to_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.placeBids"><code class="docutils literal notranslate"><span class="pre">GameLogic.placeBids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.play_turn"><code class="docutils literal notranslate"><span class="pre">GameLogic.play_turn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.process_ai_property_purchase"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_ai_property_purchase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.process_auction_bid"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_bid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.process_auction_pass"><code class="docutils literal notranslate"><span class="pre">GameLogic.process_auction_pass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.remove_player"><code class="docutils literal notranslate"><span class="pre">GameLogic.remove_player()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.sell_hotel"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.sell_house"><code class="docutils literal notranslate"><span class="pre">GameLogic.sell_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.try_leave_jail"><code class="docutils literal notranslate"><span class="pre">GameLogic.try_leave_jail()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.unmortgage_property"><code class="docutils literal notranslate"><span class="pre">GameLogic.unmortgage_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Game_Logic.GameLogic.validate_bank_transaction"><code class="docutils literal notranslate"><span class="pre">GameLogic.validate_bank_transaction()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Game Logic Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/game_logic.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-logic-module">
+<h1>Game Logic Module<a class="headerlink" href="#game-logic-module" title="Link to this heading"></a></h1>
+<p>This module implements the core rules and mechanics of the Property Tycoon game. It manages player turns, property transactions, rent calculation, card draws, auctions, and game state progression according to the established rules. The central class, <cite>GameLogic</cite>, orchestrates these elements.</p>
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<p>Use Case Diagram
+—————————————————~</p>
+<p>Illustrates the main actions managed or initiated by the Game Logic.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-b0c3a2e7e990a9f6f4a00f5b302a0262e0fc22dd.png" alt="&#64;startuml
+skinparam handwritten false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam roundcorner 10
+skinparam usecase {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+left to right direction
+actor &quot;Human Player&quot; as HumanPlayer
+actor &quot;AI Player&quot; as AIPlayer
+
+rectangle &quot;Game Logic&quot; {
+  usecase &quot;Start Game&quot; as StartGame
+  usecase &quot;Play Turn&quot; as PlayTurn
+  usecase &quot;Roll Dice&quot; as RollDice
+  usecase &quot;Move Player&quot; as MovePlayer
+  usecase &quot;Handle Landed Space&quot; as HandleSpace
+  usecase &quot;Buy Property&quot; as BuyProperty
+  usecase &quot;Auction Property&quot; as AuctionProperty
+  usecase &quot;Pay Rent&quot; as PayRent
+  usecase &quot;Draw Card&quot; as DrawCard
+  usecase &quot;Manage Property&quot; as ManageProperty
+  usecase &quot;Handle Jail&quot; as HandleJail
+  usecase &quot;Check Game Over&quot; as CheckGameOver
+  usecase &quot;Handle Bankruptcy&quot; as HandleBankruptcy
+}
+
+HumanPlayer -- PlayTurn
+AIPlayer -- PlayTurn
+PlayTurn ..&gt; RollDice : &lt;&lt;include&gt;&gt;
+RollDice ..&gt; MovePlayer : &lt;&lt;include&gt;&gt;
+MovePlayer ..&gt; HandleSpace : &lt;&lt;include&gt;&gt;
+HandleSpace ..&gt; BuyProperty : &lt;&lt;extends&gt;&gt;
+HandleSpace ..&gt; AuctionProperty : &lt;&lt;extends&gt;&gt;
+HandleSpace ..&gt; PayRent : &lt;&lt;extends&gt;&gt;
+HandleSpace ..&gt; DrawCard : &lt;&lt;extends&gt;&gt;
+HandleSpace ..&gt; HandleJail : &lt;&lt;extends&gt;&gt;
+PlayTurn ..&gt; HandleJail : &lt;&lt;include&gt;&gt;
+HumanPlayer -- ManageProperty
+AIPlayer -- ManageProperty
+PlayTurn ..&gt; CheckGameOver : &lt;&lt;include&gt;&gt;
+PayRent ..&gt; HandleBankruptcy : &lt;&lt;extends&gt;&gt;
+DrawCard ..&gt; HandleBankruptcy : &lt;&lt;extends&gt;&gt;
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Game Logic Use Cases</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Dependency Diagram
+—————————————————~~~</p>
+<p>Shows the primary dependencies of the Game Logic module.</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-5ab84a67894eee2ffa7c53b2c022a9ef4bc8ed71.png" alt="&#64;startuml
+skinparam componentStyle uml2
+skinparam component {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+package &quot;Game Logic Module&quot; {
+  [GameLogic]
+  [pot_luck_cards]
+  [opportunity_knocks_cards]
+}
+
+package &quot;External Libraries&quot; {
+  [pygame]
+  [random]
+}
+
+package &quot;Internal Modules&quot; {
+  [Loadexcel]
+  package &quot;Ai_Player_Logic&quot; {
+     [EasyAIPlayer]
+     [HardAIPlayer]
+  }
+  [Sound_Manager]
+  [Game]
+}
+
+[GameLogic] --&gt; [pygame]
+[GameLogic] --&gt; [random]
+[GameLogic] --&gt; [Loadexcel]
+[GameLogic] --&gt; [EasyAIPlayer]
+[GameLogic] --&gt; [HardAIPlayer]
+[GameLogic] --&gt; [Sound_Manager]
+[GameLogic] --&gt; [Game]
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Game Logic Dependencies</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+</section>
+<section id="class-and-data-structures">
+<h2>Class and Data Structures<a class="headerlink" href="#class-and-data-structures" title="Link to this heading"></a></h2>
+<p><strong>GameLogic Class</strong></p>
+<p>The core class managing the game state and rules.</p>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-f66f76a99a190f82e5f8e16a93996b856043212a.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+class GameLogic {
+  + {static} BANK_LIMIT: int = 50000
+  + {static} MAX_HOUSES_PER_PROPERTY: int = 4
+  + {static} MAX_HOTELS_PER_PROPERTY: int = 1
+  + {static} GAME_TOKENS: list
+  - players: list&lt;dict&gt;
+  - bank_money: int
+  - free_parking_fund: int
+  - current_player_index: int
+  - properties: dict
+  - is_going_to_jail: bool
+  - last_dice_roll: tuple
+  - doubles_count: int
+  - message_queue: list
+  - bankrupted_players: list
+  - voluntary_exits: list
+  - jail_free_cards: dict
+  - completed_circuits: dict
+  - available_tokens: list
+  - pot_luck_cards: list&lt;dict&gt;
+  - opportunity_knocks_cards: list&lt;dict&gt;
+  - ai_difficulty: str
+  - ai_player: AIPlayer
+  - game: Game
+  - current_auction: dict
+
+  + __init__()
+  + validate_bank_transaction(amount: int): bool
+  + pay_from_bank(player: dict, amount: int): bool
+  + pay_to_bank(player: dict, amount: int): bool
+  + game_start(): bool
+  + add_player(player: any): tuple&lt;bool, str&gt;
+  + advance_to_next_player(): dict
+  + play_turn(): tuple&lt;int, int&gt;
+  + add_message(message: str): void
+  + handle_space(player: dict): tuple&lt;str, str&gt;
+  + handle_jail(player: dict): str
+  + try_leave_jail(player: dict, dice1: int, dice2: int): tuple&lt;bool, str&gt;
+  + check_game_over(): tuple&lt;bool, any&gt;
+  + calculate_space_rent(space: dict, player: dict): int
+  + handle_card_draw(player: dict, card_type: str): tuple&lt;str, str&gt;
+  + calculate_repair_cost(player: dict, house_cost: int, hotel_cost: int): int
+  + check_property_group_completion(player_name: str): bool
+  + buy_property(player: dict): bool
+  + auction_property(position: str): str
+  + process_auction_bid(player: dict, bid_amount: int): tuple&lt;bool, str&gt;
+  + process_auction_pass(player: dict): tuple&lt;bool, str&gt;
+  + check_auction_end(): str
+  + move_to_next_bidder(): void
+  + is_game_over(): bool
+  + get_winner(): str
+  + remove_player(player_name: str, voluntary: bool): bool
+  + auction(property_data: dict): void
+  + placeBids(player_list: list, property_data: dict): tuple&lt;dict, int&gt;
+  + get_ai_bid(player: dict, current_minimum: int, property_data: dict): int
+  + get_human_bid(player: dict, current_minimum: int, property_data: dict): int
+  + buy_property_after_auction(player: dict, property_data: dict): bool
+  + handle_bankruptcy(player: dict): bool
+  + can_build_house(property_data: dict, player: dict): tuple&lt;bool, str&gt;
+  + can_build_hotel(property_data: dict, player: dict): tuple&lt;bool, str&gt;
+  + build_house(property_data: dict, player: dict): bool
+  + build_hotel(property_data: dict, player: dict): bool
+  + sell_house(property_data: dict, player: dict): bool
+  + sell_hotel(property_data: dict, player: dict): bool
+  + mortgage_property(property_data: dict, player: dict): bool
+  + unmortgage_property(property_data: dict, player: dict): bool
+  + handle_rent_payment(landing_player: dict, property_data: dict): bool
+  + calculate_house_difference(color_group_properties: list): int
+  + handle_ai_turn(player: dict): any
+  + process_ai_property_purchase(player: dict, property_data: dict): bool
+  + get_ai_auction_bid(player: dict, property_data: dict, current_bid: int): int
+  + handle_ai_bankruptcy_prevention(player: dict, amount_needed: int): bool
+  + handle_buy_decision(player: dict, decision: str): str
+  + handle_birthday_collection(birthday_player: dict): tuple&lt;int, int, int&gt;
+  + handle_payment_to_bank(player: dict, amount: int, to_free_parking: bool): tuple&lt;int, int, int&gt;
+  + handle_repair_assessment(player: dict, house_cost: int, hotel_cost: int): tuple&lt;int, int, int&gt;
+}
+
+note right of GameLogic::players
+  List contains dictionaries representing players.
+  Keys include: name, money, position, is_ai,
+  properties (list), token, in_jail, jail_turns,
+  bankrupt, exited.
+end note
+
+note right of GameLogic::properties
+  Dictionary contains dictionaries representing properties,
+  keyed by board position (string). Keys include: name,
+  price, rent, group, owner, houses, house_cost,
+  is_mortgaged, type, etc.
+end note
+
+note right of GameLogic::pot_luck_cards
+  List contains dictionaries representing cards.
+  Keys: text, action (lambda function).
+end note
+
+GameLogic *-- &quot;players&quot; : list&lt;dict&gt;
+GameLogic *-- &quot;properties&quot; : dict&lt;str, dict&gt;
+GameLogic *-- &quot;pot_luck_cards&quot; : list&lt;dict&gt;
+GameLogic *-- &quot;opportunity_knocks_cards&quot; : list&lt;dict&gt;
+GameLogic *-- &quot;current_auction&quot; : dict
+GameLogic ..&gt; &quot;AIPlayer&quot; : uses
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">GameLogic Class Diagram</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Simplified Game State</strong></p>
+<p>Shows the main states the game can be in, focusing on turn progression and auctions.</p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-d59d6166272aaaacaf0276ff4c650c19c7b874bc.png" alt="&#64;startuml
+skinparam state {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+[*] --&gt; Initializing
+Initializing --&gt; PlayerTurn : Game Setup Complete
+
+state PlayerTurn {
+  [*] --&gt; Roll
+  Roll --&gt; Move : Dice Values
+  Move --&gt; HandleSpace : Landing
+  HandleSpace --&gt; [*] : Complete
+
+  HandleSpace --&gt; Buy : Unowned Property
+  HandleSpace --&gt; PayRent : Owned Property
+  HandleSpace --&gt; DrawCard : Card Space
+  HandleSpace --&gt; Jail : Go To Jail
+
+  Buy --&gt; Auction : Decline Purchase
+  Buy --&gt; [*] : Purchase Complete
+  Auction --&gt; [*] : Complete
+
+  PayRent --&gt; [*] : Paid
+  PayRent --&gt; Bankruptcy : Cannot Pay
+
+  DrawCard --&gt; Move : Movement Card
+  DrawCard --&gt; PayBank : Payment Card
+  DrawCard --&gt; GetMoney : Receive Money
+  DrawCard --&gt; [*] : Effect Complete
+
+  Jail --&gt; Roll : Pay Fine/Use Card
+  Jail --&gt; [*] : Stay in Jail
+}
+
+PlayerTurn --&gt; PlayerTurn : Next Player's Turn
+PlayerTurn --&gt; GameOver : Single Player / Time Limit
+GameOver --&gt; [*]
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Simplified Game State Diagram</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Activity Diagrams
+—————————————————~~</p>
+<p><strong>Play Turn Flow</strong></p>
+<p>Illustrates the sequence of actions within a single player’s turn.</p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-3e84016be1890163259b2030c10ce753a7e21670.png" alt="&#64;startuml
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+start
+:Get Current Player;
+if (Player is Bankrupt or Exited?) then (yes)
+  :Advance to Next Player;
+  stop
+endif
+if (Player in Jail?) then (yes)
+  :Roll Dice;
+  :Try Leave Jail;
+  if (Left Jail?) then (no)
+    :Advance to Next Player;
+    stop
+  else (yes)
+    note right: Continue turn
+  endif
+else (no)
+  :Roll Dice;
+endif
+
+:Record Dice Roll;
+if (Rolled Doubles?) then (yes)
+  :Increment Doubles Count;
+  if (Doubles Count == 3?) then (yes)
+    :Go To Jail;
+    :Advance to Next Player;
+    stop
+  endif
+else (no)
+  :Reset Doubles Count;
+endif
+
+:Calculate New Position;
+if (Passed GO?) then (yes)
+  :Collect £200;
+  :Increment Lap Count;
+endif
+:Update Player Position;
+:Handle Landed Space Action;
+
+if (Action Result is Bankrupt?) then (yes)
+   :Handle Bankruptcy;
+   if (Game Over?) then (yes)
+     stop
+   endif
+endif
+
+if (Rolled Doubles? AND Not Sent to Jail?) then (yes)
+   :Player Takes Another Turn;
+   -&gt; Get Current Player;
+   note right: Loop back for the same player
+else (no)
+   :Advance to Next Player;
+endif
+
+stop
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Activity Diagram: Play Turn</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Handle Landed Space Flow</strong></p>
+<p>Details the logic when a player lands on a specific board space.</p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-aeb65976737eba8e2e566bb03d020a6c9dbdca0d.png" alt="&#64;startuml
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+start
+:Get Space Data (from properties dict);
+switch (Space Type?)
+case ( Property / Station / Utility )
+  if (Owned?) then (yes)
+     if (Owner is Current Player?) then (no)
+       :Calculate Rent;
+       :Pay Rent to Owner;
+       if (Cannot Pay?) then (yes)
+         :Handle Bankruptcy;
+       endif
+     else (yes)
+       :Landed on Own Property;
+     endif
+  else (no)
+     if (Can be Bought? AND Passed GO?) then (yes)
+       :Signal 'Can Buy' state;
+       note right: Wait for player/AI decision (Buy/Auction)
+     else (no)
+       :Do Nothing (e.g., Corner Space);
+     endif
+  endif
+
+case ( Tax )
+  :Pay Tax Amount to Bank;
+  :Show Tax Popup (if UI);
+
+case ( Pot Luck / Opportunity Knocks )
+  :Draw Card;
+  :Execute Card Action;
+   if (Action causes move?) then (yes)
+     :Handle Landed Space (recursive);
+   endif
+   if (Action causes payment issue?) then (yes)
+     :Handle Bankruptcy;
+   endif
+
+case ( Go To Jail )
+  :Send Player to Jail;
+
+case ( Free Parking )
+  :Collect Free Parking Fund (if applicable);
+  :Show Free Parking Popup (if UI);
+
+case ( Jail / Just Visiting )
+  :Do Nothing;
+
+case ( GO )
+  :Do Nothing (Handled by Pass GO logic);
+
+endswitch
+stop
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Activity Diagram: Handle Landed Space</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Auction Flow (Simplified)</strong></p>
+<p>Outlines the basic steps of the property auction process using the <cite>current_auction</cite> state.</p>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-8d91b6bbd0be5a737090b59f36841dc7c4170a45.png" alt="&#64;startuml
+skinparam activity {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+start
+:Initiate Auction (auction_property);
+:Set up current_auction state;
+:Identify Eligible Players;
+if (No Eligible Players?) then (yes)
+  :End Auction (Unsold);
+  stop
+endif
+:Set Current Bidder Index;
+:Set Minimum Bid;
+:Start Auction Timer;
+
+repeat
+  :Wait for Current Bidder Action (Bid/Pass);
+  if (Action is Bid?) then (yes)
+    :Process Bid (process_auction_bid);
+    if (Bid Valid?) then (yes)
+      :Update Highest Bid/Bidder;
+      :Update Minimum Bid;
+      :Move to Next Bidder (move_to_next_bidder);
+    else (no)
+      :Inform Player of Invalid Bid;
+    endif
+  else (Action is Pass?)
+    :Process Pass (process_auction_pass);
+    :Move to Next Bidder (move_to_next_bidder);
+  endif
+
+  :Check Auction End Conditions (check_auction_end);
+  partition CheckEnd {
+     if (Timeout? OR Only 1 Bidder Left? OR All Passed?) then (yes)
+       :Mark Auction Completed;
+       break
+     endif
+  }
+
+repeat while (Auction Not Completed?) is (true)
+
+:Finalize Auction;
+if (Highest Bidder Exists?) then (yes)
+  :Transfer Money (Player to Bank);
+  :Assign Property Ownership;
+else (no)
+  :Property Remains Unsold;
+endif
+:Clear current_auction state;
+stop
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Activity Diagram: Auction Process</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Sequence Diagrams
+—————————————————~~</p>
+<p><strong>Player Buys Property</strong></p>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-e54d565ae726ae8eec9099a01ccfd70c7042d4fd.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+actor &quot;User/AI&quot; as User
+participant &quot;GameUI&quot; as Game
+participant &quot;Logic&quot; as GameLogic
+participant &quot;Props&quot; as Properties
+
+User -&gt; Game : Indicate Buy Decision
+Game -&gt; GameLogic : handle_buy_decision(player, &quot;buy&quot;)
+activate GameLogic
+
+GameLogic -&gt; GameLogic : Get player position
+GameLogic -&gt; Properties : Get property data
+
+alt Can afford and available
+  GameLogic -&gt; GameLogic : Deduct money from player
+  GameLogic -&gt; GameLogic : Add money to bank
+  GameLogic -&gt; Properties : Set property owner
+  GameLogic -&gt; GameLogic : Check group completion
+  GameLogic --&gt; Game : Return &quot;purchase_completed&quot;
+else Cannot afford/unavailable
+  GameLogic --&gt; Game : Return error or start auction
+end
+
+deactivate GameLogic
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Player Buys Property</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Rent Payment</strong></p>
+<figure class="align-default" id="id9">
+<p class="plantuml">
+<img src="../_images/plantuml-4610ea2e13b9ba75cbb0ab4832f318d5f161d1b6.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;landing_player:dict&quot; as Lander
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;owning_player:dict&quot; as Owner
+participant &quot;properties:dict&quot; as Props
+participant &quot;game:Game&quot; as GameUI
+
+Logic -&gt; Logic : handle_space(Lander)
+note right: Called after move
+activate Logic
+Logic -&gt; Props : Get property_data(Lander('position'))
+Logic -&gt; Logic : calculate_space_rent(property_data, Lander)
+Logic -&gt; Owner : Find owner player dict
+alt Lander can afford rent
+  Logic -&gt; Lander : money -= rent
+  Logic -&gt; Owner : money += rent
+  Logic -&gt; Logic : add_message(...)
+  Logic -&gt; GameUI : show_rent_popup(Lander, Owner, ...)
+  Logic --&gt; Lander : return None
+  note right: Rent paid
+else Lander cannot afford rent
+  Logic -&gt; Logic : handle_bankruptcy(Lander)
+  Logic --&gt; Lander : return &quot;bankrupt&quot;
+end
+deactivate Logic
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Rent Payment</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Card Draw</strong></p>
+<figure class="align-default" id="id10">
+<p class="plantuml">
+<img src="../_images/plantuml-981dbdd25702772ad0e8ff0cf445822122ada743.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;player:dict&quot; as Player
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;cards:list&quot; as Cards
+participant &quot;game:Game&quot; as GameUI
+
+Logic -&gt; Logic : handle_space(Player)
+note right: Called after move to card space
+activate Logic
+Logic -&gt; Cards : card = cards.pop(0)
+Logic -&gt; Logic : add_message(card('text'))
+Logic -&gt; GameUI : show_card_popup(card_type, card('text'))
+alt Card is &quot;Get Out of Jail Free&quot;
+  Logic -&gt; Logic : jail_free_cards(Player('name')) += 1
+else Card has action
+  Logic -&gt; card : action(Player, bank, parking, self)
+  note right: Execute lambda
+  note right: Lambda might modify Player money, position, bank, parking
+  note right: Lambda might call other Logic methods (e.g., handle_payment_to_bank)
+  opt Action resulted in move
+     Logic -&gt; Logic : handle_space(Player)
+     note right: Handle new space
+  end
+end
+Logic -&gt; Cards : cards.append(card)
+note right: Put card back at end
+Logic --&gt; Player : return result, message
+deactivate Logic
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Card Draw</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Auction Bid Process</strong></p>
+<figure class="align-default" id="id11">
+<p class="plantuml">
+<img src="../_images/plantuml-e970e4a44285baadab6310fa9aa7db09aa326068.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+actor &quot;User/AI&quot; as User
+participant &quot;game:Game&quot; as GameUI
+participant &quot;logic:GameLogic&quot; as Logic
+participant &quot;auction_state:dict&quot; as Auction
+
+User -&gt; GameUI : Submit Bid Amount
+GameUI -&gt; Logic : process_auction_bid(player, bid_amount)
+activate Logic
+Logic -&gt; Auction : Get current_auction state
+alt Bid is valid (&gt;= min_bid, &lt;= player_money, player active)
+  Logic -&gt; Auction : current_bid = bid_amount
+  Logic -&gt; Auction : highest_bidder = player
+  Logic -&gt; Auction : minimum_bid = bid_amount + 10
+  Logic -&gt; Logic : add_message(...)
+  Logic -&gt; Logic : move_to_next_bidder()
+  Logic --&gt; GameUI : return True, &quot;Bid accepted&quot;
+else Bid is invalid
+  Logic --&gt; GameUI : return False, &quot;Error message&quot;
+end
+deactivate Logic
+GameUI -&gt; GameUI : Update Auction UI
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Auction Bid</span><a class="headerlink" href="#id11" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="key-classes-data-overview">
+<h2>Key Classes/Data Overview<a class="headerlink" href="#key-classes-data-overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>GameLogic</strong>: The main orchestrator class holding game state and rules logic.</p></li>
+<li><p><strong>Player Dictionary</strong>: Represents a player’s state (money, position, properties, AI status, jail status, etc.).</p></li>
+<li><p><strong>Property Dictionary</strong>: Represents a property’s state (owner, houses, mortgage status, rent levels, etc.), keyed by board position.</p></li>
+<li><p><strong>Card Dictionary</strong>: Represents a Pot Luck or Opportunity Knocks card, containing its text and an action (lambda function) to execute.</p></li>
+<li><p><strong>Auction Dictionary (`current_auction`)</strong>: Holds the state of an ongoing auction (property, bidders, current bid, etc.).</p></li>
+</ul>
+</section>
+<section id="module-src.Game_Logic">
+<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-src.Game_Logic" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Game_Logic.</span></span><span class="sig-name descname"><span class="pre">GameLogic</span></span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.BANK_LIMIT">
+<span class="sig-name descname"><span class="pre">BANK_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50000</span></em><a class="headerlink" href="#src.Game_Logic.GameLogic.BANK_LIMIT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.GAME_TOKENS">
+<span class="sig-name descname"><span class="pre">GAME_TOKENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['boot',</span> <span class="pre">'smartphone',</span> <span class="pre">'ship',</span> <span class="pre">'hatstand',</span> <span class="pre">'cat',</span> <span class="pre">'iron']</span></em><a class="headerlink" href="#src.Game_Logic.GameLogic.GAME_TOKENS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.MAX_HOTELS_PER_PROPERTY">
+<span class="sig-name descname"><span class="pre">MAX_HOTELS_PER_PROPERTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#src.Game_Logic.GameLogic.MAX_HOTELS_PER_PROPERTY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.MAX_HOUSES_PER_PROPERTY">
+<span class="sig-name descname"><span class="pre">MAX_HOUSES_PER_PROPERTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#src.Game_Logic.GameLogic.MAX_HOUSES_PER_PROPERTY" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.add_message">
+<span class="sig-name descname"><span class="pre">add_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.add_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.add_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.add_player">
+<span class="sig-name descname"><span class="pre">add_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.add_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.add_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.advance_to_next_player">
+<span class="sig-name descname"><span class="pre">advance_to_next_player</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.advance_to_next_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.advance_to_next_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.auction">
+<span class="sig-name descname"><span class="pre">auction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.auction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.auction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.auction_property">
+<span class="sig-name descname"><span class="pre">auction_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.auction_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.auction_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.build_hotel">
+<span class="sig-name descname"><span class="pre">build_hotel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.build_hotel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.build_hotel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.build_house">
+<span class="sig-name descname"><span class="pre">build_house</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.build_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.build_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.buy_property">
+<span class="sig-name descname"><span class="pre">buy_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.buy_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.buy_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.buy_property_after_auction">
+<span class="sig-name descname"><span class="pre">buy_property_after_auction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.buy_property_after_auction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.buy_property_after_auction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.calculate_house_difference">
+<span class="sig-name descname"><span class="pre">calculate_house_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color_group_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.calculate_house_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.calculate_house_difference" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.calculate_repair_cost">
+<span class="sig-name descname"><span class="pre">calculate_repair_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">house_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hotel_cost</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.calculate_repair_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.calculate_repair_cost" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.calculate_space_rent">
+<span class="sig-name descname"><span class="pre">calculate_space_rent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.calculate_space_rent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.calculate_space_rent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.can_build_hotel">
+<span class="sig-name descname"><span class="pre">can_build_hotel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.can_build_hotel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.can_build_hotel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.can_build_house">
+<span class="sig-name descname"><span class="pre">can_build_house</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.can_build_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.can_build_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.check_auction_end">
+<span class="sig-name descname"><span class="pre">check_auction_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.check_auction_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.check_auction_end" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.check_game_over">
+<span class="sig-name descname"><span class="pre">check_game_over</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.check_game_over"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.check_game_over" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.check_property_group_completion">
+<span class="sig-name descname"><span class="pre">check_property_group_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.check_property_group_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.check_property_group_completion" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.game_start">
+<span class="sig-name descname"><span class="pre">game_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.game_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.game_start" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.get_ai_auction_bid">
+<span class="sig-name descname"><span class="pre">get_ai_auction_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_bid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.get_ai_auction_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.get_ai_auction_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.get_ai_bid">
+<span class="sig-name descname"><span class="pre">get_ai_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_minimum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.get_ai_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.get_ai_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.get_human_bid">
+<span class="sig-name descname"><span class="pre">get_human_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_minimum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.get_human_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.get_human_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.get_winner">
+<span class="sig-name descname"><span class="pre">get_winner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.get_winner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.get_winner" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_ai_bankruptcy_prevention">
+<span class="sig-name descname"><span class="pre">handle_ai_bankruptcy_prevention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount_needed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_ai_bankruptcy_prevention"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_ai_bankruptcy_prevention" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_ai_turn">
+<span class="sig-name descname"><span class="pre">handle_ai_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_ai_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_ai_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_bankruptcy">
+<span class="sig-name descname"><span class="pre">handle_bankruptcy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_bankruptcy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_bankruptcy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_birthday_collection">
+<span class="sig-name descname"><span class="pre">handle_birthday_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birthday_player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_birthday_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_birthday_collection" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_buy_decision">
+<span class="sig-name descname"><span class="pre">handle_buy_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decision</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_buy_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_buy_decision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_card_draw">
+<span class="sig-name descname"><span class="pre">handle_card_draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_card_draw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_card_draw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_jail">
+<span class="sig-name descname"><span class="pre">handle_jail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_jail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_jail" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_payment_to_bank">
+<span class="sig-name descname"><span class="pre">handle_payment_to_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_free_parking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_payment_to_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_payment_to_bank" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_rent_payment">
+<span class="sig-name descname"><span class="pre">handle_rent_payment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">landing_player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_rent_payment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_rent_payment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_repair_assessment">
+<span class="sig-name descname"><span class="pre">handle_repair_assessment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">house_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hotel_cost</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_repair_assessment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_repair_assessment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.handle_space">
+<span class="sig-name descname"><span class="pre">handle_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.handle_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.handle_space" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.is_game_over">
+<span class="sig-name descname"><span class="pre">is_game_over</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.is_game_over"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.is_game_over" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.mortgage_property">
+<span class="sig-name descname"><span class="pre">mortgage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.mortgage_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.mortgage_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.move_to_next_bidder">
+<span class="sig-name descname"><span class="pre">move_to_next_bidder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.move_to_next_bidder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.move_to_next_bidder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.pay_from_bank">
+<span class="sig-name descname"><span class="pre">pay_from_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.pay_from_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.pay_from_bank" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.pay_to_bank">
+<span class="sig-name descname"><span class="pre">pay_to_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.pay_to_bank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.pay_to_bank" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.placeBids">
+<span class="sig-name descname"><span class="pre">placeBids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.placeBids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.placeBids" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.play_turn">
+<span class="sig-name descname"><span class="pre">play_turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.play_turn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.play_turn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.process_ai_property_purchase">
+<span class="sig-name descname"><span class="pre">process_ai_property_purchase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.process_ai_property_purchase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.process_ai_property_purchase" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.process_auction_bid">
+<span class="sig-name descname"><span class="pre">process_auction_bid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bid_amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.process_auction_bid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.process_auction_bid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.process_auction_pass">
+<span class="sig-name descname"><span class="pre">process_auction_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.process_auction_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.process_auction_pass" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.remove_player">
+<span class="sig-name descname"><span class="pre">remove_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voluntary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.remove_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.remove_player" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.sell_hotel">
+<span class="sig-name descname"><span class="pre">sell_hotel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.sell_hotel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.sell_hotel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.sell_house">
+<span class="sig-name descname"><span class="pre">sell_house</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.sell_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.sell_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.try_leave_jail">
+<span class="sig-name descname"><span class="pre">try_leave_jail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dice1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dice2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.try_leave_jail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.try_leave_jail" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.unmortgage_property">
+<span class="sig-name descname"><span class="pre">unmortgage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.unmortgage_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.unmortgage_property" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Game_Logic.GameLogic.validate_bank_transaction">
+<span class="sig-name descname"><span class="pre">validate_bank_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Game_Logic.html#GameLogic.validate_bank_transaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Game_Logic.GameLogic.validate_bank_transaction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game.html" class="btn btn-neutral float-left" title="Game Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_actions.html" class="btn btn-neutral float-right" title="Game Actions Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

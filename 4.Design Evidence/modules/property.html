@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Property Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AI Player Logic Module" href="ai_player_logic.html" />
+    <link rel="prev" title="Board Module" href="board.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Property Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-diagram">Use Case Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#domain-model">Domain Model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-diagram">Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-diagram">State Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagrams">Sequence Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-classes-overview">Key Classes Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-src.Property">API Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Property.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.build_house"><code class="docutils literal notranslate"><span class="pre">Property.build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.calculate_rent"><code class="docutils literal notranslate"><span class="pre">Property.calculate_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.can_build_hotel"><code class="docutils literal notranslate"><span class="pre">Property.can_build_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.can_build_house"><code class="docutils literal notranslate"><span class="pre">Property.can_build_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.charge_rent"><code class="docutils literal notranslate"><span class="pre">Property.charge_rent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.get_hotel_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_hotel_sale_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.get_house_sale_value"><code class="docutils literal notranslate"><span class="pre">Property.get_house_sale_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.get_mortgage_value"><code class="docutils literal notranslate"><span class="pre">Property.get_mortgage_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.get_unmortgage_cost"><code class="docutils literal notranslate"><span class="pre">Property.get_unmortgage_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.has_monopoly"><code class="docutils literal notranslate"><span class="pre">Property.has_monopoly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.mortgage"><code class="docutils literal notranslate"><span class="pre">Property.mortgage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.sell_hotel"><code class="docutils literal notranslate"><span class="pre">Property.sell_hotel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.sell_house"><code class="docutils literal notranslate"><span class="pre">Property.sell_house()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.Property.Property.unmortgage"><code class="docutils literal notranslate"><span class="pre">Property.unmortgage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Property Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/property.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="property-module">
+<h1>Property Module<a class="headerlink" href="#property-module" title="Link to this heading"></a></h1>
+<p>The Property module defines and manages all purchasable spaces on the Property Tycoon game board, including streets, stations, and utilities. It handles property ownership, rent calculations, development with houses and hotels, mortgaging, and trading. This module serves as the backbone for the economic aspects of the game.</p>
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="use-case-diagram">
+<h3>Use Case Diagram<a class="headerlink" href="#use-case-diagram" title="Link to this heading"></a></h3>
+<p>Illustrates the primary interactions involving properties from a player’s perspective.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-af1340cd6029a3ced8464fa46424b8fb3e063227.png" alt="&#64;startuml
+skinparam usecase {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+skinparam actor {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+left to right direction
+actor Player
+
+rectangle &quot;Property Management&quot; {
+  Player -- (Land on Property)
+  Player -- (Buy Property)
+  Player -- (Pay Rent)
+  Player -- (Develop Property)
+  Player -- (Mortgage Property)
+  Player -- (Unmortgage Property)
+  Player -- (Sell Development)
+
+  (Land on Property) --&gt; (Pay Rent) : if owned by another
+  (Land on Property) --&gt; (Buy Property) : if unowned
+  (Develop Property) ..&gt; (Build House) : include
+  (Develop Property) ..&gt; (Build Hotel) : include
+  (Sell Development) ..&gt; (Sell House) : include
+  (Sell Development) ..&gt; (Sell Hotel) : include
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Property Module Use Cases</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="domain-model">
+<h3>Domain Model<a class="headerlink" href="#domain-model" title="Link to this heading"></a></h3>
+<p>Shows the core <cite>Property</cite> concept and its relationship with an <cite>Owner</cite> (presumably a Player).</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-33e895c1a0f72e5676d12dbbb51e900389b8a867.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+class Property {
+  name: str
+  group: str
+  price: int
+  base_rent: int
+  houses: int
+  has_hotel: bool
+  is_station: bool
+  is_utility: bool
+  mortgaged: bool
+}
+
+class Player {
+   name: str
+   properties: list&lt;Property&gt;
+   pay(amount: int)
+   receive(amount: int)
+}
+
+Property &quot;1&quot; *-- &quot;0..1&quot; Player : owner &gt;
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Property Domain Model</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-diagram">
+<h3>Class Diagram<a class="headerlink" href="#class-diagram" title="Link to this heading"></a></h3>
+<p>Details the attributes and methods of the <cite>Property</cite> class.</p>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-f045e6af2fcbd8d9d814da8c0a124c5719f764c8.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+class Property {
+  + name: str
+  + group: str
+  + price: int
+  + base_rent: int
+  + owner: Player
+  + houses: int
+  + has_hotel: bool
+  + house_costs: list&lt;int&gt;
+  + is_station: bool
+  + is_utility: bool
+  + mortgaged: bool
+  --
+  + __init__(data: dict)
+  + calculate_rent(dice_roll: int = None, properties: list = None): int
+  + has_monopoly(properties: list): bool
+  + can_build_house(properties: list): bool
+  + can_build_hotel(properties: list): bool
+  + build_house(): bool
+  + build_hotel(): bool
+  + sell_house(): bool
+  + sell_hotel(): bool
+  + mortgage(): bool
+  + unmortgage(): bool
+  + get_mortgage_value(): int
+  + get_unmortgage_cost(): int
+  + get_house_sale_value(): int
+  + get_hotel_sale_value(): int
+  + charge_rent(player: Player, dice_roll: int = None): int
+}
+
+Property &quot;1&quot; o-- &quot;0..1&quot; Player : owner
+
+note right of Property::calculate_rent
+  Rent calculation depends on type (station, utility, street),
+  ownership count (stations, utilities), development level (houses/hotel),
+  monopoly status, and potentially dice roll (utilities).
+end note
+
+note right of Property::can_build_house
+  Requires monopoly, not mortgaged,
+  no hotel, and even building across the group.
+end note
+
+note right of Property::can_build_hotel
+  Requires monopoly, not mortgaged,
+  no hotel yet, and 5 houses built (implicitly, as houses become 0).
+  All properties in group must have 5 houses.
+end note
+
+note right of Property::charge_rent
+  Handles the transaction: calculates rent,
+  calls player.pay() and owner.receive().
+end note
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Property Class Diagram</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="state-diagram">
+<h3>State Diagram<a class="headerlink" href="#state-diagram" title="Link to this heading"></a></h3>
+<p>Models the lifecycle and states of a property.</p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-03e9ecbcb7370245ffa1ec1c2601ded3a06ae295.png" alt="&#64;startuml
+skinparam state {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+[*] --&gt; Unowned : Game Start
+
+state Owned {
+  state Undeveloped
+  state Developed {
+     state HousesBuilt {
+        HousesBuilt : houses &gt; 0
+     }
+     state HotelBuilt {
+        HotelBuilt : has_hotel = True
+     }
+     HousesBuilt --&gt; HotelBuilt : build_hotel() [houses == 5]
+     HotelBuilt --&gt; HousesBuilt : sell_hotel()
+     HousesBuilt -&gt; HousesBuilt : build_house() [houses &lt; 5]
+     HousesBuilt -&gt; HousesBuilt : sell_house() [houses &gt; 0]
+     Undeveloped --&gt; HousesBuilt : build_house() [houses == 0]
+     HousesBuilt --&gt; Undeveloped : sell_house() [houses == 1]
+  }
+  Undeveloped --&gt; Developed : build_house() [can_build_house()]
+  Developed --&gt; Undeveloped : sell_house()/sell_hotel() [no houses/hotel left]
+}
+
+state Mortgaged {
+  Mortgaged : mortgaged = True
+}
+
+Unowned --&gt; Owned : buy_property() / win_auction()
+Owned --&gt; Unowned : transfer_ownership() / auction_failed()
+Owned.Undeveloped --&gt; Mortgaged : mortgage() [houses == 0 &amp;&amp; !has_hotel]
+Mortgaged --&gt; Owned.Undeveloped : unmortgage()
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Property State Diagram</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagrams">
+<h3>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Calculating Rent (Street Property)</strong></p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-cf375d05edba95a538ada15a95382ba4bf4492f8.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;caller&quot; as Caller
+participant &quot;property:Property&quot; as Prop
+participant &quot;owner:Player&quot; as Owner
+participant &quot;group_prop:Property&quot; as GroupProp
+
+Caller -&gt; Prop : calculate_rent(properties=owner.properties)
+activate Prop
+Prop -&gt; Prop : check mortgaged
+
+opt mortgaged
+  Prop --&gt; Caller : return 0
+else not mortgaged
+  Prop -&gt; Prop : check is_station / is_utility (false)
+  Prop -&gt; Prop : check has_hotel
+  alt has_hotel
+    Prop --&gt; Caller : return house_costs(-1)
+  else not has_hotel
+    Prop -&gt; Prop : check houses &gt; 0
+    alt houses &gt; 0
+      Prop --&gt; Caller : return house_costs(houses-1)
+    else houses == 0
+      Prop -&gt; Prop : has_monopoly(properties)
+      activate Prop
+      Prop -&gt; Owner : get properties in group
+      loop for each property in group
+         Prop -&gt; GroupProp : check owner == self.owner
+      end
+      Prop --&gt; Prop : return monopoly_status
+      deactivate Prop
+      alt monopoly_status == True
+        Prop --&gt; Caller : return base_rent * 2
+      else monopoly_status == False
+        Prop --&gt; Caller : return base_rent
+      end
+    end
+  end
+end
+deactivate Prop
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Calculate Street Rent</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Calculating Rent (Station)</strong></p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-227d602ef3426af734593fe4b5fbb87d9f956006.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;caller&quot; as Caller
+participant &quot;station:Property&quot; as Station
+participant &quot;owner:Player&quot; as Owner
+participant &quot;other_station:Property&quot; as OtherStation
+
+Caller -&gt; Station : calculate_rent(properties=owner.properties)
+activate Station
+Station -&gt; Station : check mortgaged (assume false)
+Station -&gt; Station : check is_station (true)
+Station -&gt; Owner : get properties
+activate Owner
+Owner --&gt; Station : list of properties
+deactivate Owner
+Station -&gt; Station : count owned stations
+activate Station
+loop for each property p in properties
+  Station -&gt; OtherStation : check is_station and owner == self.owner
+  activate OtherStation
+  OtherStation --&gt; Station : bool
+  deactivate OtherStation
+end
+Station --&gt; Station : station_count
+deactivate Station
+Station -&gt; Station : rent = base_rent * (2**(station_count - 1))
+Station --&gt; Caller : return rent
+deactivate Station
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Calculate Station Rent</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Building a House</strong></p>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-5c11c0fd5c54c0eea0bf2d5fabf791a5c787e0ca.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+participant &quot;Player&quot; as Player
+participant &quot;Game&quot; as Game
+participant &quot;Property&quot; as Property
+
+Player -&gt; Game : request_build_house(property)
+activate Game
+
+Game -&gt; Property : can_build_house(all_properties)
+activate Property
+
+Property -&gt; Property : Check conditions
+note right: Not station, not utility,\nnot mortgaged, no hotel
+
+Property -&gt; Property : has_monopoly(all_properties)
+Property -&gt; Property : check even build rule
+Property --&gt; Game : can_build result
+deactivate Property
+
+alt can build
+  Game -&gt; Player : deduct_house_cost()
+  Game -&gt; Property : build_house()
+  activate Property
+  Property -&gt; Property : houses += 1
+  Property --&gt; Game : success
+  deactivate Property
+end
+
+Game --&gt; Player : result
+deactivate Game
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram - Building a House</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Mortgaging a Property</strong></p>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-a950eebbbb4568343bfadb7a8817aad45dcf1471.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+participant &quot;Player&quot; as Player
+participant &quot;Game&quot; as Game
+participant &quot;Property&quot; as Property
+
+Player -&gt; Game : request_mortgage(property)
+activate Game
+
+Game -&gt; Property : mortgage()
+activate Property
+
+Property -&gt; Property : Check conditions
+note right: Not already mortgaged,\nno houses, no hotel
+
+alt conditions met
+  Property -&gt; Property : mortgaged = true
+  Property -&gt; Player : receive(mortgage_value)
+  Property --&gt; Game : true
+else conditions not met
+  Property --&gt; Game : false
+end
+deactivate Property
+
+Game --&gt; Player : result
+deactivate Game
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram - Mortgaging a Property</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-classes-overview">
+<h2>Key Classes Overview<a class="headerlink" href="#key-classes-overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Property</strong>: Represents a single purchasable tile on the board. It stores its attributes (name, group, price, rent values, development costs), current state (owner, houses, hotel, mortgaged), and provides methods for calculating rent based on complex rules, managing development (building/selling houses/hotels), and handling mortgaging. It interacts implicitly with a <cite>Player</cite> class for ownership and transactions.</p></li>
+</ul>
+</section>
+<section id="module-src.Property">
+<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-src.Property" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Property.Property">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Property.</span></span><span class="sig-name descname"><span class="pre">Property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.build_hotel">
+<span class="sig-name descname"><span class="pre">build_hotel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.build_hotel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.build_hotel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.build_house">
+<span class="sig-name descname"><span class="pre">build_house</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.build_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.build_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.calculate_rent">
+<span class="sig-name descname"><span class="pre">calculate_rent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dice_roll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.calculate_rent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.calculate_rent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.can_build_hotel">
+<span class="sig-name descname"><span class="pre">can_build_hotel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.can_build_hotel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.can_build_hotel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.can_build_house">
+<span class="sig-name descname"><span class="pre">can_build_house</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.can_build_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.can_build_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.charge_rent">
+<span class="sig-name descname"><span class="pre">charge_rent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dice_roll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.charge_rent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.charge_rent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.get_hotel_sale_value">
+<span class="sig-name descname"><span class="pre">get_hotel_sale_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.get_hotel_sale_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.get_hotel_sale_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.get_house_sale_value">
+<span class="sig-name descname"><span class="pre">get_house_sale_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.get_house_sale_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.get_house_sale_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.get_mortgage_value">
+<span class="sig-name descname"><span class="pre">get_mortgage_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.get_mortgage_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.get_mortgage_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.get_unmortgage_cost">
+<span class="sig-name descname"><span class="pre">get_unmortgage_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.get_unmortgage_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.get_unmortgage_cost" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.has_monopoly">
+<span class="sig-name descname"><span class="pre">has_monopoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.has_monopoly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.has_monopoly" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.mortgage">
+<span class="sig-name descname"><span class="pre">mortgage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.mortgage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.mortgage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.sell_hotel">
+<span class="sig-name descname"><span class="pre">sell_hotel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.sell_hotel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.sell_hotel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.sell_house">
+<span class="sig-name descname"><span class="pre">sell_house</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.sell_house"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.sell_house" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Property.Property.unmortgage">
+<span class="sig-name descname"><span class="pre">unmortgage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Property.html#Property.unmortgage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Property.Property.unmortgage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="board.html" class="btn btn-neutral float-left" title="Board Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ai_player_logic.html" class="btn btn-neutral float-right" title="AI Player Logic Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1098 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.GameActions &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.GameActions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.GameActions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon GameActions.py</span>
+<span class="c1"># Contains the classes for the game actions, such as the play turn, the handle buy decision, and the start auction.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Cards</span><span class="w"> </span><span class="kn">import</span> <span class="n">CardType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Sound_Manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">sound_manager</span>
+
+<span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">LIGHT_GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">UI_BG</span> <span class="o">=</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+<span class="n">DARK_RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">139</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DARK_GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DARK_BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">139</span><span class="p">)</span>
+<span class="n">GOLD</span> <span class="o">=</span> <span class="p">(</span><span class="mi">218</span><span class="p">,</span> <span class="mi">165</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">CREAM</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">208</span><span class="p">)</span>
+<span class="n">BURGUNDY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">ACCENT_COLOR</span> <span class="o">=</span> <span class="n">BURGUNDY</span>
+<span class="n">BUTTON_HOVER</span> <span class="o">=</span> <span class="p">(</span><span class="mi">160</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">ERROR_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">69</span><span class="p">)</span>
+<span class="n">SUCCESS_COLOR</span> <span class="o">=</span> <span class="n">DARK_GREEN</span>
+<span class="n">MODE_COLOR</span> <span class="o">=</span> <span class="n">DARK_BLUE</span>
+<span class="n">TIME_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">HUMAN_COLOR</span> <span class="o">=</span> <span class="n">DARK_GREEN</span>
+<span class="n">AI_COLOR</span> <span class="o">=</span> <span class="n">DARK_RED</span>
+
+
+<div class="viewcode-block" id="GameActions">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameActions</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">game</span>
+
+<div class="viewcode-block" id="GameActions.play_turn">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.play_turn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">play_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">game_over</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">dice_animation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">current_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">current_player</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;Error: No current player found&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">player_obj</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">is_ai_player</span> <span class="o">=</span> <span class="n">player_obj</span> <span class="ow">and</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">is_ai</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">development_mode</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_ai_player</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">update_current_player</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player_obj</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not find player object for </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">!=</span> <span class="n">current_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_jail&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Synchronizing jail status for </span><span class="si">{</span><span class="n">player_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="n">current_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_jail&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span>
+            <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="n">current_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span>
+
+        <span class="k">if</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="ow">and</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> chose to stay in jail - skipping turn&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is staying in jail - skipping turn&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">handle_turn_end</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="ow">and</span> <span class="n">current_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;in_jail&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is in jail - showing jail options&quot;</span><span class="p">)</span>
+            <span class="n">jail_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_jail_turn</span><span class="p">(</span><span class="n">current_player</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">jail_result</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> stays in jail&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">handle_turn_end</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">old_position</span> <span class="o">=</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">lap_count</span><span class="p">[</span><span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Lap count for </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">lap_count</span><span class="p">[</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ROLL&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">dice_animation</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">animation_start</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+
+            <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;dice_roll&quot;</span><span class="p">)</span>
+
+            <span class="n">dice1</span><span class="p">,</span> <span class="n">dice2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">play_turn</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dice1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">dice_animation</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">message_queue</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">message_queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing message: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;left jail&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jail exit notification: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;jail&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">dice_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">dice1</span><span class="p">,</span> <span class="n">dice2</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">!=</span> <span class="n">old_position</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Correcting position mismatch for </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Player object: </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">position</span><span class="si">}</span><span class="s2">, Game logic: </span><span class="si">{</span><span class="n">old_position</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">player</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">old_position</span>
+
+                    <span class="n">spaces_to_move</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">old_position</span><span class="p">)</span> <span class="o">%</span> <span class="mi">40</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">spaces_to_move</span> <span class="o">==</span> <span class="mi">0</span>
+                        <span class="ow">and</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_position</span>
+                    <span class="p">):</span>
+                        <span class="n">spaces_to_move</span> <span class="o">=</span> <span class="mi">40</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">move_player</span><span class="p">(</span><span class="n">player</span><span class="p">,</span> <span class="n">spaces_to_move</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Starting animation for </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to move </span><span class="si">{</span><span class="n">spaces_to_move</span><span class="si">}</span><span class="s2"> spaces from </span><span class="si">{</span><span class="n">old_position</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">wait_for_animations</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_board_positions</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">old_position</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rounds_completed</span><span class="p">[</span><span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;*** PASSED GO! ***&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> collected £200&quot;</span><span class="p">)</span>
+            <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;collect_money&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> rolled </span><span class="si">{</span><span class="n">dice1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dice2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dice1</span> <span class="o">==</span> <span class="n">dice2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;Doubles! Roll again!&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_game_over</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GameActions.handle_buy_decision">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.handle_buy_decision">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_buy_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wants_to_buy</span><span class="p">):</span>
+        <span class="n">current_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+        <span class="n">property_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_property</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Property Purchase Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player: </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player money: £</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property price: £</span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wants to buy: </span><span class="si">{</span><span class="n">wants_to_buy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Is AI: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_player_is_ai</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Completed circuits: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">completed_circuits</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Current lap count: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">lap_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property owner before: </span><span class="si">{</span><span class="n">property_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;owner&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;None&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">wants_to_buy</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Attempting purchase...&quot;</span><span class="p">)</span>
+                <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+                <span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property owner set to: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property data position: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Property in self.game.logic.properties: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Global property owner: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">])]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;owner&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;None&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])][</span>
+                        <span class="s2">&quot;owner&quot;</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Updated global property owner: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">])]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;owner&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;None&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> bought </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> for £</span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Purchase successful&quot;</span><span class="p">)</span>
+
+                <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;buy_property&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_player_is_ai</span><span class="p">:</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                        <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span>
+                            <span class="n">pygame</span><span class="o">.</span><span class="n">USEREVENT</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;ai_buy_action_complete&quot;</span><span class="p">}</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+                <span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State changed to ROLL&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Auction in progress - maintaining AUCTION state&quot;</span><span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Player properties after purchase:&quot;</span><span class="p">)</span>
+                <span class="n">owned_count</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">prop_pos</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                        <span class="n">owned_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">prop</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (Position: </span><span class="si">{</span><span class="n">prop_pos</span><span class="si">}</span><span class="s2">, Group: </span><span class="si">{</span><span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;group&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;None&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                        <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total properties owned: </span><span class="si">{</span><span class="n">owned_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Not enough money for purchase&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> doesn&#39;t have enough money to buy </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting auction due to insufficient funds&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_auction</span><span class="p">(</span><span class="n">property_data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Player passed on purchase&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_auction</span><span class="p">(</span><span class="n">property_data</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Final state:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property owner: </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;owner&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player money: £</span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+        <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ROLL&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">update_current_player</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Auction in progress - state is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameActions.start_auction">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.start_auction">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_auction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_data</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Starting Auction for </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
+
+        <span class="n">any_eligible</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">completed_circuits</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">any_eligible</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">any_eligible</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No players have completed a circuit - skipping auction&quot;</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;No players have completed a circuit - property remains unsold&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">update_current_player</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="n">any_moving</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">any_moving</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Animations in progress - delaying auction start&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">pending_auction_property</span> <span class="o">=</span> <span class="n">property_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">waiting_for_animation</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+
+        <span class="n">active_players</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bankrupt&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exited&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_players</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Only one active player (</span><span class="si">{</span><span class="n">active_players</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">) - skipping auction&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">update_current_player</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">auction_property</span><span class="p">(</span><span class="n">property_data</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;auction_in_progress&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;AUCTION&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">auction_bid_amount</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State changed to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">auction_just_started</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Auction for </span><span class="si">{</span><span class="n">property_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> started!&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to start auction: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State changed to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">update_current_player</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final state: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== End Auction ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GameActions.handle_jail_turn">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.handle_jail_turn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_jail_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Jail Turn Handler for </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In jail: </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;in_jail&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jail turns: </span><span class="si">{</span><span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jail_turns&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Money: £</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Has jail free cards: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">jail_free_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Player not in jail - exiting jail handler&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">player_obj</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]),</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player_obj</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not find player object for </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Synchronizing jail state for </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">is_ai</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> deciding how to handle jail&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">jail_free_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI using &#39;Get Out of Jail Free&#39; card&quot;</span><span class="p">)</span>
+                <span class="n">card_type</span> <span class="o">=</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">use_jail_card</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">card_type</span> <span class="o">==</span> <span class="n">CardType</span><span class="o">.</span><span class="n">POT_LUCK</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">pot_luck_deck</span><span class="o">.</span><span class="n">return_jail_card</span><span class="p">(</span><span class="n">card_type</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned Pot Luck jail card to deck&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">opportunity_deck</span><span class="o">.</span><span class="n">return_jail_card</span><span class="p">(</span><span class="n">card_type</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned Opportunity Knocks jail card to deck&quot;</span><span class="p">)</span>
+
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> used Get Out of Jail Free card and left jail!&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> successfully left jail using card&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">50</span> <span class="ow">and</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;AI player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> paying £50 to leave jail (randomly decided)&quot;</span>
+                <span class="p">)</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">50</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">free_parking_fund</span> <span class="o">+=</span> <span class="mi">50</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">synchronize_free_parking_pot</span><span class="p">()</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> paid £50 and left jail!&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;AI player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> successfully left jail by paying £50&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> will try to roll doubles&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Human player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> choosing jail option&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+            <span class="n">choice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">get_jail_choice</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Human player selected option: </span><span class="si">{</span><span class="n">choice</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;card&quot;</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">jail_free_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using &#39;Get Out of Jail Free&#39; card&quot;</span><span class="p">)</span>
+                <span class="n">card_type</span> <span class="o">=</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">use_jail_card</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">card_type</span> <span class="o">==</span> <span class="n">CardType</span><span class="o">.</span><span class="n">POT_LUCK</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">pot_luck_deck</span><span class="o">.</span><span class="n">return_jail_card</span><span class="p">(</span><span class="n">card_type</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">opportunity_deck</span><span class="o">.</span><span class="n">return_jail_card</span><span class="p">(</span><span class="n">card_type</span><span class="p">)</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> used Get Out of Jail Free card and left jail!&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> successfully left jail using card&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;pay&quot;</span> <span class="ow">and</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Paying £50 to leave jail&quot;</span><span class="p">)</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">50</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">free_parking_fund</span> <span class="o">+=</span> <span class="mi">50</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">synchronize_free_parking_pot</span><span class="p">()</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> paid £50 and left jail!&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> paid £50 and left jail!&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: board.add_message call failed&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> successfully left jail by paying £50&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;stay&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> chose to stay in jail&quot;</span><span class="p">)</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> chose to stay in jail!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;roll&quot;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> will try to roll doubles&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Jail turn count increased to </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;jail_turns&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has been in jail for 3 turns&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Forcing payment after 3 turns&quot;</span><span class="p">)</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">50</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">free_parking_fund</span> <span class="o">+=</span> <span class="mi">50</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">synchronize_free_parking_pot</span><span class="p">()</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> paid £50 after 3 turns and left jail!&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> successfully left jail after 3 turns by paying £50&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> can&#39;t pay jail fine - leaving jail bankrupt&quot;</span>
+                <span class="p">)</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;in_jail&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player</span><span class="p">[</span><span class="s2">&quot;jail_turns&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">jail_turns</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">stay_in_jail</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> couldn&#39;t pay jail fine and left jail bankrupt!&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handle_bankruptcy</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> remains in jail - jail turn handled</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GameActions.handle_voluntary_exit">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.handle_voluntary_exit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_voluntary_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player_name</span><span class="p">,</span> <span class="n">final_assets</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Voluntary Exit Debug ===&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player_name</span><span class="si">}</span><span class="s2"> is exiting the game&quot;</span><span class="p">)</span>
+
+        <span class="n">logic_player</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">player_name</span><span class="p">),</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">logic_player</span><span class="p">:</span>
+            <span class="n">actual_final_assets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_player_assets</span><span class="p">(</span><span class="n">logic_player</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final assets calculated from game logic: </span><span class="si">{</span><span class="n">actual_final_assets</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">actual_final_assets</span> <span class="o">=</span> <span class="n">final_assets</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using provided final assets: </span><span class="si">{</span><span class="n">final_assets</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current number of players: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Current player index before exit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player_name</span><span class="si">}</span><span class="s2"> exits game&quot;</span><span class="p">)</span>
+
+        <span class="n">player_obj</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">player_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">player_obj</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Could not find player object for </span><span class="si">{</span><span class="n">player_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found player object: </span><span class="si">{</span><span class="n">player_obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">player_properties</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">player_name</span>
+        <span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Player has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">player_properties</span><span class="p">)</span><span class="si">}</span><span class="s2"> properties that will be returned to bank&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">player_obj</span><span class="p">,</span> <span class="s2">&quot;handle_voluntary_exit&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting voluntary_exit flag for </span><span class="si">{</span><span class="n">player_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">player_obj</span><span class="o">.</span><span class="n">final_assets</span> <span class="o">=</span> <span class="n">actual_final_assets</span>
+            <span class="n">player_obj</span><span class="o">.</span><span class="n">handle_voluntary_exit</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">remove_player</span><span class="p">(</span><span class="n">player_name</span><span class="p">,</span> <span class="n">voluntary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Game logic marked player as exited: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">exited_player</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">player_name</span><span class="p">),</span> <span class="kc">None</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">exited_player</span> <span class="ow">and</span> <span class="n">exited_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exited&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">player_name</span><span class="si">}</span><span class="s2"> successfully marked as exited&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Player </span><span class="si">{</span><span class="n">player_name</span><span class="si">}</span><span class="s2"> not properly marked as exited&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+
+            <span class="n">active_players</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exited&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Active players after exit: </span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">active_players</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">next_player_found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">original_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">next_player_found</span> <span class="ow">and</span> <span class="n">active_players</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span> <span class="o">==</span> <span class="n">original_index</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">current_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">current_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exited&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">next_player_found</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Next active player: </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (index: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Current player index after exit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_players</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">active_players</span><span class="p">)</span><span class="si">}</span><span class="s2"> active player(s) left - game should end soon&quot;</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_one_player_remains</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Game ending due to only one player remaining&quot;</span><span class="p">)</span>
+                    <span class="n">game_over_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_full_game</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">game_over_data</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking if next player is an AI...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_and_trigger_ai_turn</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to mark player as exited in game logic&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GameActions.calculate_player_assets">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.calculate_player_assets">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_player_assets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">player</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">player</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Warning: Invalid player object in calculate_player_assets: </span><span class="si">{</span><span class="n">player</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="mi">0</span>
+
+            <span class="n">total</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;money&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span>
+            <span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: No properties found in game logic&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">total</span>
+
+            <span class="k">for</span> <span class="n">prop_id</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">):</span>
+                    <span class="n">total</span> <span class="o">+=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="s2">&quot;houses&quot;</span> <span class="ow">in</span> <span class="n">prop</span> <span class="ow">and</span> <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;houses&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">house_costs</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;house_costs&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">house_costs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">house_costs</span><span class="p">:</span>
+                            <span class="n">houses_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">prop</span><span class="p">[</span><span class="s2">&quot;houses&quot;</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">house_costs</span><span class="p">))</span>
+                            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">houses_count</span><span class="p">):</span>
+                                <span class="n">total</span> <span class="o">+=</span> <span class="n">house_costs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">house_costs</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                            <span class="n">total</span> <span class="o">+=</span> <span class="n">house_costs</span> <span class="o">*</span> <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;houses&quot;</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">total</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in calculate_player_assets: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;money&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GameActions.handle_ai_turn">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.handle_ai_turn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_ai_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_player</span><span class="p">):</span>
+        <span class="n">MAX_ITERATIONS</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">iteration_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">player_obj</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">player</span>
+                    <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span>
+                    <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                <span class="p">),</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">player_obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">is_ai</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="n">player_pos_valid</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">player_obj</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">position</span> <span class="o">&lt;=</span> <span class="mi">40</span>
+            <span class="p">)</span>
+            <span class="n">logic_pos_valid</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">ai_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">40</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">player_pos_valid</span> <span class="ow">and</span> <span class="n">logic_pos_valid</span><span class="p">:</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">player_pos_valid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logic_pos_valid</span><span class="p">:</span>
+                <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">position</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">player_pos_valid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logic_pos_valid</span><span class="p">:</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">player_obj</span><span class="o">.</span><span class="n">position</span> <span class="o">!=</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]:</span>
+                <span class="n">player_obj</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ROLL&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">play_turn</span><span class="p">()</span>
+
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;BUY&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_property</span><span class="p">:</span>
+
+                <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&gt;</span> <span class="mi">5000</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Timeout reached for AI </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> in BUY state - forcing decision&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handle_buy_decision</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="n">iteration_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">iteration_count</span> <span class="o">&gt;</span> <span class="n">MAX_ITERATIONS</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Maximum iterations reached for AI </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> in BUY state - forcing decision&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handle_buy_decision</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Purchase Decision ===&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI Player: </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_property</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Price: £</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_property</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI Money: £</span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">should_buy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">ai_player</span><span class="o">.</span><span class="n">should_buy_property</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_property</span><span class="p">,</span>
+                        <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">],</span>
+                        <span class="p">[</span>
+                            <span class="n">p</span>
+                            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="p">],</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">should_buy</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AI Decision: Buy&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">handle_buy_decision</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AI Decision: Pass&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">handle_buy_decision</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in AI purchase decision: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handle_buy_decision</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span>
+        <span class="p">):</span>
+            <span class="n">auction_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+
+            <span class="k">if</span> <span class="n">auction_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: Auction data is None in handle_ai_turn&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+            <span class="k">while</span> <span class="p">(</span>
+                <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;active_players&quot;</span><span class="p">][</span><span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;current_bidder_index&quot;</span><span class="p">]][</span>
+                    <span class="s2">&quot;name&quot;</span>
+                <span class="p">]</span>
+                <span class="o">==</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&gt;</span> <span class="mi">5000</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Timeout reached for AI </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> in AUCTION state - forcing pass&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_pass</span><span class="p">(</span><span class="n">ai_player</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="n">iteration_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">iteration_count</span> <span class="o">&gt;</span> <span class="n">MAX_ITERATIONS</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Maximum iterations reached for AI </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> in AUCTION state - forcing pass&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_pass</span><span class="p">(</span><span class="n">ai_player</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Auction Turn ===&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI Player: </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property: </span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;property&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current bid: £</span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;current_bid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum bid: £</span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;minimum_bid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">ai_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;passed_players&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">()):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI </span><span class="si">{</span><span class="n">ai_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> has already passed&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">bid_amount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">get_ai_auction_bid</span><span class="p">(</span>
+                        <span class="n">ai_player</span><span class="p">,</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;property&quot;</span><span class="p">],</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;current_bid&quot;</span><span class="p">]</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">bid_amount</span> <span class="ow">and</span> <span class="n">bid_amount</span> <span class="o">&gt;=</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;minimum_bid&quot;</span><span class="p">]:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI Decision: Bid £</span><span class="si">{</span><span class="n">bid_amount</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_bid</span><span class="p">(</span>
+                            <span class="n">ai_player</span><span class="p">,</span> <span class="n">bid_amount</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;AI Decision: Pass&quot;</span><span class="p">)</span>
+                        <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_pass</span><span class="p">(</span>
+                            <span class="n">ai_player</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in AI auction decision: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_pass</span><span class="p">(</span><span class="n">ai_player</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+                <span class="n">result_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">check_auction_end</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">result_message</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">result_message</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="GameActions.handle_bankruptcy">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.handle_bankruptcy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_bankruptcy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ui_player</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ui_player</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                <span class="n">ui_player</span><span class="o">.</span><span class="n">bankrupt</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Marking player </span><span class="si">{</span><span class="n">ui_player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> as bankrupt in UI&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">remove_player</span><span class="p">(</span><span class="n">player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> bankrupt!&quot;</span><span class="p">)</span>
+            <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;bankruptcy&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_one_player_remains</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Only one player remains after bankruptcy - ending game&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;game_settings&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">end_full_game</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">end_abridged_game</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GameActions.add_to_free_parking">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.add_to_free_parking">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_to_free_parking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">free_parking_pot</span> <span class="o">+=</span> <span class="n">amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;£</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2"> added to Free Parking pot (Total: £</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">free_parking_pot</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GameActions.collect_free_parking">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.collect_free_parking">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collect_free_parking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">free_parking_pot</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">amount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">free_parking_pot</span>
+            <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amount</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">free_parking_pot</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">free_parking_fund</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> collected £</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2"> from Free Parking!&quot;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">show_card</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_card</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Free Parking&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;You collected £</span><span class="si">{</span><span class="n">amount</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> from the Free Parking pot!&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_card_player</span> <span class="o">=</span> <span class="n">player</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">card_display_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+
+            <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">waiting</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">while</span> <span class="n">waiting</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">]:</span>
+                        <span class="n">waiting</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">show_card</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_card</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">current_card_player</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                        <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+                        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+                <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GameActions.handle_fine_payment">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.handle_fine_payment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_fine_payment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;fine&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">amount</span><span class="p">:</span>
+            <span class="n">player</span><span class="p">[</span><span class="s2">&quot;money&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">amount</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_to_free_parking</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> paid £</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> cannot pay £</span><span class="si">{</span><span class="n">amount</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GameActions.show_time_stats">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.show_time_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_time_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">game_mode</span> <span class="o">==</span> <span class="s2">&quot;abridged&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">time_limit</span><span class="p">:</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+            <span class="n">elapsed</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">start_time</span><span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">time_limit</span> <span class="o">-</span> <span class="n">elapsed</span><span class="p">)</span>
+            <span class="n">minutes</span> <span class="o">=</span> <span class="n">remaining</span> <span class="o">//</span> <span class="mi">60</span>
+            <span class="n">seconds</span> <span class="o">=</span> <span class="n">remaining</span> <span class="o">%</span> <span class="mi">60</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time: </span><span class="si">{</span><span class="n">minutes</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">min_rounds</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rounds_completed</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">max_rounds</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">rounds_completed</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">min_rounds</span> <span class="o">!=</span> <span class="n">max_rounds</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rounds: </span><span class="si">{</span><span class="n">min_rounds</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">max_rounds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GameActions.show_exit_confirmation">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.show_exit_confirmation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_exit_confirmation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">show_exit_confirmation</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameActions.check_one_player_remains">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.check_one_player_remains">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_one_player_remains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_one_player_remains</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameActions.check_game_over">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.check_game_over">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_game_over</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_game_over</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameActions.check_and_trigger_ai_turn">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.check_and_trigger_ai_turn">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_and_trigger_ai_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">check_and_trigger_ai_turn</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameActions.end_full_game">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.end_full_game">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_full_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">end_full_game</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GameActions.end_abridged_game">
+<a class="viewcode-back" href="../../modules/game_actions.html#src.GameActions.GameActions.end_abridged_game">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_abridged_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">end_abridged_game</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

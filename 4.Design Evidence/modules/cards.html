@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cards Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="UI Module" href="ui.html" />
+    <link rel="prev" title="AI Player Logic Module" href="ai_player_logic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Cards Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.Cards.Card"><code class="docutils literal notranslate"><span class="pre">Card</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#src.Cards.CardDeck"><code class="docutils literal notranslate"><span class="pre">CardDeck</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.draw_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.draw_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.get_discard_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_discard_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.get_remaining_count"><code class="docutils literal notranslate"><span class="pre">CardDeck.get_remaining_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.initialize_deck"><code class="docutils literal notranslate"><span class="pre">CardDeck.initialize_deck()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.peek_top_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.peek_top_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.return_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_card()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardDeck.return_jail_card"><code class="docutils literal notranslate"><span class="pre">CardDeck.return_jail_card()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#src.Cards.CardType"><code class="docutils literal notranslate"><span class="pre">CardType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardType.OPPORTUNITY_KNOCKS"><code class="docutils literal notranslate"><span class="pre">CardType.OPPORTUNITY_KNOCKS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Cards.CardType.POT_LUCK"><code class="docutils literal notranslate"><span class="pre">CardType.POT_LUCK</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-diagram">Use Case Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-diagram">Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-diagram-carddeck">State Diagram (CardDeck)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagrams">Sequence Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#key-classes-overview">Key Classes Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Cards Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/cards.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cards-module">
+<h1>Cards Module<a class="headerlink" href="#cards-module" title="Link to this heading"></a></h1>
+<p>This module defines the structure and behavior of the Pot Luck and Opportunity Knocks cards used in the game. It includes classes for individual cards and the decks that manage them, including drawing, discarding, and reshuffling.</p>
+<dl class="py class" id="module-src.Cards">
+<dt class="sig sig-object py" id="src.Cards.Card">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Cards.</span></span><span class="sig-name descname"><span class="pre">Card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#Card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.Card" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Cards.CardDeck">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Cards.</span></span><span class="sig-name descname"><span class="pre">CardDeck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.draw_card">
+<span class="sig-name descname"><span class="pre">draw_card</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.draw_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.draw_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.get_discard_count">
+<span class="sig-name descname"><span class="pre">get_discard_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.get_discard_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.get_discard_count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.get_remaining_count">
+<span class="sig-name descname"><span class="pre">get_remaining_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.get_remaining_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.get_remaining_count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.initialize_deck">
+<span class="sig-name descname"><span class="pre">initialize_deck</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.initialize_deck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.initialize_deck" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.peek_top_card">
+<span class="sig-name descname"><span class="pre">peek_top_card</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.peek_top_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.peek_top_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.return_card">
+<span class="sig-name descname"><span class="pre">return_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.return_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.return_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Cards.CardDeck.return_jail_card">
+<span class="sig-name descname"><span class="pre">return_jail_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">card_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardDeck.return_jail_card"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardDeck.return_jail_card" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.Cards.CardType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Cards.</span></span><span class="sig-name descname"><span class="pre">CardType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Cards.html#CardType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Cards.CardType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Cards.CardType.OPPORTUNITY_KNOCKS">
+<span class="sig-name descname"><span class="pre">OPPORTUNITY_KNOCKS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'opportunity</span> <span class="pre">knocks'</span></em><a class="headerlink" href="#src.Cards.CardType.OPPORTUNITY_KNOCKS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.Cards.CardType.POT_LUCK">
+<span class="sig-name descname"><span class="pre">POT_LUCK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pot</span> <span class="pre">luck'</span></em><a class="headerlink" href="#src.Cards.CardType.POT_LUCK" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="use-case-diagram">
+<h3>Use Case Diagram<a class="headerlink" href="#use-case-diagram" title="Link to this heading"></a></h3>
+<p>Shows the basic interaction with the card system from a game perspective.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-d572ee661e71e7adcbb976f70ab6103a201d34b5.png" alt="&#64;startuml
+skinparam usecase {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+skinparam actor {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+left to right direction
+actor Player
+
+rectangle &quot;Card System&quot; {
+  usecase &quot;Draw Card&quot; as Draw
+  usecase &quot;Apply Card Action&quot; as Apply
+  usecase &quot;Return Card to Deck&quot; as Return
+}
+
+Player -- Draw
+Draw ..&gt; Apply : includes
+Apply ..&gt; Return : includes
+
+note right of Draw
+  Game logic requests a card
+  from the appropriate deck.
+end note
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Card System Use Cases</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-diagram">
+<h3>Class Diagram<a class="headerlink" href="#class-diagram" title="Link to this heading"></a></h3>
+<p>Shows the classes involved in the card system and their relationships.</p>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-ba91630f3ff4b11233ca430687ac4fdcd1a83a62.png" alt="&#64;startuml
+skinparam class {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+skinparam note {
+  BackgroundColor white
+  BorderColor black
+}
+
+enum CardType {
+  POT_LUCK
+  OPPORTUNITY_KNOCKS
+}
+
+class Card {
+  + text: str
+  + action: any
+  + card_type: CardType
+  + requires_input: bool &lt;&lt;get&gt;&gt;
+  + is_special: bool &lt;&lt;get&gt;&gt;
+  + __init__(text, action, card_type)
+}
+
+note right of Card: action field contains function or identifier
+
+class CardDeck {
+  - card_type: CardType
+  - cards: List&lt;Card&gt;
+  - discard_pile: List&lt;Card&gt;
+  - last_drawn_card: Card
+  + __init__(card_type: CardType)
+  + initialize_deck()
+  + draw_card(): Card
+  + return_card(card: Card, to_bottom: bool = True)
+  + return_jail_card(card_type: CardType)
+  + peek_top_card(): Card
+  + get_remaining_count(): int
+  + get_discard_count(): int
+}
+
+CardDeck o-- &quot;*&quot; Card : contains
+CardDeck ..&gt; CardType : uses
+Card -- CardType : uses
+CardDeck ..&gt; random : uses
+CardDeck ..&gt; Game_Logic::pot_luck_cards : uses
+CardDeck ..&gt; Game_Logic::opportunity_knocks_cards : uses
+
+note right of CardDeck::initialize_deck
+  Reads card data from external
+  lists (pot_luck_cards or
+  opportunity_knocks_cards)
+  and creates Card objects.
+end note
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Cards Class Structure</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="state-diagram-carddeck">
+<h3>State Diagram (CardDeck)<a class="headerlink" href="#state-diagram-carddeck" title="Link to this heading"></a></h3>
+<p>Illustrates the different states a <cite>CardDeck</cite> can be in regarding its draw and discard piles.</p>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-6bd9879be425b1704b9b1187af486cc320829e6d.png" alt="&#64;startuml
+skinparam state {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+[*] --&gt; Ready : initialize_deck()
+
+state Deck {
+  state Ready : Draw pile has cards
+  state DrawEmpty : Draw pile empty
+  state NoCardsLeft : Both piles empty (Error state or needs re-init)
+
+  Ready --&gt; Ready : draw_card() [cards &gt; 1]
+  Ready --&gt; DrawEmpty : draw_card() [cards == 1]
+  Ready --&gt; Ready : return_card()
+
+  DrawEmpty --&gt; Ready : draw_card() [discard &gt; 0] / Reshuffle discard into draw
+  DrawEmpty --&gt; DrawEmpty : return_card()
+  DrawEmpty --&gt; NoCardsLeft : draw_card() [discard == 0] / Cannot draw
+
+  NoCardsLeft --&gt; DrawEmpty : return_card() / Card added to discard
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">CardDeck State Diagram</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagrams">
+<h3>Sequence Diagrams<a class="headerlink" href="#sequence-diagrams" title="Link to this heading"></a></h3>
+<p><strong>Deck Initialization</strong></p>
+<p>Shows the process of creating and shuffling a new deck.</p>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-8cd441a25e127f9adeeefb98f0a3057bf2ebecf3.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;deck:CardDeck&quot; as Deck
+participant &quot;Card&quot; as CardClass &lt;&lt;static&gt;&gt;
+participant &quot;random&quot; as Random &lt;&lt;static&gt;&gt;
+participant &quot;card_data&quot; as Data &lt;&lt;external&gt;&gt;
+
+activate Deck
+Deck -&gt; Deck : initialize_deck()
+activate Deck
+alt deck.card_type == POT_LUCK
+  Deck -&gt; Data : pot_luck_cards
+else deck.card_type == OPPORTUNITY_KNOCKS
+  Deck -&gt; Data : opportunity_knocks_cards
+end
+Data --&gt; Deck : card_info_list
+
+loop for card_info in card_info_list
+  Deck -&gt; CardClass : create Card(text, action, type)
+  CardClass --&gt; Deck : new_card
+  Deck -&gt; Deck : self.cards.append(new_card)
+end
+
+Deck -&gt; Random : shuffle(self.cards)
+Deck --&gt; Deck : shuffled cards
+deactivate Deck
+deactivate Deck
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Deck Initialization</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Drawing a Card</strong></p>
+<p>Illustrates the logic when a card is drawn, including handling an empty draw pile.</p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-28e4f6b55ac878c53d2a88240d48e00ca6c3e41a.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;caller:GameLogic&quot; as Caller
+participant &quot;deck:CardDeck&quot; as Deck
+participant &quot;random&quot; as Random &lt;&lt;static&gt;&gt;
+
+Caller -&gt; Deck : draw_card()
+activate Deck
+alt len(self.cards) == 0
+  alt len(self.discard_pile) &gt; 0
+    Deck -&gt; Deck : self.cards = self.discard_pile
+    Deck -&gt; Deck : self.discard_pile = ()
+    Deck -&gt; Random : shuffle(self.cards)
+    note right: Discard pile becomes the new draw pile
+  else len(self.discard_pile) == 0
+    Deck --&gt; Caller : return None
+    deactivate Deck
+    return No card available
+  end
+end
+Deck -&gt; Deck : card = self.cards.pop()
+Deck -&gt; Deck : self.last_drawn_card = card
+Deck --&gt; Caller : return card
+deactivate Deck
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Card Drawing Sequence</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>Returning a “Get Out of Jail Free” Card</strong></p>
+<p>Shows the special handling for returning this specific type of card.</p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-40fab919feaa8c95bf25810358199bbb4397affd.png" alt="&#64;startuml
+skinparam sequence {
+  ParticipantBackgroundColor white
+  ParticipantBorderColor black
+  ArrowColor black
+  LifeLineBorderColor gray
+  LifeLineBackgroundColor lightgray
+}
+
+participant &quot;GameLogic&quot; as Caller
+participant &quot;CardDeck&quot; as Deck
+participant &quot;Card&quot; as CardClass
+participant &quot;CardData&quot; as Data
+
+Caller -&gt; Deck : return_jail_card(card_type)
+activate Deck
+
+Deck -&gt; Deck : Search for jail card
+note right of Deck : Search in draw and discard piles
+
+alt jail card found
+    note right of Deck : Use existing card instance
+else jail card not found
+    Deck -&gt; Data : Get jail card data
+    Data --&gt; Deck : text, action
+    Deck -&gt; CardClass : create(text, action, card_type)
+    CardClass --&gt; Deck : jail_card
+    note right of Deck : Create new instance
+end
+
+Deck -&gt; Deck : return_card(jail_card, to_bottom=True)
+activate Deck
+Deck -&gt; Deck : discard_pile.append(jail_card)
+deactivate Deck
+
+Deck --&gt; Caller : void
+deactivate Deck
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Sequence Diagram: Returning Jail Free Card</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="key-classes-overview">
+<h2>Key Classes Overview<a class="headerlink" href="#key-classes-overview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>CardType</strong>: An <cite>Enum</cite> defining the two types of decks: <cite>POT_LUCK</cite> and <cite>OPPORTUNITY_KNOCKS</cite>.</p></li>
+<li><p><strong>Card</strong>: Represents a single card with its display <cite>text</cite>, associated <cite>action</cite> (which likely corresponds to a function or identifier in the game logic), and <cite>card_type</cite>. It also determines if the card <cite>requires_input</cite> or is <cite>is_special</cite> based on keywords in its text.</p></li>
+<li><p><strong>CardDeck</strong>: Manages a collection of <cite>Card</cite> objects for a specific <cite>card_type</cite>. It handles initialization (reading from external data and shuffling), drawing cards (including reshuffling the discard pile when the draw pile is empty), returning used cards to the discard pile, and specifically handling the return of “Get Out of Jail Free” cards.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ai_player_logic.html" class="btn btn-neutral float-left" title="AI Player Logic Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ui.html" class="btn btn-neutral float-right" title="UI Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

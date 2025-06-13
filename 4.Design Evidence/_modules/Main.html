@@ -1,0 +1,1132 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Main</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Property Tycoon main.py</span>
+<span class="c1"># Created for 2025 UOS Year 2 G6046: Software Engineering Project-Group 5</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># Contains the main function for the game.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Game</span><span class="w"> </span><span class="kn">import</span> <span class="n">Game</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Player</span><span class="w"> </span><span class="kn">import</span> <span class="n">Player</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.GameRenderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameRenderer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.GameEventHandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameEventHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.GameActions</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameActions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Sound_Manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">sound_manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.Font_Manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">font_manager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.UI</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MainMenuPage</span><span class="p">,</span>
+    <span class="n">StartPage</span><span class="p">,</span>
+    <span class="n">GameModePage</span><span class="p">,</span>
+    <span class="n">EndGamePage</span><span class="p">,</span>
+    <span class="n">SettingsPage</span><span class="p">,</span>
+    <span class="n">HowToPlayPage</span><span class="p">,</span>
+    <span class="n">AIDifficultyPage</span><span class="p">,</span>
+    <span class="n">CreditsPage</span><span class="p">,</span>
+    <span class="n">KeyboardShortcutsPage</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">WINDOW_SIZE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">720</span><span class="p">)</span>
+
+<span class="n">logs_dir</span> <span class="o">=</span> <span class="s2">&quot;logs&quot;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">logs_dir</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logs_dir</span><span class="p">)</span>
+
+<span class="n">log_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">logs_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;game_log_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.txt&quot;</span>
+<span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[:]:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+<span class="k">except</span> <span class="p">(</span><span class="ne">IOError</span><span class="p">,</span> <span class="ne">PermissionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not create log file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">file_handler</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not create console handler: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">console_handler</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="log_print">
+<a class="viewcode-back" href="../modules/main.html#Main.log_print">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;flush&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">builtin_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">builtin_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;flush&#39;</span><span class="p">})</span></div>
+
+
+<span class="n">builtin_print</span> <span class="o">=</span> <span class="nb">print</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">__builtins__</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="n">log_print</span>
+
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Game Session Started ===&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">file_handler</span><span class="p">:</span>
+    <span class="n">file_handler</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+<span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+
+<span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">GRAY</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">RED</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">BLUE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">GREEN</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">YELLOW</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">MAGENTA</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+
+<span class="c1"># game money stuff</span>
+<span class="n">STARTING_BANK_MONEY</span> <span class="o">=</span> <span class="mi">50000</span>
+<span class="n">STARTING_PLAYER_MONEY</span> <span class="o">=</span> <span class="mi">1500</span>
+<span class="n">JAIL_FINE</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">PASSING_GO_AMOUNT</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">HOTEL_VALUE_IN_HOUSES</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># A hotel is worth 5 houses</span>
+<span class="n">HOTEL_REPLACES_HOUSES</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># When building a hotel, houses are returned to bank</span>
+
+<span class="n">FPS</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="c1"># how to play text</span>
+<span class="n">GAME_INSTRUCTIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Use WASD or Arrow keys to move&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Press + or - to zoom&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Press ESC to exit game&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Use mouse to click buttons&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Buy properties when landing on them&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;You must complete one lap around the board before buying properties&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Build houses/hotels on owned property sets&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Pay rent when landing on others&#39; properties&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Collect £200 when passing GO&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1"># sets up the screen size</span>
+<div class="viewcode-block" id="apply_screen_settings">
+<a class="viewcode-back" href="../modules/main.html#Main.apply_screen_settings">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">apply_screen_settings</span><span class="p">(</span><span class="n">resolution</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">WINDOW_SIZE</span>
+    <span class="n">WINDOW_SIZE</span> <span class="o">=</span> <span class="n">resolution</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">WINDOW_SIZE</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">RESIZABLE</span><span class="p">)</span>
+
+    <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s2">&quot;Property Tycoon Alpha 04.04.2025&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">icon_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s2">&quot;assets&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;icon.ico&quot;</span>
+        <span class="p">)</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">icon_path</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_icon</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not load game icon: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">font_manager</span><span class="o">.</span><span class="n">update_scale_factor</span><span class="p">(</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">():</span>
+        <span class="n">current_w</span><span class="p">,</span> <span class="n">current_h</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">()</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_w</span> <span class="o">!=</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">current_h</span> <span class="o">!=</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">resolution</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">RESIZABLE</span><span class="p">)</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">screen</span></div>
+
+
+
+<span class="c1"># checks player can build houses/hotels</span>
+<div class="viewcode-block" id="can_develop">
+<a class="viewcode-back" href="../modules/main.html#Main.can_develop">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">can_develop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dev_manager</span><span class="o">.</span><span class="n">can_develop</span><span class="p">(</span><span class="n">player</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#  new game instance</span>
+<div class="viewcode-block" id="create_game">
+<a class="viewcode-back" href="../modules/main.html#Main.create_game">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_game</span><span class="p">(</span><span class="n">player_info</span><span class="p">,</span> <span class="n">game_settings</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">player_info</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">game_settings</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing player info or game settings&quot;</span><span class="p">)</span>
+
+    <span class="n">total_players</span><span class="p">,</span> <span class="n">player_names</span><span class="p">,</span> <span class="n">ai_count</span><span class="p">,</span> <span class="n">token_indices</span> <span class="o">=</span> <span class="n">player_info</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">total_players</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ai_count</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid player counts&quot;</span><span class="p">)</span>
+
+    <span class="n">players</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">player_number</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">bank_money</span> <span class="o">=</span> <span class="n">STARTING_BANK_MONEY</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">player_names</span><span class="p">[:</span> <span class="n">total_players</span> <span class="o">-</span> <span class="n">ai_count</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">continue</span>
+        <span class="n">token_index</span> <span class="o">=</span> <span class="n">token_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">player_number</span><span class="o">=</span><span class="n">token_index</span><span class="p">)</span>
+        <span class="n">player</span><span class="o">.</span><span class="n">money</span> <span class="o">=</span> <span class="n">STARTING_PLAYER_MONEY</span>
+        <span class="n">bank_money</span> <span class="o">-=</span> <span class="n">STARTING_PLAYER_MONEY</span>
+        <span class="n">players</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+        <span class="n">player_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">player_names</span><span class="p">[</span><span class="n">total_players</span> <span class="o">-</span> <span class="n">ai_count</span> <span class="p">:]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">continue</span>
+        <span class="n">token_index</span> <span class="o">=</span> <span class="n">token_indices</span><span class="p">[</span><span class="n">total_players</span> <span class="o">-</span> <span class="n">ai_count</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">is_ai</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">player_number</span><span class="o">=</span><span class="n">token_index</span><span class="p">,</span>
+            <span class="n">ai_difficulty</span><span class="o">=</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ai_difficulty&quot;</span><span class="p">,</span> <span class="s2">&quot;easy&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">player</span><span class="o">.</span><span class="n">money</span> <span class="o">=</span> <span class="n">STARTING_PLAYER_MONEY</span>
+        <span class="n">bank_money</span> <span class="o">-=</span> <span class="n">STARTING_PLAYER_MONEY</span>
+        <span class="n">players</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+        <span class="n">player_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">players</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid players created&quot;</span><span class="p">)</span>
+
+    <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span>
+        <span class="n">players</span><span class="p">,</span>
+        <span class="n">game_mode</span><span class="o">=</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;full&quot;</span><span class="p">),</span>
+        <span class="n">time_limit</span><span class="o">=</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_limit&quot;</span><span class="p">),</span>
+        <span class="n">ai_difficulty</span><span class="o">=</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ai_difficulty&quot;</span><span class="p">,</span> <span class="s2">&quot;easy&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">game</span><span class="o">.</span><span class="n">bank_money</span> <span class="o">=</span> <span class="n">bank_money</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">free_parking_pot</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;game_start&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">game</span></div>
+
+
+
+<span class="c1"># main game loop</span>
+<div class="viewcode-block" id="run_game">
+<a class="viewcode-back" href="../modules/main.html#Main.run_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_game</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="n">game_settings</span><span class="p">):</span>
+    <span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">game_over_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">last_time_check</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+    <span class="n">last_ai_progress_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+    <span class="n">ai_timeout_duration</span> <span class="o">=</span> <span class="mi">10000</span>
+
+    <span class="n">last_log_flush_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+    <span class="n">log_flush_interval</span> <span class="o">=</span> <span class="mi">1500</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting game with settings: </span><span class="si">{</span><span class="n">game_settings</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Players: </span><span class="si">{</span><span class="p">[</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">player</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Game mode: </span><span class="si">{</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mode&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;full&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_limit&quot;</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time limit: </span><span class="si">{</span><span class="n">game_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;time_limit&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">):</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">warning_edge_size</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">warning_max_edge</span> <span class="o">=</span> <span class="mi">60</span>
+    <span class="n">last_warning_update</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+    <span class="n">game_actions</span> <span class="o">=</span> <span class="n">GameActions</span><span class="p">(</span><span class="n">game</span><span class="p">)</span>
+    <span class="n">renderer</span> <span class="o">=</span> <span class="n">GameRenderer</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="n">game_actions</span><span class="p">)</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="n">renderer</span>
+    <span class="n">event_handler</span> <span class="o">=</span> <span class="n">GameEventHandler</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="n">game_actions</span><span class="p">)</span>
+
+    <span class="n">game</span><span class="o">.</span><span class="n">time_warning_start</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">warning_flash_rate</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">game</span><span class="o">.</span><span class="n">warning_border_max_width</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="n">event_handler</span><span class="o">.</span><span class="n">handle_motion</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_music</span><span class="p">(</span><span class="n">loop</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># main loop starts</span>
+    <span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># let other tasks run</span>
+
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+
+        <span class="c1"># flush logs sometimes</span>
+        <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_log_flush_time</span> <span class="o">&gt;</span> <span class="n">log_flush_interval</span><span class="p">:</span>
+            <span class="n">last_log_flush_time</span> <span class="o">=</span> <span class="n">current_time</span>
+            <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">):</span>
+                    <span class="n">handler</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># check time limit for abridged mode</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">game_settings</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;abridged&quot;</span>
+            <span class="ow">and</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_time_check</span> <span class="o">&gt;</span> <span class="mi">1000</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">game_paused</span>
+        <span class="p">):</span>
+            <span class="n">last_time_check</span> <span class="o">=</span> <span class="n">current_time</span>
+            <span class="n">time_limit_result</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">check_time_limit</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">time_limit</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">game_paused</span><span class="p">:</span>
+                <span class="n">elapsed</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">current_time</span> <span class="o">-</span> <span class="n">game</span><span class="o">.</span><span class="n">start_time</span> <span class="o">-</span> <span class="n">game</span><span class="o">.</span><span class="n">total_pause_time</span>
+                <span class="p">)</span> <span class="o">//</span> <span class="mi">1000</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">game</span><span class="o">.</span><span class="n">time_limit</span> <span class="o">-</span> <span class="n">elapsed</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">remaining</span> <span class="o">&lt;=</span> <span class="mi">30</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;time_limit_reached&quot;</span><span class="p">):</span>
+                    <span class="n">game</span><span class="o">.</span><span class="n">time_warning_active</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_warning_update</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+                        <span class="n">last_warning_update</span> <span class="o">=</span> <span class="n">current_time</span>
+                        <span class="n">warning_intensity</span> <span class="o">=</span> <span class="p">(</span><span class="mi">30</span> <span class="o">-</span> <span class="n">remaining</span><span class="p">)</span> <span class="o">/</span> <span class="mi">30</span>
+                        <span class="n">warning_edge_target</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">warning_max_edge</span> <span class="o">*</span> <span class="n">warning_intensity</span><span class="p">)</span>
+                        <span class="n">warning_edge_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                            <span class="n">warning_edge_size</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">warning_edge_target</span>
+                        <span class="p">)</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">warning_border_width</span> <span class="o">=</span> <span class="n">warning_edge_size</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">game</span><span class="o">.</span><span class="n">time_warning_active</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">warning_edge_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">warning_edge_size</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="n">game</span><span class="o">.</span><span class="n">warning_border_width</span> <span class="o">=</span> <span class="n">warning_edge_size</span>
+
+            <span class="k">if</span> <span class="n">time_limit_result</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Time limit reached and all players completed same number of laps - ending game&quot;</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_limit_result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">time_limit_result</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">game_actions</span><span class="o">.</span><span class="n">end_abridged_game</span><span class="p">()</span>
+                <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">continue</span>
+
+        <span class="c1"># ai turn timeout</span>
+        <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">current_player_is_ai</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">game_paused</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">last_ai_progress_time</span> <span class="o">&gt;</span> <span class="n">ai_timeout_duration</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;AI player turn timeout reached after </span><span class="si">{</span><span class="n">ai_timeout_duration</span><span class="o">/</span><span class="mi">1000</span><span class="si">}</span><span class="s2"> seconds&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">current_player</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Forcing AI player </span><span class="si">{</span><span class="n">current_player</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> to skip their turn due to timeout&quot;</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;DEVELOPMENT&quot;</span><span class="p">:</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">selected_property</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">development_mode</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Closing stuck development UI due to timeout&quot;</span><span class="p">)</span>
+
+                    <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+
+                    <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+                    <span class="n">game</span><span class="o">.</span><span class="n">current_player_is_ai</span> <span class="o">=</span> <span class="kc">False</span>
+
+                    <span class="n">game_actions</span><span class="o">.</span><span class="n">check_and_trigger_ai_turn</span><span class="p">()</span>
+
+                <span class="n">last_ai_progress_time</span> <span class="o">=</span> <span class="n">current_time</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">current_player_is_ai</span><span class="p">:</span>
+            <span class="n">last_ai_progress_time</span> <span class="o">=</span> <span class="n">current_time</span>
+
+        <span class="c1"># draw everything</span>
+        <span class="n">renderer</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="c1"># wait for animations if needed</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;waiting_for_animation&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">waiting_for_animation</span><span class="p">:</span>
+            <span class="n">any_moving</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">any_moving</span><span class="p">:</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">waiting_for_animation</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                <span class="k">continue</span>
+
+        <span class="c1"># player inputs (mouse clicks, keys)</span>
+        <span class="k">for</span> <span class="n">game_event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">game_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                <span class="n">safe_exit</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">game_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                <span class="n">any_moving</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">any_moving</span> <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Animations in progress during AUCTION state - delaying click processing&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                    <span class="k">continue</span>
+
+                <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">event_handler</span><span class="o">.</span><span class="n">handle_click</span><span class="p">(</span><span class="n">game_event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">game_over_data</span><span class="p">:</span>
+                    <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;menu_click&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">game_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key pressed: </span><span class="si">{</span><span class="n">pygame</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">game_event</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">game_event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">game_mode</span> <span class="o">==</span> <span class="s2">&quot;abridged&quot;</span> <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">time_limit</span><span class="p">:</span>
+                        <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">game_paused</span><span class="p">:</span>
+                            <span class="n">pause_duration</span> <span class="o">=</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">game</span><span class="o">.</span><span class="n">pause_start_time</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">total_pause_time</span> <span class="o">+=</span> <span class="n">pause_duration</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">game_paused</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;Game resumed&quot;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">game_paused</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">pause_start_time</span> <span class="o">=</span> <span class="n">current_time</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="s2">&quot;Game paused&quot;</span><span class="p">)</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Handling auction key input in main loop&quot;</span><span class="p">)</span>
+                    <span class="n">event_handler</span><span class="o">.</span><span class="n">handle_auction_input</span><span class="p">(</span><span class="n">game_event</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">event_handler</span><span class="o">.</span><span class="n">handle_key</span><span class="p">(</span><span class="n">game_event</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">game_over_data</span><span class="p">:</span>
+                        <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">game_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">VIDEORESIZE</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">apply_screen_settings</span><span class="p">((</span><span class="n">game_event</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">game_event</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">game_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEMOTION</span><span class="p">:</span>
+                <span class="n">event_handler</span><span class="o">.</span><span class="n">handle_motion</span><span class="p">(</span><span class="n">game_event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+
+        <span class="c1"># debug logging for game state</span>
+        <span class="n">current_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;last_debug_time&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">current_time</span> <span class="o">-</span> <span class="n">game</span><span class="o">.</span><span class="n">last_debug_time</span> <span class="o">&lt;</span> <span class="mi">1000</span>
+        <span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current game state: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">last_debug_time</span> <span class="o">=</span> <span class="n">current_time</span>
+
+                <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">):</span>
+                    <span class="n">auction_data</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+                    <span class="k">if</span> <span class="n">auction_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Auction State Debug ===&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Property: </span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;property&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current bid: £</span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;current_bid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum bid: £</span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;minimum_bid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;highest_bidder&quot;</span><span class="p">]:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;Highest bidder: </span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;highest_bidder&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No bids yet&quot;</span><span class="p">)</span>
+
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Current bidder index: </span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;current_bidder_index&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;active_players&quot;</span><span class="p">]:</span>
+                            <span class="n">current_bidder</span> <span class="o">=</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;active_players&quot;</span><span class="p">][</span>
+                                <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;current_bidder_index&quot;</span><span class="p">]</span>
+                            <span class="p">]</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current bidder: </span><span class="si">{</span><span class="n">current_bidder</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Passed players: </span><span class="si">{</span><span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;passed_players&#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">set</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Active players: </span><span class="si">{</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;active_players&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[])]</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Completed: </span><span class="si">{</span><span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;completed&#39;</span><span class="p">,</span><span class="w"> </span><span class="kc">False</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Auction State Debug ===&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No auction data available&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check auction state consistency</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;completed&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;AUCTION&quot;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Auction in progress but state is not AUCTION - correcting state&quot;</span>
+                <span class="p">)</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;AUCTION&quot;</span>
+
+        <span class="c1"># ai turn if it&#39;s their go</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;ROLL&quot;</span>
+            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">current_player</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_player_index</span><span class="p">]</span>
+
+            <span class="n">ai_player</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                    <span class="n">ai_player</span> <span class="o">=</span> <span class="n">player</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">ai_player</span> <span class="ow">and</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">is_ai</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ai_player</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>
+                    <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">ai_player</span><span class="o">.</span><span class="n">position</span> <span class="o">&lt;=</span> <span class="mi">40</span>
+                <span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Warning: Invalid position </span><span class="si">{</span><span class="n">ai_player</span><span class="o">.</span><span class="n">position</span><span class="si">}</span><span class="s2"> detected for AI </span><span class="si">{</span><span class="n">ai_player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, resetting to position 1&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">ai_player</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">current_player</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+                <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">game_actions</span><span class="o">.</span><span class="n">handle_ai_turn</span><span class="p">(</span><span class="n">current_player</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">game_over_data</span><span class="p">:</span>
+                    <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># ai auction bidding/passing</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">auction_data</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">auction_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;completed&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active_players&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;auction_processing&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">game</span><span class="o">.</span><span class="n">auction_processing</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">current_bidder_index</span> <span class="o">=</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;current_bidder_index&quot;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">current_bidder_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;active_players&quot;</span><span class="p">]):</span>
+                    <span class="n">current_bidder</span> <span class="o">=</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;active_players&quot;</span><span class="p">][</span>
+                        <span class="n">current_bidder_index</span>
+                    <span class="p">]</span>
+
+                    <span class="n">bidder_obj</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">current_bidder</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+                            <span class="n">bidder_obj</span> <span class="o">=</span> <span class="n">player</span>
+                            <span class="k">break</span>
+
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">bidder_obj</span>
+                        <span class="ow">and</span> <span class="n">bidder_obj</span><span class="o">.</span><span class="n">is_ai</span>
+                        <span class="ow">and</span> <span class="n">current_bidder</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+                        <span class="ow">not</span> <span class="ow">in</span> <span class="n">auction_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;passed_players&quot;</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+                    <span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== AI Auction Turn in Main Loop ===&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI Player: </span><span class="si">{</span><span class="n">current_bidder</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Current bid: £</span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;current_bid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Minimum bid: £</span><span class="si">{</span><span class="n">auction_data</span><span class="p">[</span><span class="s1">&#39;minimum_bid&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI money: £</span><span class="si">{</span><span class="n">current_bidder</span><span class="p">[</span><span class="s1">&#39;money&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                        <span class="n">bid_amount</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">get_ai_auction_bid</span><span class="p">(</span>
+                            <span class="n">current_bidder</span><span class="p">,</span>
+                            <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;property&quot;</span><span class="p">],</span>
+                            <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;current_bid&quot;</span><span class="p">]</span>
+                        <span class="p">)</span>
+                        
+                        <span class="k">if</span> <span class="n">bid_amount</span> <span class="ow">and</span> <span class="n">bid_amount</span> <span class="o">&gt;=</span> <span class="n">auction_data</span><span class="p">[</span><span class="s2">&quot;minimum_bid&quot;</span><span class="p">]:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;AI </span><span class="si">{</span><span class="n">current_bidder</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> bids £</span><span class="si">{</span><span class="n">bid_amount</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                            <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_bid</span><span class="p">(</span>
+                                <span class="n">current_bidder</span><span class="p">,</span> <span class="n">bid_amount</span>
+                            <span class="p">)</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+                                <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                                    <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span>
+                                        <span class="n">pygame</span><span class="o">.</span><span class="n">USEREVENT</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;ai_auction_action_complete&quot;</span><span class="p">},</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI </span><span class="si">{</span><span class="n">current_bidder</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> passes&quot;</span><span class="p">)</span>
+                            <span class="n">success</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">process_auction_pass</span><span class="p">(</span>
+                                <span class="n">current_bidder</span>
+                            <span class="p">)</span>
+                            <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+                                <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                                    <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span>
+                                        <span class="n">pygame</span><span class="o">.</span><span class="n">USEREVENT</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;ai_auction_action_complete&quot;</span><span class="p">},</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+                <span class="p">):</span>
+                    <span class="n">result_message</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">check_auction_end</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">result_message</span> <span class="o">==</span> <span class="s2">&quot;auction_completed&quot;</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Auction completed in main loop - setting up delay&quot;</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+                            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="p">):</span>
+                            <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;highest_bidder&quot;</span><span class="p">):</span>
+                                <span class="n">winner</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="p">[</span><span class="s2">&quot;highest_bidder&quot;</span><span class="p">]</span>
+                                <span class="n">property_name</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="p">[</span><span class="s2">&quot;property&quot;</span><span class="p">][</span>
+                                    <span class="s2">&quot;name&quot;</span>
+                                <span class="p">]</span>
+                                <span class="n">bid_amount</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="p">[</span><span class="s2">&quot;current_bid&quot;</span><span class="p">]</span>
+                                <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">winner</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> won </span><span class="si">{</span><span class="n">property_name</span><span class="si">}</span><span class="s2"> for £</span><span class="si">{</span><span class="n">bid_amount</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">property_name</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="p">[</span><span class="s2">&quot;property&quot;</span><span class="p">][</span>
+                                    <span class="s2">&quot;name&quot;</span>
+                                <span class="p">]</span>
+                                <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">add_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No one bid on </span><span class="si">{</span><span class="n">property_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                        <span class="n">game</span><span class="o">.</span><span class="n">auction_end_time</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">auction_end_delay</span> <span class="o">=</span> <span class="mi">3000</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">auction_completed</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+
+                        <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="s2">&quot;Explicitly cleared current_auction after setting up auction delay&quot;</span>
+                        <span class="p">)</span>
+
+                <span class="nb">delattr</span><span class="p">(</span><span class="n">game</span><span class="p">,</span> <span class="s2">&quot;auction_processing&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check auction end condition</span>
+        <span class="n">any_moving</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">is_moving</span> <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">any_moving</span>
+            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span>
+            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;completed&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Auction marked as completed but state not updated - forcing state to ROLL&quot;</span>
+            <span class="p">)</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update_ownership</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+
+        <span class="c1"># more state consistency checks for auction</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">any_moving</span>
+            <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;AUCTION&quot;</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="p">,</span> <span class="s2">&quot;current_auction&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">game</span><span class="o">.</span><span class="n">logic</span><span class="o">.</span><span class="n">current_auction</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;State is AUCTION but no auction data exists - resetting to ROLL&quot;</span>
+            <span class="p">)</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;ROLL&quot;</span>
+
+        <span class="c1"># check if only one player left (game over condition)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">game_settings</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span>
+            <span class="ow">and</span> <span class="n">game_actions</span><span class="o">.</span><span class="n">check_one_player_remains</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">game_over_data</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Only one player remains - ending game&quot;</span><span class="p">)</span>
+            <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">game_actions</span><span class="o">.</span><span class="n">end_full_game</span><span class="p">()</span>
+            <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">game_settings</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;abridged&quot;</span>
+            <span class="ow">and</span> <span class="n">game_actions</span><span class="o">.</span><span class="n">check_one_player_remains</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">game_over_data</span>
+        <span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Only one player remains in abridged mode - ending game&quot;</span><span class="p">)</span>
+            <span class="n">game_over_data</span> <span class="o">=</span> <span class="n">game_actions</span><span class="o">.</span><span class="n">end_abridged_game</span><span class="p">()</span>
+            <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>  <span class="c1"># update the screen</span>
+
+        <span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span>  <span class="c1"># limit frame rate</span>
+
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">stop_music</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">game_over_data</span>  <span class="c1"># return winner info etc.</span></div>
+
+
+
+<span class="c1"># shows the end game screen</span>
+<div class="viewcode-block" id="handle_end_game">
+<a class="viewcode-back" href="../modules/main.html#Main.handle_end_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_end_game</span><span class="p">(</span><span class="n">game_over_data</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Entering handle_end_game function&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Game over data: </span><span class="si">{</span><span class="n">game_over_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;game_over&quot;</span><span class="p">)</span>
+
+    <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">game_over_data</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;WARNING: Game over data is a boolean instead of a dictionary&quot;</span><span class="p">)</span>
+        <span class="n">game_over_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;winner&quot;</span><span class="p">:</span> <span class="s2">&quot;Last Player Standing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;final_assets&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">&quot;bankrupted_players&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;voluntary_exits&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;tied_winners&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;lap_count&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">}</span>
+
+    <span class="n">end_page</span> <span class="o">=</span> <span class="n">EndGamePage</span><span class="p">(</span>
+        <span class="n">winner_name</span><span class="o">=</span><span class="n">game_over_data</span><span class="p">[</span><span class="s2">&quot;winner&quot;</span><span class="p">],</span>
+        <span class="n">final_assets</span><span class="o">=</span><span class="n">game_over_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;final_assets&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="n">bankrupted_players</span><span class="o">=</span><span class="n">game_over_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bankrupted_players&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+        <span class="n">voluntary_exits</span><span class="o">=</span><span class="n">game_over_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;voluntary_exits&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+        <span class="n">tied_winners</span><span class="o">=</span><span class="n">game_over_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tied_winners&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+        <span class="n">lap_count</span><span class="o">=</span><span class="n">game_over_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lap_count&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+    <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;EndGamePage created successfully&quot;</span><span class="p">)</span>
+
+    <span class="n">debug_drawn</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">current_page</span> <span class="o">=</span> <span class="n">end_page</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">current_page</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+        <span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">debug_drawn</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">EndGamePage</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;EndGamePage drawn&quot;</span><span class="p">)</span>
+            <span class="n">debug_drawn</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">end_event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">end_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                <span class="n">safe_exit</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">end_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">handle_click</span><span class="p">(</span><span class="n">end_event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">EndGamePage</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;play_again&quot;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+                    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;quit&quot;</span><span class="p">:</span>
+                        <span class="n">safe_exit</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;credits&quot;</span><span class="p">:</span>
+                        <span class="n">current_page</span> <span class="o">=</span> <span class="n">CreditsPage</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">CreditsPage</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="n">current_page</span> <span class="o">=</span> <span class="n">end_page</span>
+            <span class="k">elif</span> <span class="n">end_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">handle_key</span><span class="p">(</span><span class="n">end_event</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">EndGamePage</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;play_again&quot;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+                    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;quit&quot;</span><span class="p">:</span>
+                        <span class="n">safe_exit</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;credits&quot;</span><span class="p">:</span>
+                        <span class="n">current_page</span> <span class="o">=</span> <span class="n">CreditsPage</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">end_event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEMOTION</span><span class="p">:</span>
+                <span class="n">current_page</span><span class="o">.</span><span class="n">handle_motion</span><span class="p">(</span><span class="n">end_event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># fades the logo in and out</span>
+<div class="viewcode-block" id="show_logo_screen">
+<a class="viewcode-back" href="../modules/main.html#Main.show_logo_screen">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">show_logo_screen</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="n">logo_path</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+        <span class="n">bg_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;assets/image/starterbackground.png&quot;</span><span class="p">)</span>
+        <span class="n">original_background</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">bg_path</span><span class="p">)</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="n">screen</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="n">window_width</span><span class="p">,</span> <span class="n">window_height</span> <span class="o">=</span> <span class="n">window_size</span>
+
+        <span class="n">bg_width</span><span class="p">,</span> <span class="n">bg_height</span> <span class="o">=</span> <span class="n">original_background</span><span class="o">.</span><span class="n">get_size</span><span class="p">()</span>
+        <span class="n">bg_aspect</span> <span class="o">=</span> <span class="n">bg_width</span> <span class="o">/</span> <span class="n">bg_height</span>
+        <span class="n">window_aspect</span> <span class="o">=</span> <span class="n">window_width</span> <span class="o">/</span> <span class="n">window_height</span>
+
+        <span class="k">if</span> <span class="n">window_aspect</span> <span class="o">&gt;</span> <span class="n">bg_aspect</span><span class="p">:</span>
+            <span class="n">scaled_width</span> <span class="o">=</span> <span class="n">window_width</span>
+            <span class="n">scaled_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">scaled_width</span> <span class="o">/</span> <span class="n">bg_aspect</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scaled_height</span> <span class="o">=</span> <span class="n">window_height</span>
+            <span class="n">scaled_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">scaled_height</span> <span class="o">*</span> <span class="n">bg_aspect</span><span class="p">)</span>
+
+        <span class="n">pos_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_width</span> <span class="o">-</span> <span class="n">scaled_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">pos_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_height</span> <span class="o">-</span> <span class="n">scaled_height</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">background</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span>
+            <span class="n">original_background</span><span class="p">,</span> <span class="p">(</span><span class="n">scaled_width</span><span class="p">,</span> <span class="n">scaled_height</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">logo</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">logo_path</span><span class="p">)</span>
+
+        <span class="n">logo_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
+        <span class="n">logo_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">logo_width</span> <span class="o">*</span> <span class="p">(</span><span class="n">logo</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">/</span> <span class="n">logo</span><span class="o">.</span><span class="n">get_width</span><span class="p">()))</span>
+        <span class="n">logo</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">logo</span><span class="p">,</span> <span class="p">(</span><span class="n">logo_width</span><span class="p">,</span> <span class="n">logo_height</span><span class="p">))</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">logo_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">logo_height</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="c1"># Fade in</span>
+        <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">background</span><span class="p">,</span> <span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span><span class="p">))</span>
+
+            <span class="n">overlay</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">overlay</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="n">logo_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">logo_width</span><span class="p">,</span> <span class="n">logo_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">logo_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">logo_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">logo</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">logo_surface</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">logo_surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">background</span><span class="p">,</span> <span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span><span class="p">))</span>
+
+            <span class="n">overlay</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">overlay</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="n">logo_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">logo_width</span><span class="p">,</span> <span class="n">logo_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">logo_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">logo_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">logo</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">logo_surface</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">logo_surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error showing logo screen: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># shows the company and group logos</span>
+<div class="viewcode-block" id="show_company_logo">
+<a class="viewcode-back" href="../modules/main.html#Main.show_company_logo">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">show_company_logo</span><span class="p">(</span><span class="n">screen</span><span class="p">):</span>
+    <span class="n">base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.Sound_Manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">sound_manager</span>
+
+    <span class="n">logo_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;assets/image/Watson Games 2025.png&quot;</span><span class="p">)</span>
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;watson_games&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">show_logo_screen</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="n">logo_path</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+
+    <span class="n">group_logo_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="s2">&quot;assets/image/Group 5 Persent.png&quot;</span><span class="p">)</span>
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;group_present&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">show_logo_screen</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="n">group_logo_path</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;game_start&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># main entry point for the application</span>
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../modules/main.html#Main.main">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">font_manager</span><span class="o">.</span><span class="n">update_scale_factor</span><span class="p">(</span><span class="n">WINDOW_SIZE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">WINDOW_SIZE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">screen</span> <span class="o">=</span> <span class="k">await</span> <span class="n">apply_screen_settings</span><span class="p">(</span><span class="n">WINDOW_SIZE</span><span class="p">)</span>
+
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">load_sounds</span><span class="p">()</span>
+    <span class="n">sound_manager</span><span class="o">.</span><span class="n">load_music</span><span class="p">()</span>
+
+    <span class="k">await</span> <span class="n">show_company_logo</span><span class="p">(</span><span class="n">screen</span><span class="p">)</span>
+
+    <span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+    <span class="c1"># main menu loop</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># setup pages</span>
+        <span class="n">current_page</span> <span class="o">=</span> <span class="n">MainMenuPage</span><span class="p">(</span><span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span><span class="p">)</span>
+        <span class="n">player_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">game_settings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ai_difficulty</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">game_running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># page navigation loop</span>
+        <span class="k">while</span> <span class="n">game_running</span><span class="p">:</span>
+            <span class="n">current_page</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+            <span class="c1"># events for menu navigation</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                    <span class="n">safe_exit</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span>
+                <span class="p">):</span>
+                    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                        <span class="n">sound_manager</span><span class="o">.</span><span class="n">play_sound</span><span class="p">(</span><span class="s2">&quot;menu_click&quot;</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">current_page</span><span class="o">.</span><span class="n">handle_click</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span>
+                        <span class="k">else</span> <span class="n">current_page</span><span class="o">.</span><span class="n">handle_key</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">MainMenuPage</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">StartPage</span><span class="p">(</span><span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;how_to_play&quot;</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">HowToPlayPage</span><span class="p">(</span>
+                                    <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                <span class="p">)</span>
+                            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;settings&quot;</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">SettingsPage</span><span class="p">(</span>
+                                    <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                <span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">HowToPlayPage</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;keyboard_shortcuts&quot;</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">KeyboardShortcutsPage</span><span class="p">(</span>
+                                    <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">MainMenuPage</span><span class="p">(</span>
+                                    <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                <span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">KeyboardShortcutsPage</span><span class="p">):</span>
+                            <span class="n">current_page</span> <span class="o">=</span> <span class="n">HowToPlayPage</span><span class="p">(</span><span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">SettingsPage</span><span class="p">):</span>
+                            <span class="n">settings</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">get_settings</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">WINDOW_SIZE</span><span class="p">:</span>
+                                <span class="n">screen</span> <span class="o">=</span> <span class="k">await</span> <span class="n">apply_screen_settings</span><span class="p">(</span>
+                                    <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span>
+                                <span class="p">)</span>
+                            <span class="n">current_page</span> <span class="o">=</span> <span class="n">MainMenuPage</span><span class="p">(</span><span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">StartPage</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">MainMenuPage</span><span class="p">(</span>
+                                    <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">player_info</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">get_player_info</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">player_info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                    <span class="n">current_page</span> <span class="o">=</span> <span class="n">AIDifficultyPage</span><span class="p">(</span>
+                                        <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                    <span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">current_page</span> <span class="o">=</span> <span class="n">GameModePage</span><span class="p">(</span>
+                                        <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                    <span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">AIDifficultyPage</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">StartPage</span><span class="p">(</span><span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">ai_difficulty</span> <span class="o">=</span> <span class="n">result</span>
+                                <span class="n">current_page</span> <span class="o">=</span> <span class="n">GameModePage</span><span class="p">(</span>
+                                    <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                <span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_page</span><span class="p">,</span> <span class="n">GameModePage</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">ai_difficulty</span><span class="p">:</span>
+                                    <span class="n">current_page</span> <span class="o">=</span> <span class="n">AIDifficultyPage</span><span class="p">(</span>
+                                        <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                    <span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">current_page</span> <span class="o">=</span> <span class="n">StartPage</span><span class="p">(</span>
+                                        <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                    <span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">game_settings</span> <span class="o">=</span> <span class="n">current_page</span><span class="o">.</span><span class="n">get_game_settings</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">ai_difficulty</span><span class="p">:</span>
+                                    <span class="n">game_settings</span><span class="p">[</span><span class="s2">&quot;ai_difficulty&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ai_difficulty</span>
+
+                                <span class="n">game</span> <span class="o">=</span> <span class="n">create_game</span><span class="p">(</span><span class="n">player_info</span><span class="p">,</span> <span class="n">game_settings</span><span class="p">)</span>
+                                <span class="n">game_over_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">run_game</span><span class="p">(</span>
+                                    <span class="n">game</span><span class="p">,</span> <span class="n">game_settings</span>
+                                <span class="p">)</span>  <span class="c1"># run the game loop</span>
+
+                                <span class="c1"># game ending and potential restart</span>
+                                <span class="k">if</span> <span class="n">game_over_data</span><span class="p">:</span>
+                                    <span class="n">play_again</span> <span class="o">=</span> <span class="k">await</span> <span class="n">handle_end_game</span><span class="p">(</span><span class="n">game_over_data</span><span class="p">)</span>
+                                    <span class="k">if</span> <span class="n">play_again</span><span class="p">:</span>
+                                        <span class="n">current_page</span> <span class="o">=</span> <span class="n">MainMenuPage</span><span class="p">(</span>
+                                            <span class="n">instructions</span><span class="o">=</span><span class="n">GAME_INSTRUCTIONS</span>
+                                        <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEMOTION</span><span class="p">:</span>
+                    <span class="n">current_page</span><span class="o">.</span><span class="n">handle_motion</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">VIDEORESIZE</span><span class="p">:</span>
+                    <span class="n">screen</span> <span class="o">=</span> <span class="k">await</span> <span class="n">apply_screen_settings</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">h</span><span class="p">))</span>
+
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+            <span class="c1"># Limit fps</span>
+            <span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="n">FPS</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="safe_exit">
+<a class="viewcode-back" href="../modules/main.html#Main.safe_exit">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_exit</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Game is shutting down...&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Restore the original print function</span>
+    <span class="n">__builtins__</span><span class="o">.</span><span class="n">print</span> <span class="o">=</span> <span class="n">builtin_print</span>
+    
+    <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[:]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Game Session Ended ===&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">code</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

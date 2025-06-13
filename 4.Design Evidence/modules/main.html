@@ -1,0 +1,827 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Game Module" href="game.html" />
+    <link rel="prev" title="Software-Engineering-Project 2025 -Property Tycoon Game Design Documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Main Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Main.apply_screen_settings"><code class="docutils literal notranslate"><span class="pre">apply_screen_settings()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.can_develop"><code class="docutils literal notranslate"><span class="pre">can_develop()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.create_game"><code class="docutils literal notranslate"><span class="pre">create_game()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.handle_end_game"><code class="docutils literal notranslate"><span class="pre">handle_end_game()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.log_print"><code class="docutils literal notranslate"><span class="pre">log_print()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.run_game"><code class="docutils literal notranslate"><span class="pre">run_game()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.safe_exit"><code class="docutils literal notranslate"><span class="pre">safe_exit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.show_company_logo"><code class="docutils literal notranslate"><span class="pre">show_company_logo()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Main.show_logo_screen"><code class="docutils literal notranslate"><span class="pre">show_logo_screen()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#high-level-design">High-Level Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-case-diagram">Use Case Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#domain-model">Domain Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#state-diagram">State Diagram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#class-interaction-diagram-main-orchestration">Class Interaction Diagram (Main Orchestration)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging-setup-class-diagram">Logging Setup Class Diagram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagram-game-initialization">Sequence Diagram: Game Initialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagram-game-configuration-flow">Sequence Diagram: Game Configuration Flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagram-main-game-loop-simplified">Sequence Diagram: Main Game Loop (Simplified)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sequence-diagram-safe-shutdown">Sequence Diagram: Safe Shutdown</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loadexcel.html">Load Excel Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Main Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/main.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="main-module">
+<h1>Main Module<a class="headerlink" href="#main-module" title="Link to this heading"></a></h1>
+<p>The Main module serves as the entry point for the Property Tycoon game application. It initializes the core game environment, manages the main application loop, orchestrates transitions between different game states (like menus, gameplay, and end screens), and handles the overall flow of the application from startup to shutdown.</p>
+<p>The Main module is responsible for:</p>
+<ul class="simple">
+<li><p>Initializing Pygame, sound, fonts, and logging.</p></li>
+<li><p>Displaying introductory logo screens (<cite>show_company_logo</cite>, <cite>show_logo_screen</cite>).</p></li>
+<li><p>Managing the main menu and navigation between different UI pages (Settings, How To Play, Start Game configuration) within the main <cite>async def main()</cite> loop.</p></li>
+<li><p>Gathering game configuration (players, AI settings, game mode) through interaction with UI pages like <cite>StartPage</cite>, <cite>AIDifficultyPage</cite>, and <cite>GameModePage</cite>.</p></li>
+<li><p>Creating the core <cite>Game</cite> object and <cite>Player</cite> objects via the <cite>create_game</cite> function.</p></li>
+<li><p>Running the main game loop via the <cite>async def run_game()</cite> function, which utilizes <cite>GameRenderer</cite>, <cite>GameEventHandler</cite>, and <cite>GameActions</cite>.</p></li>
+<li><p>Handling the end-game sequence via the <cite>async def handle_end_game()</cite> function, displaying results using <cite>EndGamePage</cite>.</p></li>
+<li><p>Managing window resizing and applying settings via <cite>async def apply_screen_settings()</cite>.</p></li>
+<li><p>Ensuring safe application shutdown via <cite>safe_exit()</cite>.</p></li>
+</ul>
+<dl class="py function" id="module-Main">
+<dt class="sig sig-object py" id="Main.apply_screen_settings">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">apply_screen_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#apply_screen_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.apply_screen_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.can_develop">
+<span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">can_develop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#can_develop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.can_develop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.create_game">
+<span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">create_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#create_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.create_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.handle_end_game">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">handle_end_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_over_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#handle_end_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.handle_end_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.log_print">
+<span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">log_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#log_print"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.log_print" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.main">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.run_game">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">run_game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#run_game"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.run_game" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.safe_exit">
+<span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">safe_exit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#safe_exit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.safe_exit" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.show_company_logo">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">show_company_logo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#show_company_logo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.show_company_logo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Main.show_logo_screen">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Main.</span></span><span class="sig-name descname"><span class="pre">show_logo_screen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">screen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logo_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Main.html#show_logo_screen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Main.show_logo_screen" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<section id="high-level-design">
+<h2>High-Level Design<a class="headerlink" href="#high-level-design" title="Link to this heading"></a></h2>
+<section id="use-case-diagram">
+<h3>Use Case Diagram<a class="headerlink" href="#use-case-diagram" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-2885b6f91ac0b692a2d0dd5e91067819bf935f92.png" alt="&#64;startuml
+left to right direction
+actor User
+
+rectangle &quot;Property Tycoon Application (Main Module)&quot; {
+  User -- (Start Application)
+  User -- (Navigate Menus)
+  (Navigate Menus) ..&gt; (Configure Game Settings) : includes
+  (Navigate Menus) ..&gt; (View How To Play) : includes
+  (Navigate Menus) ..&gt; (Start New Game) : includes
+  (Start New Game) --&gt; (Play Game)
+  (Play Game) --&gt; (View End Game Screen)
+  User -- (Exit Application)
+
+  (Start Application) .&gt; (Initialize Environment) : includes
+  note right of (Initialize Environment)
+    Pygame, Sound, Logging, Fonts
+  end note
+  (Start Application) .&gt; (Show Logos) : includes
+
+  (Configure Game Settings) ..&gt; (Select Players) : includes
+  (Configure Game Settings) ..&gt; (Select AI Difficulty) : includes
+  (Configure Game Settings) ..&gt; (Select Game Mode) : includes
+
+  (Play Game) ..&gt; (Handle Game Events) : includes
+  (Play Game) ..&gt; (Render Game State) : includes
+  (Play Game) ..&gt; (Execute Game Actions) : includes
+  (Play Game) ..&gt; (Check Time Limit) : includes
+  (Play Game) ..&gt; (Check Game Over) : includes
+
+  (Exit Application) .&gt; (Shutdown Safely) : includes
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Main Module Use Cases</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="domain-model">
+<h3>Domain Model<a class="headerlink" href="#domain-model" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id2">
+<p class="plantuml">
+<img src="../_images/plantuml-775e468db7416be363b233bbd407ac9be2b19a4b.png" alt="&#64;startuml
+skinparam classAttributeIconSize 0
+
+package &quot;Core Game Components&quot; {
+  class Game {
+    + players: List&lt;Player&gt;
+    + board: Board
+    + game_mode: String
+    + time_limit: int
+    + state: GameState
+    + initialize()
+    + run()
+    + check_time_limit()
+    + check_game_over()
+  }
+
+  class Board {
+    + spaces: List&lt;Space&gt;
+    + properties: List&lt;Property&gt;
+    + initialize()
+    + get_space(position: int)
+    + draw()
+    + update_positions()
+  }
+
+  class Player {
+    + name: String
+    + position: int
+    + money: int
+    + properties: List&lt;Property&gt;
+    + is_ai: boolean
+    + move(steps: int)
+    + pay(amount: int)
+    + receive(amount: int)
+  }
+
+  class Property {
+    + name: String
+    + price: int
+    + owner: Player
+    + is_mortgaged: boolean
+    + calculate_rent()
+    + mortgage()
+    + unmortgage()
+  }
+
+  Game &quot;1&quot; *-- &quot;2..*&quot; Player : contains
+  Game &quot;1&quot; *-- &quot;1&quot; Board : has
+  Board &quot;1&quot; *-- &quot;*&quot; Property : contains
+  Player &quot;1&quot; o-- &quot;*&quot; Property : owns
+}
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Main Module Core Classes</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="state-diagram">
+<h3>State Diagram<a class="headerlink" href="#state-diagram" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id3">
+<p class="plantuml">
+<img src="../_images/plantuml-f09f87125b02ce3c9987363b9208daaa954c092e.png" alt="&#64;startuml
+skinparam state {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+
+[*] --&gt; Initializing : Start Application
+
+state Initializing {
+  state &quot;Loading resources&quot; as Loading
+  state &quot;Setting up environment&quot; as Setup
+  Loading --&gt; Setup
+}
+
+Initializing --&gt; ShowingLogos : Resources Loaded
+
+state ShowingLogos {
+  state &quot;Displaying company logos&quot; as CompanyLogo
+  state &quot;Displaying game logo&quot; as GameLogo
+  CompanyLogo --&gt; GameLogo
+}
+
+ShowingLogos --&gt; MainMenu : Logos Complete
+
+state MainMenu {
+  state &quot;Display menu options&quot; as MenuOptions
+  state &quot;Handle menu navigation&quot; as MenuNav
+  MenuOptions --&gt; MenuNav : User Input
+}
+
+MainMenu --&gt; MainMenu : Navigate Menus
+MainMenu --&gt; ConfiguringGame : Start New Game
+MainMenu --&gt; [*] : Exit Selected
+
+state ConfiguringGame {
+  state &quot;Select players&quot; as Players
+  state &quot;Set AI difficulty&quot; as AI
+  state &quot;Choose game mode&quot; as Mode
+  Players --&gt; AI
+  AI --&gt; Mode
+}
+
+ConfiguringGame --&gt; ConfiguringGame : Next Setting
+ConfiguringGame --&gt; MainMenu : Cancel
+ConfiguringGame --&gt; Gameplay : Settings Complete
+
+state Gameplay {
+  state &quot;Process game loop&quot; as Loop
+  state &quot;Handle player turns&quot; as Turns
+  state &quot;Update game state&quot; as Update
+  Loop --&gt; Turns
+  Turns --&gt; Update
+  Update --&gt; Loop
+}
+
+Gameplay --&gt; Gameplay : Game Loop
+Gameplay --&gt; Paused : Pause Game
+Gameplay --&gt; EndGameScreen : Game Over
+Gameplay --&gt; [*] : Exit Game
+
+state Paused {
+  state &quot;Game state frozen&quot; as Frozen
+  state &quot;Display pause menu&quot; as PauseMenu
+}
+
+Paused --&gt; Gameplay : Resume Game
+
+state EndGameScreen {
+  state &quot;Show final scores&quot; as Scores
+  state &quot;Display winner&quot; as Winner
+  Scores --&gt; Winner
+}
+
+EndGameScreen --&gt; MainMenu : Play Again
+EndGameScreen --&gt; [*] : Quit Game
+
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Main Application States</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<section id="class-interaction-diagram-main-orchestration">
+<h3>Class Interaction Diagram (Main Orchestration)<a class="headerlink" href="#class-interaction-diagram-main-orchestration" title="Link to this heading"></a></h3>
+<figure class="align-default" id="id4">
+<p class="plantuml">
+<img src="../_images/plantuml-8e743baf92dec186ec0b3433f33a1290b7398f4b.png" alt="&#64;startuml
+skinparam classAttributeIconSize 0
+
+class Main {
+   + main()
+   + create_game()
+   + run_game()
+   + handle_end_game()
+   + apply_screen_settings()
+   + show_logo_screen()
+   + show_company_logo()
+   + safe_exit()
+}
+
+class Game {
+   + players: List
+   + board: Board
+   + logic: GameLogic
+   + state: GameState
+   + check_time_limit()
+   + check_game_over()
+}
+
+class Player {
+   + name: String
+   + money: int
+   + position: int
+   + is_ai: boolean
+}
+
+class GameRenderer {
+   + draw()
+}
+
+class GameEventHandler {
+   + handle_click()
+   + handle_key()
+   + handle_motion()
+}
+
+class GameActions {
+   + play_turn()
+   + handle_ai_turn()
+   + end_game()
+}
+
+abstract class BasePage {
+   + {abstract} draw()
+   + {abstract} handle_click()
+   + {abstract} handle_key()
+}
+
+class MainMenuPage extends BasePage {
+}
+
+class StartPage extends BasePage {
+}
+
+class GameModePage extends BasePage {
+}
+
+class SettingsPage extends BasePage {
+}
+
+class HowToPlayPage extends BasePage {
+}
+
+class EndGamePage extends BasePage {
+}
+
+class Sound_Manager {
+   + play_sound()
+   + play_music()
+}
+
+class Font_Manager {
+   + get_font()
+}
+
+Main --&gt; Game : creates
+Main --&gt; Player : creates
+Main --&gt; GameRenderer : creates
+Main --&gt; GameEventHandler : creates
+Main --&gt; GameActions : creates
+Main --&gt; MainMenuPage : creates
+Main --&gt; StartPage : creates
+Main --&gt; GameModePage : creates
+Main --&gt; SettingsPage : creates
+Main --&gt; HowToPlayPage : creates
+Main --&gt; EndGamePage : creates
+Main --&gt; Sound_Manager : uses
+Main --&gt; Font_Manager : uses
+
+Game o-- Player : contains
+GameRenderer --&gt; Game : reads
+GameEventHandler --&gt; Game : reads
+GameActions --&gt; Game : modifies
+GameActions --&gt; Player : modifies
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Main Orchestration</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="logging-setup-class-diagram">
+<h3>Logging Setup Class Diagram<a class="headerlink" href="#logging-setup-class-diagram" title="Link to this heading"></a></h3>
+<p>Illustrates the custom <cite>LogRedirector</cite> used to pipe stdout/stderr to the logging framework.</p>
+<figure class="align-default" id="id5">
+<p class="plantuml">
+<img src="../_images/plantuml-687e686c45cde3ab70a66d6f534a886bacc58783.png" alt="&#64;startuml
+skinparam classAttributeIconSize 0
+
+class LogRedirector {
+    + logger: Logger
+    + level: int
+    + buffer: str
+    - _writing: boolean
+    + write(buf: str)
+    + flush()
+}
+
+class &quot;logging.Logger&quot; as Logger {
+    + log(level: int, msg: str)
+    + addHandler(handler: Handler)
+}
+
+class &quot;logging.FileHandler&quot; as FileHandler
+class &quot;logging.StreamHandler&quot; as StreamHandler
+
+class &quot;sys&quot; as SysModule {
+    + stdout: TextIO
+    + stderr: TextIO
+    + __stdout__: TextIO
+    + __stderr__: TextIO
+}
+
+LogRedirector o-- Logger : uses
+MainPy ..&gt; Logger : configures
+MainPy ..&gt; FileHandler : creates &gt;
+MainPy ..&gt; StreamHandler : creates &gt;
+MainPy ..&gt; LogRedirector : creates &gt;
+MainPy ..&gt; SysModule : redirects stdout/stderr
+LogRedirector ..&gt; Logger : calls log()
+LogRedirector ..&gt; SysModule : writes to __stdout__
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Logging Setup</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagram-game-initialization">
+<h3>Sequence Diagram: Game Initialization<a class="headerlink" href="#sequence-diagram-game-initialization" title="Link to this heading"></a></h3>
+<p>This diagram shows the sequence of calls from starting the application (<cite>main()</cite>) through creating the game instance.</p>
+<figure class="align-default" id="id6">
+<p class="plantuml">
+<img src="../_images/plantuml-2deb2a0a11282a7ddfab2468d4e86d8346876115.png" alt="&#64;startuml
+skinparam sequenceMessageAlign center
+
+actor User
+participant &quot;Main()&quot; as MainFunc
+participant &quot;ApplySettings&quot; as ApplySettings
+participant &quot;Pygame&quot; as Pygame
+participant &quot;FontManager&quot; as FM
+participant &quot;SoundManager&quot; as SM
+participant &quot;ShowLogo&quot; as ShowLogo
+participant &quot;MenuUI&quot; as MenuUI
+participant &quot;StartUI&quot; as StartUI
+participant &quot;AIUI&quot; as AIUI
+participant &quot;ModeUI&quot; as ModeUI
+participant &quot;CreateGame&quot; as CreateGame
+participant &quot;Player&quot; as PlayerClass
+participant &quot;Game&quot; as GameClass
+participant &quot;RunGame&quot; as RunGame
+
+User -&gt; MainFunc : Start Application
+activate MainFunc
+
+MainFunc -&gt; ApplySettings : apply_screen_settings()
+activate ApplySettings
+ApplySettings -&gt; Pygame : display.set_mode()
+ApplySettings -&gt; FM : update_scale_factor()
+ApplySettings --&gt; MainFunc : screen
+deactivate ApplySettings
+
+MainFunc -&gt; SM : load_sounds()
+MainFunc -&gt; SM : load_music()
+MainFunc -&gt; ShowLogo : show_company_logo()
+activate ShowLogo
+ShowLogo -&gt; SM : play_sound()
+ShowLogo -&gt; Pygame : display.flip()
+ShowLogo --&gt; MainFunc
+deactivate ShowLogo
+
+MainFunc -&gt; MenuUI : create()
+activate MenuUI
+MainFunc -&gt; MenuUI : draw()
+User -&gt; MenuUI : Interact
+MenuUI -&gt; MainFunc : result
+deactivate MenuUI
+
+MainFunc -&gt; StartUI : create()
+activate StartUI
+MainFunc -&gt; StartUI : draw()
+User -&gt; StartUI : Enter Info
+StartUI -&gt; MainFunc : player_info
+deactivate StartUI
+
+MainFunc -&gt; AIUI : create()
+activate AIUI
+MainFunc -&gt; AIUI : draw()
+User -&gt; AIUI : Select Difficulty
+AIUI -&gt; MainFunc : ai_difficulty
+deactivate AIUI
+
+MainFunc -&gt; ModeUI : create()
+activate ModeUI
+MainFunc -&gt; ModeUI : draw()
+User -&gt; ModeUI : Select Mode
+ModeUI -&gt; MainFunc : game_settings
+deactivate ModeUI
+
+MainFunc -&gt; CreateGame : create_game()
+activate CreateGame
+CreateGame -&gt; PlayerClass : create()
+CreateGame -&gt; GameClass : create()
+CreateGame -&gt; SM : play_sound()
+CreateGame --&gt; MainFunc : game
+deactivate CreateGame
+
+MainFunc -&gt; RunGame : run_game()
+deactivate MainFunc
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Game Initialization</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagram-game-configuration-flow">
+<h3>Sequence Diagram: Game Configuration Flow<a class="headerlink" href="#sequence-diagram-game-configuration-flow" title="Link to this heading"></a></h3>
+<p>Details the user interactions within the <cite>main()</cite> loop to configure and start a new game.</p>
+<figure class="align-default" id="id7">
+<p class="plantuml">
+<img src="../_images/plantuml-4a4b10b89008483ad0ca7475f196dd87fc4e51ef.png" alt="&#64;startuml
+skinparam sequenceMessageAlign center
+
+actor User
+participant &quot;Main()&quot; as MainFunc
+participant &quot;UI Pages&quot; as UI
+
+activate MainFunc
+MainFunc -&gt; MainMenuPage : create()
+
+loop Until Game Starts
+    activate UI
+    MainFunc -&gt; UI : draw()
+    User -&gt; UI : Interact
+    UI -&gt; MainFunc : result
+    deactivate UI
+
+    alt result == &quot;start&quot;
+        MainFunc -&gt; StartPage : create()
+    else result == &quot;how_to_play&quot;
+        MainFunc -&gt; HowToPlayPage : create()
+    else result == &quot;settings&quot;
+        MainFunc -&gt; SettingsPage : create()
+    else result == &quot;back&quot;
+        MainFunc -&gt; MainMenuPage : create()
+    else result == &quot;player_info&quot;
+        MainFunc -&gt; AIDifficultyPage : create()
+    else result == &quot;ai_difficulty&quot;
+        MainFunc -&gt; GameModePage : create()
+    else result == &quot;game_settings&quot;
+        MainFunc -&gt; MainFunc : create_game()
+        MainFunc -&gt; MainFunc : run_game()
+        break Game Started
+    else result == &quot;quit&quot;
+        MainFunc -&gt; MainFunc : safe_exit()
+        break Exit Application
+    end
+end
+deactivate MainFunc
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Game Configuration Flow</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagram-main-game-loop-simplified">
+<h3>Sequence Diagram: Main Game Loop (Simplified)<a class="headerlink" href="#sequence-diagram-main-game-loop-simplified" title="Link to this heading"></a></h3>
+<p>This diagram shows a simplified overview of the main <cite>run_game</cite> loop, highlighting event handling, rendering, and AI turn processing.</p>
+<figure class="align-default" id="id8">
+<p class="plantuml">
+<img src="../_images/plantuml-0a9d28e991e68579207ee8ae30e3b53ceb4eb00f.png" alt="&#64;startuml
+skinparam sequenceMessageAlign center
+
+participant &quot;RunGame&quot; as RunGame
+participant &quot;Pygame&quot; as Pygame
+participant &quot;Game&quot; as GameObj
+participant &quot;Renderer&quot; as Renderer
+participant &quot;EventHandler&quot; as EvHandler
+participant &quot;GameActions&quot; as Actions
+participant &quot;Logger&quot; as Log
+participant &quot;SoundManager&quot; as SM
+participant &quot;Asyncio&quot; as Asyncio
+
+activate RunGame
+RunGame -&gt; Renderer : create()
+RunGame -&gt; EvHandler : create()
+RunGame -&gt; SM : play_music()
+
+loop while running
+  RunGame -&gt; Asyncio : await asyncio.sleep(0)
+  RunGame -&gt; Pygame : time.get_ticks()
+  RunGame -&gt; Log : flush()
+
+  RunGame -&gt; GameObj : check_time_limit()
+
+  RunGame -&gt; Renderer : draw()
+  activate Renderer
+  Renderer -&gt; Pygame : display.flip()
+  deactivate Renderer
+
+  RunGame -&gt; Pygame : event.get()
+
+  alt event == QUIT
+    RunGame -&gt; RunGame : safe_exit()
+    break
+  else event == MOUSEBUTTONDOWN
+    RunGame -&gt; EvHandler : handle_click()
+    activate EvHandler
+    RunGame -&gt; SM : play_sound()
+    deactivate EvHandler
+  else event == KEYDOWN
+    RunGame -&gt; EvHandler : handle_key()
+  end
+
+  RunGame -&gt; Actions : handle_ai_turn()
+  activate Actions
+  Actions -&gt; GameObj : update state
+  deactivate Actions
+
+  RunGame -&gt; Actions : check_one_player_remains()
+
+  RunGame -&gt; Pygame : clock.tick()
+end
+
+RunGame -&gt; SM : stop_music()
+deactivate RunGame
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Main Game Loop</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="sequence-diagram-safe-shutdown">
+<h3>Sequence Diagram: Safe Shutdown<a class="headerlink" href="#sequence-diagram-safe-shutdown" title="Link to this heading"></a></h3>
+<p>Illustrates the steps performed when the application exits via <cite>safe_exit()</cite>.</p>
+<figure class="align-default" id="id9">
+<p class="plantuml">
+<img src="../_images/plantuml-52fa5c272d9105f666cc298e8c4c2dc9cc1b46a6.png" alt="&#64;startuml
+skinparam sequenceMessageAlign center
+
+participant &quot;Caller&quot; as Caller
+participant &quot;safe_exit()&quot; as SafeExit
+participant &quot;Logger&quot; as Log
+participant &quot;FileHandler&quot; as FH
+participant &quot;sys&quot; as Sys
+participant &quot;logging&quot; as LoggingModule
+participant &quot;pygame&quot; as Pygame
+
+activate Caller
+Caller -&gt; SafeExit : safe_exit(code)
+activate SafeExit
+
+SafeExit -&gt; Log : info(&quot;Game is shutting down...&quot;)
+activate Log
+
+SafeExit -&gt; Sys : stdout = sys.__stdout__
+SafeExit -&gt; Sys : stderr = sys.__stderr__
+
+loop for handler in logger.handlers
+    alt handler is FileHandler
+        SafeExit -&gt; FH : flush()
+        activate FH
+        deactivate FH
+    end
+end
+
+SafeExit -&gt; Log : info(&quot;=== Game Session Ended ===&quot;)
+deactivate Log
+
+SafeExit -&gt; LoggingModule : shutdown()
+SafeExit -&gt; Pygame : quit()
+SafeExit -&gt; Sys : exit(code)
+
+deactivate SafeExit
+deactivate Caller
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Safe Shutdown</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Software-Engineering-Project 2025 -Property Tycoon Game Design Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game.html" class="btn btn-neutral float-right" title="Game Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

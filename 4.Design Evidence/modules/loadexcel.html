@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Load Excel Module &mdash; Property Tycoon V1.0 Documentation V1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d43430bd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sound Manager Module" href="sound_manager.html" />
+    <link rel="prev" title="Development Mode Module" href="development_mode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Property Tycoon V1.0 Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Main Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game.html">Game Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_logic.html">Game Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_actions.html">Game Actions Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_event_handler.html">Game Event Handler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_renderer.html">Game Renderer Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="player.html">Player Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="board.html">Board Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="property.html">Property Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ai_player_logic.html">AI Player Logic Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cards.html">Cards Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ui.html">UI Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development_mode.html">Development Mode Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Load Excel Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#src.Sound_Manager.SoundManager"><code class="docutils literal notranslate"><span class="pre">SoundManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.get_missing_files"><code class="docutils literal notranslate"><span class="pre">SoundManager.get_missing_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.load_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.load_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.load_settings"><code class="docutils literal notranslate"><span class="pre">SoundManager.load_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.load_sounds"><code class="docutils literal notranslate"><span class="pre">SoundManager.load_sounds()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.pause_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.pause_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.play_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.play_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.play_sound"><code class="docutils literal notranslate"><span class="pre">SoundManager.play_sound()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.save_settings"><code class="docutils literal notranslate"><span class="pre">SoundManager.save_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.set_music_volume"><code class="docutils literal notranslate"><span class="pre">SoundManager.set_music_volume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.set_sound_volume"><code class="docutils literal notranslate"><span class="pre">SoundManager.set_sound_volume()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.stop_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.stop_music()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src.Sound_Manager.SoundManager.unpause_music"><code class="docutils literal notranslate"><span class="pre">SoundManager.unpause_music()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-design">Detailed Design</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sound_manager.html">Sound Manager Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="font_manager.html">Font Manager Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Property Tycoon V1.0 Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Load Excel Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/loadexcel.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="load-excel-module">
+<h1>Load Excel Module<a class="headerlink" href="#load-excel-module" title="Link to this heading"></a></h1>
+<p>The Load Excel module is responsible for extracting game data from Excel spreadsheets (<cite>.xlsx</cite>), validating it, and transforming it into Python data structures (primarily dictionaries) that can be used by the Property Tycoon game. This module serves as a bridge between external data files (like board layout and card text) and the game’s internal representation.</p>
+<p>This module provides functions to:</p>
+<ul class="simple">
+<li><p>Load detailed property information for each board space from <cite>PropertyTycoonBoardData.xlsx</cite>, including name, position, type (property, station, utility, tax, special), price, rent, house costs, group, and actions.</p></li>
+<li><p>Handle potential variations in file paths and data formatting within the Excel file.</p></li>
+<li><p>Load key-value pairs for game text (e.g., Chance/Pot Luck card descriptions) from the <cite>Game Text</cite> sheet in <cite>PropertyTycoonCardData.xlsx</cite>.</p></li>
+</ul>
+<dl class="py class" id="module-src.Sound_Manager">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.Sound_Manager.</span></span><span class="sig-name descname"><span class="pre">SoundManager</span></span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.get_missing_files">
+<span class="sig-name descname"><span class="pre">get_missing_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.get_missing_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.get_missing_files" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.load_music">
+<span class="sig-name descname"><span class="pre">load_music</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">music_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'background_music.mp3'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.load_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.load_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.load_settings">
+<span class="sig-name descname"><span class="pre">load_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.load_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.load_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.load_sounds">
+<span class="sig-name descname"><span class="pre">load_sounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.load_sounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.load_sounds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.pause_music">
+<span class="sig-name descname"><span class="pre">pause_music</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.pause_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.pause_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.play_music">
+<span class="sig-name descname"><span class="pre">play_music</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.play_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.play_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.play_sound">
+<span class="sig-name descname"><span class="pre">play_sound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sound_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.play_sound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.play_sound" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.save_settings">
+<span class="sig-name descname"><span class="pre">save_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.save_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.save_settings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.set_music_volume">
+<span class="sig-name descname"><span class="pre">set_music_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.set_music_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.set_music_volume" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.set_sound_volume">
+<span class="sig-name descname"><span class="pre">set_sound_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.set_sound_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.set_sound_volume" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.stop_music">
+<span class="sig-name descname"><span class="pre">stop_music</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.stop_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.stop_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.Sound_Manager.SoundManager.unpause_music">
+<span class="sig-name descname"><span class="pre">unpause_music</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/Sound_Manager.html#SoundManager.unpause_music"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Sound_Manager.SoundManager.unpause_music" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="detailed-design">
+<h2>Detailed Design<a class="headerlink" href="#detailed-design" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>Component Diagram</p>
+</div></blockquote>
+<p>This diagram shows how the Load Excel module interacts with external Excel files and provides data to other game components.</p>
+<p>Details the steps involved in reading the property data Excel file.</p>
+<p>Shows the simpler process of reading the card/game text sheet.</p>
+<p>Illustrates the structure of the dictionary returned by <cite>load_property_data</cite>. The keys are string representations of the board position numbers.</p>
+<figure class="align-default" id="id1">
+<p class="plantuml">
+<img src="../_images/plantuml-c00af5299e22ce033a7f6e7ca4252474b0c0ab3e.png" alt="&#64;startuml
+skinparam object {
+  BackgroundColor white
+  BorderColor black
+  ArrowColor black
+}
+
+object &quot;properties_data&quot; as PropertiesDict {
+  &quot;1&quot; : GO space
+  &quot;2&quot; : Old Kent Road
+  &quot;6&quot; : Station
+  &quot;13&quot; : Utility
+  &quot;39&quot; : Tax space
+  ... (more positions)
+}
+
+object &quot;GO space&quot; as Prop1 {
+  name = &quot;Go&quot;
+  position = 1
+  type = &quot;special&quot;
+  action = &quot;Collect £200&quot;
+  can_be_bought = False
+}
+
+object &quot;Old Kent Road&quot; as Prop2 {
+  name = &quot;Old Kent Road&quot;
+  position = 2
+  type = &quot;property&quot;
+  group = &quot;Brown&quot;
+  price = 60
+  rent = 2
+  house_costs = (10,30,90,160,250)
+}
+
+object &quot;Station&quot; as Prop6 {
+  name = &quot;King's Cross Station&quot;
+  position = 6
+  type = &quot;station&quot;
+  price = 200
+  rent = 25
+  is_station = True
+}
+
+object &quot;Utility&quot; as Prop13 {
+  name = &quot;Tesla Power Co&quot;
+  position = 13
+  type = &quot;utility&quot;
+  price = 150
+  is_utility = True
+}
+
+object &quot;Tax space&quot; as Prop39 {
+  name = &quot;Super Tax&quot;
+  position = 39
+  type = &quot;tax&quot;
+  amount = 100
+}
+
+PropertiesDict --&gt; Prop1
+PropertiesDict --&gt; Prop2
+PropertiesDict --&gt; Prop6
+PropertiesDict --&gt; Prop13
+PropertiesDict --&gt; Prop39
+&#64;enduml"/>
+</p>
+<figcaption>
+<p><span class="caption-text">Data Structure Diagram (Property Data)</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="development_mode.html" class="btn btn-neutral float-left" title="Development Mode Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sound_manager.html" class="btn btn-neutral float-right" title="Sound Manager Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Software Engineering Project Group 5 Eric Shi, Stuart Baker, Lin Moe Hein, Duncan Law, Owen Chen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
